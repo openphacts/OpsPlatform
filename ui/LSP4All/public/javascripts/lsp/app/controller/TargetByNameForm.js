@@ -47,7 +47,6 @@ Ext.define('LSP.controller.TargetByNameForm', {
     },
     
     submitQuery: function(button) {
-    alert('HERE!!');
         var form = button.up('form'),
         values = form.getValues();
         grid_targetbyname.store.proxy.actionMethods = {read: 'POST'};

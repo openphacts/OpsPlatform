@@ -2,6 +2,7 @@
 # Please note that all existing data in database models below will be destroyed!
 
 
+
 ApplicationType.delete_all
 atn = ApplicationType.new
 atn.id = 1
@@ -165,7 +166,7 @@ amn.id = 23
 amn.name = 'Compound by structure'
 amn.application_type_id = 2
 amn.xtype = 'SimSearchForm'
-amn.home = 'Compound Struture Search'
+amn.home = 'Compound Structure Search'
 amn.url = ''
 amn.ancestry = '1/17/16'
 amn.ancestry_depth = 3
@@ -192,20 +193,20 @@ amn.ancestry_depth = 3
 amn.save!
 amn = ApplicationModule.new
 amn.id = 26
-amn.name = 'X-Pharmacology by Target'
+amn.name = 'Pharmacology by Target'
 amn.application_type_id = 2
-amn.xtype = 'temp'
-amn.home = ''
+amn.xtype = 'PharmByTargetNameForm'
+amn.home = 'Pharmacology by Target Name'
 amn.url = ''
 amn.ancestry = '1/17/21'
 amn.ancestry_depth = 3
 amn.save!
 amn = ApplicationModule.new
 amn.id = 27
-amn.name = 'X-Pharmacology by Compound'
+amn.name = 'Pharmacology by Compound'
 amn.application_type_id = 2
-amn.xtype = 'temp'
-amn.home = ''
+amn.xtype = 'PharmByCmpdNameForm'
+amn.home = 'Pharmacology by Compound name'
 amn.url = ''
 amn.ancestry = '1/17/21'
 amn.ancestry_depth = 3
@@ -215,7 +216,7 @@ amn.id = 28
 amn.name = 'Pharmacology by Enzyme family'
 amn.application_type_id = 2
 amn.xtype = 'PharmEnzymeForm'
-amn.home = 'Compounds active agains enzyme family'
+amn.home = 'Compounds active against enzyme family'
 amn.url = ''
 amn.ancestry = '1/17/21'
 amn.ancestry_depth = 3
@@ -384,6 +385,7 @@ rn.id = 6
 rn.user_id = 12
 rn.role_id = 1
 rn.save!
+
 
 
 # For populating Enzyme data

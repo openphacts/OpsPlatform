@@ -83,6 +83,24 @@ _:fileidentifier4 larkc:connectsTo _:rdfreader .
 _:fileidentifier4 larkc:hasParameter _:param4 .
 _:param4 larkc:filePath \"c:/OPS/openphacts/datasets/uniprotrdf/enzyme.ttl\" .
 
+#Adding File - KEGG-CS mapping
+_:fileidentifier5 a <urn:eu.larkc.plugin.newfileidentifier.NewFileIdentifier> .
+_:fileidentifier5 larkc:connectsTo _:rdfreader .
+_:fileidentifier5 larkc:hasParameter _:param5 .
+_:param5 larkc:filePath \"c:/OPS/openphacts/datasets/OPS-DS-TTL/KEGG.ttl\" .
+
+#Adding File - PDSP-CS mapping
+_:fileidentifier6 a <urn:eu.larkc.plugin.newfileidentifier.NewFileIdentifier> .
+_:fileidentifier6 larkc:connectsTo _:rdfreader .
+_:fileidentifier6 larkc:hasParameter _:param6 .
+_:param6 larkc:filePath \"c:/OPS/openphacts/datasets/OPS-DS-TTL/PDSP.ttl\" .
+
+#Adding File - ChEMBL-CS mapping
+_:fileidentifier7 a <urn:eu.larkc.plugin.newfileidentifier.NewFileIdentifier> .
+_:fileidentifier7 larkc:connectsTo _:rdfreader .
+_:fileidentifier7 larkc:hasParameter _:param7 .
+_:param7 larkc:filePath \"c:/OPS/openphacts/datasets/OPS-DS-TTL/ChEMBL.ttl\" .
+
 
 #Define ChemCallout plugin
 _:chemcallout a <urn:eu.ops.plugin.chemcallout.ChemCallout> .
@@ -107,4 +125,4 @@ larkc = LarkcWorkflow.new()
 #hex_key = larkc.post_workflow(WORKFLOW)
 hex_key = larkc.post_workflow(ttl_file)
 endpoint = larkc.get_endpoint
-puts endpoint.inspect
+puts endpoint.inspect.first

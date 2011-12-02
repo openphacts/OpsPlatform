@@ -75,12 +75,14 @@ class SparqlEndpointController < ApplicationController
 
 
   # This function is for looking up concepts and getting predicates and objects. Not relevant for lashup demo....
-  def concept_name_lookup(url_lookup = params[:concept_url])
-      query_str = "SELECT DISTINCT ?concept ?label WHERE {\n"
-      query_str += "{ ?concept ?predicate ?object  .\n"
-      query_str += "OPTIONAL {?concept <http://www.w3.org/2000/01/rdf-schema#label> ?label }} .\n"
-      query_str += "FILTER regex(?concept, \"#{url_lookup}\", \"i\") }\n"
-      query_str += "Limit 150"
+  def concept_name_lookup(url_lookup = params[:query])
+      query_str = "SELECT ?concept ?object WHERE {\n"
+      query_str += "?concept ?predicate ?object  \n"
+   #   query_str += "OPTIONAL {?concept <http://www.w3.org/2000/01/rdf-schema#label> ?label } .\n"   # currently no label in ldc!!!
+   #   query_str += "OPTIONAL {?concept ?predicate ?label } .\n"
+      query_str += "FILTER regex(?object, \"#{url_lookup}\", \"i\")}\n"
+   #   query_str += "FILTER regex(?object, \"#{url_lookup}\", \"i\")}\n"
+      query_str += "Limit 50"
  
       @endpoint = SparqlEndpoint.new(session[:endpoint])             
       results = @endpoint.find_by_sparql(query_str)
@@ -194,20 +196,19 @@ class SparqlEndpointController < ApplicationController
      render :json => construct_column_objects(format_chemspider_results(results)).to_json, :layout => false
    end
  
-  def concept_object_summery(concept_url = params[:concept_url])
+  def concept_object_summery(concept_url = params[:concept_uuid])
      puts concept_url
-     concept_object_query = 'SELECT * WHERE { <#{concept_url}> ?property_type ?property_value}'
-     puts concept_object_query
-     results = []
+     concept_object_query = "SELECT ?property_type ?property_value WHERE { <#{concept_url}> ?property_type ?property_value}"
+     endpoint = SparqlEndpoint.new(session[:endpoint]) 
+     results = endpoint.find_by_sparql(concept_object_query)
      render :json => construct_column_objects(results).to_json, :layout => false
-
   end
  
-   def concept_subject_summery(concept_url = params[:concept_url])
+   def concept_subject_summery(concept_url = params[:concept_uuid])
      puts concept_url
-     concept_subject_query = 'SELECT * WHERE { ?entity_url ?relation <#{concept_url}>}'  # Add obtion line with entity_label
-     puts concept_subject_query
-     results = []
+     concept_subject_query = "SELECT ?related_resource ?relation WHERE { ?related_resource ?relation <#{concept_url}>}"  # Add obtion line with entity_label
+     endpoint = SparqlEndpoint.new(session[:endpoint]) 
+     results = endpoint.find_by_sparql(concept_subject_query)
      render :json => construct_column_objects(results).to_json, :layout => false
   end
  
@@ -231,6 +232,20 @@ class SparqlEndpointController < ApplicationController
     return input_arr
   end
   
+  # Here we look for a return variable called ?pubmed_id and format it to be a hyperlink to resolve the id
+  def format_pubmed_id(input_arr)
+    if not input_arr.first.has_key?(:pubmed_id) then 
+      #nothing
+    else
+      input_arr.each do |record|
+        pubmed_id = record[:pubmed_id]
+        if not pubmed_id.nil? then
+          record[:pubmed_id] = '<a href ="http://www.ncbi.nlm.nih.gov/pubmed/' + pubmed_id + '" target="_blank">' + pubmed_id + '</a>'
+        end
+      end 
+    end 
+    return input_arr
+  end
   
   ##
   # This function formats SPARQL query results to json column objects for ExtJS dynamicgrid widget

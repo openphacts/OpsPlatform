@@ -51,12 +51,11 @@ Ext.define('LSP.view.concept.SummeryForm', {
                 items: [
                     {
                         xtype: 'combo',
-                        valueField:'concept_url',
+                        valueField:'concept',
                       	store:  Ext.create('Ext.data.Store',{
                                       fields: [
-                                        {type: 'string', name: 'concept_label'},
-                                        {type: 'string', name: 'concept_type'},
-                                        {type: 'string', name: 'concept_url'}
+                                        {type: 'string', name: 'object'},
+                                        {type: 'string', name: 'concept'}
                                       ],
                                       proxy: {
                                           type: 'ajax',
@@ -71,7 +70,7 @@ Ext.define('LSP.view.concept.SummeryForm', {
                                       }
                                   }),
                       	queryMode: 'remote',
-                      	displayField: 'concept_url',
+                      	displayField: 'object',
                       	minChars:4,
                       	hideTrigger:true,
                       	forceSelection:true,
@@ -91,7 +90,7 @@ Ext.define('LSP.view.concept.SummeryForm', {
                             var post = selection[0];
                               if (post) {
                                  var fields = this.up().items.items;
-                                 fields.forEach(function(item) { if(item.name == 'concept_uuid'){item.setValue(post.data.concept_url);}});
+                                 fields.forEach(function(item) { if(item.name == 'concept_uuid'){item.setValue(post.data.concept);}});
                               }
                             }
                         }

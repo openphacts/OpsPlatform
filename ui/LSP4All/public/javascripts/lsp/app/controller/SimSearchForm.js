@@ -64,7 +64,7 @@ Ext.define('LSP.controller.SimSearchForm', {
         // Check to see if we already have a structure to modify and load it if we do
         fields = this.getSsform().form.getFields().items;
         var molfile = '';
-        fields.forEach(function(item) { if(item.name == 'molfile'){molfile = item.getValue(); alert(molfile);}});
+        fields.forEach(function(item) { if(item.name == 'molfile'){molfile = item.getValue(); var temp = 12;}});
         if(molfile != ''){
           document.getElementById('ketcher_box_id').contentWindow.ketcher.setMolecule(molfile);
         }

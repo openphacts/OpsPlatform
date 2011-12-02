@@ -46,6 +46,7 @@ Ext.define('LSP.view.larkc_sim_search.SimSearchForm', {
                 xtype: 'form',
                 padding: '5 5 0 5',
                 border: false,
+                height: '100%',
                 style: 'background-color: #fff;',
                 items: [                      
                       {
@@ -76,7 +77,7 @@ Ext.define('LSP.view.larkc_sim_search.SimSearchForm', {
                           emptyText: 'Enter SMILES here or use the molecular editor to draw structure - click button ->',
                           fieldLabel: 'Search for compounds similar to SMILES',
                           labelWidth: 230,                        
-                          width: 700
+                          width: 650
                         },
                         {
                           xtype: 'button',
@@ -105,7 +106,7 @@ Ext.define('LSP.view.larkc_sim_search.SimSearchForm', {
                 ];
         grid_ss.timeout = 9000000;
         grid_ss.setTitle('Structure search results');
-        grid_ss.setHeight(600); 
+        grid_ss.setHeight('82%'); 
         grid_ss.buttonRender(['exporter']);                                  
         this.callParent(arguments);
     }    
