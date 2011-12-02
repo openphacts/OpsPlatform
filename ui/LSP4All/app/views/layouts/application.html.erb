@@ -4,11 +4,11 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <title>LSP4All</title>
   <%= stylesheet_link_tag :all %>
-  <%= stylesheet_link_tag '/ext-4.0.1/resources/css/ext-all.css' %>  
+  <%= stylesheet_link_tag '/ext/resources/css/ext-all.css' %>  
   <% if ENV['RAILS_ENV'] == 'development' %>
-  <script type="text/javascript" src="/ext-4.0.1/ext-debug.js"></script>
+  <script type="text/javascript" src="/ext/ext-debug.js"></script>
   <% else %>
-  <%= javascript_include_tag '/ext-4.0.1/builds/ext-core.js' %>
+  <%= javascript_include_tag '/ext/builds/ext-core.js' %>
   <%= javascript_include_tag 'lsp/classes.js' %>
   <% end %>
   <%= javascript_include_tag 'lsp/app.js' %>

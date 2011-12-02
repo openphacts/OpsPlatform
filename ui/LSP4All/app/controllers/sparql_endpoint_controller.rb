@@ -84,14 +84,45 @@ class SparqlEndpointController < ApplicationController
      render :json => construct_column_objects((results)).to_json, :layout => false  
   end
  
-  def similar2smiles
-     smiles = params[:smiles]
+  def similar2smiles(smiles = params[:smiles])
      @endpoint = SparqlEndpoint.new(session[:endpoint]) 
      sim2smiles_query = 'SELECT * WHERE { ?csid_uri <http://wiki.openphacts.org/index.php/ext_function#has_similar> "' + smiles + '"}'
      results = @endpoint.find_by_sparql(sim2smiles_query)
      render :json => construct_column_objects(format_chemspider_results(results)).to_json, :layout => false
   end
   
+  # search_types: 1 = exact match, 2 = substructure search, 3 = similarity search
+  def search_by_smiles(smiles = params[:smiles], search_type = params[:search_type].to_i)  
+     endpoint = SparqlEndpoint.new(session[:endpoint]) 
+     ss_query = ''
+     if search_type == 1 then
+        ss_query = 'SELECT * WHERE { ?csid_uri <http://wiki.openphacts.org/index.php/ext_function#has_exact_structure_match> "' + smiles + '"}'
+     elsif search_type == 2 then
+        ss_query = 'SELECT * WHERE { ?csid_uri <http://wiki.openphacts.org/index.php/ext_function#has_substructure_match> "' + smiles + '"}'
+     elsif search_type == 3 then
+        ss_query = 'SELECT * WHERE { ?csid_uri <http://wiki.openphacts.org/index.php/ext_function#has_similar> "' + smiles + '"}'
+     end
+     results = endpoint.find_by_sparql(ss_query)
+     render :json => construct_column_objects(format_chemspider_results(results)).to_json, :layout => false
+   end
+ 
+  def concept_object_summery(concept_url = params[:concept_url])
+     puts concept_url
+     concept_object_query = 'SELECT * WHERE { <#{concept_url}> ?property_type ?property_value}'
+     puts concept_object_query
+     results = []
+     render :json => construct_column_objects(results).to_json, :layout => false
+
+  end
+ 
+   def concept_subject_summery(concept_url = params[:concept_url])
+     puts concept_url
+     concept_subject_query = 'SELECT * WHERE { ?entity_url ?relation <#{concept_url}>}'  # Add obtion line with entity_label
+     puts concept_subject_query
+     results = []
+     render :json => construct_column_objects(results).to_json, :layout => false
+  end
+ 
   def format_chemspider_results(input_arr)
     output_arr = Array.new
     input_arr.each do |record|
@@ -171,7 +202,7 @@ class SparqlEndpointController < ApplicationController
           end
           columns.push(col)
        
-      end
+      end                      
       fields = header_strings + tpl_headers
       field_aofh = Array.new
       fields.each do |field|
@@ -207,6 +238,7 @@ class SparqlEndpointController < ApplicationController
      settings_arr.push({:endpoint => endpoint})
      fields.push('endpoint') 
      settings_objs = {
+            :success => true,
             :objects => settings_arr,
             :metaData => { :fields => fields, :root => 'objects' }}
      

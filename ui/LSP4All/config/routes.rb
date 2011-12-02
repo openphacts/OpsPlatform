@@ -15,7 +15,14 @@ LSP4All::Application.routes.draw do
     collection do
       post :query
       post :similar2smiles
+      post :search_by_smiles
+      post :cmpd_by_name
+      post :target_by_name
+      post :pharm_by_cmpd_name
+      post :pharm_by_target_name
       post :pharm_enzyme_fam
+      post :concept_object_summery
+      post :concept_subject_summery
       post :settings
     end  
   end
