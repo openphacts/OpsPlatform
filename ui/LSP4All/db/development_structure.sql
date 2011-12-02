@@ -95,6 +95,40 @@ ALTER SEQUENCE application_types_id_seq OWNED BY application_types.id;
 
 
 --
+-- Name: enzymes; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE enzymes (
+    id integer NOT NULL,
+    ec_number character varying(255),
+    name character varying(255),
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone,
+    ancestry character varying(255),
+    ancestry_depth integer DEFAULT 0
+);
+
+
+--
+-- Name: enzymes_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE enzymes_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: enzymes_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE enzymes_id_seq OWNED BY enzymes.id;
+
+
+--
 -- Name: role_profiles; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -306,6 +340,13 @@ ALTER TABLE application_types ALTER COLUMN id SET DEFAULT nextval('application_t
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE enzymes ALTER COLUMN id SET DEFAULT nextval('enzymes_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE role_profiles ALTER COLUMN id SET DEFAULT nextval('role_profiles_id_seq'::regclass);
 
 
@@ -351,6 +392,14 @@ ALTER TABLE ONLY application_modules
 
 ALTER TABLE ONLY application_types
     ADD CONSTRAINT application_types_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: enzymes_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY enzymes
+    ADD CONSTRAINT enzymes_pkey PRIMARY KEY (id);
 
 
 --
@@ -401,6 +450,20 @@ CREATE INDEX index_application_modules_on_ancestry ON application_modules USING 
 
 
 --
+-- Name: index_enzymes_on_ancestry; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_enzymes_on_ancestry ON enzymes USING btree (ancestry);
+
+
+--
+-- Name: index_enzymes_on_name; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_enzymes_on_name ON enzymes USING btree (name);
+
+
+--
 -- Name: index_user_sessions_on_session_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -448,3 +511,7 @@ INSERT INTO schema_migrations (version) VALUES ('20110706071224');
 INSERT INTO schema_migrations (version) VALUES ('20110706095944');
 
 INSERT INTO schema_migrations (version) VALUES ('20110708075544');
+
+INSERT INTO schema_migrations (version) VALUES ('20110722080546');
+
+INSERT INTO schema_migrations (version) VALUES ('20110722081140');
