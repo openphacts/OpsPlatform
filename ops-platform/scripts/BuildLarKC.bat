@@ -19,39 +19,44 @@ call mvn install -DdescriptorId=jar-with-dependencies -Dmaven.test.skip=true
 
 call:changeDirectory "%LARKC_PATH%\plugins\NewFileIdentifier"
 call mvn assembly:assembly 
-call:moveFile target\*SNAPSHOT-LarkcPluginAssembly.jar   ..\..\platform\plugins
+call:moveFile target\*SNAPSHOT.jar   ..\..\platform\plugins
 
 call:changeDirectory "%LARKC_PATH%\plugins\SparqlQueryEvaluationReasoner"
 call mvn assembly:assembly
-call:moveFile target\*SNAPSHOT-LarkcPluginAssembly.jar   ..\..\platform\plugins
+call:moveFile target\*SNAPSHOT.jar   ..\..\platform\plugins
 
 call:changeDirectory "%LARKC_PATH%\plugins\RDFReader
 call mvn assembly:assembly
-call:moveFile target\*SNAPSHOT-LarkcPluginAssembly.jar   ..\..\platform\plugins
+call:moveFile target\*SNAPSHOT.jar   ..\..\platform\plugins
 
 call:changeDirectory "%LARKC_PATH%\platform\endpoints\endpointsSourceCode\endpoint.sparql\
 call mvn install
 
 call:changeDirectory "%OPS_PATH%\ops-platform\larkc-plugins\plugin.querymapper"
 call mvn assembly:assembly
-call:moveFile target\*SNAPSHOT-LarkcPluginAssembly.jar "%LARKC_PATH%\platform\plugins"
+call:moveFile target\*SNAPSHOT.jar "%LARKC_PATH%\platform\plugins"
 
 call:changeDirectory "%OPS_PATH%\ops-platform\larkc-plugins\plugin.edffilter"
 call mvn assembly:assembly
-call:moveFile target\*SNAPSHOT-LarkcPluginAssembly.jar "%LARKC_PATH%\platform\plugins"
+call:moveFile target\*SNAPSHOT.jar "%LARKC_PATH%\platform\plugins"
 
 call:changeDirectory "%OPS_PATH%\ops-platform\larkc-plugins\plugin.edfquerytransformer"
 call mvn assembly:assembly
-call:moveFile target\*SNAPSHOT-LarkcPluginAssembly.jar "%LARKC_PATH%\platform\plugins"
+call:moveFile target\*SNAPSHOT.jar "%LARKC_PATH%\platform\plugins"
 
 call:changeDirectory "%OPS_PATH%\ops-platform\larkc-plugins\plugin.edfsearch"
 call mvn assembly:assembly
-call:moveFile target\*SNAPSHOT-LarkcPluginAssembly.jar "%LARKC_PATH%\platform\plugins"
+call:moveFile target\*SNAPSHOT.jar "%LARKC_PATH%\platform\plugins"
 
 call:changeDirectory "%OPS_PATH%\ops-platform\larkc-plugins\plugin.chemcallout\ChemSpiderServices"
 call mvn install -Dmaven.test.skip=true
 call:changeDirectory "%OPS_PATH%\ops-platform\larkc-plugins\plugin.chemcallout"
 call mvn assembly:assembly -Dmaven.test.skip=true
+call:moveFile target\*SNAPSHOT-LarkcPluginAssembly.jar "%LARKC_PATH%\platform\plugins"
+
+call:changeDirectory "%OPS_PATH%\ops-platform\larkc-endpoints\endpoint.opsapi
+mvn assembly:assembly
+call:moveFile target\*SNAPSHOT-LarkcEndpointAssembly.jar "%LARKC_PATH%\platform\plugins"
 
 rem back to here to rerun
 call:changeDirectory "%OPS_PATH%\ops-platform\scripts"
