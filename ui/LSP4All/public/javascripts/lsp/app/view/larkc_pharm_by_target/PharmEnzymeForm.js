@@ -105,8 +105,8 @@ Ext.define('LSP.view.larkc_pharm_by_target.PharmEnzymeForm', {
                         layout: {
                             type: 'column'
                         },
-                        fieldLabel: 'Filter by activity (nM)',
-                        labelWidth: 120,
+                        fieldLabel: 'Filter by activity (mM)',
+                        labelWidth: 125,
                         items: [
                             {
                                 xtype: 'numberfield',
@@ -157,11 +157,6 @@ Ext.define('LSP.view.larkc_pharm_by_target.PharmEnzymeForm', {
                                 boxLabel: 'Rat',
                                 inputValue: 'Rattus+norvegicus',
                                 name: 'species_3'
-                            },
-                            {
-                                xtype: 'checkboxfield',
-                                boxLabel: 'Pink Unicorn',
-                                name: 'species_4' 
                             }
                         ]
                     }

@@ -134,22 +134,19 @@ class SparqlEndpointController < ApplicationController
   
   # Results for form for answering question 15 like question.
   def pharm_enzyme_fam  
-     species = [params[:species_1],params[:species_2],params[:species_3],params[:species_4]]
+     species = [params[:species_1],params[:species_2],params[:species_3]]
       species.compact!
       pharm_enzyme_query = "PREFIX brenda: <http://brenda-enzymes.info/>\n" 
       pharm_enzyme_query +=  "PREFIX uniprot: <http://purl.uniprot.org/enzymes/>\n" 
       pharm_enzyme_query += "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" 
-      pharm_enzyme_query += "select  ?ic50 ?inhibitor ?species ?target_name ?enzyme_class_name where {\n"
-      pharm_enzyme_query += "?ic50experiment brenda:has_ic50_value_of ?ic50 .\n"
-      pharm_enzyme_query += "OPTIONAL { ?brenda_entry brenda:recommended_name ?target_name } .\n"
-      pharm_enzyme_query += "OPTIONAL {?uniprot_entry <http://purl.uniprot.org/core/name> ?enzyme_class_name} .\n"
-      
+      pharm_enzyme_query += "select  ?ic50_milli_molar?inhibitor ?species ?target_name ?enzyme_class_name where {\n"
+      pharm_enzyme_query += "?ic50experiment brenda:has_ic50_value_of ?ic50_milli_molar.\n"
       if not params[:min_filter] == "" and not params[:max_filter] == "" then  
-        pharm_enzyme_query += "filter(?ic50 > #{params[:min_filter]} && ?ic50 < #{params[:max_filter]}) .\n" 
+        pharm_enzyme_query += "filter(?ic50_milli_molar> #{params[:min_filter]} && ?ic50_milli_molar< #{params[:max_filter]}) .\n" 
       elsif not params[:min_filter] == "" and params[:max_filter] == "" then  
-        pharm_enzyme_query += "filter(?ic50 > #{params[:min_filter]}) .\n"
+        pharm_enzyme_query += "filter(?ic50_milli_molar> #{params[:min_filter]}) .\n"
       elsif params[:min_filter] == "" and not params[:max_filter] == "" then
-        pharm_enzyme_query += "filter(?ic50 < #{params[:max_filter]}) .\n" 
+        pharm_enzyme_query += "filter(?ic50_milli_molar< #{params[:max_filter]}) .\n" 
       end
       pharm_enzyme_query += "?ic50experiment brenda:has_inhibitor ?inhibitor .\n" 
       pharm_enzyme_query += "?ic50experiment brenda:species ?species_code .\n"
@@ -160,8 +157,11 @@ class SparqlEndpointController < ApplicationController
       pharm_enzyme_query += "?brenda_entry brenda:is_inhibited_by ?ic50experiment .\n" 
       pharm_enzyme_query += "?brenda_entry brenda:has_ec_number ?uniprot_entry_url .\n" 
       pharm_enzyme_query += "?uniprot_entry_url rdfs:subClassOf ?uniprot_top_level_entry .\n"
-      pharm_enzyme_query += "?uniprot_top_level_entry <http://purl.uniprot.org/core/name> \"#{params[:enz_name]}\"}" 
-                          
+      pharm_enzyme_query += "?uniprot_top_level_entry <http://purl.uniprot.org/core/name> \"#{params[:enz_name]}\" .\n" 
+      pharm_enzyme_query += "?brenda_entry brenda:recommended_name ?target_name .\n"
+      pharm_enzyme_query += "?uniprot_top_level_entry <http://purl.uniprot.org/core/name> ?enzyme_class_name }\n"
+      pharm_enzyme_query += "LIMIT 1000"                    
+
      @endpoint = SparqlEndpoint.new(session[:endpoint]) 
      results = @endpoint.find_by_sparql(pharm_enzyme_query)
      render :json => construct_column_objects(format_chemspider_results(results)).to_json, :layout => false  
