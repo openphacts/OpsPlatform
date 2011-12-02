@@ -14,6 +14,7 @@ import org.bridgedb.bio.BioDataSource;
 import org.openrdf.model.Literal;
 import org.openrdf.model.Resource;
 import org.openrdf.model.URI;
+import org.openrdf.model.URIImpl;
 import org.openrdf.model.Value;
 import org.openrdf.query.algebra.StatementPattern;
 import org.openrdf.query.algebra.helpers.StatementPatternCollector;
@@ -36,7 +37,7 @@ import eu.larkc.plugin.Plugin;
 public class QueryMapper extends Plugin {
 
 	private IDMapper mapper;
-	public static String METABOLITE_DB = "/home/lupin/projects/jsaito.svn.bigcat/test/bridgedb-1.1.0-src/data/metabolites_100227.bridge";
+	public static URIImpl METABOLITE_DB = new URIImpl("http://ops.eu#bridgedb_mappings");
 
 	/**
 	 * Constructor.
@@ -72,7 +73,7 @@ public class QueryMapper extends Plugin {
 	 */
 	@Override
 	protected void initialiseInternal(SetOfStatements workflowDescription) {
-		// TODO Auto-generated method stub
+		String db = DataFactory.INSTANCE.extractObjectsForPredicate(params, METABOLITE_DB).first();
 		BioDataSource.init();
 		try {
 			Class.forName("org.bridgedb.rdb.IDMapperRdb");
@@ -83,7 +84,7 @@ public class QueryMapper extends Plugin {
 		try {
 
 			mapper = BridgeDb
-					.connect("idmapper-pgdb:" + METABOLITE_DB );
+					.connect("idmapper-pgdb:" + db );
 
 		} catch (IDMapperException ex) {
 			logger.error("could not connect to mapper", ex);
