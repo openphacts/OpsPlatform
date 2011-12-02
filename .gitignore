@@ -22,3 +22,7 @@ datasets/uniprotrdf/enzyme.ttl
 datasets/brenda/brenda.tgz
 datasets/brenda/brenda.txt.gz
 datasets/brenda/brenda.ttl.gz
+usecases/usecase15/question15-results.csv
+usecases/usecase15/question15-results.txt
+usecases/usecase15/question15-results-full.csv
+usecases/usecase15/question15-results-full.txt
