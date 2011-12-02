@@ -57,12 +57,16 @@ public class WorkflowEndpointCreator {
 			}
 			try {
 				String workflowId = runner.loadWorkflowDefinition(sb.toString());
-				String endpoint = runner.getSparqlEndpoint(workflowId);
-				if (runTest) {
-					String result = runner.runQuery(endpoint, TEST_QUERY);
-					System.out.println(result);
+				if (workflowId == null) {
+					System.err.println("Failed to load workflow");
+				} else {
+					String endpoint = runner.getSparqlEndpoint(workflowId);
+					if (runTest) {
+						String result = runner.runQuery(endpoint, TEST_QUERY);
+						System.out.println(result);
+					}
+					System.out.println(endpoint);
 				}
-				System.out.println(endpoint);
 			} catch (ConnectException e) {
 				System.err.println("Failed to connect: "+e.getMessage());
 			}

@@ -39,9 +39,14 @@ public class OPSClient {
 		httppost.setEntity(entity);
 		
 		HttpResponse response = httpclient.execute(httppost);
-		HttpEntity responseEntity = response.getEntity();
-		if (responseEntity != null) {
-			return EntityUtils.toString(responseEntity);
+		int statusCode = response.getStatusLine().getStatusCode();
+		if (statusCode >= 200 && statusCode < 300) {
+			HttpEntity responseEntity = response.getEntity();
+			if (responseEntity != null) {
+				return EntityUtils.toString(responseEntity);
+			}
+		} else {
+			System.err.println(response.getStatusLine().getReasonPhrase());
 		}
 		return null;
 	}
