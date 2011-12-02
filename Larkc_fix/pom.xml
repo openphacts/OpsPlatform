@@ -1,0 +1,123 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>eu.larkc</groupId>
+	<artifactId>plugin.RDFReader</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+	<name> plugin.RDFReader </name>
+	<description> plugin.RDFReader</description>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<repositories>
+		<repository>
+			<id>larkc.sourceforge.net</id>
+			<url>http://larkc.sourceforge.net/maven</url>
+		</repository>
+		<repository>
+			<id>aduna-repo</id>
+			<name>Aduna repository</name>
+			<url>http://repo.aduna-software.org/maven2/releases</url>
+		</repository>
+		<repository> 
+            <id>fortytwo</id> 
+            <name>fortytwo.net Maven repository</name> 
+            <url>http://fortytwo.net/maven2</url>
+        </repository> 
+ 
+	</repositories>
+
+	<dependencies>
+		<dependency>
+			<groupId>eu.larkc</groupId>
+			<artifactId>platform</artifactId>
+			<version>2.5.0-SNAPSHOT</version>
+		</dependency>
+		<!--  <dependency>
+			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-rio</artifactId>
+			<version>2.3.2</version>
+		</dependency> -->
+    	<dependency> 
+        	<groupId>net.fortytwo.sesametools</groupId> 
+        	<artifactId>nquads</artifactId> 
+        	<version>1.1</version> 
+   		 </dependency> 
+		
+		
+		<!-- A placeholder for a user library which has been uploaded to the local maven repository
+		<dependency>
+			<groupId>mylibs</groupId>
+			<artifactId>mylib</artifactId>
+			<version>1.0</version>
+		</dependency>
+		-->
+		<!-- A placeholder for a user library copied to src/main/resources/lib directory -->
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.2</version>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.2</version>
+				<configuration>
+					<descriptors>
+						<descriptor>src/main/assembly/PluginAssembly.xml</descriptor>
+					</descriptors>
+					<!-- A default descriptor is deprecated due to a need of filtering the resulting jar file is needed
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+					-->
+					<archive>
+						<manifest>
+							<mainClass>eu.larkc.core.Larkc</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>1.1</version>
+				<executions>
+					<execution>
+						<id>add-test-source</id>
+						<phase>generate-test-sources</phase>
+						<goals>
+							<goal>add-test-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>src/main/test</source>
+							</sources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+		</plugins>
+	</build>
+
+	<!-- Reporting is used for automatic JavaDoc publishing -->
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.7</version>
+			</plugin>
+		</plugins>
+	</reporting>
+</project>
