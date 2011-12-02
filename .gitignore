@@ -1,0 +1,6 @@
+# Ignore svn #
+.svn/
+
+#ignore datasets
+datasets/pdspki/kidb110121.txt
+datasets/pdspki/pdsp-v2-rdf.zip
