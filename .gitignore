@@ -6,8 +6,15 @@
 .project
 .settings/
 
+# ignore target files #
+target/
+
+# ignore log files #
+*.log
+
 #ignore datasets
 datasets/pdspki/kidb110121.txt
 datasets/pdspki/pdsp-v2-rdf.zip
 datasets/chem2bio2rdf/chebi.n3.gz
 datasets/chem2bio2rdf/kegg.n3.gz
+datasets/bridgeDbMappings/metabolites_100227.bridge

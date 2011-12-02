@@ -24,6 +24,38 @@
 			<scope>compile</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>org.bridgedb</groupId>
+			<artifactId>bridgedb</artifactId>
+			<version>1.1.0</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/org.bridgedb.jar</systemPath>
+		</dependency>
+
+		<dependency>
+			<groupId>org.bridgedb</groupId>
+			<artifactId>bio</artifactId>
+			<version>1.1.0</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/org.bridgedb.bio.jar</systemPath>
+		</dependency>
+
+		<dependency>
+			<groupId>org.bridgedb</groupId>
+			<artifactId>rdb</artifactId>
+			<version>1.1.0</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/org.bridgedb.rdb.jar</systemPath>
+		</dependency>
+
+<!--
+		<dependency>
+				<groupId>org.apache.derby</groupId>
+				<artifactId>derbyclient</artifactId>
+				<version>10.2.2.0</version>
+		</dependency>
+-->
+
 		<!-- Declare any special libraries (which have to be put in /lib) here. -->
 		<!-- 
 		<dependency>
