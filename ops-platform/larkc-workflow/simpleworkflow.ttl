@@ -12,9 +12,14 @@ _:plugin2 larkc:connectsTo _:plugin1 .
 _:plugin2 larkc:hasParameter _:param31 .
 _:param31 <http://ops.eu#bridgedb_mappings> "../../../openphacts/datasets/bridgeDbMappings/metabolites_100227.bridge" .
 
-
 _:plugin3 a <urn:eu.larkc.plugin.newfileidentifier.NewFileIdentifier> .
 _:plugin3 larkc:connectsTo _:plugin0 .
+
+_:plugin4 a <urn:eu.larkc.plugin.newfileidentifier.NewFileIdentifier> .
+_:plugin4 larkc:connectsTo _:plugin0 .
+
+_:plugin4 larkc:hasParameter _:param40 .
+_:param40 larkc:filePath "../../../openphacts/datasets/chem2bio2rdf/kegg.n3.gz" .
 
 _:plugin3 larkc:hasParameter _:param30 .
 _:param30 larkc:filePath "../../../openphacts/datasets/chem2bio2rdf/chebi.n3.gz" .
