@@ -108,6 +108,7 @@ public class QueryMapper extends Plugin {
 		for (Map.Entry<String,DataSource> prefix : knownPrefixes.entrySet()) {
 			if (url.startsWith(prefix.getKey())) {
 				String u=url.substring(prefix.getKey().length());
+				logger.info("Identified url " + url + " in " + prefix);
 				return new Xref(u,prefix.getValue());
 			}
 		}
@@ -121,6 +122,7 @@ public class QueryMapper extends Plugin {
 		if (xref!=null) {			
 			try {
 				for (Xref x : mapper.mapID(xref, BioDataSource.KEGG_COMPOUND)) {
+					logger.info("Mapping found: " + x );
 					urls.add("<" + x.getUrl() + ">");
 				}
 				return urls;

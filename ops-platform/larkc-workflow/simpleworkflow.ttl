@@ -17,12 +17,17 @@ _:plugin3 larkc:connectsTo _:plugin0 .
 
 _:plugin4 a <urn:eu.larkc.plugin.newfileidentifier.NewFileIdentifier> .
 _:plugin4 larkc:connectsTo _:plugin0 .
-
 _:plugin4 larkc:hasParameter _:param40 .
 _:param40 larkc:filePath "../../../openphacts/datasets/chem2bio2rdf/kegg.n3.gz" .
 
 _:plugin3 larkc:hasParameter _:param30 .
 _:param30 larkc:filePath "../../../openphacts/datasets/chem2bio2rdf/chebi.n3.gz" .
+
+_:plugin5 a <urn:eu.larkc.plugin.newfileidentifier.NewFileIdentifier> .
+_:plugin5 larkc:connectsTo _:plugin0 .
+_:plugin5 larkc:hasParameter _:param50 .
+_:param50 larkc:filePath "../../../openphacts/datasets/pdspki/pdsp-v2-rdf.zip" .
+
 
 <urn:eu.larkc.endpoint.sparql.ep1> a <urn:eu.larkc.endpoint.sparql> .
 <urn:eu.larkc.endpoint.sparql.ep1> larkc:links _:path .
