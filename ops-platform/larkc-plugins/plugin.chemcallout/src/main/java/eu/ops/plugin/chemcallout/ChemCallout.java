@@ -29,14 +29,17 @@ import eu.ops.services.chemspider.model.ArrayOfInt;
 import eu.ops.services.chemspider.model.ERequestStatus;
 
 /**
- * Input: SPARQL query, containing at least one pattern {?x HAS_SIMILAR ?y}, where ?y is a bound literal representing a molecule
- * Output: Reference to graph with triples in the form: {?x HAS_SIMILAR ?y}, where ?y is a bound literal in the form (http://inchi.chemspider.com/Chemical-Structure."+csid+".html), where csid is retrieved from chemspider
+ * Input: SPARQL query, containing at least one pattern {?x [HAS_SIMILAR|HAS_SUBSTRUCTURE_MATCH|HAS_SUBSTRUCTURE_MATCH_OR_TAUTOMER|HAS_EXACT_STRUCTURE_MATCH] ?y}, where ?y is a bound literal representing a molecule
+ * Output: Reference to graph with triples in the form: {?x [HAS_SIMILAR|HAS_SUBSTRUCTURE_MATCH|HAS_SUBSTRUCTURE_MATCH_OR_TAUTOMER|HAS_EXACT_STRUCTURE_MATCH] ?y}, where ?y is a bound literal in the form (http://inchi.chemspider.com/Chemical-Structure."+csid+".html), where csid is retrieved from chemspider
  * 
  * Given a Set of statementpatterns, invokes the chemspider service and retrieves similar molecules
  */
 public class ChemCallout extends Plugin
 {
 	private static final String HAS_SIMILAR = "http://wiki.openphacts.org/index.php/ext_function#has_similar";
+	private static final String HAS_SUBSTRUCTURE_MATCH = "http://wiki.openphacts.org/index.php/ext_function#has_substructure_match";
+	private static final String HAS_SUBSTRUCTURE_MATCH_OR_TAUTOMER = "http://wiki.openphacts.org/index.php/ext_function#has_substructure_match_or_tautomer";
+	private static final String HAS_EXACT_STRUCTURE_MATCH = "http://wiki.openphacts.org/index.php/ext_function#has_exact_structure_match";
 	private static String OPS_TOKEN = "5d749a0a-f4b0-444b-8287-aba2c2800ebaXt";
 	private static String CHEMSPIDER_WS = "http://inchi.chemspider.com/Search.asmx";
 	public static final URI FIXEDCONTEXT=new URIImpl("http://larkc.eu#Fixedcontext");
@@ -131,21 +134,126 @@ public class ChemCallout extends Plugin
 					boolean gotResult = false;
 					while (!gotResult) {
 						if (waittime++>TIMEOUT) {
+							logger.error("Chemspider web service call timed out after " + waittime + " seconds.");
+							break;
+						}
+						pause(1);
+						ERequestStatus status = chemSpiderClient.getAsyncSearchStatus(rid);
+						logger.info("Status="+status.name());
+						if (status==ERequestStatus.FAILED){
+							logger.error("Chemspider web service call failed.");
+							break;
+						}
+						if (status == ERequestStatus.RESULT_READY) {
+							List<Integer> results = chemSpiderClient.getAsyncSearchResult(rid);
+							if (results!=null){
+								for (Integer csid : results) {
+									// make up triples: chemspider_url has_similar object
+									Resource subj = new URIImpl("http://inchi.chemspider.com/Chemical-Structure."+csid+".html");
+									myStore.addStatement(subj, p, o, FIXEDCONTEXT, label);
+									logger.info("Created triple: "+subj.stringValue()+" has_similar "+o.stringValue());
+								}
+								gotResult = true;
+							}
+						}
+					}
+				}
+				// if predicate is the has_substructure_match function
+				else if (p.toString().equals(HAS_SUBSTRUCTURE_MATCH)) {
+					// grab objects and pass to ChemSpider
+					String rid = chemSpiderClient.substructureSearch(o.stringValue(), false);
+					logger.info("ChemSpider RID="+rid);
+					int waittime=0;
+					boolean gotResult = false;
+					while (!gotResult) {
+						if (waittime++>TIMEOUT) {
 							logger.error("Chemspider web service call timed out after " + " seconds.");
 							break;
 						}
 						pause(1);
 						ERequestStatus status = chemSpiderClient.getAsyncSearchStatus(rid);
 						logger.info("Status="+status.name());
+						if (status==ERequestStatus.FAILED){
+							logger.error("Chemspider web service call failed.");
+							break;
+						}
 						if (status == ERequestStatus.RESULT_READY) {
 							List<Integer> results = chemSpiderClient.getAsyncSearchResult(rid);
-							for (Integer csid : results) {
-								// make up triples: chemspider_url has_similar object
-								Resource subj = new URIImpl("http://inchi.chemspider.com/Chemical-Structure."+csid+".html");
-								myStore.addStatement(subj, p, o, FIXEDCONTEXT, label);
-								logger.info("Created triple: "+subj.stringValue()+" has_similar "+o.stringValue());
+							if (results!=null){
+								for (Integer csid : results) {
+									// make up triples: chemspider_url has_substructure_match object
+									Resource subj = new URIImpl("http://inchi.chemspider.com/Chemical-Structure."+csid+".html");
+									myStore.addStatement(subj, p, o, FIXEDCONTEXT, label);
+									logger.info("Created triple: "+subj.stringValue()+" has_substructure_match "+o.stringValue());
+								}
+								gotResult = true;	
 							}
-							gotResult = true;			
+						}
+					}
+				}
+				// if predicate is the has_substructure_match_or_tautomer function
+				else if (p.toString().equals(HAS_SUBSTRUCTURE_MATCH_OR_TAUTOMER)) {
+					// grab objects and pass to ChemSpider
+					String rid = chemSpiderClient.substructureSearch(o.stringValue(), true);
+					logger.info("ChemSpider RID="+rid);
+					int waittime=0;
+					boolean gotResult = false;
+					while (!gotResult) {
+						if (waittime++>TIMEOUT) {
+							logger.error("Chemspider web service call timed out after " + " seconds.");
+							break;
+						}
+						pause(1);
+						ERequestStatus status = chemSpiderClient.getAsyncSearchStatus(rid);
+						logger.info("Status="+status.name());
+						if (status==ERequestStatus.FAILED){
+							logger.error("Chemspider web service call failed.");
+							break;
+						}
+						if (status == ERequestStatus.RESULT_READY) {
+							List<Integer> results = chemSpiderClient.getAsyncSearchResult(rid);
+							if (results!=null){
+								for (Integer csid : results) {
+									// make up triples: chemspider_url has_substructure_match object
+									Resource subj = new URIImpl("http://inchi.chemspider.com/Chemical-Structure."+csid+".html");
+									myStore.addStatement(subj, p, o, FIXEDCONTEXT, label);
+									logger.info("Created triple: "+subj.stringValue()+" has_substructure_match_or_tautomer "+o.stringValue());
+								}
+								gotResult = true;	
+							}
+						}
+					}
+				}
+				// if predicate is the has_exact_structure_match function
+				else if (p.toString().equals(HAS_EXACT_STRUCTURE_MATCH)) {
+					// grab objects and pass to ChemSpider
+					String rid = chemSpiderClient.structureSearch(o.stringValue(), "ExactMatch");
+					logger.info("ChemSpider RID="+rid);
+					int waittime=0;
+					boolean gotResult = false;
+					while (!gotResult) {
+						if (waittime++>TIMEOUT) {
+							logger.error("Chemspider web service call timed out after " + " seconds.");
+							break;
+						}
+						pause(1);
+						ERequestStatus status = chemSpiderClient.getAsyncSearchStatus(rid);
+						logger.info("Status="+status.name());
+						if (status==ERequestStatus.FAILED){
+							logger.error("Chemspider web service call failed.");
+							break;
+						}
+						if (status == ERequestStatus.RESULT_READY) {
+							List<Integer> results = chemSpiderClient.getAsyncSearchResult(rid);
+							if (results!=null){
+								for (Integer csid : results) {
+									// make up triples: chemspider_url has_substructure_match object
+									Resource subj = new URIImpl("http://inchi.chemspider.com/Chemical-Structure."+csid+".html");
+									myStore.addStatement(subj, p, o, FIXEDCONTEXT, label);
+									logger.info("Created triple: "+subj.stringValue()+" has_exact_structure_match "+o.stringValue());
+								}
+								gotResult = true;	
+							}
 						}
 					}
 				}

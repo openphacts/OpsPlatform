@@ -47,6 +47,42 @@ public class TestSearchClient {
 		}
 	}
 	
+	@Test
+	public void testSubstructureSearch() {
+		String rid = client.substructureSearch(ACCOLATE,false);
+		log.info("RID="+rid);
+		while (true) {
+			pause(1);
+			ERequestStatus status = client.getAsyncSearchStatus(rid);
+			log.info("Status="+status.name());
+			if (status == ERequestStatus.RESULT_READY) {
+				List<Integer> results = client.getAsyncSearchResult(rid);
+				for (Integer csid : results) {
+					log.info("CSID: "+csid);
+				}
+				return;
+			}
+		}
+	}
+	
+	@Test
+	public void testStructureSearch() {
+		String rid = client.structureSearch(ACCOLATE,"ExactMatch");
+		log.info("RID="+rid);
+		while (true) {
+			pause(1);
+			ERequestStatus status = client.getAsyncSearchStatus(rid);
+			log.info("Status="+status.name());
+			if (status == ERequestStatus.RESULT_READY) {
+				List<Integer> results = client.getAsyncSearchResult(rid);
+				for (Integer csid : results) {
+					log.info("CSID: "+csid);
+				}
+				return;
+			}
+		}
+	}
+	
 	@Ignore
 	@Test
 	public void testAsyncStatus() {

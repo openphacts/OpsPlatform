@@ -55,12 +55,12 @@ public class SearchClient {
 	private static String SOAP_SUFFIX = "</soap:Body></soap:Envelope>";
 	
 	public String similaritySearch(String molecule, String similarityType, double threshold) {
-		return similaritySearch(molecule, similarityType, threshold, null, null, false, false);
+		return similaritySearch(molecule, similarityType, threshold, null, null, null, null);
 	}
 	
 	public String similaritySearch(String molecule, String similarityType, double threshold,
-			String complexity, String isotopic, boolean hasSpectra,
-			boolean hasPatents) {	
+			String complexity, String isotopic, String hasSpectra,
+			String hasPatents) {	
 		StringBuilder soapRequest = new StringBuilder();
 		soapRequest.append(SOAP_PREFIX);
 		soapRequest.append("<SimilaritySearch xmlns=\"http://www.chemspider.com/\">");
@@ -70,12 +70,16 @@ public class SearchClient {
 		addElement(soapRequest, "SimilarityType", similarityType);
 		addElement(soapRequest, "Threshold", String.valueOf(threshold));
 		soapRequest.append("</options>");
-		if (complexity != null || isotopic != null || hasSpectra || hasPatents) {
+		if (complexity != null || isotopic != null || hasSpectra!=null || hasPatents!=null) {
 			soapRequest.append("<commonOptions>");
-			addElement(soapRequest, "Complexity", complexity);
-			addElement(soapRequest, "Isotopic", isotopic);
-			addElement(soapRequest, "HasSpectra", hasSpectra?"true":"false");
-			addElement(soapRequest, "HasPatents", hasPatents?"true":"false");
+			if (complexity!=null)
+				addElement(soapRequest, "Complexity", complexity);
+			if (isotopic!=null)
+				addElement(soapRequest, "Isotopic", isotopic);
+			if (hasSpectra!=null)
+				addElement(soapRequest, "HasSpectra", hasSpectra);
+			if (hasPatents!=null)
+				addElement(soapRequest, "HasPatents", hasPatents);
 			soapRequest.append("</commonOptions>");
 		}
 		addElement(soapRequest, "token", token);
@@ -109,6 +113,148 @@ public class SearchClient {
 				int start = res.indexOf("<SimilaritySearchResult>");
 				int end = res.indexOf("<", start+24);
 				String rid = res.substring(start+24, end);
+				return rid;
+			}
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return null;		
+	}
+	
+	public String substructureSearch(String molecule, boolean tautomers) {
+		return substructureSearch(molecule, tautomers, null, null, null, null);
+	}
+	
+	public String substructureSearch(String molecule, boolean tautomers,
+			String complexity, String isotopic, String hasSpectra,
+			String hasPatents) {	
+		StringBuilder soapRequest = new StringBuilder();
+		soapRequest.append(SOAP_PREFIX);
+		soapRequest.append("<SubstructureSearch xmlns=\"http://www.chemspider.com/\">");
+		soapRequest.append("<options>");
+		addElement(soapRequest, "Molecule", molecule);
+		addElement(soapRequest, "SearchType", "Substructure");
+		addElement(soapRequest, "MatchTautomers", tautomers?"true":"false");
+		soapRequest.append("</options>");
+		if (complexity != null || isotopic != null || hasSpectra!=null || hasPatents!=null) {
+			soapRequest.append("<commonOptions>");
+			if (complexity!=null)
+				addElement(soapRequest, "Complexity", complexity);
+			if (isotopic!=null)
+				addElement(soapRequest, "Isotopic", isotopic);
+			if (hasSpectra!=null)
+				addElement(soapRequest, "HasSpectra", hasSpectra);
+			if (hasPatents!=null)
+				addElement(soapRequest, "HasPatents", hasPatents);
+			soapRequest.append("</commonOptions>");
+		}
+		addElement(soapRequest, "token", token);
+		soapRequest.append("</SubstructureSearch>");
+		soapRequest.append(SOAP_SUFFIX);
+
+		StringEntity entity;
+		try {
+			entity = new StringEntity(soapRequest.toString(), "UTF-8");
+			entity.setContentType("text/xml");
+		} catch (UnsupportedEncodingException e) {
+			// should not be possible to fail
+			e.printStackTrace();
+			return null;
+		}
+
+		HttpPost httppost = new HttpPost(serviceUrl);
+		httppost.setEntity(entity);
+		httppost.addHeader("SOAPAction", "\"http://www.chemspider.com/SubstructureSearch\"");
+
+		try {
+			HttpResponse response = httpclient.execute(httppost);
+			log.debug("Protocol="+response.getProtocolVersion());
+			log.debug("StatusCode="+response.getStatusLine().getStatusCode());
+			log.debug("ReasonPhrase="+response.getStatusLine().getReasonPhrase());
+			log.debug("StatusLine="+response.getStatusLine().toString());
+
+			HttpEntity responseEntity = response.getEntity();
+			if (responseEntity != null) {
+				String res = EntityUtils.toString(responseEntity);
+				int start = res.indexOf("<SubstructureSearchResult>");
+				int end = res.indexOf("<", start+26);
+				String rid = res.substring(start+26, end);
+				return rid;
+			}
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return null;		
+	}
+	
+	public String structureSearch(String molecule, String type) {
+		return structureSearch(molecule, type, null, null, null, null);
+	}
+	
+	public String structureSearch(String molecule, String type,
+			String complexity, String isotopic, String hasSpectra,
+			String hasPatents) {	
+		StringBuilder soapRequest = new StringBuilder();
+		soapRequest.append(SOAP_PREFIX);
+		soapRequest.append("<StructureSearch xmlns=\"http://www.chemspider.com/\">");
+		soapRequest.append("<options>");
+		addElement(soapRequest, "Molecule", molecule);
+		addElement(soapRequest, "SearchType", "Structure");
+		addElement(soapRequest, "MatchType", type);
+		soapRequest.append("</options>");
+		if (complexity != null || isotopic != null || hasSpectra!=null || hasPatents!=null) {
+			soapRequest.append("<commonOptions>");
+			if (complexity!=null)
+				addElement(soapRequest, "Complexity", complexity);
+			if (isotopic!=null)
+				addElement(soapRequest, "Isotopic", isotopic);
+			if (hasSpectra!=null)
+				addElement(soapRequest, "HasSpectra", hasSpectra);
+			if (hasPatents!=null)
+				addElement(soapRequest, "HasPatents", hasPatents);
+			soapRequest.append("</commonOptions>");
+		}
+		addElement(soapRequest, "token", token);
+		soapRequest.append("</StructureSearch>");
+		soapRequest.append(SOAP_SUFFIX);
+
+		StringEntity entity;
+		try {
+			entity = new StringEntity(soapRequest.toString(), "UTF-8");
+			entity.setContentType("text/xml");
+		} catch (UnsupportedEncodingException e) {
+			// should not be possible to fail
+			e.printStackTrace();
+			return null;
+		}
+
+		HttpPost httppost = new HttpPost(serviceUrl);
+		httppost.setEntity(entity);
+		httppost.addHeader("SOAPAction", "\"http://www.chemspider.com/StructureSearch\"");
+
+		try {
+			HttpResponse response = httpclient.execute(httppost);
+			log.debug("Protocol="+response.getProtocolVersion());
+			log.debug("StatusCode="+response.getStatusLine().getStatusCode());
+			log.debug("ReasonPhrase="+response.getStatusLine().getReasonPhrase());
+			log.debug("StatusLine="+response.getStatusLine().toString());
+
+			HttpEntity responseEntity = response.getEntity();
+			if (responseEntity != null) {
+				String res = EntityUtils.toString(responseEntity);
+				int start = res.indexOf("<StructureSearchResult>");
+				int end = res.indexOf("<", start+23);
+				String rid = res.substring(start+23, end);
 				return rid;
 			}
 		} catch (ParseException e) {
