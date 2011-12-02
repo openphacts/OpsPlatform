@@ -100,10 +100,19 @@ class SparqlEndpointController < ApplicationController
   def cmpd_by_name(cmpd_url = params[:cmpd_uuid])
  
     query_str = "PREFIX brenda: <http://brenda-enzymes.info/> \n"
-    query_str += "SELECT ?cmpdurl ?compound_smiles ?compound_name  WHERE {\n"
-    query_str += "?cmpdurl ?p \"#{cmpd_url}\" . \n"
-    query_str += "OPTIONAL {?cmpdurl <http://wiki.openphacts.org/index.php/PDSP_DB#has_smiles_code> ?compound_smiles} .\n"
-    query_str += "OPTIONAL {{ ?cmpdurl brenda:has_inhibitor ?compound_name } UNION { ?cmpdurl <http://wiki.openphacts.org/index.php/PDSP_DB#has_test_ligand_name> ?compound_name }}} \n"
+    query_str += "PREFIX pdsp: <http://wiki.openphacts.org/index.php/PDSP_DB#>\n"
+    query_str += "PREFIX cspr: <http://rdf.chemspider.com/#> \n"
+    query_str += "SELECT DISTINCT ?compound_name ?csid ?csid_uri ?compound_inchi ?compound_inchi_key ?compound_smiles WHERE { { \n"
+    query_str += "<#{cmpd_url}> brenda:has_inhibitor ?compound_name} UNION { \n"
+    query_str += "<#{cmpd_url}> pdsp:has_test_ligand_name ?compound_name} OPTIONAL { \n"
+    query_str += "?csid cspr:exturl <#{cmpd_url}> . ?csid cspr:csid ?csid_uri ;"
+    query_str += "cspr:inchi ?compound_inchi ; cspr:inchikey ?compound_inchi_key ;"
+    query_str += "cspr:smiles ?compound_smiles } }"
+    #query_str += ""
+    #query_str += "SELECT ?cmpdurl ?compound_smiles ?compound_name  WHERE {\n"
+    #query_str += "?cmpdurl ?p \"#{cmpd_url}\" . \n"
+    #query_str += "OPTIONAL {?cmpdurl <http://wiki.openphacts.org/index.php/PDSP_DB#has_smiles_code> ?compound_smiles} .\n"
+    #query_str += "OPTIONAL {{ ?cmpdurl brenda:has_inhibitor ?compound_name } UNION { ?cmpdurl <http://wiki.openphacts.org/index.php/PDSP_DB#has_test_ligand_name> ?compound_name }}} \n"
     @endpoint = SparqlEndpoint.new(session[:endpoint])             
     results = @endpoint.find_by_sparql(query_str)
     render :json => construct_column_objects(format_chemspider_results(results)).to_json, :layout => false
