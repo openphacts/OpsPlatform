@@ -61,13 +61,51 @@ Ext.define('LSP.view.target_by_name.TargetByNameForm', {
                         value: $$('meta[name=csrf-token]')[0].readAttribute('content')
                       },
                       {
-                        xtype: 'textfield',
-                        name: 'target_name',
+                        xtype: 'combo',
+                        valueField:'target_url',
+                      	store:  Ext.create('Ext.data.Store',{
+                                      fields: [
+                                        {type: 'string', name: 'target_name'},
+                                        {type: 'string', name: 'target_url'}
+                                      ],
+                                      proxy: {
+                                          type: 'ajax',
+                                          api: {
+                                              read: 'sparql_endpoint/target_name_lookup.json'
+                                          },
+                                          reader: {
+                                              type: 'json',
+                                              root: 'objects',
+                                              totalProperty: 'totalCount'
+                                          }
+                                      }
+                                  }),
+                      	queryMode: 'remote',
+                      	displayField: 'target_name',
+                      	minChars:4,
+                      	hideTrigger:true,
+                      	forceSelection:true,
+                      	typeAhead:true,
+                        emptyText: 'Start typing...',
+                        name: 'compound_url',
                         margin: '5 5 5 5',
                         width: 800,
-                        fieldLabel: 'Target Name',
-                        labelWidth: 120
-                      },
+                        fieldLabel: 'Compound name',
+                        labelWidth: 120,
+                        listConfig: {
+                          loadingText: 'Searching...',
+                          emptyText: 'No matching compounds found.',
+                        },
+                        listeners: {
+                            select: function(combo, selection) {
+                            var post = selection[0];
+                              if (post) {
+                                 var fields = this.up().items.items;
+                                 fields.forEach(function(item) { if(item.name == 'target_uuid'){item.setValue(post.data.target_name);}});
+                              }
+                            }
+                        }
+                      },,
                       {
                         xtype: 'button',
                         padding: '5 5 5 5',

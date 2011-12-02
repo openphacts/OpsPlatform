@@ -60,8 +60,7 @@ Ext.define('LSP.controller.PharmEnzymeForm', {
     // Launch Enzyme class selection window
     launchEnzyme: function(button) {
         // Launch the window
-        var view = Ext.widget('EnzymeTreeForm');    
-        console.log(this);
+        var view = Ext.widget('EnzymeTreeForm');            
     },
     
     // Get selection from the enzyme tree window
@@ -81,7 +80,7 @@ Ext.define('LSP.controller.PharmEnzymeForm', {
     submitQuery: function(button) {
         var form    = button.up('form');
         var values = form.getValues();
-        console.log(values);
+
         pharenz_grid.store.proxy.actionMethods = {read: 'POST'};
         pharenz_grid.store.proxy.extraParams = values;
         pharenz_grid.store.proxy.api.read = '/sparql_endpoint/pharm_enzyme_fam.json';

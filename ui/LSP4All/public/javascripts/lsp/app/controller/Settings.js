@@ -57,7 +57,7 @@ Ext.define('LSP.controller.Settings', {
             success: function(fp, o) {
               Ext.Msg.alert('Success', 'Endpoint stored');
         }});
-        console.log(this);    
+            
     }
     }
 );

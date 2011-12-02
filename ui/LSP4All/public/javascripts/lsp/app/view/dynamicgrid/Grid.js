@@ -92,7 +92,7 @@ Ext.define('LSP.view.dynamicgrid.Grid', {
                 columns.push(column);  
             });
             //console.log(columns);
-            console.log(this);
+            //console.log(this);
             var title = this.getHeader().title;
             if (this.store.proxy.reader.jsonData.totalCount > 0){
               this.setTitle(title + ' - Records found: ' +  this.store.proxy.reader.jsonData.totalCount);
@@ -100,7 +100,7 @@ Ext.define('LSP.view.dynamicgrid.Grid', {
             else {
               this.setTitle(title + ' - Records found: ' +  'No records found!');
             }
-            console.log(this.store.proxy.reader.jsonData.totalCount);
+            //console.log(this.store.proxy.reader.jsonData.totalCount);
             this.reconfigure(this.store, columns);
         }  
     },  
