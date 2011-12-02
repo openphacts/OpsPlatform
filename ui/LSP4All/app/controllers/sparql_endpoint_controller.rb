@@ -41,17 +41,33 @@ class SparqlEndpointController < ApplicationController
 
   def query
      query_str = params[:query]
+     puts query_str
      @endpoint = SparqlEndpoint.new(session[:endpoint])             
      results = @endpoint.find_by_sparql(query_str)
      render :json => construct_column_objects(results).to_json, :layout => false
   end
   
+  def cmpd_name_lookup(name_lookup = params[:query])
+      query_str = "PREFIX brenda: <http://brenda-enzymes.info/>\n"
+      query_str += "SELECT DISTINCT ?cmpd_name WHERE {\n"
+      query_str += "?ic50exp brenda:has_inhibitor ?cmpd_name .\n"
+      query_str += "FILTER regex(?cmpd_name, \"#{name_lookup}\", \"i\") }\n"
+      query_str += "Limit 100"
+ 
+      @endpoint = SparqlEndpoint.new(session[:endpoint])             
+      results = @endpoint.find_by_sparql(query_str)
+      render :json => construct_column_objects(results).to_json, :layout => false
+  end
+ 
+  def cmpd_by_name
+     #TODO add query string here...
+  end
+  # Do similar thing for target
+  
+  
   def pharm_enzyme_fam
   
-  puts session.inspect
-  
-      puts params.inspect
-      species = [params[:species_1],params[:species_2],params[:species_3],params[:species_4]]
+     species = [params[:species_1],params[:species_2],params[:species_3],params[:species_4]]
       species.compact!
       pharm_enzyme_query = "PREFIX brenda: <http://brenda-enzymes.info/>\n" 
       pharm_enzyme_query +=  "PREFIX uniprot: <http://purl.uniprot.org/enzymes/>\n" 
@@ -76,11 +92,8 @@ class SparqlEndpointController < ApplicationController
       pharm_enzyme_query += "?uniprot_entry_url rdfs:subClassOf ?uniprot_top_level_entry .\n"
       pharm_enzyme_query += "?uniprot_top_level_entry <http://purl.uniprot.org/core/name> \"#{params[:enz_name]}\"}" 
                           
-     puts pharm_enzyme_query
-     puts session[:endpoint]
      @endpoint = SparqlEndpoint.new(session[:endpoint]) 
      results = @endpoint.find_by_sparql(pharm_enzyme_query)
-   puts results.inspect 
      render :json => construct_column_objects((results)).to_json, :layout => false  
   end
  

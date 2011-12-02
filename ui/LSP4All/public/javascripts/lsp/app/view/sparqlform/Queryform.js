@@ -35,6 +35,7 @@
 Ext.define('LSP.view.sparqlform.Queryform', {
     extend: 'Ext.form.Panel',  
     alias: 'widget.queryform',
+    closable: true,
         
     initComponent: function() {
     
@@ -45,14 +46,6 @@ Ext.define('LSP.view.sparqlform.Queryform', {
                 border: false,
                 style: 'background-color: #fff;',
                 items: [
-					{ 
-						xtype: 'textfield',
-						name: 'endpoint',
-						id: 'endpoint_id',
-						fieldLabel: 'Endpoint URL',
-						width: 700,
-						value: 'http://10.11.92.222:8202/sparql' 
-					},
 					{
 						xtype: 'textarea',
 						name: 'query',
@@ -62,6 +55,16 @@ Ext.define('LSP.view.sparqlform.Queryform', {
 						width: 700,
 						value: 'SELECT *  WHERE { <http://linkedlifedata.com/resource/umls/id/C0000970> ?p ?o} LIMIT 100'
 					},
+					{
+            name: 'utf8',
+            xtype: 'hidden',
+            value: '&#x2713;'
+          },
+          {
+            name: 'authenticity_token',
+            xtype: 'hidden',
+            value: $$('meta[name=csrf-token]')[0].readAttribute('content')
+          },
 					{
 						xtype: 'button',
 						action: 'query',
@@ -73,7 +76,7 @@ Ext.define('LSP.view.sparqlform.Queryform', {
         ];
         grid.timeout = 9000000;
         grid.setTitle('SPARQL results');
-        grid.setHeight(750);
+        grid.setHeight(500);
         grid.buttonRender(['exporter']);
 		grid.buttonRender(['load-button','exporter-button']);
         this.callParent(arguments);

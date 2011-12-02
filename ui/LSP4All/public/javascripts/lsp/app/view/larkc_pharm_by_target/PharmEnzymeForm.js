@@ -39,7 +39,8 @@ Ext.define('LSP.view.larkc_pharm_by_target.PharmEnzymeForm', {
     requires: [
         'LSP.view.tree_selector_forms.EnzymeTreeForm'
     ],                         
-  
+    closable: true,
+    
     initComponent: function() {
         var me = this;
         me.items = [

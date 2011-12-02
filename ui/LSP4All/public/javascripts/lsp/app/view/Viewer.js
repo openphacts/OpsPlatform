@@ -49,7 +49,6 @@ Ext.define('LSP.view.Viewer', {
     
     activeItem: 0,
     margins: '0 4 4 4',
-    
     //cls: 'preview',
     
     initComponent: function() {

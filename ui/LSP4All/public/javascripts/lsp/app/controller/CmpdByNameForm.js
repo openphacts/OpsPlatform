@@ -47,9 +47,10 @@ Ext.define('LSP.controller.CmpdByNameForm', {
     },
     
     submitQuery: function(button) {
-    alert('HERE!!');
-        var form = button.up('form'),
+        var form = button.up('form');
+        console.log(form);
         values = form.getValues();
+        console.log(values);
         grid_cmpdbyname.store.proxy.actionMethods = {read: 'POST'};
         grid_cmpdbyname.store.proxy.extraParams = values;
         grid_cmpdbyname.store.proxy.api.read = '/sparql_endpoint/cmpd_by_name.json';

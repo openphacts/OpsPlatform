@@ -38,7 +38,7 @@ Ext.define('LSP.view.larkc_sim_search.SimSearchForm', {
     requires: [
         'LSP.view.mol_editor_forms.KetcherForm'
     ],
-    
+    closable: true,
      initComponent: function() {
     
         this.items = [

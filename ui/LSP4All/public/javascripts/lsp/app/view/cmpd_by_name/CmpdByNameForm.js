@@ -35,9 +35,10 @@
 Ext.define('LSP.view.cmpd_by_name.CmpdByNameForm', {
     extend: 'Ext.form.Panel',  
     alias: 'widget.CmpdByNameForm',
+    closable: true,
     
      initComponent: function() {
-    
+        
         this.items = [
                    {
                 xtype: 'container',
@@ -55,17 +56,60 @@ Ext.define('LSP.view.cmpd_by_name.CmpdByNameForm', {
                         value: '&#x2713;'
                       },
                       {
+                        name: 'cmpd_uuid',
+                        xtype: 'hidden',
+                        value: ''
+                      },
+                      {
                         name: 'authenticity_token',
                         xtype: 'hidden',
                         value: $$('meta[name=csrf-token]')[0].readAttribute('content')
                       },
                       {
-                        xtype: 'textfield',
-                        name: 'concept_url',
+                        xtype: 'combo',
+                        valueField:'cmpd_url',
+                      	store:  Ext.create('Ext.data.Store',{
+                                      fields: [
+                                        {type: 'string', name: 'cmpd_name'},
+                                        {type: 'string', name: 'cmpd_url'}
+                                      ],
+                                      proxy: {
+                                          type: 'ajax',
+                                          api: {
+                                              read: 'sparql_endpoint/cmpd_name_lookup.json'
+                                          },
+                                          reader: {
+                                              type: 'json',
+                                              root: 'objects',
+                                              totalProperty: 'totalCount'
+                                          }
+                                      }
+                                  }),
+                      	queryMode: 'remote',
+                      	displayField: 'cmpd_name',
+                      	minChars:4,
+                      	hideTrigger:true,
+                      	forceSelection:true,
+                      	typeAhead:true,
+                        emptyText: 'Start typing...',
+                        name: 'compound_url',
                         margin: '5 5 5 5',
                         width: 800,
-                        fieldLabel: 'Concept identifier',
-                        labelWidth: 120
+                        fieldLabel: 'Compound name',
+                        labelWidth: 120,
+                        listConfig: {
+                          loadingText: 'Searching...',
+                          emptyText: 'No matching compounds found.',
+                        },
+                        listeners: {
+                            select: function(combo, selection) {
+                            var post = selection[0];
+                              if (post) {
+                                 var fields = this.up().items.items;
+                                 fields.forEach(function(item) { if(item.name == 'cmpd_uuid'){item.setValue(post.data.cmpd_name);}});
+                              }
+                            }
+                        }
                       },
                       {
                         xtype: 'button',

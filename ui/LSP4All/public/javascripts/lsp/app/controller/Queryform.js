@@ -49,7 +49,7 @@ Ext.define('LSP.controller.Queryform', {
         var form = button.up('form'),
         values = form.getValues();
         grid.store.proxy.actionMethods = {read: 'POST'};
-        grid.store.proxy.extraParams = {query: values.query, endpoint_url: values.endpoint};
+        grid.store.proxy.extraParams = values;
         grid.store.proxy.api.read = '/sparql_endpoint/query.json';
         grid.store.load();
     }

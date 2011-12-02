@@ -1,7 +1,8 @@
 Ext.define('LSP.view.placeholder.temp', {
     extend: 'Ext.form.Panel',  
     alias: 'widget.temp',
-   
+    closable: true,
+    
      initComponent: function() {
     
         this.items = [

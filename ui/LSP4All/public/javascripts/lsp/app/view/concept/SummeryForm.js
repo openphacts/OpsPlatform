@@ -35,7 +35,8 @@
 Ext.define('LSP.view.concept.SummeryForm', {
     extend: 'Ext.form.Panel',
     alias: 'widget.SummeryForm',
- 
+    closable: true,
+    
     initComponent: function() {
         var me = this;
         me.items = [
