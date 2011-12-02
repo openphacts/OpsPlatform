@@ -67,7 +67,7 @@ Ext.define('LSP.view.pharm_by_cmpd_name2.PharmByCmpdNameForm', {
                       },
                       {
                         xtype: 'combo',
-                        valueField:'cmpdurl',
+                        valueField:'cmpd_name',
                       	store:  Ext.create('Ext.data.Store',{
                                       fields: [
                                         {type: 'string', name: 'cmpd_name'},
@@ -92,7 +92,7 @@ Ext.define('LSP.view.pharm_by_cmpd_name2.PharmByCmpdNameForm', {
                       	forceSelection:true,
                       	typeAhead:true,
                         emptyText: 'Start typing...',
-                        name: 'cmpd_uuid',
+                        name: 'cmpd_name',
                         margin: '5 5 5 5',
                         width: 800,
                         fieldLabel: 'Compound name',

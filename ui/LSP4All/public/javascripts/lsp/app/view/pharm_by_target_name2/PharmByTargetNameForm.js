@@ -67,7 +67,7 @@ Ext.define('LSP.view.pharm_by_target_name2.PharmByTargetNameForm', {
                       },
                       {
                         xtype: 'combo',
-                        valueField:'targeturl',
+                        valueField:'target_name',
                       	store:  Ext.create('Ext.data.Store',{
                                       fields: [
                                         {type: 'string', name: 'target_name'},
@@ -92,7 +92,7 @@ Ext.define('LSP.view.pharm_by_target_name2.PharmByTargetNameForm', {
                       	forceSelection:true,
                       	typeAhead:true,
                         emptyText: 'Start typing...',
-                        name: 'target_uuid',
+                        name: 'target_name',
                         margin: '5 5 5 5',
                         width: 800,
                         fieldLabel: 'Target name',

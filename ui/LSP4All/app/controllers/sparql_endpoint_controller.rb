@@ -234,7 +234,7 @@ class SparqlEndpointController < ApplicationController
   end
 
   # Main search for pharmacology by compound name. The input parameter is the cmpd_url returned by cmdp_name_lookup
-  def pharm_by_cmpd_name(cmpd_url = params[:cmpd_uuid])
+  def pharm_by_cmpd_name(cmpd_url = params[:cmpd_uuid], cmpd_name = params[:cmpd_name])
      query_str = "PREFIX brenda: <http://brenda-enzymes.info/> \n"
      query_str += "SELECT ........??????????? put more query here!!!"
      
@@ -245,7 +245,7 @@ class SparqlEndpointController < ApplicationController
   
   # Main search for pharmacology by target name. The input parameter is the target_url returned by target_name_lookup
   # NB: the SPARQL query can for now be identical to the one for pharm_by_cmpd_name as both the url for Brenda and PDSP are both the experiment url and not target or compound classes as such
-  def pharm_by_target_name(target_url = params[:target_uuid])
+  def pharm_by_target_name(target_url = params[:target_uuid], target_name = params[:target_name])
      query_str = "PREFIX brenda: <http://brenda-enzymes.info/> \n"
      query_str += "SELECT ........??????????? put more query here!!!"
      
@@ -389,7 +389,7 @@ class SparqlEndpointController < ApplicationController
           if key =~ /structure/ then
             col[:width] = 200
           end
-          if key == 'ic50' then
+          if key =~ /ic50/ then
              col[:type] = 'float'
              col[:filter] = {:type => 'numeric'}             
           end
@@ -400,7 +400,7 @@ class SparqlEndpointController < ApplicationController
       field_aofh = Array.new
       fields.each do |field|
          type = 'auto'
-         if field == 'ic50' then
+         if field =~ /ic50/ then
             type = 'float'
          end
          field_aofh.push({:name => field, :type => type})

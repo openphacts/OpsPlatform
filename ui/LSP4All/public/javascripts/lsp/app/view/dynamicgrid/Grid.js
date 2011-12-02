@@ -102,17 +102,18 @@ Ext.define('LSP.view.dynamicgrid.Grid', {
             });
             //console.log(columns);
             //console.log(this);
-            var title = this.getHeader().title;
+            if (typeof(title) == "undefined") {
+     	        var title = this.title;
+            }			
             if (this.store.proxy.reader.jsonData.totalCount > 0){
-              this.setTitle(title + ' - Records found: ' +  this.store.proxy.reader.jsonData.totalCount);
+                    this.setTitle(title + ' - Records found: ' +  this.store.proxy.reader.jsonData.totalCount);
             }
             else {
-              this.setTitle(title + ' - Records found: ' +  'No records found!');
+                     this.setTitle(title + ' - Records found: ' +  'No records found!');
             }
-            //console.log(this.store.proxy.reader.jsonData.totalCount);
-            this.reconfigure(this.store, columns);
-            
-        }  
+                         this.reconfigure(this.store, columns);
+                        
+                    }  
     },  
     onRender: function(ct, position) {
         LSP.view.dynamicgrid.Grid.superclass.onRender.call(this, ct, position);  
