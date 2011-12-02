@@ -221,12 +221,12 @@ class SparqlEndpointController < ApplicationController
          uri = record[:csid_uri]
          csid = nil
          cs_image = nil
-         if uri =~ /Chemical-Structure\.(\d+)\.html/ then
+         if uri =~ /http:\/\/rdf.chemspider.com\/(\d+)/ then
            csid = $1
            cs_image = '<img src="http://www.chemspider.com/ImagesHandler.ashx?id=' + csid + '&w=200&h=160" alt="CSID:' + csid + '"/>'
          end
          record[:csid] = csid
-         record[:chemspider_id] = '<a href ="' + uri + '" target="_blank">' + csid + '</a>'
+         record[:chemspider_id] = '<a href ="http://inchi.chemspider.com/Chemical-Structure.' + csid + '.html' + '" target="_blank">' + csid + '</a>'
          record[:structure] = cs_image
          puts record.inspect
       end
