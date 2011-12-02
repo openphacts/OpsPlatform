@@ -1,7 +1,7 @@
 #!/bin/bash
 export MAVEN_OPTS=-Xmx512m
-#LARKC_PATH - path where LarKC is checked out: svn co https://larkc.svn.sourceforge.net/svnroot/larkc/trunk larkc/trunk
-#OPS_PATH - path where OPS repository is checked out: svn co  https://trac.nbic.nl/svn/openphacts
+# LARKC_PATH=/tmp/cleanrun # path where LarKC is checked out: svn co https://larkc.svn.sourceforge.net/svnroot/larkc/trunk larkc/trunk
+# OPS_PATH=/tmp/cleanrun # - path where OPS repository is checked out: svn co  https://trac.nbic.nl/svn/openphacts
 
 currentdir=`pwd`
 

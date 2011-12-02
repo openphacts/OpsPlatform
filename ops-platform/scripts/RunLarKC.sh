@@ -1,3 +1,4 @@
+#LARKC_PATH #- path where LarKC is checked out: svn co https://larkc.svn.sourceforge.net/svnroot/larkc/trunk larkc/trunk
 # Launch LarKC
 currentdir=`pwd`
 cd $LARKC_PATH/larkc/trunk/platform/
