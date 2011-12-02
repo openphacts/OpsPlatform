@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Pathway xmlns="http://genmapp.org/GPML/2010a" Name="New Pathway" Version="20110524">
+  <Graphics BoardWidth="687.2029442691903" BoardHeight="320.0" />
+  <DataNode TextLabel="TP53INP2" GraphId="aa594" Type="GeneProduct">
+    <Graphics CenterX="358.0" CenterY="271.0" Width="80.0" Height="20.0" ZOrder="32768" FontSize="10" Valign="Middle" Color="0000ff" />
+    <Xref Database="Ensembl Human" ID="ENSG00000078804" />
+  </DataNode>
+  <DataNode TextLabel="7410:BDH2" GraphId="d7964" Type="GeneProduct">
+    <Graphics CenterX="406.0" CenterY="165.0" Width="80.0" Height="30.0" ZOrder="32768" FontSize="10" Valign="Middle" />
+    <Xref Database="KEGG Genes" ID="56898" />
+  </DataNode>
+  <InfoBox CenterX="0.0" CenterY="0.0" />
+</Pathway>
+
