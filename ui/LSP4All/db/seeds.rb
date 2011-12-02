@@ -58,7 +58,7 @@ amn.application_type_id = 1
 amn.xtype = ''
 amn.home = ''
 amn.url = ''
-amn.ancestry = ''
+amn.ancestry = '0'
 amn.ancestry_depth = 0
 amn.save!
 amn = ApplicationModule.new
