@@ -1,12 +1,9 @@
 package eu.ops.plugin.querymapper;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
-import javax.jms.Message;
 
 import org.bridgedb.BridgeDb;
 import org.bridgedb.DataSource;
@@ -17,8 +14,8 @@ import org.bridgedb.bio.BioDataSource;
 import org.openrdf.model.Literal;
 import org.openrdf.model.Resource;
 import org.openrdf.model.URI;
-import org.openrdf.model.impl.URIImpl;
 import org.openrdf.model.Value;
+import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.algebra.StatementPattern;
 import org.openrdf.query.algebra.helpers.StatementPatternCollector;
 
@@ -52,16 +49,6 @@ public class QueryMapper extends Plugin {
 		// TODO Auto-generated constructor stub
 	}
 
-	/**
-	 * Will be called when a message is send to the plug-in.
-	 * 
-	 * @param message
-	 *            the message send to the plug-in
-	 */
-	@Override
-	public void onMessage(Message message) {
-		// TODO Auto-generated method stub 
-	}
 
 	/**
 	 * Called on plug-in initialisation. The plug-in instances are initialised

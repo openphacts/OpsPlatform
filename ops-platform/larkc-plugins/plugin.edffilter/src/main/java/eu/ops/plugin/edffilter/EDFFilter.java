@@ -1,7 +1,5 @@
 package eu.ops.plugin.edffilter;
 
-import javax.jms.Message;
-
 import org.openrdf.model.URI;
 
 import eu.larkc.core.data.SetOfStatements;
@@ -26,16 +24,6 @@ public class EDFFilter extends Plugin
 		// TODO Auto-generated constructor stub
 	}
 
-	/**
-	 * Will be called when a message is send to the plug-in. 
-	 * 
-	 * @param message 
-	 * 		the message send to the plug-in
-	 */
-	@Override
-	public void onMessage(Message message) {
-		// TODO Auto-generated method stub
-	}
 
 	/**
 	 * Called on plug-in initialisation. The plug-in instances are initialised on
