@@ -117,19 +117,19 @@ public class OPSAPIEndpointResource extends ServerResource {
 			qr=compoundPharmacology(parts);
 		} else if (method.equals("proteinPharmacology")){
 			qr=proteinPharmacology(parts);		
-		} else if (method.equals("chemSpiderExactStructureSearch")){
-			qr=chemSpiderExactStructureSearch(parts);
-		} else if (method.equals("chemSpiderSubstructureSearch")){
-			qr=chemSpiderSubstructureSearch(parts);
-		} else if (method.equals("chemSpiderSimilaritySearch")){
-			qr=chemSpiderSimilaritySearch(parts);
+		} else if (method.equals("chemicalExactStructureSearch")){
+			qr=chemicalExactStructureSearch(parts);
+		} else if (method.equals("chemicalSubstructureSearch")){
+			qr=chemicalSubstructureSearch(parts);
+		} else if (method.equals("chemicalSimilaritySearch")){
+			qr=chemicalSimilaritySearch(parts);
 		} else {
 			throw new APIException("Unknown method name: "+method+". Use one of: " );
 		}
 		return qr;
 	}
 
-	private SparqlQueryRequest chemSpiderSimilaritySearch(String[] parts) throws APIException {
+	private SparqlQueryRequest chemicalSimilaritySearch(String[] parts) throws APIException {
 		SparqlQueryRequest qr=new SparqlQueryRequest();
 		boolean hasMethod = false;
 		String sparql="";
@@ -159,18 +159,18 @@ public class OPSAPIEndpointResource extends ServerResource {
 				}
 				hasMethod = true;
 			} else if (name.equals("smiles")) {
-				sparql= "PREFIX cspr: <http://rdf.chemspider.com/#>" +
-					"PREFIX pdsp: <http://wiki.openphacts.org/index.php/PDSP_DB#>" +
-					"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>" +
-					"PREFIX ext: <http://wiki.openphacts.org/index.php/ext_function#>" +
-					"SELECT ?csid_uri ?compound_inchi ?compound_inchi_key ?compound_name ?compound_smiles ?receptor_name ?test_ligand_name ?cas_no ?unigene_id ?ligand_displaced ?species ?source ?ki_value ?ki_unit" +
+				sparql= "PREFIX cspr: <http://rdf.chemspider.com/#> " +
+					"PREFIX pdsp: <http://wiki.openphacts.org/index.php/PDSP_DB#> " +
+					"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " +
+					"PREFIX ext: <http://wiki.openphacts.org/index.php/ext_function#> " +
+					" SELECT ?csid_uri ?compound_inchi ?compound_inchi_key ?compound_name ?compound_smiles ?receptor_name ?test_ligand_name ?cas_no ?unigene_id ?ligand_displaced ?species ?source ?ki_value ?ki_unit" +
 					" WHERE {" +
 						"?csid_uri ext:has_similar \""+value+"\"" +
-							"OPTIONAL { ?csid_uri cspr:inchi ?compound_inchi ;" +
+							" OPTIONAL { ?csid_uri cspr:inchi ?compound_inchi ;" +
 							"cspr:inchikey ?compound_inchi_key;" +
 							"cspr:synonym ?compound_name ;" +
 							"cspr:smiles ?compound_smiles }" +
-							"OPTIONAL{?csid_uri cspr:exturl ?exturl ." +
+							" OPTIONAL{?csid_uri cspr:exturl ?exturl ." +
 							"?exturl pdsp:has_receptor_name ?receptor_name ;" +
 							"pdsp:has_test_ligand_id ?test_ligand_id ;" +
 							"pdsp:has_test_ligand_name ?test_ligand_name;" +
@@ -195,7 +195,7 @@ public class OPSAPIEndpointResource extends ServerResource {
 			} 				
 			else {
 				throw new APIException("Unknown parameter name: \""
-						+ name + "\" for method chemSpiderSimilaritySearch; "+
+						+ name + "\" for method chemicalSimilaritySearch; "+
 						" should be \"uri\", \"limit\", \"offset\", \"default-graph-uri\" or \"named-graph-uri\"." +
 						"URIs should be contained in <>");
 			}
@@ -209,7 +209,7 @@ public class OPSAPIEndpointResource extends ServerResource {
 	}
 
 
-	private SparqlQueryRequest chemSpiderSubstructureSearch(String[] parts) throws APIException {
+	private SparqlQueryRequest chemicalSubstructureSearch(String[] parts) throws APIException {
 		SparqlQueryRequest qr=new SparqlQueryRequest();
 		boolean hasMethod = false;
 		String sparql="";
@@ -243,14 +243,14 @@ public class OPSAPIEndpointResource extends ServerResource {
 					"PREFIX pdsp: <http://wiki.openphacts.org/index.php/PDSP_DB#>" +
 					"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>" +
 					"PREFIX ext: <http://wiki.openphacts.org/index.php/ext_function#>" +
-					"SELECT ?csid_uri ?compound_inchi ?compound_inchi_key ?compound_name ?compound_smiles ?receptor_name ?test_ligand_name ?cas_no ?unigene_id ?ligand_displaced ?species ?source ?ki_value ?ki_unit" +
+					" SELECT ?csid_uri ?compound_inchi ?compound_inchi_key ?compound_name ?compound_smiles ?receptor_name ?test_ligand_name ?cas_no ?unigene_id ?ligand_displaced ?species ?source ?ki_value ?ki_unit" +
 					" WHERE {" +
 						"?csid_uri ext:has_substructure_match \""+value+"\"" +
-							"OPTIONAL { ?csid_uri cspr:inchi ?compound_inchi ;" +
+							" OPTIONAL { ?csid_uri cspr:inchi ?compound_inchi ;" +
 							"cspr:inchikey ?compound_inchi_key;" +
 							"cspr:synonym ?compound_name ;" +
 							"cspr:smiles ?compound_smiles }" +
-							"OPTIONAL{?csid_uri cspr:exturl ?exturl ." +
+							" OPTIONAL{?csid_uri cspr:exturl ?exturl ." +
 							"?exturl pdsp:has_receptor_name ?receptor_name ;" +
 							"pdsp:has_test_ligand_id ?test_ligand_id ;" +
 							"pdsp:has_test_ligand_name ?test_ligand_name;" +
@@ -275,7 +275,7 @@ public class OPSAPIEndpointResource extends ServerResource {
 			} 				
 			else {
 				throw new APIException("Unknown parameter name: \""
-						+ name + "\" for method chemSpiderSubstructureSearch; "+
+						+ name + "\" for method chemicalSubstructureSearch; "+
 						" should be \"uri\", \"limit\", \"offset\", \"default-graph-uri\" or \"named-graph-uri\"." +
 						"URIs should be contained in <>");
 			}
@@ -289,7 +289,7 @@ public class OPSAPIEndpointResource extends ServerResource {
 	}
 
 
-	private SparqlQueryRequest chemSpiderExactStructureSearch(String[] parts) throws APIException {
+	private SparqlQueryRequest chemicalExactStructureSearch(String[] parts) throws APIException {
 		SparqlQueryRequest qr=new SparqlQueryRequest();
 		boolean hasMethod = false;
 		String sparql="";
@@ -323,14 +323,14 @@ public class OPSAPIEndpointResource extends ServerResource {
 					"PREFIX pdsp: <http://wiki.openphacts.org/index.php/PDSP_DB#>" +
 					"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>" +
 					"PREFIX ext: <http://wiki.openphacts.org/index.php/ext_function#>" +
-					"SELECT ?csid_uri ?compound_inchi ?compound_inchi_key ?compound_name ?compound_smiles ?receptor_name ?test_ligand_name ?cas_no ?unigene_id ?ligand_displaced ?species ?source ?ki_value ?ki_unit" +
+					" SELECT ?csid_uri ?compound_inchi ?compound_inchi_key ?compound_name ?compound_smiles ?receptor_name ?test_ligand_name ?cas_no ?unigene_id ?ligand_displaced ?species ?source ?ki_value ?ki_unit" +
 					" WHERE {" +
 						"?csid_uri ext:has_exact_structure_match \""+value+"\"" +
-							"OPTIONAL { ?csid_uri cspr:inchi ?compound_inchi ;" +
+							" OPTIONAL { ?csid_uri cspr:inchi ?compound_inchi ;" +
 							"cspr:inchikey ?compound_inchi_key;" +
 							"cspr:synonym ?compound_name ;" +
 							"cspr:smiles ?compound_smiles }" +
-							"OPTIONAL{?csid_uri cspr:exturl ?exturl ." +
+							" OPTIONAL{?csid_uri cspr:exturl ?exturl ." +
 							"?exturl pdsp:has_receptor_name ?receptor_name ;" +
 							"pdsp:has_test_ligand_id ?test_ligand_id ;" +
 							"pdsp:has_test_ligand_name ?test_ligand_name;" +
@@ -355,7 +355,7 @@ public class OPSAPIEndpointResource extends ServerResource {
 			} 				
 			else {
 				throw new APIException("Unknown parameter name: \""
-						+ name + "\" for method chemSpiderExactStructureSearch; "+
+						+ name + "\" for method chemicalExactStructureSearch; "+
 						" should be \"uri\", \"limit\", \"offset\", \"default-graph-uri\" or \"named-graph-uri\"." +
 						"URIs should be contained in <>");
 			}
@@ -404,17 +404,17 @@ public class OPSAPIEndpointResource extends ServerResource {
 						"PREFIX pdsp: <http://wiki.openphacts.org/index.php/PDSP_DB#>" +
 						"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>" +
 						"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>" +
-						"SELECT ?protein_name ?uniprot_entry ?species ?ic50 ?inhibitor ?pubmed_id ?ki_value ?ki_unit " +
+						" SELECT ?protein_name ?uniprot_entry ?species ?ic50 ?inhibitor ?pubmed_id ?ki_value ?ki_unit " +
 						" WHERE {" +
 							"{"+value+" brenda:recommended_name ?protein_name ;" +
 							"brenda:has_ec_number ?uniprot_entry ;" +
 							"brenda:species ?species_code ." +
 							"?species_code rdfs:label ?species" +
-							"OPTIONAL {?ic50experiment brenda:has_inhibitor ?inhibitor ; brenda:has_ic50_value_of ?ic50 }" +
+							" OPTIONAL {?ic50experiment brenda:has_inhibitor ?inhibitor ; brenda:has_ic50_value_of ?ic50 }" +
 							"} UNION {"+value+" pdsp:has_receptor_name ?protein_name ;" +
 							"pdsp:species ?species ;" +
 							"pdsp:has_test_ligand_name ?inhibitor ." +
-							"OPTIONAL {?protein_uri pdsp:pubmed_id ?pubmed_id ;" +
+							" OPTIONAL {?protein_uri pdsp:pubmed_id ?pubmed_id ;" +
 								"pdsp:has_ki_value ?ki_entry ." +
 								"?ki_entry rdf:value ?ki_value ;" +
 								"pdsp:unit ?ki_unit}" +
@@ -425,17 +425,17 @@ public class OPSAPIEndpointResource extends ServerResource {
 						"PREFIX pdsp: <http://wiki.openphacts.org/index.php/PDSP_DB#>" +
 						"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>" +
 						"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>" +
-						"SELECT ?protein_name ?species ?inhibitor ?pubmed_id ?ki_value ?ki_unit ?ic50 ?uniprot_entry " +
+						" SELECT ?protein_name ?species ?inhibitor ?pubmed_id ?ki_value ?ki_unit ?ic50 ?uniprot_entry " +
 						" WHERE {" +
 							"{"+value+" brenda:recommended_name ?protein_name ;" +
 							"brenda:has_ec_number ?uniprot_entry ;" +
 							"brenda:species ?species_code ." +
 							"?species_code rdfs:label ?species" +
-							"OPTIONAL {?ic50experiment brenda:has_inhibitor ?inhibitor ; brenda:has_ic50_value_of ?ic50 }" +
+							" OPTIONAL {?ic50experiment brenda:has_inhibitor ?inhibitor ; brenda:has_ic50_value_of ?ic50 }" +
 							"} UNION {"+value+" pdsp:has_receptor_name ?protein_name  ;" +
 							"pdsp:species ?species ;" +
 							"pdsp:has_test_ligand_name ?inhibitor ." +
-								"OPTIONAL {?protein_uri pdsp:pubmed_id ?pubmed_id ;" +
+								" OPTIONAL {?protein_uri pdsp:pubmed_id ?pubmed_id ;" +
 								"pdsp:has_ki_value ?ki_entry ." +
 								"?ki_entry rdf:value ?ki_value ;" +
 								"pdsp:unit ?ki_unit}" +
@@ -503,38 +503,38 @@ public class OPSAPIEndpointResource extends ServerResource {
 						"PREFIX pdsp: <http://wiki.openphacts.org/index.php/PDSP_DB#>" +
 						"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>" +
 						"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>" +
-						"SELECT ?compound_name ?species ?ic50 ?target_name ?ki_value ?ki_unit ?pubmed_id" +
+						" SELECT ?compound_name ?species ?ic50 ?target_name ?ki_value ?ki_unit ?pubmed_id" +
 						" WHERE {" +
 							"{"+value+" brenda:has_inhibitor ?compound_name ;" +
 							"brenda:has_ic50_value_of ?ic50 ;" +
 							"brenda:species ?species_uri ." +
 							"?species_uri rdfs:label ?species }" +
-						"UNION {"+value+" pdsp:has_test_ligand_name ?compound_name ;" +
+						" UNION {"+value+" pdsp:has_test_ligand_name ?compound_name ;" +
 							"pdsp:has_receptor_name ?target_name;" +
 							"pdsp:species ?species ;" +
 							"pdsp:has_ki_value ?ki_entry ." +
 							"?ki_entry rdf:value ?ki_value ;" +
 							"pdsp:unit ?ki_unit " +
-							"OPTIONAL {"+value+" pdsp:pubmed_id ?pubmed_id }}" +
+							" OPTIONAL {"+value+" pdsp:pubmed_id ?pubmed_id }}" +
 						"}";
 				}else {
 					sparql= "PREFIX brenda: <http://brenda-enzymes.info/>" +
 						"PREFIX pdsp: <http://wiki.openphacts.org/index.php/PDSP_DB#>" +
 						"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>" +
 						"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>" +
-						"SELECT ?compound_name ?species ?target_name ?ki_value ?ki_unit ?pubmed_id ?ic50" +
+						" SELECT ?compound_name ?species ?target_name ?ki_value ?ki_unit ?pubmed_id ?ic50" +
 						" WHERE {" +
 							"{"+value+" brenda:has_inhibitor ?compound_name ;" +
 							"brenda:has_ic50_value_of ?ic50 ;" +
 							"brenda:species ?species_uri ." +
 							"?species_uri rdfs:label ?species }" +
-						"UNION {"+value+" pdsp:has_test_ligand_name ?compound_name ;" +
+						" UNION {"+value+" pdsp:has_test_ligand_name ?compound_name ;" +
 							"pdsp:has_receptor_name ?target_name;" +
 							"pdsp:species ?species ;" +
 							"pdsp:has_ki_value ?ki_entry ." +
 							"?ki_entry rdf:value ?ki_value ;" +
 							"pdsp:unit ?ki_unit " +
-							"OPTIONAL {"+value+" pdsp:pubmed_id ?pubmed_id }}" +
+							" OPTIONAL {"+value+" pdsp:pubmed_id ?pubmed_id }}" +
 						"}";
 					}
 			} else if (name.equals("default-graph-uri")) {
@@ -595,7 +595,7 @@ public class OPSAPIEndpointResource extends ServerResource {
 						"PREFIX pdsp: <http://wiki.openphacts.org/index.php/PDSP_DB#>" +
 						"PREFIX cspr: <http://rdf.chemspider.com/#>" +
 						"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>" +
-						"SELECT ?protein_name ?species ?systematic_name ?uniprot_id ?unigene_id ?nsc ?pubmed_id " +
+						" SELECT ?protein_name ?species ?systematic_name ?uniprot_id ?unigene_id ?nsc ?pubmed_id " +
 							" WHERE {" +
 								"{"+value+" brenda:recommended_name ?protein_name ." +
 								"?protein_url brenda:recommended_name ?protein_name ;" +
@@ -603,11 +603,11 @@ public class OPSAPIEndpointResource extends ServerResource {
 								"brenda:species ?species_uri ;" +
 								"brenda:has_ec_number ?uniprot_id ." +
 								"?species_uri rdfs:label ?species }" +
-							"UNION {"+value+" pdsp:has_receptor_name ?protein_name  ." +
+							" UNION {"+value+" pdsp:has_receptor_name ?protein_name  ." +
 								"?protein_url pdsp:has_receptor_name ?protein_name" +
-								"OPTIONAL {?protein_url pdsp:has_unigene_id ?unigene_id ; pdsp:has_nsc_number ?nsc}" +
-								"OPTIONAL {?protein_url pdsp:pubmed_id ?pubmed_id }" +
-								"OPTIONAL {?protein_url pdsp:species ?species}" +
+								" OPTIONAL {?protein_url pdsp:has_unigene_id ?unigene_id ; pdsp:has_nsc_number ?nsc}" +
+								" OPTIONAL {?protein_url pdsp:pubmed_id ?pubmed_id }" +
+								" OPTIONAL {?protein_url pdsp:species ?species}" +
 							"}" +
 						"}";
 				}else {
@@ -615,7 +615,7 @@ public class OPSAPIEndpointResource extends ServerResource {
 						"PREFIX pdsp: <http://wiki.openphacts.org/index.php/PDSP_DB#>" +
 						"PREFIX cspr: <http://rdf.chemspider.com/#>" +
 						"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>" +
-						"SELECT ?protein_name ?unigene_id ?nsc ?pubmed_id ?species ?systematic_name ?uniprot_id " +
+						" SELECT ?protein_name ?unigene_id ?nsc ?pubmed_id ?species ?systematic_name ?uniprot_id " +
 							" WHERE {" +
 								"{"+value+" brenda:recommended_name ?protein_name ." +
 								"?protein_url brenda:recommended_name ?protein_name ;" +
@@ -623,11 +623,11 @@ public class OPSAPIEndpointResource extends ServerResource {
 								"brenda:species ?species_uri ;" +
 								"brenda:has_ec_number ?uniprot_id ." +
 								"?species_uri rdfs:label ?species }" +
-							"UNION {"+value+" pdsp:has_receptor_name ?protein_name  ." +
+							" UNION {"+value+" pdsp:has_receptor_name ?protein_name  ." +
 								"?protein_url pdsp:has_receptor_name ?protein_name" +
-								"OPTIONAL {?protein_url pdsp:has_unigene_id ?unigene_id ; pdsp:has_nsc_number ?nsc}" +
-								"OPTIONAL {?protein_url pdsp:pubmed_id ?pubmed_id }" +
-								"OPTIONAL {?protein_url pdsp:species ?species}" +
+								" OPTIONAL {?protein_url pdsp:has_unigene_id ?unigene_id ; pdsp:has_nsc_number ?nsc}" +
+								" OPTIONAL {?protein_url pdsp:pubmed_id ?pubmed_id }" +
+								" OPTIONAL {?protein_url pdsp:species ?species}" +
 							"}" +
 						"}";
 				}
@@ -690,30 +690,30 @@ public class OPSAPIEndpointResource extends ServerResource {
 						"PREFIX pdsp: <http://wiki.openphacts.org/index.php/PDSP_DB#> " +
 						"PREFIX cspr: <http://rdf.chemspider.com/#> " +
 						"PREFIX rdfs: <http://w3.org/2000/01/rdf-schema#> " +
-						"SELECT ?compound_name ?ic50 ?species ?csid_uri ?inchi ?inchi_key ?smiles ?synonym WHERE {" +
+						" SELECT ?compound_name ?ic50 ?species ?csid_uri ?inchi ?inchi_key ?smiles ?synonym WHERE {" +
 							"{"+value+" brenda:has_inhibitor ?compound_name " +
-								"OPTIONAL {"+value+" brenda:has_ic50_value_of ?ic50}" +
-								"OPTIONAL {"+value+" brenda:species ?species_uri . ?species_uri rdfs:label ?species } }" +
-							"UNION {"+value+" pdsp:has_test_ligand_name ?compound_name  " +
-								"OPTIONAL {?csid_uri cspr:exturl "+value+" } " +
-								"OPTIONAL {?csid_uri cspr:smiles ?smiles}" +
-								"OPTIONAL {?csid_uri cspr:synonym ?synonym} " +
-								"OPTIONAL {?csid_uri cspr:inchi ?inchi ; cspr:inchikey ?inchi_key}}" +
+								" OPTIONAL {"+value+" brenda:has_ic50_value_of ?ic50}" +
+								" OPTIONAL {"+value+" brenda:species ?species_uri . ?species_uri rdfs:label ?species } }" +
+							" UNION {"+value+" pdsp:has_test_ligand_name ?compound_name  " +
+								" OPTIONAL {?csid_uri cspr:exturl "+value+" } " +
+								" OPTIONAL {?csid_uri cspr:smiles ?smiles}" +
+								" OPTIONAL {?csid_uri cspr:synonym ?synonym} " +
+								" OPTIONAL {?csid_uri cspr:inchi ?inchi ; cspr:inchikey ?inchi_key}}" +
 						"}";
 				}else {
 					sparql= "PREFIX brenda: <http://brenda-enzymes.info/> " +
 						"PREFIX pdsp: <http://wiki.openphacts.org/index.php/PDSP_DB#> " +
 						"PREFIX cspr: <http://rdf.chemspider.com/#> " +
 						"PREFIX rdfs: <http://w3.org/2000/01/rdf-schema#> " +
-						"SELECT ?compound_name ?csid_uri ?inchi ?inchi_key ?smiles ?synonym ?ic50 ?species WHERE {" +
+						" SELECT ?compound_name ?csid_uri ?inchi ?inchi_key ?smiles ?synonym ?ic50 ?species WHERE {" +
 							"{"+value+" brenda:has_inhibitor ?compound_name " +
-								"OPTIONAL {"+value+" brenda:has_ic50_value_of ?ic50}" +
-								"OPTIONAL {"+value+" brenda:species ?species_uri . ?species_uri rdfs:label ?species } }" +
-							"UNION {"+value+" pdsp:has_test_ligand_name ?compound_name  " +
-								"OPTIONAL {?csid_uri cspr:exturl "+value+" } " +
-								"OPTIONAL {?csid_uri cspr:smiles ?smiles}" +
-								"OPTIONAL {?csid_uri cspr:synonym ?synonym} " +
-								"OPTIONAL {?csid_uri cspr:inchi ?inchi ; cspr:inchikey ?inchi_key}}" +
+								" OPTIONAL {"+value+" brenda:has_ic50_value_of ?ic50}" +
+								" OPTIONAL {"+value+" brenda:species ?species_uri . ?species_uri rdfs:label ?species } }" +
+							" UNION {"+value+" pdsp:has_test_ligand_name ?compound_name  " +
+								" OPTIONAL {?csid_uri cspr:exturl "+value+" } " +
+								" OPTIONAL {?csid_uri cspr:smiles ?smiles}" +
+								" OPTIONAL {?csid_uri cspr:synonym ?synonym} " +
+								" OPTIONAL {?csid_uri cspr:inchi ?inchi ; cspr:inchikey ?inchi_key}}" +
 						"}";
 				}
 			} else if (name.equals("default-graph-uri")) {
@@ -777,9 +777,9 @@ public class OPSAPIEndpointResource extends ServerResource {
 				else {
 					sparql= "PREFIX brenda: <http://brenda-enzymes.info/>" +
 						"PREFIX pdsp: <http://wiki.openphacts.org/index.php/PDSP_DB#>" +
-						"SELECT DISTINCT ?protein_uri ?protein_name WHERE {" +
+						" SELECT DISTINCT ?protein_uri ?protein_name WHERE {" +
 							"{ ?protein_uri brenda:recommended_name ?protein_name } " +
-							"UNION { ?protein_uri pdsp:has_receptor_name ?protein_name } " +
+							" UNION { ?protein_uri pdsp:has_receptor_name ?protein_name } " +
 			 				"FILTER regex(?protein_name, \""+value+"\", \"i\") }";
 				}
 			} else if (name.equals("default-graph-uri")) {
@@ -844,10 +844,10 @@ public class OPSAPIEndpointResource extends ServerResource {
 					sparql= "PREFIX brenda: <http://brenda-enzymes.info/>" +
 						"PREFIX pdsp: <http://wiki.openphacts.org/index.php/PDSP_DB#>" +
 						"PREFIX cspr: <http://rdf.chemspider.com/#> " +
-						"SELECT DISTINCT ?compound_uri ?compound_name WHERE {" +
+						" SELECT DISTINCT ?compound_uri ?compound_name WHERE {" +
 							"{ ?compound_uri brenda:has_inhibitor ?compound_name } " +
-							"UNION { ?compund_uri pdsp:has_test_ligand_name ?compound_name } " +
-							"UNION { ?csid cspr:exturl ?compound_uri . ?csid cspr:synonym ?compound_name}" +
+							" UNION { ?compund_uri pdsp:has_test_ligand_name ?compound_name } " +
+							" UNION { ?csid cspr:exturl ?compound_uri . ?csid cspr:synonym ?compound_name}" +
 			 				"FILTER regex(?compound_name, \""+value+"\", \"i\") }";
 				}
 			} else if (name.equals("default-graph-uri")) {
@@ -906,7 +906,7 @@ public class OPSAPIEndpointResource extends ServerResource {
 				hasMethod = true;
 			} else if (name.equals("uri")) {
 				sparql= "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> " +
-					"SELECT DISTINCT ?s WHERE { ?s rdfs:subClassOf "+value+" }";
+					" SELECT DISTINCT ?s WHERE { ?s rdfs:subClassOf "+value+" }";
 			} else if (name.equals("default-graph-uri")) {
 				qr.addDefaultGraphUri(value);
 			} else if (name.equals("named-graph-uri")) {
@@ -963,7 +963,7 @@ public class OPSAPIEndpointResource extends ServerResource {
 				hasMethod = true;
 			} else if (name.equals("uri")) {
 				sparql= "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> " +
-					"SELECT DISTINCT ?o WHERE { "+value+" rdfs:subClassOf ?o}";
+					" SELECT DISTINCT ?o WHERE { "+value+" rdfs:subClassOf ?o}";
 			} else if (name.equals("default-graph-uri")) {
 				qr.addDefaultGraphUri(value);
 			} else if (name.equals("named-graph-uri")) {
@@ -1020,7 +1020,7 @@ public class OPSAPIEndpointResource extends ServerResource {
 				}
 				hasMethod = true;
 			} else if (name.equals("subject")) {
-				sparql="SELECT DISTINCT ?o WHERE { "+value+sparql;
+				sparql=" SELECT DISTINCT ?o WHERE { "+value+sparql;
 			} else if (name.equals("predicate")) {
 				sparql+=" "+value+" ?o }";
 			} else if (name.equals("default-graph-uri")) {
@@ -1079,7 +1079,7 @@ public class OPSAPIEndpointResource extends ServerResource {
 				}
 				hasMethod = true;
 			} else if (name.equals("subject")) {
-				sparql="SELECT DISTINCT ?p WHERE { "+value+" ?p"+sparql;
+				sparql=" SELECT DISTINCT ?p WHERE { "+value+" ?p"+sparql;
 			} else if (name.equals("uri")) {
 				sparql+=" "+value+" }";
 			} else if (name.equals("literal")) {
@@ -1146,7 +1146,7 @@ public class OPSAPIEndpointResource extends ServerResource {
 				}
 				hasMethod = true;
 			} else if (name.equals("predicate")) {
-				sparql="SELECT DISTINCT ?s WHERE {?s "+value+sparql;
+				sparql=" SELECT DISTINCT ?s WHERE {?s "+value+sparql;
 			} else if (name.equals("uri")) {
 				sparql+=" "+value+" }";
 			} else if (name.equals("literal")) {
@@ -1213,7 +1213,7 @@ public class OPSAPIEndpointResource extends ServerResource {
 				}
 				hasMethod = true;
 			} else if (name.equals("uri")) {
-				sparql="SELECT DISTINCT ?o WHERE {?s "+value+" ?o}";
+				sparql=" SELECT DISTINCT ?o WHERE {?s "+value+" ?o}";
 			} else if (name.equals("default-graph-uri")) {
 				qr.addDefaultGraphUri(value);
 			} else if (name.equals("named-graph-uri")) {
@@ -1270,13 +1270,13 @@ public class OPSAPIEndpointResource extends ServerResource {
 				}
 				hasMethod = true;
 			} else if (name.equals("uri")) {
-				sparql="SELECT DISTINCT ?p WHERE {?s ?p "+value+"}";
+				sparql=" SELECT DISTINCT ?p WHERE {?s ?p "+value+"}";
 			} else if (name.equals("literal")) {
 				try {
 					Float.parseFloat(value);
-					sparql="SELECT DISTINCT ?p WHERE {?s ?p "+value+" }";
+					sparql=" SELECT DISTINCT ?p WHERE {?s ?p "+value+" }";
 				}catch (NumberFormatException e){
-					sparql="SELECT DISTINCT ?p WHERE {?s ?p \""+value+"\"}";
+					sparql=" SELECT DISTINCT ?p WHERE {?s ?p \""+value+"\"}";
 				}
 			} else if (name.equals("default-graph-uri")) {
 				qr.addDefaultGraphUri(value);
@@ -1334,7 +1334,7 @@ public class OPSAPIEndpointResource extends ServerResource {
 				}
 				hasMethod = true;
 			} else if (name.equals("uri")) {
-				sparql="SELECT DISTINCT ?s WHERE {?s "+value+" ?o}";
+				sparql=" SELECT DISTINCT ?s WHERE {?s "+value+" ?o}";
 			} else if (name.equals("default-graph-uri")) {
 				qr.addDefaultGraphUri(value);
 			} else if (name.equals("named-graph-uri")) {
@@ -1391,7 +1391,7 @@ public class OPSAPIEndpointResource extends ServerResource {
 				}
 				hasMethod = true;
 			} else if (name.equals("uri")) {
-				sparql="SELECT DISTINCT ?p WHERE {"+value+" ?p ?o}";
+				sparql=" SELECT DISTINCT ?p WHERE {"+value+" ?p ?o}";
 			} else if (name.equals("default-graph-uri")) {
 				qr.addDefaultGraphUri(value);
 			} else if (name.equals("named-graph-uri")) {
@@ -1448,13 +1448,13 @@ public class OPSAPIEndpointResource extends ServerResource {
 				}
 				hasMethod = true;
 			}else if (name.equals("uri")) {
-				sparql="SELECT DISTINCT ?s ?p WHERE {?s ?p "+value+"}";
+				sparql=" SELECT DISTINCT ?s ?p WHERE {?s ?p "+value+"}";
 			} else if (name.equals("literal")) {
 				try {
 					Float.parseFloat(value);
-					sparql="SELECT DISTINCT ?s ?p WHERE {?s ?p "+value+" }";
+					sparql=" SELECT DISTINCT ?s ?p WHERE {?s ?p "+value+" }";
 				}catch (NumberFormatException e){
-					sparql="SELECT DISTINCT ?s ?p WHERE {?s ?p \""+value+"\"}";
+					sparql=" SELECT DISTINCT ?s ?p WHERE {?s ?p \""+value+"\"}";
 				}
 			} else if (name.equals("default-graph-uri")) {
 				qr.addDefaultGraphUri(value);
@@ -1512,7 +1512,7 @@ public class OPSAPIEndpointResource extends ServerResource {
 				}
 				hasMethod = true;
 			} else if (name.equals("uri")) {
-				sparql="SELECT DISTINCT ?s ?o WHERE {?s "+value+" ?o}";
+				sparql=" SELECT DISTINCT ?s ?o WHERE {?s "+value+" ?o}";
 			} else if (name.equals("default-graph-uri")) {
 				qr.addDefaultGraphUri(value);
 			} else if (name.equals("named-graph-uri")) {
@@ -1570,7 +1570,7 @@ public class OPSAPIEndpointResource extends ServerResource {
 				}
 				hasMethod = true;
 			} else if (name.equals("uri")) {
-				sparql="SELECT DISTINCT ?p ?o WHERE {"+value+" ?p ?o}";
+				sparql=" SELECT DISTINCT ?p ?o WHERE {"+value+" ?p ?o}";
 			} else if (name.equals("default-graph-uri")) {
 				qr.addDefaultGraphUri(value);
 			} else if (name.equals("named-graph-uri")) {
