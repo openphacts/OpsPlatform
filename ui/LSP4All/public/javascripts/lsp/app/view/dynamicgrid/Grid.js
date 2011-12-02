@@ -111,6 +111,7 @@ Ext.define('LSP.view.dynamicgrid.Grid', {
             }
             //console.log(this.store.proxy.reader.jsonData.totalCount);
             this.reconfigure(this.store, columns);
+            
         }  
     },  
     onRender: function(ct, position) {
