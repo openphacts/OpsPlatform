@@ -46,12 +46,15 @@ class SparqlEndpointController < ApplicationController
      results = @endpoint.find_by_sparql(query_str)
      render :json => construct_column_objects(results).to_json, :layout => false
   end
-  
+ 
    # This function sould return compound name and target url as cmpd_name and cmdpurl, e.i. call query variables ?cmpd_name and ?cmpdurl 
   def cmpd_name_lookup(name_lookup = params[:query])
       query_str = "PREFIX brenda: <http://brenda-enzymes.info/>\n"
+      query_str += "PREFIX pdsp: <http://wiki.openphacts.org/index.php/PDSP_DB#>\n"
+      query_str += "PREFIX cspr: <http://rdf.chemspider.com/#>\n"   
       query_str += "SELECT DISTINCT ?cmpd_name ?cmpdurl WHERE {\n"
-      query_str += "{ ?cmpdurl brenda:has_inhibitor ?cmpd_name } UNION { ?cmpdurl <http://wiki.openphacts.org/index.php/PDSP_DB#has_test_ligand_name> ?cmpd_name } .\n"
+      query_str += "{ ?cmpdurl brenda:has_inhibitor ?cmpd_name } UNION { ?cmpdurl pdsp:has_test_ligand_name ?cmpd_name } UNION {?csid cspr:exturl ?cmpdurl . \n"
+      query_str += "?csid cspr:synonym ?cmpd_name}. \n" 
       query_str += "FILTER regex(?cmpd_name, \"#{name_lookup}\", \"i\") }\n"
       query_str += "Limit 100"
  
@@ -59,13 +62,13 @@ class SparqlEndpointController < ApplicationController
       results = @endpoint.find_by_sparql(query_str)
       render :json => construct_column_objects(results).to_json, :layout => false
   end
-
+                      
   # This function sould return target name and target url as target_name and targeturl, e.i. call query variables ?target_name and ?targeturl 
   def target_name_lookup(name_lookup = params[:query])
       query_str = "PREFIX brenda: <http://brenda-enzymes.info/>\n"
-      query_str += "SELECT DISTINCT ?cmpd_name ?cmpdurl WHERE {\n"
-      query_str += "{ ?cmpdurl brenda:has_inhibitor ?cmpd_name } UNION { ?cmpdurl <http://wiki.openphacts.org/index.php/PDSP_DB#has_test_ligand_name> ?cmpd_name } .\n"
-      query_str += "FILTER regex(?cmpd_name, \"#{name_lookup}\", \"i\") }\n"
+      query_str += "PREFIX pdsp: <http://wiki.openphacts.org/index.php/PDSP_DB#> \n"
+      query_str += "SELECT DISTINCT ?target_name ?targeturl WHERE {{{ ?targeturl brenda:recommended_name ?target_name } UNION { ?targeturl pdsp:has_receptor_name ?target_name } }\n"
+      query_str += "FILTER regex(?target_name, \"#{name_lookup}\", \"i\") }\n"
       query_str += "Limit 100"
  
       @endpoint = SparqlEndpoint.new(session[:endpoint])             
@@ -95,6 +98,7 @@ class SparqlEndpointController < ApplicationController
   # For this special formating to work the chemcallout subject variable must be called ?csid_uri and the returned identifier must contain the substring "Chemical-Structure"
   # If the Chemcallout return value is changes the to return a different string the "format_chemspider_results" function must also be changed accordingly! 
   def cmpd_by_name(cmpd_url = params[:cmpd_uuid])
+ 
     query_str = "PREFIX brenda: <http://brenda-enzymes.info/> \n"
     query_str += "SELECT ?cmpdurl ?compound_smiles ?compound_name  WHERE {\n"
     query_str += "?cmpdurl ?p \"#{cmpd_url}\" . \n"
@@ -126,8 +130,11 @@ class SparqlEndpointController < ApplicationController
       pharm_enzyme_query = "PREFIX brenda: <http://brenda-enzymes.info/>\n" 
       pharm_enzyme_query +=  "PREFIX uniprot: <http://purl.uniprot.org/enzymes/>\n" 
       pharm_enzyme_query += "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" 
-      pharm_enzyme_query += "select  ?ic50 ?inhibitor ?species  where {\n"
+      pharm_enzyme_query += "select  ?ic50 ?inhibitor ?species ?target_name ?enzyme_class_name where {\n"
       pharm_enzyme_query += "?ic50experiment brenda:has_ic50_value_of ?ic50 .\n"
+      pharm_enzyme_query += "OPTIONAL { ?brenda_entry brenda:recommended_name ?target_name } .\n"
+      pharm_enzyme_query += "OPTIONAL {?uniprot_entry <http://purl.uniprot.org/core/name> ?enzyme_class_name} .\n"
+      
       if not params[:min_filter] == "" and not params[:max_filter] == "" then  
         pharm_enzyme_query += "filter(?ic50 > #{params[:min_filter]} && ?ic50 < #{params[:max_filter]}) .\n" 
       elsif not params[:min_filter] == "" and params[:max_filter] == "" then  
@@ -215,7 +222,7 @@ class SparqlEndpointController < ApplicationController
   # This formatting function manipulates the resultset based on query variable name "csid_uri" which is tested for a substring match with "Chemical-Structure"
   # from where the CSID is grapped and used to construct columns for displaying the picture and the csid hyperlink to the Chemspider page. 
   def format_chemspider_results(input_arr)
-    if input_arr.first.has_key?(:csid_uri) then
+    if input_arr.length >= 1 and input_arr.first.has_key?(:csid_uri) then
       output_arr = Array.new
       input_arr.each do |record|
          uri = record[:csid_uri]
