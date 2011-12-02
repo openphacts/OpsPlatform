@@ -30,3 +30,5 @@ usecases/usecase15/question15-millmolar-full.xlsx
 usecases/usecase15/question15-nanomolar-full.csv
 usecases/usecase15/question15-nanomolar-full.txt
 usecases/usecase15/question15-nanomolar-full.xlsx
+datasets/wikipathways/Wikipathways.ttl
+datasets/wikipathways/Wikipathways.ttl.gz
