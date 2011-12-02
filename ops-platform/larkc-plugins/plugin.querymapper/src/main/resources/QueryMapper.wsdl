@@ -1,0 +1,20 @@
+<wsdl:description>
+
+	<!-- LarKC binding (do not change) -->
+	<wsdl:binding 
+		name="larkcbinding" type="http://larkc.eu/wsdl-binding" />
+	
+	<!-- LarKC plug-in interface -->
+	<wsdl:interface 
+		name="Plugin"
+		sawsdl:modelReference="http://larkc.eu/plugin#QueryMapper">
+	</wsdl:interface>
+	
+	<!-- Define service -->
+	<wsdl:service 
+		name="urn:eu.ops.plugin.querymapper.QueryMapper" interface="Plugin"
+		sawsdl:modelReference="http://larkc.eu/plugin#QueryMapper" >
+		
+    	<wsdl:endpoint location="java:eu.ops.plugin.querymapper.QueryMapper" />
+	</wsdl:service>
+</wsdl:description>

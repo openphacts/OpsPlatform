@@ -1,0 +1,23 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix larkc: <http://larkc.eu/schema#> .
+
+_:plugin0 a <urn:eu.larkc.plugin.RDFReader.RDFReader> .
+_:plugin0 larkc:connectsTo _:plugin1 .
+
+_:plugin1 a <urn:eu.larkc.plugin.SparqlQueryEvaluationReasoner> .
+
+_:plugin2 a <urn:eu.ops.plugin.querymapper.QueryMapper> .
+_:plugin2 larkc:connectsTo _:plugin1 .
+
+_:plugin3 a <urn:eu.larkc.plugin.newfileidentifier.NewFileIdentifier> .
+_:plugin3 larkc:connectsTo _:plugin0 .
+
+_:plugin3 larkc:hasParameter _:param30 .
+_:param30 larkc:filePath "/Users/pgroth/Dropbox/work/vu/openphacts/datasets/pdsp-ki-database/pdsp-v2.ttl" .
+
+<urn:eu.larkc.endpoint.sparql.ep1> a <urn:eu.larkc.endpoint.sparql> .
+<urn:eu.larkc.endpoint.sparql.ep1> larkc:links _:path .
+
+_:path a larkc:Path .
+_:path larkc:hasInput _:plugin2 .
+_:path larkc:hasOutput _:plugin1 .
