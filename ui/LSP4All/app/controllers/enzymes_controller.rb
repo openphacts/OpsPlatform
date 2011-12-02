@@ -48,13 +48,13 @@ class EnzymesController < ApplicationController
           truncks = root.children
           unless truncks.nil?
             truncks.each { |d|
-              nodes.push( { :name => d.name, :id => d.id, :ec_number => d.ec_number, :leaf => d.has_children? ? false : true, :cls => d.has_children? ? 'folder' : 'file', :checked => false } )
+              nodes.push( { :name => d.name, :id => d.id, :ec_number => d.ec_number, :leaf => d.has_children? ? false : true, :cls => d.has_children? ? 'folder' : 'file'} )
             }
           end
         else
           node = Enzyme.find(params[:node])
           node.children.each { |d|
-            nodes.push( { :name => d.name, :id => d.id, :ec_number => d.ec_number, :leaf => d.has_children? ? false : true, :cls => d.has_children? ? 'folder' : 'file', :checked => false } )
+            nodes.push( { :name => d.name, :id => d.id, :ec_number => d.ec_number, :leaf => d.has_children? ? false : true, :cls => d.has_children? ? 'folder' : 'file'} )
           }
         end
         render :json => construct_column_objects(nodes).to_json       

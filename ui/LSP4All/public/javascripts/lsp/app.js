@@ -44,7 +44,8 @@ Ext.application({
         'NavigationTree',
         'Queryform',
         'SimSearchForm',
-	'PharmEnzymeForm'
+	'PharmEnzymeForm',
+	'Settings'
     ],
     
     autoCreateViewport: true,

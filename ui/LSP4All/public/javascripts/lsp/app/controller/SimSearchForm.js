@@ -88,7 +88,7 @@ Ext.define('LSP.controller.SimSearchForm', {
         values = form.getValues();
         //console.log(values.endpoint);
         grid_ss.store.proxy.actionMethods = {read: 'POST'};
-        grid_ss.store.proxy.extraParams = {smiles: values.smiles, endpoint_url: values.endpoint};
+        grid_ss.store.proxy.extraParams = values;
         grid_ss.store.proxy.api.read = '/sparql_endpoint/similar2smiles.json';
         //grid.store.proxy.create;
         grid_ss.store.load();

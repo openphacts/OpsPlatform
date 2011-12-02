@@ -33,7 +33,7 @@
 ########################################################################################*/
 
 Ext.define('LSP.view.larkc_pharm_by_target.PharmEnzymeForm', {
-    extend: 'Ext.panel.Panel',
+    extend: 'Ext.form.Panel',
     alias: 'widget.PharmEnzymeForm',
 
     requires: [
@@ -54,7 +54,7 @@ Ext.define('LSP.view.larkc_pharm_by_target.PharmEnzymeForm', {
                 items: [
                     {
                         xtype: 'displayfield',
-                        name: 'enzyme_families',
+                        name: 'enzyme_family',
                         margin: '5 5 5 5',
                         width: 488,
                         value: 'No enzyme class selected - press button ->',
@@ -68,14 +68,24 @@ Ext.define('LSP.view.larkc_pharm_by_target.PharmEnzymeForm', {
                         action: 'enz_tree'
                     },
                     {
-                        name: 'enz_names',
+                        name: 'enz_name',
                         xtype: 'hidden',
                         value: ''
                     },
                     {
-                        name: 'ec_numbers',
+                        name: 'ec_number',
                         xtype: 'hidden',
                         value: ''
+                    },
+                    {
+                        name: 'utf8',
+                        xtype: 'hidden',
+                        value: '&#x2713;'
+                    },
+                    {
+                        name: 'authenticity_token',
+                        xtype: 'hidden',
+                        value: $$('meta[name=csrf-token]')[0].readAttribute('content')
                     }
                 ]
             },
@@ -99,21 +109,27 @@ Ext.define('LSP.view.larkc_pharm_by_target.PharmEnzymeForm', {
                         items: [
                             {
                                 xtype: 'numberfield',
+                                name: 'min_filter',
                                 margin: '0 5 0 5',
                                 padding: '',
                                 width: 190,
-                                fieldLabel: 'include below (<)',
+                                fieldLabel: 'exclude below (<)',
                                 labelWidth: 110,
                                 autoStripChars: true,
                                 maxValue: 1000000,
-                                minValue: 1
+                                minValue: 0,
+                                value: 0
                             },
                             {
                                 xtype: 'numberfield',
+                                name: 'max_filter',
                                 margin: '0 5 0 5',
-                                width: 180,
-                                fieldLabel: 'include above (>)',
-                                labelWidth: 110
+                                width: 190,
+                                fieldLabel: 'exclude above (>)',
+                                labelWidth: 110,
+                                maxValue: 10000000,
+                                minValue: 1,
+                                value: 1000000
                             }
                         ]
                     },
@@ -125,19 +141,26 @@ Ext.define('LSP.view.larkc_pharm_by_target.PharmEnzymeForm', {
                         items: [
                             {
                                 xtype: 'checkboxfield',
-                                boxLabel: 'Human'
+                                boxLabel: 'Human',
+                                inputValue: 'Homo+sapiens',
+                                name: 'species_1'
                             },
                             {
                                 xtype: 'checkboxfield',
-                                boxLabel: 'Mouse'
+                                boxLabel: 'Mouse',
+                                inputValue: 'Mus+musculus',
+                                name: 'species_2'
                             },
                             {
                                 xtype: 'checkboxfield',
-                                boxLabel: 'Rat'
+                                boxLabel: 'Rat',
+                                inputValue: 'Rattus+norvegicus',
+                                name: 'species_3'
                             },
                             {
                                 xtype: 'checkboxfield',
-                                boxLabel: 'Pink Unicorn'
+                                boxLabel: 'Pink Unicorn',
+                                name: 'species_4' 
                             }
                         ]
                     }
@@ -148,12 +171,12 @@ Ext.define('LSP.view.larkc_pharm_by_target.PharmEnzymeForm', {
                        action: 'query',
                        text: 'Start search'
                    },
-			             grid = Ext.widget('dynamicgrid')
+			             pharenz_grid = Ext.widget('dynamicgrid')
         ];
-        grid.timeout = 9000000;
-        grid.setTitle('Compounds from enzyme class result set');
-        grid.setHeight(750); 
-        grid.buttonRender(['exporter']);                       
+        pharenz_grid.timeout = 9000000;
+        pharenz_grid.setTitle('Inhibitors for enzyme class: no selection yet');
+        pharenz_grid.setHeight('70%'); 
+        pharenz_grid.buttonRender(['exporter']);                       
         me.callParent(arguments);
     }
 });

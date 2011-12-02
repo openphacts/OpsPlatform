@@ -64,7 +64,13 @@ Ext.define('LSP.view.Navigator', {
             title:'Settings',
             border: false,
             autoScroll: true,
-            iconCls: 'settings'
+            iconCls: 'settings',
+            items: [
+              {
+                xtype: 'settingsform',
+                id: 'appSettings'
+              }
+            ]
         }];
         
         this.callParent(arguments);

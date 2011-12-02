@@ -32,57 +32,32 @@
 #  
 ########################################################################################*/
 
-Ext.define('LSP.view.larkc_pharm_by_target.PharmTargetForm', {
-    extend: 'Ext.form.Panel',  
-    alias: 'widget.PharmTargetForm',
-    
-    requires: [
-        'LSP.view.EnzymeTree'
-    ],
-     initComponent: function() {
-    
-        this.items = [
-                   {
-                xtype: 'form',
-                padding: '5 5 0 5',
-                border: false,
-                style: 'background-color: #fff;',
-                items: [
-                      { 
-                        xtype: 'textfield',
-                        name: 'endpoint',
-                        fieldLabel: 'Endpoint URL',
-                        width: 700,
-                        value: 'http://192.168.0.7:8184/sparql' 
-                      },
-                      {
-                      xtype:'fieldset',
-                     // columnWidth: 0.5,
-                      title: 'Pharmacological data by target and species',
-                      layout: 'column',
-                      collapsible: false,
-                      defaults: {anchor: '100%'},
-                      items :[                         
-                         enztree = Ext.widget('enzymeTree')
-                         ]
-                      },
-                      {
-                          xtype: 'button',
-                          action: 'enz_tree',
-                          text: 'Start search'
-                      },
-                      {
-                          xtype: 'button',
-                          action: 'query',
-                          text: 'Start search'
-                      },
-			grid = Ext.widget('dynamicgrid')
-                      ]
-                  }           
-                ];
-        grid.timeout = 9000000;
-        grid.setTitle('Results');
-        grid.setHeight(750);                                   
-        this.callParent(arguments);
-    }    
-});
+Ext.define('LSP.controller.Settings', {
+    extend: 'Ext.app.Controller',
+
+    views: ['Settings'],
+
+    init: function() {
+        this.control({
+            'settingsform button[action=save_endpoint]': {
+                click: this.saveEndpoint
+            },
+            
+        });
+    },
+    // Launch Enzyme class selection window
+    saveEndpoint: function(button) {
+        // Call to store endpoint in session
+   //TODO store url in sessino variable.....!!!!!!!!         
+        var form    = button.up('form');
+        var values = form.getValues();
+        form.submit({
+            url: '/sparql_endpoint/settings.json',
+            waitMsg: 'Saving end point...',
+            success: function(fp, o) {
+              Ext.Msg.alert('Success', 'Endpoint stored');
+        }});
+        console.log(this);    
+    }
+    }
+);

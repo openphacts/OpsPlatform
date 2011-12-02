@@ -57,39 +57,36 @@ Ext.define('LSP.controller.PharmEnzymeForm', {
             }
         });
     },
-    // Launch ketcher window
+    // Launch Enzyme class selection window
     launchEnzyme: function(button) {
         // Launch the window
         var view = Ext.widget('EnzymeTreeForm');    
         console.log(this);
     },
     
-    // Grep smiles from ketcher window and store in smiles field in form
+    // Get selection from the enzyme tree window
     getEnzyme: function(button) {
         var tree    = button.up().up().down('enzymeTree');
-        var records = tree.getChecked(),
-        names = [];
-        ec_numbers = [];
-        Ext.Array.each(records, function(rec){
-                names.push(rec.get('name'));
-                ec_numbers.push(rec.get('ec_number')); 
-            });
-        console.log(this.getPEform().items.items);    
-        fields = this.getPEform().items.items;
-        fields.forEach(function(item) { if(item.name == 'enz_names'){item.setValue(names)} else if(item.name == 'ec_numbers'){item.setValue(ec_numbers)} });  
+        var selected = tree.getView().getSelectionModel().getSelection();
+        var sel_data = selected[0].data;
+        var disp_field = this.getPEform().getForm().findField('enzyme_family');
+        disp_field.setValue( '<b>' + sel_data.ec_number + ' : ' + sel_data.name + '</b>');
+        var ec_num_field = this.getPEform().getForm().findField('ec_number');
+        ec_num_field.setValue(sel_data.ec_number);
+        var enz_name_field = this.getPEform().getForm().findField('enz_name');
+        enz_name_field.setValue(sel_data.name);
         button.up('EnzymeTreeForm').close();   
     },
     
     submitQuery: function(button) {
-        var form    = button.up('form'),
-        values = form.getValues();
+        var form    = button.up('form');
+        var values = form.getValues();
         console.log(values);
-        //console.log(values.endpoint);
-   //     grid_ss.store.proxy.actionMethods = {read: 'POST'};
-   //     grid_ss.store.proxy.extraParams = {smiles: values.smiles, endpoint_url: values.endpoint};
-   //     grid_ss.store.proxy.api.read = '/sparql_endpoint/similar2smiles.json';
-        //grid.store.proxy.create;
-   //     grid_ss.store.load();
+        pharenz_grid.store.proxy.actionMethods = {read: 'POST'};
+        pharenz_grid.store.proxy.extraParams = values;
+        pharenz_grid.store.proxy.api.read = '/sparql_endpoint/pharm_enzyme_fam.json';
+        pharenz_grid.setTitle('Inhibitors for enzymes in class:  ' + values.ec_number + ' => ' + values.enz_name);
+        pharenz_grid.store.load();
     }
     
     

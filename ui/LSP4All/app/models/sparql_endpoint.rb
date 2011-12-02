@@ -88,9 +88,9 @@ class SparqlEndpoint
     query.filter(options[:filter]) unless options[:filter].nil?
     query.offset(options[:offset]) unless options[:offset].nil?
  
-    puts "#{Time.now} - Remote SPARQL endpoint #{@endpoint} posted with query:\n#{query}\n"
+    puts "#{Time.now} - Remote SPARQL endpoint #{@url} posted with query:\n#{query}\n"
     solutions = query.execute
-    puts "#{Time.now} - ENDPOINT #{@endpoint} returned #{solutions.size} results"                                           
+    puts "#{Time.now} - ENDPOINT #{@url} returned #{solutions.size} results"                                           
     results = Array.new
     solutions.each do |solution|                                                             
        results.push(solution.to_hash)                                                                                                        
@@ -99,9 +99,9 @@ class SparqlEndpoint
   end
        
   def find_by_sparql(query)
-     puts "#{Time.now} - Remote SPARQL @endpoint #{@endpoint} posted with query:\n#{query}\n"
+     puts "#{Time.now} - Remote SPARQL Endpoint #{@url} posted with query:\n#{query}\n"
      solutions = @endpoint.query(query)
-     puts "#{Time.now} - ENDPOINT #{@endpoint} returned #{solutions.size} results" 
+     puts "#{Time.now} - ENDPOINT #{@url} returned #{solutions.size} results" 
      results = Array.new
      solutions.each do |solution| 
      

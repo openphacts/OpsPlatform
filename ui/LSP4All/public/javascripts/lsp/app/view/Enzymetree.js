@@ -36,9 +36,6 @@ Ext.define('LSP.view.EnzymeTree', {
     extend: 'Ext.tree.Panel',
     alias: 'widget.enzymeTree',
     
- //   requires: [
- //     'Ext.data.TreeStore'
- //   ],
  
      requires: [
         'Ext.data.*',
@@ -49,7 +46,8 @@ Ext.define('LSP.view.EnzymeTree', {
 
     
     singleExpand: true,
-    simpleSelect: true,    
+    //simpleSelect: true,
+    multiSelect: false,    
     rootVisible: false,
     useArrows: true,
     frame: true,

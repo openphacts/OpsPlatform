@@ -40,10 +40,38 @@ Ext.define('LSP.view.Settings', {
     
         this.items = [
             {
+                xtype: 'form',
+                padding: '5 5 0 5',
+                border: false,
+                style: 'background-color: #fff;',
                 items: [
                     {
-                       
-                    }
+                        xtype: 'label',
+                        text: 'Insert URL of sparql endpoint below and click save' 
+                    },
+                    {
+                        xtype: 'textarea',
+                        name: 'endpoint',
+                        heigth: 50,
+                        fieldLabel: 'URL',
+                        emptyText: 'Insert full URL to the sparql endpoint used, eg: http://10.11.93.218:8183/sparql',
+                        labelWidth: 30
+                    },
+                    {
+                        name: 'utf8',
+                        xtype: 'hidden',
+                        value: '&#x2713;'
+                    },
+                    {
+                        name: 'authenticity_token',
+                        xtype: 'hidden',
+                        value: $$('meta[name=csrf-token]')[0].readAttribute('content')
+                    },
+                    {
+                        xtype: 'button',
+                        text: 'Save',
+                        action: 'save_endpoint'
+                    } 
                 ]
             }
         ];

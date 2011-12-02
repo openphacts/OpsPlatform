@@ -42,6 +42,7 @@ Ext.define('LSP.view.Viewport', {
     requires: [
       'LSP.view.Viewer',
       'LSP.view.Navigator',
+      'LSP.view.Settings',
       'LSP.view.user.Loginbutton',
       'LSP.view.user.Logoutbutton',
       'LSP.view.user.Newbutton',
@@ -52,11 +53,13 @@ Ext.define('LSP.view.Viewport', {
   	layout: 'border',
     
     initComponent: function() {
+
+      var ops_logo = Ext.create('Ext.Img',{src: 'images/ops_logo.png',bodyStyle: {background: 'transparent'}});
       this.items = [
         {
       	  region: 'north',
       	  id: 'northView',
-      	  height: 36,
+      	  height: 60,
       	  border: false,
       	  bodyStyle: {
               background: 'transparent',
@@ -67,10 +70,11 @@ Ext.define('LSP.view.Viewport', {
             align: 'middle'
           },
       	  items: [
+      	     ops_logo,
             {
               id: 'lsp-header',
               xtype: 'box',
-              html: 'OpenPHACTS'
+              html: 'OpenPHACTS GUI<sub>powered by LSP4All</sub>'
             },
             {
               xtype: 'tbspacer',

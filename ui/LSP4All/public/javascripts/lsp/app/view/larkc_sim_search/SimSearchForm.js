@@ -47,13 +47,16 @@ Ext.define('LSP.view.larkc_sim_search.SimSearchForm', {
                 padding: '5 5 0 5',
                 border: false,
                 style: 'background-color: #fff;',
-                items: [
-                      { 
-                        xtype: 'textfield',
-                        name: 'endpoint',
-                        fieldLabel: 'Endpoint URL',
-                        width: 700,
-                        value: 'http://10.101.133.37:8183/sparql' 
+                items: [                      
+                      {
+                        name: 'utf8',
+                        xtype: 'hidden',
+                        value: '&#x2713;'
+                      },
+                      {
+                        name: 'authenticity_token',
+                        xtype: 'hidden',
+                        value: $$('meta[name=csrf-token]')[0].readAttribute('content')
                       },
                       {
                         name: 'molfile',

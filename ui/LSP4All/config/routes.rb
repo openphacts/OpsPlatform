@@ -15,6 +15,8 @@ LSP4All::Application.routes.draw do
     collection do
       post :query
       post :similar2smiles
+      post :pharm_enzyme_fam
+      post :settings
     end  
   end
   

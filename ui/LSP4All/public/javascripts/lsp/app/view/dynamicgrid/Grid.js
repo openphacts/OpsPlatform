@@ -42,7 +42,11 @@ Ext.define('LSP.view.dynamicgrid.Grid', {
 		'LSP.view.standardToolbar.StandardToolbar'
 	],
     
-    initComponent: function(){  
+    initComponent: function(){
+        
+        var groupingFeature = Ext.create('Ext.grid.feature.Grouping',{
+        groupHeaderTpl: 'Group: {name} ({rows.length} Item{[values.rows.length > 1 ? "s" : ""]})'
+        });  
         var config = {
             store: {
                 fields: [],
@@ -58,17 +62,12 @@ Ext.define('LSP.view.dynamicgrid.Grid', {
                     }
                 }
             },
-      		dockedItems: [{
-				xtype: 'standardtoolbar'
+      	dockedItems: [{
+				  xtype: 'standardtoolbar'
       		}],
-            columns:[],  
-			renderer: function(value){
-						if (value > 1) {
-							return '1 person';
-						}
-						return value + ' people';
-					},
-            rowNumberer: true  
+            columns:[{name: 'temp', hidden:true}],  
+            rowNumberer: true,
+            features: [groupingFeature]
         };  
           
         Ext.apply(this, config);  
@@ -87,13 +86,21 @@ Ext.define('LSP.view.dynamicgrid.Grid', {
     storeLoad: function() {
         if(typeof(this.store.proxy.reader.jsonData.columns) === 'object') {  
             var columns = [];
-            
+            //console.log(this);
             if(this.rowNumberer) { columns.push(Ext.create('Ext.grid.RowNumberer')); }  
             Ext.each(this.store.proxy.reader.jsonData.columns, function(column){
                 columns.push(column);  
             });
-            console.log(columns);
-            console.log(this.store);
+            //console.log(columns);
+            console.log(this);
+            var title = this.getHeader().title;
+            if (this.store.proxy.reader.jsonData.totalCount > 0){
+              this.setTitle(title + ' - Records found: ' +  this.store.proxy.reader.jsonData.totalCount);
+            }
+            else {
+              this.setTitle(title + ' - Records found: ' +  'No records found!');
+            }
+            console.log(this.store.proxy.reader.jsonData.totalCount);
             this.reconfigure(this.store, columns);
         }  
     },  
