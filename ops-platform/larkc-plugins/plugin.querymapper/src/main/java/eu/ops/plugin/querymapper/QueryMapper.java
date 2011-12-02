@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+
 import org.bridgedb.BridgeDb;
 import org.bridgedb.DataSource;
 import org.bridgedb.IDMapper;
@@ -209,5 +210,13 @@ public class QueryMapper extends Plugin {
 
 		queryMapper.invokeInternal(new SPARQLQueryImpl(
 				"SELECT * where {<http://chem2bio2rdf.org/chebi/resource/chebi/CHEBI%3A242117> ?p ?o} LIMIT 10").toRDF());
+	}
+
+
+
+	@Override
+	public void shutdown() {
+		// TODO Auto-generated method stub
+		
 	}
 }
