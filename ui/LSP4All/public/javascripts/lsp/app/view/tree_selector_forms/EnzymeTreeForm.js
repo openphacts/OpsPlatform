@@ -36,7 +36,7 @@ Ext.define('LSP.view.tree_selector_forms.EnzymeTreeForm', {
     extend: 'Ext.window.Window',
     alias : 'widget.EnzymeTreeForm',
 
-    requires: ['Ext.form.Panel','LSP.view.EnzymeTree'],
+    requires: ['Ext.form.Panel','LSP.view.Enzymetree'],
 
     title : 'Select an enzyme family',
     layout: 'fit',

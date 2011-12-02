@@ -82,7 +82,7 @@ namespace :db do
         f.puts "\nRoleProfile.delete_all"
         rp.each do |r|
            f.puts "rn = RoleProfile.new"
-           f.puts "rn.id = r.id"
+           f.puts "rn.id = #{r.id}"
            f.puts "rn.role_id = #{r.role_id}"
            f.puts "rn.application_module_id = #{r.application_module_id}"
            f.puts "rn.priv_create = #{r.priv_create}"

@@ -32,7 +32,7 @@
 #  
 ########################################################################################*/
 
-Ext.define('LSP.view.target_by_name.CmpdByNameForm', {
+Ext.define('LSP.view.target_by_name.TargetByNameForm', {
     extend: 'Ext.form.Panel',  
     alias: 'widget.TargetByNameForm',
     

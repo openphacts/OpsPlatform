@@ -1,6 +1,7 @@
 # Seed file will seed database with the application model data and other data needed to run the interface
 # Please note that all existing data in database models below will be destroyed!
 
+
 ApplicationType.delete_all
 atn = ApplicationType.new
 atn.id = 1
@@ -296,7 +297,7 @@ rn.save!
 
 RoleProfile.delete_all
 rn = RoleProfile.new
-rn.id = r.id
+rn.id = 2
 rn.role_id = 1
 rn.application_module_id = 2
 rn.priv_create = 1
@@ -305,7 +306,7 @@ rn.priv_update = 1
 rn.priv_destroy = 1
 rn.save!
 rn = RoleProfile.new
-rn.id = r.id
+rn.id = 3
 rn.role_id = 1
 rn.application_module_id = 4
 rn.priv_create = 1
@@ -314,7 +315,7 @@ rn.priv_update = 1
 rn.priv_destroy = 1
 rn.save!
 rn = RoleProfile.new
-rn.id = r.id
+rn.id = 4
 rn.role_id = 2
 rn.application_module_id = 4
 rn.priv_create = 1
@@ -323,7 +324,7 @@ rn.priv_update = 1
 rn.priv_destroy = 0
 rn.save!
 rn = RoleProfile.new
-rn.id = r.id
+rn.id = 5
 rn.role_id = 3
 rn.application_module_id = 4
 rn.priv_create = 0
@@ -332,7 +333,7 @@ rn.priv_update = 0
 rn.priv_destroy = 0
 rn.save!
 rn = RoleProfile.new
-rn.id = r.id
+rn.id = 6
 rn.role_id = 3
 rn.application_module_id = 17
 rn.priv_create = 0
@@ -341,7 +342,7 @@ rn.priv_update = 0
 rn.priv_destroy = 0
 rn.save!
 rn = RoleProfile.new
-rn.id = r.id
+rn.id = 7
 rn.role_id = 3
 rn.application_module_id = 18
 rn.priv_create = 0

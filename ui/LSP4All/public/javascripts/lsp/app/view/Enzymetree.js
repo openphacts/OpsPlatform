@@ -32,7 +32,7 @@
 #  
 ########################################################################################*/
 
-Ext.define('LSP.view.EnzymeTree', {
+Ext.define('LSP.view.Enzymetree', {
     extend: 'Ext.tree.Panel',
     alias: 'widget.enzymeTree',
     
