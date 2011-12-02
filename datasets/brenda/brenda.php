@@ -172,7 +172,7 @@ function IC50_VALUE($l,$id)
 {	
 	global $species;
 	
-	$found_match = preg_match("/IC50\s+#(\d+)#\s+(\d+(?:\.\d+)?)\s+\{(.*)\}+/", $l, $m);
+	$found_match = preg_match("/^IC50\s+#(\d+)#\s+([-+]?[0-9]*\.?[0-9]+(?:[eE][-+]?[0-9]+)?)\s+\{(.*)\}/", $l, $m);
 	if (!$found_match) 
 		return false;
  	// create a unique hash per entry
