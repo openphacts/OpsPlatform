@@ -1,3 +1,4 @@
+ECHO OFF
 rem THIS bat was built by Christain based on BuildLarKC,sh
 rem If there are difference between the bat and the sh assume the sh is the correct version.
 rem Please contact Christian if you find any errors or if this version is out of date.
@@ -12,46 +13,76 @@ rem OPS_PATH- path where OPS repository is checked out: svn co  https://trac.nbi
 rem note My SVN did not include the parent folder openphacts add it if required.
 rem assumes mvn.bat directory is in your "Path" Environment variable.
 
-cd "%LARKC_PATH%\platform\"
+call:changeDirectory "%LARKC_PATH%\platform\"
 call mvn assembly:assembly -DdescriptorId=jar-with-dependencies -Dmaven.test.skip=true
 call mvn install -DdescriptorId=jar-with-dependencies -Dmaven.test.skip=true
 
-cd "%LARKC_PATH%/plugins/NewFileIdentifier"
+call:changeDirectory "%LARKC_PATH%/plugins/NewFileIdentifier"
 call mvn install 
-ECHO ON
-move target\*SNAPSHOT.jar   ..\..\platform\plugins
+call:moveFile target\*SNAPSHOT.jar   ..\..\platform\plugins
 
-cd "%LARKC_PATH%/plugins/SparqlQueryEvaluationReasoner"
+call:changeDirectory "%LARKC_PATH%/plugins/SparqlQueryEvaluationReasoner"
 call mvn install 
-ECHO ON
-move target\*SNAPSHOT.jar   ..\..\platform\plugins
+call:moveFile target\*SNAPSHOT.jar   ..\..\platform\plugins
 
-cd "%LARKC_PATH%/plugins/RDFReader
+call:changeDirectory "%LARKC_PATH%/plugins/RDFReader
 call mvn install
-ECHO ON
 dir target
-move target\*SNAPSHOT.jar   ..\..\platform\plugins
+call:moveFile target\*SNAPSHOT.jar   ..\..\platform\plugins
 
-cd "%OPS_PATH%\ops-platform\larkc-plugins\plugin.querymapper\"
+call:changeDirectory "%OPS_PATH%\ops-platform\larkc-plugins\plugin.querymapper\"
 call mvn install
 call mvn assembly:assembly
-ECHO ON
-move target\plugin.QueryMapper-0.0.1-SNAPSHOT-LarkcPluginAssembly.jar "%LARKC_PATH%\platform\plugins"
+call:moveFile target\plugin.QueryMapper-0.0.1-SNAPSHOT-LarkcPluginAssembly.jar "%LARKC_PATH%\platform\plugins"
 
-cd "%OPS_PATH%\ops-platform\larkc-plugins\plugin.edffilter/"
+call:changeDirectory "%OPS_PATH%\ops-platform\larkc-plugins\plugin.edffilter/"
 call mvn install
-ECHO ON
-move target\plugin.EDFFilter-0.0.1-SNAPSHOT.jar "%LARKC_PATH%\platform\plugins"
+call:moveFile target\plugin.EDFFilter-0.0.1-SNAPSHOT.jar "%LARKC_PATH%\platform\plugins"
 
-cd "%OPS_PATH%\ops-platform\larkc-plugins\plugin.edfquerytransformer/"
+call:changeDirectory "%OPS_PATH%\ops-platform\larkc-plugins\plugin.edfquerytransformer/"
 call mvn install
-ECHO ON
-move target\plugin.EDFQueryTransformer-0.0.1-SNAPSHOT.jar "%LARKC_PATH%\platform\plugins"
+call:moveFile target\plugin.EDFQueryTransformer-0.0.1-SNAPSHOT.jar "%LARKC_PATH%\platform\plugins"
 
-cd "%OPS_PATH%\ops-platform\larkc-plugins\plugin.edfsearch/"
+call:changeDirectory "%OPS_PATH%\ops-platform\larkc-plugins\plugin.edfsearch/"
 call mvn install
-ECHO ON
-move target\plugin.EDFSearch-0.0.1-SNAPSHOT.jar "%LARKC_PATH%\platform\plugins"
+call:moveFile target\plugin.EDFSearch-0.0.1-SNAPSHOT.jar "%LARKC_PATH%\platform\plugins"
 
 rem back to here to rerun
-cd "%OPS_PATH%\ops-platform\scripts"
+call:changeDirectory "%OPS_PATH%\ops-platform\scripts"
+
+echo. finished script if it did not pause no bat level error noticed.
+goto:eof
+
+::--------------------------------------------------------
+::-- Function section starts below here
+::--------------------------------------------------------
+
+:changeDirectory
+IF EXIST %~1 (
+   echo. changing dir to "%~1"
+   chdir "%~1"
+   goto:eof
+) ELSE (
+   echo. ERROR Unable to find the Directory %~1. 
+   pause
+)
+goto:eof
+
+:moveFile 
+IF EXIST %~1 (
+   IF EXIST %~2 (
+   echo. moving "%~1" to "%~2"
+   move "%~1" "%~2"
+   goto:eof
+   ) ELSE (
+      echo. ERROR Unable to find target Directory %~2. 
+      pause
+      goto:eof
+   )
+) ELSE (
+   echo. ERROR Unable to find file %~1 ."
+   pause
+   goto:eof
+)
+goto:eof
+
