@@ -1,0 +1,32 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix larkc: <http://larkc.eu/schema#> .
+
+#Define a plugin
+_:rdfreader a <urn:eu.larkc.plugin.RDFReader.RDFReader> .
+#Define a connection to another plugin
+_:rdfreader larkc:connectsTo _:reasoner .
+_:reasoner a <urn:eu.larkc.plugin.SparqlQueryEvaluationReasoner> .
+
+_:expand a <urn:eu.ops.plugin.sparqlexpand.SPARQLExpand>.
+
+_:expand larkc:connectsTo _:reasoner.
+_:expand larkc:hasParameter _:endpoint.
+_:endpoint larkc:endpointaddr "http://linkedlifedata.com/sparql".
+
+_:fileidentifier a <urn:eu.larkc.plugin.newfileidentifier.NewFileIdentifier> .
+_:fileidentifier larkc:connectsTo _:rdfreader .
+
+#Define plugin parameters, these are passed to the plugin at platform initialization through the initializeInternal() method.
+_:fileidentifier larkc:hasParameter _:param .
+_:param larkc:filePath "/Users/pgroth/Dropbox/develop/openphacts/datasets/pdspki/pdsp-v2.ttl" .
+
+#Define the endpoint for this workflow.
+<urn:eu.larkc.endpoint.sparql.ep1> a <urn:eu.larkc.endpoint.sparql> .
+#Endpoints are connected to paths in the workflow. Specify the path the above endpoint refers to.
+<urn:eu.larkc.endpoint.sparql.ep1> larkc:links _:path .
+_:path a larkc:Path .
+#Connect the input of the path to a plugin
+_:path larkc:hasInput _:reasoner .
+_:path larkc:hasInput _:expand.
+#Connect the output of the path to a plugin
+_:path larkc:hasOutput _:reasoner .
