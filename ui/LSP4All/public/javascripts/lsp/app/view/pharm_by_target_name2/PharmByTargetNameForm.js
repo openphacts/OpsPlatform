@@ -67,11 +67,11 @@ Ext.define('LSP.view.pharm_by_target_name2.PharmByTargetNameForm', {
                       },
                       {
                         xtype: 'combo',
-                        valueField:'target_url',
+                        valueField:'targeturl',
                       	store:  Ext.create('Ext.data.Store',{
                                       fields: [
                                         {type: 'string', name: 'target_name'},
-                                        {type: 'string', name: 'target_url'}
+                                        {type: 'string', name: 'targeturl'}
                                       ],
                                       proxy: {
                                           type: 'ajax',
@@ -106,7 +106,7 @@ Ext.define('LSP.view.pharm_by_target_name2.PharmByTargetNameForm', {
                             var post = selection[0];
                               if (post) {
                                  var fields = this.up().items.items;
-                                 fields.forEach(function(item) { if(item.name == 'target_uuid'){item.setValue(post.data.target_name);}});
+                                 fields.forEach(function(item) { if(item.name == 'target_uuid'){item.setValue(post.data.targeturl);}});
                               }
                             }
                         }

@@ -47,6 +47,7 @@ class SparqlEndpointController < ApplicationController
      render :json => construct_column_objects(results).to_json, :layout => false
   end
   
+   # This function sould return compound name and target url as cmpd_name and cmdpurl, e.i. call query variables ?cmpd_name and ?cmpdurl 
   def cmpd_name_lookup(name_lookup = params[:query])
       query_str = "PREFIX brenda: <http://brenda-enzymes.info/>\n"
       query_str += "SELECT DISTINCT ?cmpd_name ?cmpdurl WHERE {\n"
@@ -59,6 +60,7 @@ class SparqlEndpointController < ApplicationController
       render :json => construct_column_objects(results).to_json, :layout => false
   end
 
+  # This function sould return target name and target url as target_name and targeturl, e.i. call query variables ?target_name and ?targeturl 
   def target_name_lookup(name_lookup = params[:query])
       query_str = "PREFIX brenda: <http://brenda-enzymes.info/>\n"
       query_str += "SELECT DISTINCT ?cmpd_name ?cmpdurl WHERE {\n"
@@ -71,7 +73,9 @@ class SparqlEndpointController < ApplicationController
       render :json => construct_column_objects(results).to_json, :layout => false
   end
 
-    def concept_name_lookup(url_lookup = params[:concept_url])
+
+  # This function is for looking up concepts and getting predicates and objects. Not relevant for lashup demo....
+  def concept_name_lookup(url_lookup = params[:concept_url])
       query_str = "SELECT DISTINCT ?concept ?label WHERE {\n"
       query_str += "{ ?concept ?predicate ?object  .\n"
       query_str += "OPTIONAL {?concept <http://www.w3.org/2000/01/rdf-schema#label> ?label }} .\n"
@@ -83,30 +87,38 @@ class SparqlEndpointController < ApplicationController
       render :json => construct_column_objects(results).to_json, :layout => false
   end
 
- 
-  def cmpd_by_name(cmpd_name = params[:cmpd_uuid])
+  
+  # here we get the cmpdurl from the cmpd_name_lookup and do a query to get smiles, name, chemspider id, inchi, inchikey for the compound/small molecule
+  # NB see function "format_chemspider_results" below for formatting for Chemsider ID to structure image and hyperlink. 
+  # For this special formating to work the chemcallout subject variable must be called ?csid_uri and the returned identifier must contain the substring "Chemical-Structure"
+  # If the Chemcallout return value is changes the to return a different string the "format_chemspider_results" function must also be changed accordingly! 
+  def cmpd_by_name(cmpd_url = params[:cmpd_uuid])
     query_str = "PREFIX brenda: <http://brenda-enzymes.info/> \n"
     query_str += "SELECT ?cmpdurl ?compound_smiles ?compound_name  WHERE {\n"
-    query_str += "?cmpdurl ?p \"#{cmpd_name}\" . \n"
+    query_str += "?cmpdurl ?p \"#{cmpd_url}\" . \n"
     query_str += "OPTIONAL {?cmpdurl <http://wiki.openphacts.org/index.php/PDSP_DB#has_smiles_code> ?compound_smiles} .\n"
     query_str += "OPTIONAL {{ ?cmpdurl brenda:has_inhibitor ?compound_name } UNION { ?cmpdurl <http://wiki.openphacts.org/index.php/PDSP_DB#has_test_ligand_name> ?compound_name }}} \n"
     @endpoint = SparqlEndpoint.new(session[:endpoint])             
     results = @endpoint.find_by_sparql(query_str)
-    render :json => construct_column_objects(results).to_json, :layout => false
+    render :json => construct_column_objects(format_chemspider_results(results)).to_json, :layout => false
   end
-  # Do similar thing for target
-  def target_by_name
+  
+  
+  # Same as above but for target. 
+  def target_by_name(target_url = params[:target_uuid])
 
-
+# For Brenda this looks like:
 # SELECT * WHERE {?s  <http://brenda-enzymes.info/recommended_name> ?recomended_name .
 # OPTIONAL { ?s <http://brenda-enzymes.info/systematic_name> ?sys } .
 # OPTIONAL {?s <http://brenda-enzymes.info/has_ec_number> ?ec_number } .
 # OPTIONAL {?s <http://brenda-enzymes.info/cas_registry_number> ?cas_number } .
 # }
+# Must also cover PDSP too!
+
   end 
   
-  def pharm_enzyme_fam
-  
+  # Results for form for answering question 15 like question.
+  def pharm_enzyme_fam  
      species = [params[:species_1],params[:species_2],params[:species_3],params[:species_4]]
       species.compact!
       pharm_enzyme_query = "PREFIX brenda: <http://brenda-enzymes.info/>\n" 
@@ -134,9 +146,31 @@ class SparqlEndpointController < ApplicationController
                           
      @endpoint = SparqlEndpoint.new(session[:endpoint]) 
      results = @endpoint.find_by_sparql(pharm_enzyme_query)
-     render :json => construct_column_objects((results)).to_json, :layout => false  
+     render :json => construct_column_objects(format_chemspider_results(results)).to_json, :layout => false  
   end
- 
+  
+  # Main search for pharmacology by compound name. The input parameter is the cmpd_url returned by cmdp_name_lookup
+  def pharm_by_cmpd_name(cmpd_url = params[:cmpd_uuid])
+     query_str = "PREFIX brenda: <http://brenda-enzymes.info/> \n"
+     query_str += "SELECT ........??????????? put more query here!!!"
+     
+     @endpoint = SparqlEndpoint.new(session[:endpoint]) 
+     results = @endpoint.find_by_sparql(query_str)
+     render :json => construct_column_objects(format_chemspider_results(results)).to_json, :layout => false  
+  end
+  
+  # Main search for pharmacology by target name. The input parameter is the target_url returned by target_name_lookup
+  # NB: the SPARQL query can for now be identical to the one for pharm_by_cmpd_name as both the url for Brenda and PDSP are both the experiment url and not target or compound classes as such
+  def pharm_by_target_name(target_url = params[:target_uuid])
+     query_str = "PREFIX brenda: <http://brenda-enzymes.info/> \n"
+     query_str += "SELECT ........??????????? put more query here!!!"
+     
+     @endpoint = SparqlEndpoint.new(session[:endpoint]) 
+     results = @endpoint.find_by_sparql(query_str)
+     render :json => construct_column_objects(format_chemspider_results(results)).to_json, :layout => false  
+  end
+  
+  # Currently not in use...
   def similar2smiles(smiles = params[:smiles])
      @endpoint = SparqlEndpoint.new(session[:endpoint]) 
      sim2smiles_query = 'SELECT * WHERE { ?csid_uri <http://wiki.openphacts.org/index.php/ext_function#has_similar> "' + smiles + '"}'
@@ -144,6 +178,7 @@ class SparqlEndpointController < ApplicationController
      render :json => construct_column_objects(format_chemspider_results(results)).to_json, :layout => false
   end
   
+  # Query for the substructure/exact and similarity search by smiles string from the drawn structure
   # search_types: 1 = exact match, 2 = substructure search, 3 = similarity search
   def search_by_smiles(smiles = params[:smiles], search_type = params[:search_type].to_i)  
      endpoint = SparqlEndpoint.new(session[:endpoint]) 
@@ -176,6 +211,8 @@ class SparqlEndpointController < ApplicationController
      render :json => construct_column_objects(results).to_json, :layout => false
   end
  
+  # This formatting function manipulates the resultset based on query variable name "csid_uri" which is tested for a substring match with "Chemical-Structure"
+  # from where the CSID is grapped and used to construct columns for displaying the picture and the csid hyperlink to the Chemspider page. 
   def format_chemspider_results(input_arr)
     output_arr = Array.new
     input_arr.each do |record|
@@ -279,6 +316,7 @@ class SparqlEndpointController < ApplicationController
     end       
   end
   
+  # This is where we store the endpoint url
   def settings
      endpoint = params[:endpoint]  
      session[:endpoint] = endpoint

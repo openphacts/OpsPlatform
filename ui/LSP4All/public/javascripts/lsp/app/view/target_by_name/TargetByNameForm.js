@@ -71,7 +71,7 @@ Ext.define('LSP.view.target_by_name.TargetByNameForm', {
                       	store:  Ext.create('Ext.data.Store',{
                                       fields: [
                                         {type: 'string', name: 'target_name'},
-                                        {type: 'string', name: 'target_url'}
+                                        {type: 'string', name: 'targeturl'}
                                       ],
                                       proxy: {
                                           type: 'ajax',
@@ -92,7 +92,7 @@ Ext.define('LSP.view.target_by_name.TargetByNameForm', {
                       	forceSelection:true,
                       	typeAhead:true,
                         emptyText: 'Start typing...',
-                        name: 'target_url',
+                        name: 'targetuuid',
                         margin: '5 5 5 5',
                         width: 800,
                         fieldLabel: 'Target name',
@@ -106,7 +106,7 @@ Ext.define('LSP.view.target_by_name.TargetByNameForm', {
                             var post = selection[0];
                               if (post) {
                                  var fields = this.up().items.items;
-                                 fields.forEach(function(item) { if(item.name == 'target_uuid'){item.setValue(post.data.target_name);}});
+                                 fields.forEach(function(item) { if(item.name == 'targetuuid'){item.setValue(post.data.targeturl);}});
                               }
                             }
                         }

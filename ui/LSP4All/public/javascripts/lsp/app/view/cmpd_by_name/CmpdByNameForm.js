@@ -67,11 +67,11 @@ Ext.define('LSP.view.cmpd_by_name.CmpdByNameForm', {
                       },
                       {
                         xtype: 'combo',
-                        valueField:'cmpd_url',
+                        valueField:'cmpdurl',
                       	store:  Ext.create('Ext.data.Store',{
                                       fields: [
                                         {type: 'string', name: 'cmpd_name'},
-                                        {type: 'string', name: 'cmpd_url'}
+                                        {type: 'string', name: 'cmpdurl'}
                                       ],
                                       proxy: {
                                           type: 'ajax',
@@ -92,7 +92,7 @@ Ext.define('LSP.view.cmpd_by_name.CmpdByNameForm', {
                       	forceSelection:true,
                       	typeAhead:true,
                         emptyText: 'Start typing...',
-                        name: 'compound_url',
+                        name: 'cmpd_uuid',
                         margin: '5 5 5 5',
                         width: 800,
                         fieldLabel: 'Compound name',
@@ -106,7 +106,7 @@ Ext.define('LSP.view.cmpd_by_name.CmpdByNameForm', {
                             var post = selection[0];
                               if (post) {
                                  var fields = this.up().items.items;
-                                 fields.forEach(function(item) { if(item.name == 'cmpd_uuid'){item.setValue(post.data.cmpd_name);}});
+                                 fields.forEach(function(item) { if(item.name == 'cmpd_uuid'){item.setValue(post.data.cmpdurl);}});
                               }
                             }
                         }

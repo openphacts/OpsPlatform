@@ -51,7 +51,7 @@ Ext.define('LSP.controller.PharmByTargetNameForm', {
         values = form.getValues();
         grid_pharmbytargetname.store.proxy.actionMethods = {read: 'POST'};
         grid_pharmbytargetname.store.proxy.extraParams = values;
-        grid_pharmbytargetname.store.proxy.api.read = '/sparql_endpoint/cmpd_by_name.json';
+        grid_pharmbytargetname.store.proxy.api.read = '/sparql_endpoint/pharm_by_target_name.json';
         //grid.store.proxy.create;
         grid_pharmbytargetname.store.load();
     }

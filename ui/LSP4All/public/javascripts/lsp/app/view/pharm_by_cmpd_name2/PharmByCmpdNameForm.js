@@ -67,11 +67,11 @@ Ext.define('LSP.view.pharm_by_cmpd_name2.PharmByCmpdNameForm', {
                       },
                       {
                         xtype: 'combo',
-                        valueField:'cmpd_url',
+                        valueField:'cmpdurl',
                       	store:  Ext.create('Ext.data.Store',{
                                       fields: [
                                         {type: 'string', name: 'cmpd_name'},
-                                        {type: 'string', name: 'cmpd_url'}
+                                        {type: 'string', name: 'cmpdurl'}
                                       ],
                                       proxy: {
                                           type: 'ajax',
@@ -106,7 +106,7 @@ Ext.define('LSP.view.pharm_by_cmpd_name2.PharmByCmpdNameForm', {
                             var post = selection[0];
                               if (post) {
                                  var fields = this.up().items.items;
-                                 fields.forEach(function(item) { if(item.name == 'cmpd_uuid'){item.setValue(post.data.cmpd_name);}});
+                                 fields.forEach(function(item) { if(item.name == 'cmpd_uuid'){item.setValue(post.data.cmpdurl);}});
                               }
                             }
                         }
