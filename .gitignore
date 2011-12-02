@@ -19,3 +19,6 @@ datasets/chem2bio2rdf/chebi.n3.gz
 datasets/chem2bio2rdf/kegg.n3.gz
 datasets/bridgeDbMappings/metabolites_100227.bridge
 datasets/uniprotrdf/enzyme.ttl
+datasets/brenda/brenda.tgz
+datasets/brenda/brenda.txt.gz
+datasets/brenda/brenda.ttl.gz
