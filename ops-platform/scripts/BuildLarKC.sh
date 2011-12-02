@@ -29,12 +29,16 @@ mv ./target/plugin.QueryMapper-0.0.1-SNAPSHOT-LarkcPluginAssembly.jar $LARKC_PAT
 cd ../plugin.edffilter/
 mvn install
 mv ./target/plugin.EDFFilter-0.0.1-SNAPSHOT.jar $LARKC_PATH/larkc/branches/openphacts/platform/plugins
-cd ../plugin.edfquerytransformer/
 
+cd ../plugin.sparqlexpand/
+mvn install
+mv ./target/plugin.SPARQLExpand-0.0.1-SNAPSHOT.jar $LARKC_PATH/larkc/branches/openphacts/platform/plugins
+
+cd ../plugin.edfquerytransformer/
 mvn install
 mv ./target/plugin.EDFQueryTransformer-0.0.1-SNAPSHOT.jar $LARKC_PATH/larkc/branches/openphacts/platform/plugins
-cd ../plugin.edfsearch/
 
+cd ../plugin.edfsearch/
 mvn install
 mv ./target/plugin.EDFSearch-0.0.1-SNAPSHOT.jar $LARKC_PATH/larkc/branches/openphacts/platform/plugins
 
