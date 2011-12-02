@@ -34,8 +34,9 @@ move target\*SNAPSHOT.jar   ..\..\platform\plugins
 
 cd "%OPS_PATH%\ops-platform\larkc-plugins\plugin.querymapper\"
 call mvn install
+call mvn assembly:assembly
 ECHO ON
-move target\plugin.QueryMapper-0.0.1-SNAPSHOT.jar "%LARKC_PATH%\platform\plugins"
+move target\plugin.QueryMapper-0.0.1-SNAPSHOT-LarkcPluginAssembly.jar "%LARKC_PATH%\platform\plugins"
 
 cd "%OPS_PATH%\ops-platform\larkc-plugins\plugin.edffilter/"
 call mvn install

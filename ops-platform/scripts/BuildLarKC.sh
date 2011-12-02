@@ -24,9 +24,9 @@ cd $OPS_PATH
 cd openphacts/ops-platform/larkc-plugins/
 cd plugin.querymapper/
 mvn assembly:assembly
-mv ./target/plugin.QueryMapper-0.0.1-SNAPSHOT.jar $LARKC_PATH/larkc/trunk/platform/plugins
-cd ../plugin.edffilter/
+mv ./target/plugin.QueryMapper-0.0.1-SNAPSHOT-LarkcPluginAssembly.jar $LARKC_PATH/larkc/trunk/platform/plugins
 
+cd ../plugin.edffilter/
 mvn install
 mv ./target/plugin.EDFFilter-0.0.1-SNAPSHOT.jar $LARKC_PATH/larkc/trunk/platform/plugins
 cd ../plugin.edfquerytransformer/
