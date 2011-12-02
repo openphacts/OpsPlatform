@@ -6,7 +6,7 @@ define("BRENDA_EMPTY_STRING", "@empty_string@");
 $file = "brenda.txt";
 //$file = "brenda.small.txt";
 
-$n3file = "brenda.ttl";
+$n3file = "brenda2.ttl";
 if(!file_exists($file)) {
 	trigger_error("File $file doesn't exists");
 	exit;
@@ -15,7 +15,7 @@ $n3fp = fopen($n3file,"w+");
 
 //fwrite($n3fp,"@prefix brenda: <http://brenda-enzymes.info/> .\n");
 //fwrite($n3fp,"@prefix uniprot: <http://purl.uniprot.org/enzyme/> .\n");
-fwrite($n3fp,"@prefix rdfs: <http://w3.org/2000/01/rdf-schema> .\n");
+fwrite($n3fp,"@prefix rdfs: <http://w3.org/2000/01/rdf-schema#> .\n");
 fwrite($n3fp,"@prefix rdf: <http://w3.org/1999/02/22-rdf-syntax-ns#> .\n");
 fwrite($n3fp,"\n");
 
@@ -123,7 +123,7 @@ function PROTEIN($l,$id) {
 	$b = '';
 	$b .= "<http://brenda-enzymes.info/$id> <http://brenda-enzymes.info/species> $sid.".PHP_EOL;
 	$b .= "$sid rdf:type <http://brenda-enzymes.info/Species> .".PHP_EOL;
-	$b .= "$sid rdfs:label \"".clean_string($m[3]." [".$sid."]")."\".".PHP_EOL;
+	$b .= "$sid rdfs:label \"".clean_string($m[3])."\".".PHP_EOL;
 	//
 	// store the species assingment for later reference
 	global $species;
