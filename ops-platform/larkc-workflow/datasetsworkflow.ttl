@@ -1,22 +1,22 @@
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix larkc: <http://larkc.eu/schema#> .
 
-# !!! Important: make sure to replace every occurance of /Users/pgroth/Dropbox/develop/openphacts/datasets/ 
+# !!! Important: make sure to replace every occurrence of <OPSPWD> 
 # with the path on your system 
 #Define a plugin
 
 _:reasoner a <urn:eu.larkc.plugin.SparqlQueryEvaluationReasoner> .
-
 _:rdfreader a <urn:eu.larkc.plugin.RDFReader.RDFReader> .
 _:rdfreader larkc:connectsTo _:reasoner .
-
+_:rdfreader larkc:hasParameter _:rdfreaderparam .
+_:rdfreaderparam larkc:defaultoutputname larkc:defaultgraph .
 
 #Adding File - PDSP:
 
 _:fileidentifier a <urn:eu.larkc.plugin.newfileidentifier.NewFileIdentifier> .
 _:fileidentifier larkc:connectsTo _:rdfreader .
 _:fileidentifier larkc:hasParameter _:param .
-_:param larkc:filePath "<OPSPWD>/openphacts/datasets/pdspki/pdsp-v2.ttl" .
+_:param larkc:filePath "<OPSPWD>/OPS/openphacts/datasets/pdspki/pdsp-v2.ttl" .
 
 #Adding File - Kegg
 _:fileidentifier2 a <urn:eu.larkc.plugin.newfileidentifier.NewFileIdentifier> .
@@ -28,22 +28,22 @@ _:param2 larkc:filePath "<OPSPWD>/openphacts/datasets/chem2bio2rdf/kegg.nt" .
 _:fileidentifier3 a <urn:eu.larkc.plugin.newfileidentifier.NewFileIdentifier> .
 _:fileidentifier3 larkc:connectsTo _:rdfreader .
 _:fileidentifier3 larkc:hasParameter _:param3 .
-_:param3 larkc:filePath "<OPSPWD>/openphacts/datasets/brenda/brenda.ttl" .
+_:param3 larkc:filePath "<OPSPWD>/OPS/openphacts/datasets/brenda/brenda.ttl" .
 
 
 #Adding File - Uniprot enzyme
 _:fileidentifier4 a <urn:eu.larkc.plugin.newfileidentifier.NewFileIdentifier> .
 _:fileidentifier4 larkc:connectsTo _:rdfreader .
 _:fileidentifier4 larkc:hasParameter _:param4 .
-_:param4 larkc:filePath "<OPSPWD>/openphacts/datasets/uniprotrdf/enzyme.ttl" .
-
-#Adding File - Uniprot enzyme
-_:fileidentifier5 a <urn:eu.larkc.plugin.newfileidentifier.NewFileIdentifier> .
-_:fileidentifier5 larkc:connectsTo _:rdfreader .
-_:fileidentifier5 larkc:hasParameter _:param5 .
-_:param5 larkc:filePath "<OPSPWD>/openphacts/datasets/chem2bio2rdf/chebi.nt" .
+_:param4 larkc:filePath "<OPSPWD>/OPS/openphacts/datasets/uniprotrdf/enzyme.ttl" .
 
 
+#Define ChemCallout plugin
+_:chemcallout a <urn:eu.ops.plugin.chemcallout.ChemCallout> .
+_:path larkc:hasInput _:chemcallout .
+_:chemcallout larkc:connectsTo _:reasoner .
+_:chemcallout larkc:hasParameter _:chemparam .
+_:chemparam larkc:defaultoutputname larkc:defaultgraph .
 
 #Define the endpoint for this workflow.
 <urn:eu.larkc.endpoint.sparql.ep1> a <urn:eu.larkc.endpoint.sparql> .
