@@ -1,5 +1,6 @@
 package eu.ops.plugin.querymapper;
 
+import eu.larkc.core.query.SPARQLQueryImpl;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -35,4 +36,16 @@ public class QueryMapperTest
     {
         assertTrue( true );
     }
+    
+    
+	public void testQueryMapper() {
+		QueryMapper queryMapper = new QueryMapper(null);
+	//	queryMapper.initialiseInternal(null);
+
+		queryMapper.invokeInternal(new SPARQLQueryImpl(
+				"SELECT * where {<http://chem2bio2rdf.org/chebi/resource/chebi/CHEBI%3A242117> ?p ?o} LIMIT 10").toRDF());
+		assert(true);
+	}
+
+
 }

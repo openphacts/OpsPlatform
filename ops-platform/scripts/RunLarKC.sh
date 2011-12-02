@@ -3,6 +3,6 @@
 currentdir=`pwd`
 cd $LARKC_PATH/larkc/branches/openphacts/platform/
 rm -rf ordi-trree
-java -cp plugins/plugin.QueryMapper-0.0.1-SNAPSHOT-LarkcPluginAssembly/lib/derby.jar:./target/platform-2.5.0-SNAPSHOT-jar-with-dependencies.jar -Xmx1G eu.larkc.core.Larkc
+java -cp plugins/plugin.QueryMapper-0.0.1-SNAPSHOT-LarkcPluginAssembly/lib/derby.jar:./target/platform-2.5.0-SNAPSHOT-jar-with-dependencies.jar -Xmx1024M eu.larkc.core.Larkc
 
 cd $currentdir

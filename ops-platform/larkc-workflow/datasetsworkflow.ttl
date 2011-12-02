@@ -37,6 +37,12 @@ _:fileidentifier4 larkc:connectsTo _:rdfreader .
 _:fileidentifier4 larkc:hasParameter _:param4 .
 _:param4 larkc:filePath "<OPSPWD>/openphacts/datasets/uniprotrdf/enzyme.ttl" .
 
+#Adding File - Uniprot enzyme
+_:fileidentifier5 a <urn:eu.larkc.plugin.newfileidentifier.NewFileIdentifier> .
+_:fileidentifier5 larkc:connectsTo _:rdfreader .
+_:fileidentifier5 larkc:hasParameter _:param5 .
+_:param5 larkc:filePath "<OPSPWD>/openphacts/datasets/chem2bio2rdf/chebi.nt" .
+
 
 
 #Define the endpoint for this workflow.

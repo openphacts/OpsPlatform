@@ -16,6 +16,7 @@ import org.openrdf.model.Literal;
 import org.openrdf.model.Resource;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
+import org.openrdf.model.BNode;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.algebra.StatementPattern;
 import org.openrdf.query.algebra.helpers.StatementPatternCollector;
@@ -153,10 +154,10 @@ public class QueryMapper extends Plugin {
 
 				Set<String> substitutedObjectIDs = new HashSet<String>();
 
-				if (o == null) {
+				if (o == null) {           // replace IDs if o is a URI 
 					substitutedObjectIDs.add("?" + sp.getObjectVar().getName());
 				} 
-				else if (o instanceof Literal) {
+				else if ( o instanceof Literal || o instanceof BNode ) {
 					substitutedObjectIDs = new HashSet<String>();
 					substitutedObjectIDs.add(o.toString());
 				}
@@ -166,15 +167,25 @@ public class QueryMapper extends Plugin {
 					throw new IllegalArgumentException(
 							"Unrecognized term in object position");
 
+
 				Set<String> substitutedSubjectIDs = new HashSet<String>();
-				if (s != null) {
-					substitutedSubjectIDs = getIDs(((URI) s).toString());
-				} else
-					substitutedSubjectIDs.add("?"
-							+ sp.getSubjectVar().getName());
+
+				if (s == null )  {
+					substitutedSubjectIDs.add("?" + sp.getSubjectVar().getName());
+				}
+				else {
+					if( s instanceof BNode) {
+						substitutedSubjectIDs.add( s.toString() );
+					}
+					else {
+						substitutedSubjectIDs = getIDs(((URI) s).toString());
+					}
+				}
+
 
 				String predicate = (p == null) ? ("?" + sp.getPredicateVar()
 						.getName()) : "<" + p.toString() + ">";
+
 
 				for (String subRef : substitutedSubjectIDs) {
 					for (String objRef : substitutedObjectIDs) {
@@ -182,6 +193,7 @@ public class QueryMapper extends Plugin {
 								+ objRef + " .} UNION ";
 					}
 				}
+
 				expandedQuery = expandedQuery.substring(0, expandedQuery
 						.length() - 7);
 			}
@@ -203,15 +215,6 @@ public class QueryMapper extends Plugin {
 	protected void shutdownInternal() {
 		// TODO Auto-generated method stub
 	}
-
-	public static void main(String[] args) {
-		QueryMapper queryMapper = new QueryMapper(null);
-	//	queryMapper.initialiseInternal(null);
-
-		queryMapper.invokeInternal(new SPARQLQueryImpl(
-				"SELECT * where {<http://chem2bio2rdf.org/chebi/resource/chebi/CHEBI%3A242117> ?p ?o} LIMIT 10").toRDF());
-	}
-
 
 
 	@Override
