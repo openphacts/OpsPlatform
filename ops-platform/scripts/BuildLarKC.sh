@@ -1,49 +1,55 @@
 #!/bin/bash
 export MAVEN_OPTS=-Xmx512m
-# LARKC_PATH=/tmp/cleanrun # path where LarKC is checked out: svn co https://larkc.svn.sourceforge.net/svnroot/larkc/branches/openphacts larkc/branches/openphacts
+# LARKC_PATH=/tmp/cleanrun # path where LarKC is checked out: svn co https://larkc.svn.sourceforge.net/svnroot/larkc/trunk larkc
 # OPS_PATH=/tmp/cleanrun # - path where OPS repository is checked out: svn co  https://trac.nbic.nl/svn/openphacts
 
 currentdir=`pwd`
 
-cd $LARKC_PATH/larkc/branches/openphacts/platform/
+cd $LARKC_PATH/larkc/platform/
 mvn assembly:assembly -DdescriptorId=jar-with-dependencies -Dmaven.test.skip=true
+mvn install -DdescriptorId=jar-with-dependencies -Dmaven.test.skip=true
 
 cd ../plugins/NewFileIdentifier
-mvn install
-mv ./target/*SNAPSHOT.jar   ../../platform/plugins
+mvn assembly:assembly
+mv ./target/*SNAPSHOT-LarkcPluginAssembly.jar   ../../platform/plugins
 
 cd ../SparqlQueryEvaluationReasoner
-mvn install
-mv ./target/*SNAPSHOT.jar   ../../platform/plugins
+mvn assembly:assembly
+mv ./target/*SNAPSHOT-LarkcPluginAssembly.jar   ../../platform/plugins
 
 cd ../RDFReader
+mvn assembly:assembly
+mv ./target/*SNAPSHOT-LarkcPluginAssembly.jar   ../../platform/plugins
+
+cd ../../platform/endpoints/endpointsSourceCode/endpoint.sparql/
 mvn install
-mv ./target/*SNAPSHOT.jar   ../../platform/plugins
 
 cd $OPS_PATH
 cd openphacts/ops-platform/larkc-plugins/
 cd plugin.querymapper/
 mvn assembly:assembly
-mv ./target/plugin.QueryMapper-0.0.1-SNAPSHOT-LarkcPluginAssembly.jar $LARKC_PATH/larkc/branches/openphacts/platform/plugins
+mv ./target/*SNAPSHOT-LarkcPluginAssembly.jar $LARKC_PATH/larkc/platform/plugins
 
 cd ../plugin.edffilter/
 mvn install
-mv ./target/plugin.EDFFilter-0.0.1-SNAPSHOT.jar $LARKC_PATH/larkc/branches/openphacts/platform/plugins
+mv ./target/*SNAPSHOT-LarkcPluginAssembly.jar $LARKC_PATH/larkc/platform/plugins
 
 cd ../plugin.sparqlexpand/
 mvn install
-mv ./target/plugin.SPARQLExpand-0.0.1-SNAPSHOT.jar $LARKC_PATH/larkc/branches/openphacts/platform/plugins
+mv ./target/*SNAPSHOT-LarkcPluginAssembly.jar $LARKC_PATH/larkc/platform/plugins
 
 cd ../plugin.edfquerytransformer/
 mvn install
-mv ./target/plugin.EDFQueryTransformer-0.0.1-SNAPSHOT.jar $LARKC_PATH/larkc/branches/openphacts/platform/plugins
+mv ./target/*SNAPSHOT-LarkcPluginAssembly.jar $LARKC_PATH/larkc/platform/plugins
 
 cd ../plugin.edfsearch/
 mvn install
-mv ./target/plugin.EDFSearch-0.0.1-SNAPSHOT.jar $LARKC_PATH/larkc/branches/openphacts/platform/plugins
+mv ./target/*SNAPSHOT-LarkcPluginAssembly.jar $LARKC_PATH/larkc/platform/plugins
 
-# do not build ChemCallout, the jar is in the repository
-cd ../plugin.chemcallout/
-cp ./target/plugin.ChemCallout-0.0.1-SNAPSHOT-LarkcPluginAssembly.jar $LARKC_PATH/larkc/branches/openphacts/platform/plugins
+cd ../plugin.chemcallout/ChemSpiderServices
+mvn install -Dmaven.test.skip=true
+cd ..
+mvn assembly:assembly -Dmaven.test.skip=true
+mv ./target/*SNAPSHOT-LarkcPluginAssembly.jar $LARKC_PATH/larkc/platform/plugins
 
 cd $currentdir
