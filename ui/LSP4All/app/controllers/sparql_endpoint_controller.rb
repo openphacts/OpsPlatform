@@ -103,23 +103,17 @@ class SparqlEndpointController < ApplicationController
         query_str += "PREFIX pdsp: <http://wiki.openphacts.org/index.php/PDSP_DB#>\n"
         query_str += "PREFIX cspr: <http://rdf.chemspider.com/#> \n"
         query_str += "SELECT DISTINCT ?compound_name ?ic50 ?species WHERE { { \n"
-        query_str += "<#{cmpd_url}> brenda:has_inhibitor ?compound_name} UNION { \n"
-        query_str += "<#{cmpd_url}> pdsp:has_test_ligand_name ?compound_name} \n"
-        #query_str += "OPTIONAL { ?csid_uri cspr:exturl <#{cmpd_url}> . ?csid_uri cspr:csid ?csid ;"
-        #query_str += "cspr:inchi ?compound_inchi ; cspr:inchikey ?compound_inchi_key ;"
-        #query_str += "cspr:smiles ?compound_smiles } }"
-        query_str += "OPTIONAL {<#{cmpd_url}> brenda:has_ic50_value_of ?ic50 ; brenda:species ?species_uri . ?species_uri <http://w3.org/2000/01/rdf-schema#label> ?species }}"
+        query_str += "<#{cmpd_url}> brenda:has_inhibitor ?compound_name . ?cmpd_url brenda:has_inhibitor ?compound_name"
+        query_str += "; brenda:has_ic50_value_of ?ic50 ; brenda:species ?species_uri . ?species_uri <http://w3.org/2000/01/rdf-schema#label> ?species }}"
     else
     	query_str = "PREFIX brenda: <http://brenda-enzymes.info/> \n"
     	query_str += "PREFIX pdsp: <http://wiki.openphacts.org/index.php/PDSP_DB#>\n"
     	query_str += "PREFIX cspr: <http://rdf.chemspider.com/#> \n"
-    	query_str += "SELECT DISTINCT ?compound_name ?csid ?csid_uri ?compound_inchi ?compound_inchi_key ?compound_smiles WHERE { { \n"
-    	query_str += "<#{cmpd_url}> brenda:has_inhibitor ?compound_name} UNION { \n"
-    	query_str += "<#{cmpd_url}> pdsp:has_test_ligand_name ?compound_name} \n"
-    	query_str += "OPTIONAL { ?csid_uri cspr:exturl <#{cmpd_url}> . ?csid_uri cspr:csid ?csid ;"
-    	query_str += "cspr:inchi ?compound_inchi ; cspr:inchikey ?compound_inchi_key ;"
-    	query_str += "cspr:smiles ?compound_smiles } }"
-    	#query_str += "OPTIONAL {<#{cmpd_url}> brenda:has_ic50_value_of ?ic50 ; brenda:species ?species_uri . ?species_uri <http://w3.org/2000/01/rdf-schema#label> ?species }}"
+    	query_str += "SELECT DISTINCT ?compound_name ?csid ?csid_uri ?compound_inchi ?compound_inchi_key ?compound_smiles ?compound_synonym WHERE {  \n"
+    	query_str += "<#{cmpd_url}> pdsp:has_test_ligand_name ?compound_name . ?cmpd_url pdsp:has_test_ligand_name ?compound_name . \n"
+    	query_str += "?csid_uri cspr:exturl ?cmpd_url . ?csid_uri cspr:csid ?csid ;"
+    	query_str += "cspr:inchi ?compound_inchi ; cspr:inchikey ?compound_inchi_key ; cspr:synonym ?compound_synonym ; "
+    	query_str += "cspr:smiles ?compound_smiles } "
     end
     @endpoint = SparqlEndpoint.new(session[:endpoint])             
     results = @endpoint.find_by_sparql(query_str)
@@ -128,15 +122,13 @@ class SparqlEndpointController < ApplicationController
   
   
   # Same as above but for target. 
-  def target_by_name(target_url = params[:target_uuid])
+  def target_by_name(target_url = params[:target_uuid],  target_name = params[:target_name])
     if "#{target_url}".index("brenda") then
   	  query_str = "PREFIX brenda: <http://brenda-enzymes.info/> \n"
  	   query_str += "PREFIX pdsp: <http://wiki.openphacts.org/index.php/PDSP_DB#>\n"
  	   query_str += "PREFIX cspr: <http://rdf.chemspider.com/#> \n"
- 	   query_str += "SELECT ?target_name ?systematic_name ?cas_no ?species ?uniprot_id WHERE { {{ <#{target_url}> brenda:recommended_name ?target_name } "
- 	   query_str += "UNION { <#{target_url}> pdsp:has_receptor_name ?target_name } }"
- 	   query_str += "OPTIONAL {<#{target_url}> brenda:systematic_name ?systematic_name ; brenda:cas_registry_number ?cas_no ; brenda:species ?species_uri ; brenda:has_ec_number ?uniprot_id . ?species_uri <http://w3.org/2000/01/rdf-schema#label> ?species }}"
- 	  # query_str += "OPTIONAL{ <#{target_url}> pdsp:has_unigene_id ?unigene_id ; pdsp:has_nsc_number ?nsc ; pdsp:has_smiles_code ?smiles ; pdsp:pubmed_id ?pubmed_id }}"
+ 	   query_str += "SELECT * WHERE { <#{target_url}> brenda:recommended_name ?target_name . ?target_url brenda:recommended_name ?target_name .  "
+ 	   query_str += "?target_url brenda:systematic_name ?systematic_name ; brenda:cas_registry_number ?cas_no ; brenda:species ?species_uri ; brenda:has_ec_number ?uniprot_id . ?species_uri <http://w3.org/2000/01/rdf-schema#label> ?species } LIMIT 100"
     	@endpoint = SparqlEndpoint.new(session[:endpoint])
     	results = @endpoint.find_by_sparql(query_str)
     	render :json => construct_column_objects(format_chemspider_results(results)).to_json, :layout => false
@@ -144,13 +136,13 @@ class SparqlEndpointController < ApplicationController
 	query_str = "PREFIX brenda: <http://brenda-enzymes.info/> \n"
            query_str += "PREFIX pdsp: <http://wiki.openphacts.org/index.php/PDSP_DB#>\n"
            query_str += "PREFIX cspr: <http://rdf.chemspider.com/#> \n"
-           query_str += "SELECT * WHERE { {{ <#{target_url}> brenda:recommended_name ?target_name } "
-           query_str += "UNION { <#{target_url}> pdsp:has_receptor_name ?target_name } }"
-          # query_str += "OPTIONAL {<#{target_url}> brenda:systematic_name ?systematic_name ; brenda:cas_registry_number ?cas ; brenda:species ?species ; brenda:has_ec_number ?uniprot_id}}"
-           query_str += "OPTIONAL{ <#{target_url}> pdsp:has_unigene_id ?unigene_id ; pdsp:has_nsc_number ?nsc ; pdsp:has_smiles_code ?smiles ; pdsp:pubmed_id ?pubmed_id }}"
+           query_str += "SELECT * WHERE {  "
+           query_str += "<#{target_url}> pdsp:has_receptor_name ?target_name  . "
+	   query_str += "?target_url pdsp:has_receptor_name ?target_name . "
+           query_str += "OPTIONAL {?target_url pdsp:has_unigene_id ?unigene_id ; pdsp:has_nsc_number ?nsc} . OPTIONAL { ?target_url  pdsp:has_smiles_code ?smiles } ?target_url  pdsp:pubmed_id ?pubmed_id } limit 100"
         @endpoint = SparqlEndpoint.new(session[:endpoint])
         results = @endpoint.find_by_sparql(query_str)
-        render :json => construct_column_objects(format_chemspider_results(format_pubmed_id(results))).to_json, :layout => false
+        render :json => construct_column_objects(format_pubmed_id(results)).to_json, :layout => false
 	# render :json => construct_column_objects(format_chemspider_results(results)).to_json, :layout => false
     end 
 
@@ -225,7 +217,7 @@ class SparqlEndpointController < ApplicationController
       pharm_enzyme_query += "?uniprot_entry_url rdfs:subClassOf ?uniprot_top_level_entry .\n"
       pharm_enzyme_query += "?uniprot_top_level_entry <http://purl.uniprot.org/core/name> \"#{params[:enz_name]}\" .\n" 
       pharm_enzyme_query += "?brenda_entry brenda:recommended_name ?target_name .\n"
-      pharm_enzyme_query += "?uniprot_top_level_entry <http://purl.uniprot.org/core/name> ?enzyme_class_name }\n"
+      pharm_enzyme_query += "?uniprot_entry_url <http://purl.uniprot.org/core/name> ?enzyme_class_name }\n"
       pharm_enzyme_query += "LIMIT 1000"                    
 
      @endpoint = SparqlEndpoint.new(session[:endpoint]) 
@@ -235,23 +227,36 @@ class SparqlEndpointController < ApplicationController
 
   # Main search for pharmacology by compound name. The input parameter is the cmpd_url returned by cmdp_name_lookup
   def pharm_by_cmpd_name(cmpd_url = params[:cmpd_uuid], cmpd_name = params[:cmpd_name])
-     query_str = "PREFIX brenda: <http://brenda-enzymes.info/> \n"
-     query_str += "SELECT ........??????????? put more query here!!!"
-     
+     if "#{cmpd_url}".index("brenda") then
+             query_str = "PREFIX brenda: <http://brenda-enzymes.info/> \n"
+             query_str += "SELECT * WHERE { <#{cmpd_url}> brenda:has_inhibitor ?compound_name . ?compound_uri brenda:has_inhibitor ?compound_name; "
+	     query_str += " brenda:has_ic50_value_of ?ic50 ; brenda:species ?species_uri . ?species_uri <http://w3.org/2000/01/rdf-schema#label> ?species }"
+     else
+             query_str = 'PREFIX pdsp: <http://wiki.openphacts.org/index.php/PDSP_DB#>'
+             query_str += "SELECT * WHERE { <#{cmpd_url}> pdsp:has_test_ligand_name ?compound_name . ?cmpd_url pdsp:has_test_ligand_name ?compound_name  ;  pdsp:has_receptor_name ?target_name; pdsp:species ?species_code ; "
+             query_str += 'pdsp:pubmed_id ?pubmed_id ; pdsp:has_ki_value ?ki_entry . ?ki_entry <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> ?ki_value ; pdsp:unit ?ki_unit} limit 100'
+     end
+ 
      @endpoint = SparqlEndpoint.new(session[:endpoint]) 
      results = @endpoint.find_by_sparql(query_str)
-     render :json => construct_column_objects(format_chemspider_results(results)).to_json, :layout => false  
+     render :json => construct_column_objects(format_chemspider_results(format_pubmed_id(results))).to_json, :layout => false  
   end
   
   # Main search for pharmacology by target name. The input parameter is the target_url returned by target_name_lookup
   # NB: the SPARQL query can for now be identical to the one for pharm_by_cmpd_name as both the url for Brenda and PDSP are both the experiment url and not target or compound classes as such
   def pharm_by_target_name(target_url = params[:target_uuid], target_name = params[:target_name])
-     query_str = "PREFIX brenda: <http://brenda-enzymes.info/> \n"
-     query_str += "SELECT ........??????????? put more query here!!!"
-     
+     if "#{target_url}".index("brenda") then
+	     query_str = "PREFIX brenda: <http://brenda-enzymes.info/> \n"
+             query_str += "SELECT * WHERE { <#{target_url}> brenda:recommended_name ?target_name . ?target_uri brenda:recommended_name ?target_name; brenda:has_ec_number ?ec_no ;"
+             query_str += " brenda:is_inhibited_by ?ic50experiment . ?ic50experiment brenda:has_inhibitor ?inhibitor ; brenda:has_ic50_value_of ?ic50_milli_molar ; brenda:species ?species_code . ?species_code <http://w3.org/2000/01/rdf-schema#label> ?species } limit 100"
+     else
+	     query_str = 'PREFIX pdsp: <http://wiki.openphacts.org/index.php/PDSP_DB#>'
+	     query_str += "SELECT * WHERE {?target_uri pdsp:has_receptor_name \"#{target_url}\"  ;  pdsp:species ?species_code ;  pdsp:has_test_ligand_name ?inhibitor ; "
+             query_str += 'OPTIONAL {?target_uri pdsp:pubmed_id ?pubmed_id ; pdsp:has_ki_value ?ki_entry . ?ki_entry <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> ?ki_value ; pdsp:unit ?ki_unit}} limit 100'
+     end      
      @endpoint = SparqlEndpoint.new(session[:endpoint]) 
      results = @endpoint.find_by_sparql(query_str)
-     render :json => construct_column_objects(format_chemspider_results(results)).to_json, :layout => false  
+     render :json => construct_column_objects(format_chemspider_results(format_pubmed_id(results))).to_json, :layout => false  
   end
   
   # Currently not in use...
@@ -259,14 +264,14 @@ class SparqlEndpointController < ApplicationController
      @endpoint = SparqlEndpoint.new(session[:endpoint]) 
      sim2smiles_query = 'SELECT * WHERE { ?csid_uri <http://wiki.openphacts.org/index.php/ext_function#has_similar> "' + smiles + '"}'
      results = @endpoint.find_by_sparql(sim2smiles_query)
-     render :json => construct_column_objects(format_chemspider_results(results)).to_json, :layout => false
+     render :json => construct_column_objects(format_chemspider_results(format_pubmed_id(results))).to_json, :layout => false
   end
   
   # Query for the substructure/exact and similarity search by smiles string from the drawn structure
   # search_types: 1 = exact match, 2 = substructure search, 3 = similarity search
   def search_by_smiles(smiles = params[:smiles], search_type = params[:search_type].to_i)  
      endpoint = SparqlEndpoint.new(session[:endpoint]) 
-     ss_query = 'PREFIX cspr: <http://rdf.chemspider.com/#> '
+     ss_query = 'PREFIX cspr: <http://rdf.chemspider.com/#> PREFIX pdsp: <http://wiki.openphacts.org/index.php/PDSP_DB#>'
      if search_type == 1 then
         ss_query += 'SELECT * WHERE {{ ?csid_uri <http://wiki.openphacts.org/index.php/ext_function#has_exact_structure_match> "' + smiles + '"} . '
      elsif search_type == 2 then
@@ -274,7 +279,10 @@ class SparqlEndpointController < ApplicationController
      elsif search_type == 3 then
         ss_query += 'SELECT * WHERE {{ ?csid_uri <http://wiki.openphacts.org/index.php/ext_function#has_similar> "' + smiles + '"} . '
      end
-	ss_query += 'OPTIONAL { ?csid_uri cspr:inchi ?compound_inchi ; cspr:inchikey ?compound_inchi_key; cspr:synonym ?compound_name ; cspr:smiles ?compound_smiles }}'
+	ss_query += 'OPTIONAL { ?csid_uri cspr:inchi ?compound_inchi ; cspr:inchikey ?compound_inchi_key; cspr:synonym ?compound_name ; cspr:smiles ?compound_smiles ; '
+	ss_query += ' cspr:exturl ?exturl . ?exturl pdsp:has_receptor_name ?receptor_name ; pdsp:has_test_ligand_id ?test_ligand_id ; pdsp:has_test_ligand_name ?test_ligand_name;'
+        ss_query += ' pdsp:has_cas_num ?cas_no ; pdsp:has_unigene_id ?unigene_id ; pdsp:ligand_displaced ?ligand_displaced ; pdsp:species ?species ; pdsp:source ?source ; pdsp:has_ki_value ?ki_entry . '
+        ss_query += ' ?ki_entry pdsp:unit ?ki_unit ; <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> ?ki_value}} limit 100'
      results = endpoint.find_by_sparql(ss_query)
      render :json => construct_column_objects(format_chemspider_results(results)).to_json, :layout => false
    end
@@ -319,9 +327,7 @@ class SparqlEndpointController < ApplicationController
   
   # Here we look for a return variable called ?pubmed_id and format it to be a hyperlink to resolve the id
   def format_pubmed_id(input_arr)
-    if not input_arr.first.has_key?(:pubmed_id) then 
-      #nothing
-    else
+    if not :pubmed_id.nil? && input_arr.first.has_key?(:pubmed_id) then 
       input_arr.each do |record|
         pubmed_id = record[:pubmed_id]
         if not pubmed_id.nil? then
@@ -372,12 +378,12 @@ class SparqlEndpointController < ApplicationController
          col = Hash.new
          col[:text] = key
          col[:xtype] = 'templatecolumn'  
-         col[:tpl] = '<a href ="{' + header_strings[idx_pair.last] + '}" target="_blank">{' + header_strings[idx_pair.first] + '}</a>'
+         col[:tpl] = '<a href ="{' + header_strings[idx_pair.last.to_i] + '}" target="_blank">{' + header_strings[idx_pair.first.to_i] + '}</a>'
          col[:hidden] = false
          col[:groupable] = true
          columns.push(col)
-         columns.push(:text => header_strings[idx_pair.first], :dataIndex => header_strings[idx_pair.first], :hidden => true)
-         columns.push(:text => header_strings[idx_pair.last], :dataIndex => header_strings[idx_pair.last], :hidden => true)
+         columns.push(:text => header_strings[idx_pair.first.to_i], :dataIndex => header_strings[idx_pair.first.to_i], :hidden => true)
+         columns.push(:text => header_strings[idx_pair.last.to_i], :dataIndex => header_strings[idx_pair.last.to_i], :hidden => true)
       end
       singleton_vars.each do |key, idx|
           col = Hash.new
