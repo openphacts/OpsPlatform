@@ -215,19 +215,21 @@ class SparqlEndpointController < ApplicationController
   # This formatting function manipulates the resultset based on query variable name "csid_uri" which is tested for a substring match with "Chemical-Structure"
   # from where the CSID is grapped and used to construct columns for displaying the picture and the csid hyperlink to the Chemspider page. 
   def format_chemspider_results(input_arr)
-    output_arr = Array.new
-    input_arr.each do |record|
-       uri = record[:csid_uri]
-       csid = nil
-       cs_image = nil
-       if uri =~ /Chemical-Structure\.(\d+)\.html/ then
-         csid = $1
-         cs_image = '<img src="http://www.chemspider.com/ImagesHandler.ashx?id=' + csid + '&w=200&h=160" alt="CSID:' + csid + '"/>'
-       end
-       record[:csid] = csid
-       record[:chemspider_id] = '<a href ="' + uri + '" target="_blank">' + csid + '</a>'
-       record[:structure] = cs_image
-       puts record.inspect
+    if input_arr.first.has_key?(:csid_uri) then
+      output_arr = Array.new
+      input_arr.each do |record|
+         uri = record[:csid_uri]
+         csid = nil
+         cs_image = nil
+         if uri =~ /Chemical-Structure\.(\d+)\.html/ then
+           csid = $1
+           cs_image = '<img src="http://www.chemspider.com/ImagesHandler.ashx?id=' + csid + '&w=200&h=160" alt="CSID:' + csid + '"/>'
+         end
+         record[:csid] = csid
+         record[:chemspider_id] = '<a href ="' + uri + '" target="_blank">' + csid + '</a>'
+         record[:structure] = cs_image
+         puts record.inspect
+      end
     end
     return input_arr
   end
@@ -299,11 +301,14 @@ class SparqlEndpointController < ApplicationController
           col[:text] = key.gsub(/_/,' ').capitalize
           col[:dataIndex] = key
           col[:hidden] = false
+          col[:filter] = {:type => 'string'}
+          col[:width] = 150
           if key =~ /structure/ then
             col[:width] = 200
           end
           if key == 'ic50' then
-             col[:type] = 'number'
+             col[:type] = 'float'
+             col[:filter] = {:type => 'numeric'}             
           end
           columns.push(col)
        

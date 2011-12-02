@@ -31,7 +31,8 @@
 #  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #  
 ########################################################################################*/
-
+Ext.Loader.setConfig({enabled: true});
+Ext.Loader.setPath('Ext.ux.grid', 'ext/examples/ux/grid');
 Ext.define('LSP.view.dynamicgrid.Grid', {
     extend: 'Ext.grid.GridPanel',  
     alias: 'widget.dynamicgrid',
@@ -39,6 +40,7 @@ Ext.define('LSP.view.dynamicgrid.Grid', {
     requires: [
 		'Ext.grid.RowNumberer',
 		'Ext.form.*',
+		'Ext.ux.grid.FiltersFeature',
 		'LSP.view.standardToolbar.StandardToolbar'
 	],
     
@@ -46,7 +48,13 @@ Ext.define('LSP.view.dynamicgrid.Grid', {
         
         var groupingFeature = Ext.create('Ext.grid.feature.Grouping',{
         groupHeaderTpl: 'Group: {name} ({rows.length} Item{[values.rows.length > 1 ? "s" : ""]})'
-        });  
+        });
+        var filters = {
+        ftype: 'filters',
+        // encode and local configuration options defined previously for easier reuse
+        encode: false, // json encode the filter query
+        local: true,   // defaults to false (remote filtering)
+        };  
         var config = {
             store: {
                 fields: [],
@@ -68,7 +76,7 @@ Ext.define('LSP.view.dynamicgrid.Grid', {
             columns:[{name: 'temp', hidden:true}],  
             rowNumberer: true,
             defaultWidth : 200,
-            features: [groupingFeature]
+            features: [groupingFeature, filters]
         };  
           
         Ext.apply(this, config);  

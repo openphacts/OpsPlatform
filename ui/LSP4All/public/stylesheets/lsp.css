@@ -11,6 +11,17 @@
 .icon-delete{ background-image:url(/images/icon-delete.gif) !important; }
 .icon-filter { background-image:url(/images/icon-filter.png) !important; }
 .icon-reload { background-image:url(/images/icon-reload.png) !important; }
+.ux-rangemenu-gt { background-image:url(/images/greater_than.png) !important; }
+.ux-rangemenu-lt { background-image:url(/images/less_than.png) !important; }
+.ux-rangemenu-eq { background-image:url(/images/equals.png) !important; }
+.ux-filtered-column {
+    font-style: italic;  
+    font-weight: bold;
+}
+.ux-gridfilter-text-icon {
+    background-image: url(/images/find.png) !important;
+}
+
 
 /*buttons*/
 .x-btn-default-small .icon-add {
