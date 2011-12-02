@@ -9,11 +9,15 @@ _:plugin1 a <urn:eu.larkc.plugin.SparqlQueryEvaluationReasoner> .
 _:plugin2 a <urn:eu.ops.plugin.querymapper.QueryMapper> .
 _:plugin2 larkc:connectsTo _:plugin1 .
 
+_:plugin2 larkc:hasParameter _:param31 .
+_:param31 <http://ops.eu#bridgedb_mappings> "../../../openphacts/datasets/bridgeDbMappings/metabolites_100227.bridge" .
+
+
 _:plugin3 a <urn:eu.larkc.plugin.newfileidentifier.NewFileIdentifier> .
 _:plugin3 larkc:connectsTo _:plugin0 .
 
 _:plugin3 larkc:hasParameter _:param30 .
-_:param30 larkc:filePath "/Users/pgroth/Dropbox/work/vu/openphacts/datasets/pdsp-ki-database/pdsp-v2.ttl" .
+_:param30 larkc:filePath "../../../openphacts/datasets/chem2bio2rdf/chebi.n3.gz" .
 
 <urn:eu.larkc.endpoint.sparql.ep1> a <urn:eu.larkc.endpoint.sparql> .
 <urn:eu.larkc.endpoint.sparql.ep1> larkc:links _:path .
