@@ -16,26 +16,26 @@ _:rdfreader larkc:connectsTo _:reasoner .
 _:fileidentifier a <urn:eu.larkc.plugin.newfileidentifier.NewFileIdentifier> .
 _:fileidentifier larkc:connectsTo _:rdfreader .
 _:fileidentifier larkc:hasParameter _:param .
-_:param larkc:filePath "/Users/pgroth/Dropbox/develop/openphacts/datasets/pdspki/pdsp-v2.ttl" .
+_:param larkc:filePath "<OPSPWD>/openphacts/datasets/pdspki/pdsp-v2.ttl" .
 
 #Adding File - Kegg
 _:fileidentifier2 a <urn:eu.larkc.plugin.newfileidentifier.NewFileIdentifier> .
 _:fileidentifier2 larkc:connectsTo _:rdfreader .
 _:fileidentifier2 larkc:hasParameter _:param2 .
-_:param2 larkc:filePath "/Users/pgroth/Dropbox/develop/openphacts/datasets/chem2bio2rdf/kegg.nt" .
+_:param2 larkc:filePath "<OPSPWD>/openphacts/datasets/chem2bio2rdf/kegg.nt" .
 
 #Adding File - Brenda
 _:fileidentifier3 a <urn:eu.larkc.plugin.newfileidentifier.NewFileIdentifier> .
 _:fileidentifier3 larkc:connectsTo _:rdfreader .
 _:fileidentifier3 larkc:hasParameter _:param3 .
-_:param3 larkc:filePath "/Users/pgroth/Dropbox/develop/openphacts/datasets/brenda/brenda.ttl" .
+_:param3 larkc:filePath "<OPSPWD>/openphacts/datasets/brenda/brenda.ttl" .
 
 
 #Adding File - Uniprot enzyme
 _:fileidentifier4 a <urn:eu.larkc.plugin.newfileidentifier.NewFileIdentifier> .
 _:fileidentifier4 larkc:connectsTo _:rdfreader .
 _:fileidentifier4 larkc:hasParameter _:param4 .
-_:param4 larkc:filePath "/Users/pgroth/Dropbox/develop/openphacts/datasets/uniprotrdf/enzyme.ttl" .
+_:param4 larkc:filePath "<OPSPWD>/openphacts/datasets/uniprotrdf/enzyme.ttl" .
 
 
 
