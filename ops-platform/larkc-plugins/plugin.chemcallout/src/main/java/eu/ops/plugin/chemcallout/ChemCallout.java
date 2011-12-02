@@ -4,39 +4,46 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import javax.xml.bind.JAXBContext;
+
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
+import org.openrdf.model.impl.BNodeImpl;
+import org.openrdf.model.impl.StatementImpl;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.algebra.StatementPattern;
 import org.openrdf.query.algebra.helpers.StatementPatternCollector;
 
-import eu.larkc.core.data.CloseableIterator;
 import eu.larkc.core.data.DataFactory;
 import eu.larkc.core.data.RdfStoreConnection;
 import eu.larkc.core.data.SetOfStatements;
+import eu.larkc.core.data.SetOfStatementsImpl;
 import eu.larkc.core.query.SPARQLQuery;
 import eu.larkc.core.query.SPARQLQueryImpl;
-import eu.larkc.core.query.TriplePattern;
-import eu.larkc.core.query.TriplePatternQuery;
-import eu.larkc.core.query.TriplePatternQueryImpl;
 import eu.larkc.core.util.RDFConstants;
 import eu.larkc.plugin.Plugin;
 import eu.ops.services.chemspider.SearchClient;
+import eu.ops.services.chemspider.model.ArrayOfInt;
 import eu.ops.services.chemspider.model.ERequestStatus;
 
 /**
- * <p>Generated LarKC plug-in skeleton for <code>eu.ops.plugin.chemcallout.ChemCallout</code>.
- * Use this class as an entry point for your plug-in development.</p>
+ * Input: SPARQL query, containing at least one pattern {?x HAS_SIMILAR ?y}, where ?y is a bound literal representing a molecule
+ * Output: Reference to graph with triples in the form: {?x HAS_SIMILAR ?y}, where ?y is a bound literal in the form (http://inchi.chemspider.com/Chemical-Structure."+csid+".html), where csid is retrieved from chemspider
+ * 
+ * Given a Set of statementpatterns, invokes the chemspider service and retrieves similar molecules
  */
 public class ChemCallout extends Plugin
 {
+	private static final String HAS_SIMILAR = "http://wiki.openphacts.org/index.php/ext_function#has_similar";
 	private static String OPS_TOKEN = "5d749a0a-f4b0-444b-8287-aba2c2800ebaXt";
 	private static String CHEMSPIDER_WS = "http://inchi.chemspider.com/Search.asmx";
 	public static final URI FIXEDCONTEXT=new URIImpl("http://larkc.eu#Fixedcontext");
+	private static final int TIMEOUT = 300;
 	
 	SearchClient chemSpiderClient = null;
+	private URI outputGraphName;
 
 	/**
 	 * Constructor.
@@ -64,11 +71,15 @@ public class ChemCallout extends Plugin
 			chemSpiderClient = new SearchClient();
 			chemSpiderClient.setServiceUrl(new java.net.URI(CHEMSPIDER_WS));
 			chemSpiderClient.setToken(OPS_TOKEN);
+			chemSpiderClient.setJaxbContext(JAXBContext.newInstance(ERequestStatus.class, ArrayOfInt.class));
 		} catch (Exception e) {
 			logger.error("Failed to initialise ChemCallout plugin", e);
 			chemSpiderClient = null;
 			return;
-		}		
+		}
+
+		// Get the label of the graph
+		outputGraphName=super.getNamedGraphFromParameters(workflowDescription, RDFConstants.DEFAULTOUTPUTNAME);
 		logger.info("ChemCallout initialized. Hello World!");
 	}
 
@@ -88,32 +99,41 @@ public class ChemCallout extends Plugin
 		}
 		logger.debug("Input: "+input.getStatements().toString());
 	
-		URI label=new URIImpl("http://larkc.eu#arbitraryGraphLabel" + UUID.randomUUID());
+		final URI label;
+		if (outputGraphName==null)
+			label=new URIImpl("http://larkc.eu#arbitraryGraphLabel" + UUID.randomUUID());
+		else
+			label=outputGraphName;
+		
 	    final RdfStoreConnection myStore=DataFactory.INSTANCE.createRdfStoreConnection();
 		
 		// Does not care about the input name since it has a single argument, use any named graph
 		SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(input);
 
-		TriplePatternQuery tpq = new TriplePatternQueryImpl(new ArrayList<TriplePattern>());
-		
 		if( query instanceof SPARQLQueryImpl)
 		{
 			StatementPatternCollector spc = new StatementPatternCollector();
 			((SPARQLQueryImpl) query).getParsedQuery().getTupleExpr().visit(spc);
 	
 			for (StatementPattern sp : spc.getStatementPatterns()) {
-				Resource s = (Resource) sp.getSubjectVar().getValue();
+				if (sp.getPredicateVar().getValue()==null || sp.getObjectVar().getValue()==null)
+					continue;
 				URI p = (URI) sp.getPredicateVar().getValue();
 				Value o = (Value) sp.getObjectVar().getValue();
 				logger.info(sp.toString());
 
 				// if predicate is my has_similar function
-				if (p.toString().equals("http://wiki.openphacts.org/index.php/ext_function#has_similar")) {
+				if (p.toString().equals(HAS_SIMILAR)) {
 					// grab objects and pass to ChemSpider
-					String rid = chemSpiderClient.similaritySearchMock(o.stringValue(), "Tanimoto", .99);
+					String rid = chemSpiderClient.similaritySearch(o.stringValue(), "Tanimoto", .99);
 					logger.info("ChemSpider RID="+rid);
+					int waittime=0;
 					boolean gotResult = false;
 					while (!gotResult) {
+						if (waittime++>TIMEOUT) {
+							logger.error("Chemspider web service call timed out after " + " seconds.");
+							break;
+						}
 						pause(1);
 						ERequestStatus status = chemSpiderClient.getAsyncSearchStatus(rid);
 						logger.info("Status="+status.name());
@@ -132,7 +152,12 @@ public class ChemCallout extends Plugin
 			}
 		}
 			
-		return input;
+		myStore.close();
+		// Create the metadata for the output
+		ArrayList<Statement> l=new ArrayList<Statement>();
+		l.add(new StatementImpl(new BNodeImpl(UUID.randomUUID()+""), RDFConstants.DEFAULTOUTPUTNAME, label));
+		
+		return new SetOfStatementsImpl(l);
 	}
 
 	/**
@@ -143,6 +168,7 @@ public class ChemCallout extends Plugin
 	protected void shutdownInternal() {
 		// TODO Auto-generated method stub
 	}
+	
 	
 	
 	private void pause(long s) {

@@ -84,7 +84,8 @@ public class SearchClient {
 
 		StringEntity entity;
 		try {
-			entity = new StringEntity(soapRequest.toString(), "text/xml", "UTF-8");
+			entity = new StringEntity(soapRequest.toString(), "UTF-8");
+			entity.setContentType("text/xml");
 		} catch (UnsupportedEncodingException e) {
 			// should not be possible to fail
 			e.printStackTrace();
