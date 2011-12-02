@@ -37,3 +37,6 @@ datasets/OPS-DS-TTL/ChEMBL.ttl.gz
 datasets/OPS-DS-TTL/KEGG.ttl.gz
 datasets/OPS-DS-TTL/PDSP.ttl.gz
 datasets/OPS-DS-TTL/PDSP_URIs.ttl.gz
+datasets/textmining/documents/document.tar.gz
+datasets/textmining/tm_concepts/textmining_concept.tar.gz
+datasets/textmining/tm_hits/textmining_hit.tar.gz
