@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>eu.larkc</groupId>
+	<artifactId>plugin.ChemCallout</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
+
+	<name>ChemCallout</name>
+	<url>http://maven.apache.org</url>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<!-- We are dependent on the LarKC platform -->
+	<dependencies>
+		<dependency>
+			<groupId>eu.larkc</groupId>
+			<artifactId>platform</artifactId>
+			<version>2.5.0-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+
+		<!-- Declare any special libraries (which have to be put in /lib) here. -->
+		<dependency>
+			<groupId>eu.ops.services</groupId>
+			<artifactId>ChemSpiderServices</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<scope>compile</scope>
+			<!-- 
+			<groupId>your.external.library</groupId>
+			<artifactId>artifactid</artifactId>
+			<version>x.x.x</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/your-library.jar</systemPath>
+			 -->
+		</dependency>
+	</dependencies>
+
+	<!-- Set the compiler version to 1.6 -->
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.2</version>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.2</version>
+				<configuration>
+					<descriptors>
+						<descriptor>LarkcPluginAssembly.xml</descriptor>
+					</descriptors>
+				</configuration>
+			</plugin>
+			
+			<!-- Copy resources plug-in to copy the jar to the platform -->
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.5</version>
+				<executions>
+					<execution>
+						<id>copy-resources</id>
+						<phase>install</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${basedir}/../platform/plugins</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${basedir}/target</directory>
+									<includes>
+										<include>*.jar</include>
+									</includes>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>
