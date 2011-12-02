@@ -78,9 +78,9 @@ Ext.define('LSP.view.standardToolbar.StandardToolbar', {
 					name: 'filter-button'
 			  },
 			  {
-					xtype: 'exporterbutton',
+					xtype: 'button',
 					name: 'exporter-button',
-					hidden: true,
+					hidden: false,
 					text: 'Download to Excel'
 			  }
 			]
