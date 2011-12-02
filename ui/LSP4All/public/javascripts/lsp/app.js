@@ -44,6 +44,8 @@ Ext.application({
         'NavigationTree',
         'Queryform',
         'SimSearchForm',
+        'CmpdByNameForm',
+	'TargetByNameForm',
 	'PharmEnzymeForm',
 	'Settings'
     ],

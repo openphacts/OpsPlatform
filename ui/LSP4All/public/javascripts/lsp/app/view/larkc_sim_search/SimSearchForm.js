@@ -64,9 +64,7 @@ Ext.define('LSP.view.larkc_sim_search.SimSearchForm', {
                         value: ''
                       },
                       {
-                      xtype:'fieldset',
-                     // columnWidth: 0.5,
-                      title: 'Search for similar compounds',
+                      xtype: 'fieldcontainer',
                       layout: 'column',
                       collapsible: false,
                       defaults: {anchor: '100%'},
@@ -87,6 +85,15 @@ Ext.define('LSP.view.larkc_sim_search.SimSearchForm', {
                          }
                          ]
                       },
+                      {                      
+                          xtype: 'radiogroup',
+                          fieldLabel: 'Search type',
+                          items: [
+                              {boxLabel: 'Exact structure search', name: 'search_type', inputValue: 1, checked: true},
+                              {boxLabel: 'Substructure seach', name: 'search_type', inputValue: 2},
+                              {boxLabel: 'Structural similarity search', name: 'search_type', inputValue: 3}                              
+                          ]
+                      },
                       {
                           xtype: 'button',
                           action: 'query',
@@ -97,8 +104,8 @@ Ext.define('LSP.view.larkc_sim_search.SimSearchForm', {
                   }           
                 ];
         grid_ss.timeout = 9000000;
-        grid_ss.setTitle('Similarity search results');
-        grid_ss.setHeight(750); 
+        grid_ss.setTitle('Structure search results');
+        grid_ss.setHeight(600); 
         grid_ss.buttonRender(['exporter']);                                  
         this.callParent(arguments);
     }    

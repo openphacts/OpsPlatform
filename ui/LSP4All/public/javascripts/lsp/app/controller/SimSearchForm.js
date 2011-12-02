@@ -89,7 +89,13 @@ Ext.define('LSP.controller.SimSearchForm', {
         //console.log(values.endpoint);
         grid_ss.store.proxy.actionMethods = {read: 'POST'};
         grid_ss.store.proxy.extraParams = values;
-        grid_ss.store.proxy.api.read = '/sparql_endpoint/similar2smiles.json';
+        grid_ss.store.proxy.api.read = '/sparql_endpoint/search_by_smiles.json';
+        var grid_title = '';
+        if (values.search_type == '1') {grid_title = 'Exact structure match'};
+        if (values.search_type == '2') {grid_title = 'Substructure structure'};
+        if (values.search_type == '3') {grid_title = 'Similarity search'};
+        grid_ss.setTitle(grid_title);
+        
         //grid.store.proxy.create;
         grid_ss.store.load();
     }
