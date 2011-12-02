@@ -122,10 +122,10 @@ public class SPARQLExpand extends Plugin
 			}
 		}
 		
-		final ArrayList<Statement> l=new ArrayList<Statement>();
-		l.add(new StatementImpl(new BNodeImpl(UUID.randomUUID()+""), RDFConstants.DEFAULTOUTPUTNAME, label));
+		//final ArrayList<Statement> l=new ArrayList<Statement>();
+		//l.add(new StatementImpl(new BNodeImpl(UUID.randomUUID()+""), RDFConstants.DEFAULTOUTPUTNAME, label));
 		
-		return new SetOfStatementsImpl(l);
+		return new SetOfStatementsImpl(new ArrayList<Statement>());
 	}
 	
 	protected void runSPARQLQuery(SetOfStatements input, RdfStoreConnection myStore)
@@ -243,15 +243,16 @@ public class SPARQLExpand extends Plugin
 	public static void main(String[] args) {
 		SPARQLExpand s=new SPARQLExpand(null);
 		s.endpoints=new ArrayList<String>();
-		s.endpoints.add("http://http://linkedlifedata.com/sparql");
-		String qStr = " SELECT ?interaction ?protein" +
+		s.endpoints.add("http://linkedlifedata.com/sparql");
+		String qStr = " SELECT ?protein" +
 				" WHERE {" +
-				" ?interaction <http://www.biopax.org/release/biopax-level2.owl#PARTICIPANTS> ?p ." +
-				" ?p <http://www.biopax.org/release/biopax-level2.owl#PHYSICAL-ENTITY> ?protein ." +
-	            " ?protein <http://www.biopax.org/release/biopax-level2.owl#NAME> \"Phytochrome A\" " +
+				" ?protein <http://www.biopax.org/release/biopax-level2.owl#NAME> \"Phytochrome A\" " +
 				"}";
 		
 		System.out.println(qStr);
 		s.invokeInternal(new SPARQLQueryImpl(qStr).toRDF());
+		
+		//?interaction <http://www.biopax.org/release/biopax-level2.owl#PARTICIPANTS> ?p ." +
+		//" ?p <http://www.biopax.org/release/biopax-level2.owl#PHYSICAL-ENTITY> ?protein ." +
 	}
 }
