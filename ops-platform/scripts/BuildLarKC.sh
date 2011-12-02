@@ -42,4 +42,8 @@ cd ../plugin.edfsearch/
 mvn install
 mv ./target/plugin.EDFSearch-0.0.1-SNAPSHOT.jar $LARKC_PATH/larkc/branches/openphacts/platform/plugins
 
+# do not build ChemCallout, the jar is in the repository
+cd ../plugin.ChemCallout/
+cp ./target/plugin.ChemCallout-0.0.1-SNAPSHOT-LarkcPluginAssembly.jar $LARKC_PATH/larkc/branches/openphacts/platform/plugins
+
 cd $currentdir

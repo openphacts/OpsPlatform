@@ -47,6 +47,9 @@ call:changeDirectory "%OPS_PATH%\ops-platform\larkc-plugins\plugin.edfsearch/"
 call mvn install
 call:moveFile target\plugin.EDFSearch-0.0.1-SNAPSHOT.jar "%LARKC_PATH%\platform\plugins"
 
+call:changeDirectory "%OPS_PATH%\ops-platform\larkc-plugins\plugin.ChemCallout/"
+call:copyFile plugin.ChemCallout-0.0.1-SNAPSHOT-LarkcPluginAssembly.jar "%LARKC_PATH%\platform\plugins"
+
 rem back to here to rerun
 call:changeDirectory "%OPS_PATH%\ops-platform\scripts"
 
@@ -73,6 +76,24 @@ IF EXIST %~1 (
    IF EXIST %~2 (
    echo. moving "%~1" to "%~2"
    move "%~1" "%~2"
+   goto:eof
+   ) ELSE (
+      echo. ERROR Unable to find target Directory %~2. 
+      pause
+      goto:eof
+   )
+) ELSE (
+   echo. ERROR Unable to find file %~1 ."
+   pause
+   goto:eof
+)
+goto:eof
+
+:copyFile 
+IF EXIST %~1 (
+   IF EXIST %~2 (
+   echo. moving "%~1" to "%~2"
+   copy "%~1" "%~2"
    goto:eof
    ) ELSE (
       echo. ERROR Unable to find target Directory %~2. 
