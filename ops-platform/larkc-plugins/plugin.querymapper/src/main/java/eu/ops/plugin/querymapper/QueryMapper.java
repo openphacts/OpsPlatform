@@ -1,12 +1,15 @@
 package eu.ops.plugin.querymapper;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import javax.jms.Message;
 
 import org.bridgedb.BridgeDb;
+import org.bridgedb.DataSource;
 import org.bridgedb.IDMapper;
 import org.bridgedb.IDMapperException;
 import org.bridgedb.Xref;
@@ -14,12 +17,10 @@ import org.bridgedb.bio.BioDataSource;
 import org.openrdf.model.Literal;
 import org.openrdf.model.Resource;
 import org.openrdf.model.URI;
-import org.openrdf.model.URIImpl;
+import org.openrdf.model.impl.URIImpl;
 import org.openrdf.model.Value;
 import org.openrdf.query.algebra.StatementPattern;
 import org.openrdf.query.algebra.helpers.StatementPatternCollector;
-
-import com.sun.xml.internal.bind.v2.schemagen.xmlschema.List;
 
 import eu.larkc.core.data.DataFactory;
 import eu.larkc.core.data.SetOfStatements;
@@ -73,7 +74,7 @@ public class QueryMapper extends Plugin {
 	 */
 	@Override
 	protected void initialiseInternal(SetOfStatements workflowDescription) {
-		String db = DataFactory.INSTANCE.extractObjectsForPredicate(params, METABOLITE_DB).first();
+		String db = DataFactory.INSTANCE.extractObjectsForPredicate(workflowDescription, METABOLITE_DB).get(0);
 		BioDataSource.init();
 		try {
 			Class.forName("org.bridgedb.rdb.IDMapperRdb");
@@ -99,35 +100,35 @@ public class QueryMapper extends Plugin {
 	 * @return the ID substring of an Identifier's URL, assuming that the ID
 	 *         substring is in the end
 	 */
-	private String urlToId(String url) {
-		String returnValue = "";
-		ArrayList<String> knownPrefixes = new ArrayList<String>();
+	private Xref urlToId(String url) {
+		Map<String,DataSource> knownPrefixes = new HashMap<String,DataSource>();
 
-		knownPrefixes.add(BioDataSource.KEGG_COMPOUND.getUrl(""));
-		knownPrefixes.add(BioDataSource.CHEBI.getUrl(""));
-		for (String prefix : knownPrefixes) {
-			if (url.startsWith(prefix)) {
-				returnValue = url.substring(prefix.length());
+		knownPrefixes.put(BioDataSource.KEGG_COMPOUND.getUrl(""),BioDataSource.KEGG_COMPOUND);
+		knownPrefixes.put("http://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI:",BioDataSource.CHEBI);
+		for (Map.Entry<String,DataSource> prefix : knownPrefixes.entrySet()) {
+			if (url.startsWith(prefix.getKey())) {
+				String u=url.substring(prefix.getKey().length());
+				return new Xref(u,prefix.getValue());
 			}
 		}
-		return returnValue;
+		return null;
 	}
 
 	private Set<String> getIDs( String url ) {
-		String idString = urlToId(url);
-		Set<String> xrefs = new HashSet<String>();
-
-		try {
-			Xref src = new Xref(idString, BioDataSource.CHEBI);
-			for (Xref x : mapper.mapID(src, BioDataSource.KEGG_COMPOUND)) {
-				xrefs.add("<" + x.getUrl() + ">");
+		Xref xref = urlToId(url);
+		Set<String> urls = new HashSet<String>();
+		urls.add("<"+url+">");
+		if (xref!=null) {			
+			try {
+				for (Xref x : mapper.mapID(xref, BioDataSource.KEGG_COMPOUND)) {
+					urls.add("<" + x.getUrl() + ">");
+				}
+				return urls;
+			} catch (IDMapperException ex) {
+				logger.warn("failed to map", ex);
 			}
-			xrefs.add("<" + src.getUrl() + ">");
-			return xrefs;
-		} catch (IDMapperException ex) {
-			logger.warn("failed to map", ex);
 		}
-		return xrefs;
+		return urls;
 	}
 
 	/**
@@ -141,9 +142,11 @@ public class QueryMapper extends Plugin {
 	 */
 	@Override
 	protected SetOfStatements invokeInternal(SetOfStatements input) {
-		logger.info("QueryMapper working.");
+		//logger.info("QueryMapper working.");
 		SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(input);
 
+		logger.info("QueryMapper working. query =" + query.toString());
+		
 		String expandedQuery = "";
 
 		if (query instanceof SPARQLQueryImpl) {
@@ -187,8 +190,10 @@ public class QueryMapper extends Plugin {
 				expandedQuery = expandedQuery.substring(0, expandedQuery
 						.length() - 7);
 			}
-			String firstPart = query.toString().split(" where ")[0];
-			expandedQuery = firstPart + " where {" + expandedQuery + "}";
+			String queryString = query.toString();
+			String firstPart = queryString.split(" where ")[0];
+			String lastPart=queryString.substring(queryString.lastIndexOf("}")+1, queryString.length());
+			expandedQuery = firstPart + " where {" + expandedQuery + "}" + lastPart;
 		}
 		
 		logger.info(expandedQuery.toString());
@@ -206,9 +211,9 @@ public class QueryMapper extends Plugin {
 
 	public static void main(String[] args) {
 		QueryMapper queryMapper = new QueryMapper(null);
-		queryMapper.initialiseInternal(null);
+	//	queryMapper.initialiseInternal(null);
 
 		queryMapper.invokeInternal(new SPARQLQueryImpl(
-				"select * where { <http://www.ebi.ac.uk/chebi/searchId.do?chebiId=16811> ?p \"\"} limit 1").toRDF());
+				"SELECT * where {<http://chem2bio2rdf.org/chebi/resource/chebi/CHEBI%3A242117> ?p ?o} LIMIT 10").toRDF());
 	}
 }
