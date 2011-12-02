@@ -15,8 +15,8 @@ $n3fp = fopen($n3file,"w+");
 
 //fwrite($n3fp,"@prefix brenda: <http://brenda-enzymes.info/> .\n");
 //fwrite($n3fp,"@prefix uniprot: <http://purl.uniprot.org/enzyme/> .\n");
-fwrite($n3fp,"@prefix rdfs: <http://w3.org/2000/01/rdf-schema#> .\n");
-fwrite($n3fp,"@prefix rdf: <http://w3.org/1999/02/22-rdf-syntax-ns#> .\n");
+fwrite($n3fp,"@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .\n");
+fwrite($n3fp,"@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .\n");
 fwrite($n3fp,"\n");
 
 $id = '';
