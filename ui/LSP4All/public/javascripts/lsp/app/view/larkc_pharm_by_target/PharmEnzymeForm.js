@@ -132,6 +132,7 @@ Ext.define('LSP.view.larkc_pharm_by_target.PharmEnzymeForm', {
                                 labelWidth: 110,
                                 maxValue: 10000000,
                                 minValue: 0.000001,
+                                decimalPrecision: 6,
                                 value: 1000000,
                                 allowDecimals: true
                             }
