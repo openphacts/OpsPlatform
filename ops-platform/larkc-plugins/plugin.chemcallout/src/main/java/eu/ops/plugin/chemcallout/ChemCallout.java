@@ -28,6 +28,9 @@ import eu.ops.services.chemspider.SearchClient;
 import eu.ops.services.chemspider.model.ArrayOfInt;
 import eu.ops.services.chemspider.model.ERequestStatus;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Input: SPARQL query, containing at least one pattern {?x [HAS_SIMILAR|HAS_SUBSTRUCTURE_MATCH|HAS_SUBSTRUCTURE_MATCH_OR_TAUTOMER|HAS_EXACT_STRUCTURE_MATCH] ?y}, where ?y is a bound literal representing a molecule
  * Output: Reference to graph with triples in the form: {?x [HAS_SIMILAR|HAS_SUBSTRUCTURE_MATCH|HAS_SUBSTRUCTURE_MATCH_OR_TAUTOMER|HAS_EXACT_STRUCTURE_MATCH] ?y}, where ?y is a bound URI in the form (http://inchi.chemspider.com/Chemical-Structure."+csid+".html), where csid is retrieved from chemspider
@@ -46,9 +49,11 @@ public class ChemCallout extends Plugin
 	public static final URI FIXEDCONTEXT=new URIImpl("http://larkc.eu#Fixedcontext");
 	private static final int TIMEOUT = 300;
 	
+	protected final Logger logger = LoggerFactory.getLogger(Plugin.class);
+	
 	SearchClient chemSpiderClient = null;
 	private URI outputGraphName;
-
+	
 	/**
 	 * Constructor.
 	 * 
