@@ -32,14 +32,14 @@
 #  
 ########################################################################################*/
 
-Ext.define('LSP.controller.Summeryform', {
+Ext.define('LSP.controller.SummeryForm', {
     extend: 'Ext.app.Controller',
 
-    views: ['concept.Summeryform'],
+    views: ['concept.SummeryForm'],
 
     init: function() {
         this.control({
-            'queryform button[action=look_up_concept]': {
+            'SummeryForm button[action=look_up_concept]': {
                 click: this.lookUpConcept
             }
         });
@@ -48,9 +48,13 @@ Ext.define('LSP.controller.Summeryform', {
     lookUpConcept: function(button) {
         var form = button.up('form'),
         values = form.getValues();
-        grid.store.proxy.actionMethods = {read: 'POST'};
-        grid.store.proxy.extraParams = values
-        grid.store.proxy.api.read = '/sparql_endpoint/concept_summery.json';
-        grid.store.load();
+        subject_grid.store.proxy.actionMethods = {read: 'POST'};
+        subject_grid.store.proxy.extraParams = values
+        subject_grid.store.proxy.api.read = '/sparql_endpoint/concept_subject_summery.json';
+        subject_grid.store.load();
+        object_grid.store.proxy.actionMethods = {read: 'POST'};
+        object_grid.store.proxy.extraParams = values
+        object_grid.store.proxy.api.read = '/sparql_endpoint/concept_object_summery.json';
+        object_grid.store.load();
     }
 });

@@ -32,80 +32,30 @@
 #  
 ########################################################################################*/
 
-/* replace with the settings panel options later on */
-iconSize = 'small'
+Ext.define('LSP.controller.PharmByTargetNameForm', {
+    extend: 'Ext.app.Controller',
 
-Ext.define('LSP.view.Viewport', {
-    extend: 'Ext.container.Viewport',
-    alias: 'widget.lspviewport',
+    views: ['pharm_by_target_name2.PharmByTargetNameForm'],
 
-    requires: [
-      'LSP.view.Viewer',
-      'LSP.view.Navigator',
-      'LSP.view.Settings',
-      'LSP.view.user.Loginbutton',
-      'LSP.view.user.Logoutbutton',
-      'LSP.view.user.Newbutton',
-      'Ext.layout.container.Border',
-      'Ext.toolbar.Spacer'
-    ],
-
-  	layout: 'border',
-    
-    initComponent: function() {
-
-      var ops_logo = Ext.create('Ext.Img',{src: 'images/ops_logo.png',bodyStyle: {background: 'transparent'}});
-      this.items = [
-        {
-      	  region: 'north',
-      	  id: 'northView',
-      	  height: 60,
-      	  border: false,
-      	  bodyStyle: {
-              background: 'transparent',
-          },
-      	  layout: {
-            type: 'hbox',
-            padding: '5',
-            align: 'middle'
-          },
-      	  items: [
-      	     ops_logo,
-            {
-              id: 'lsp-header',
-              xtype: 'box',
-              html: 'Open PHACTS GUI<sub>powered by LSP4All</sub>'
-            },
-            {
-              xtype: 'tbspacer',
-              flex: 1
-            },
-            {
-              xtype: 'loginbutton',
-              id: 'loginButton'
-            },
-            {
-              xtype: 'usernewbutton',
-              id: 'userNewButton'
-            },
-            {
-              xtype: 'logoutbutton',
-              id: 'logoutButton'
+    init: function() {
+        this.control({
+            'PharmByTargetNameForm button[action=query_pharm_by_target_name]': {
+                click: this.submitQuery
+                
             }
-          ]
-        },
-        {
-      		region: 'center',
-      		id: 'centerView',
-      		xtype: 'viewer'      		
-      	},
-        {
-      		region: 'west',
-      		id: 'westView',
-      		width: 225,
-      		xtype: 'navigator'
-      	}
-      ]
-      this.callParent(arguments);
+        });
+    },
+    
+    submitQuery: function(button) {
+        var form = button.up('form');
+        values = form.getValues();
+        grid_pharmbytargetname.store.proxy.actionMethods = {read: 'POST'};
+        grid_pharmbytargetname.store.proxy.extraParams = values;
+        grid_pharmbytargetname.store.proxy.api.read = '/sparql_endpoint/cmpd_by_name.json';
+        //grid.store.proxy.create;
+        grid_pharmbytargetname.store.load();
     }
-});
+    
+    
+    }
+);

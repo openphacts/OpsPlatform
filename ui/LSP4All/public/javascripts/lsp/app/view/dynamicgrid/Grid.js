@@ -67,6 +67,7 @@ Ext.define('LSP.view.dynamicgrid.Grid', {
       		}],
             columns:[{name: 'temp', hidden:true}],  
             rowNumberer: true,
+            defaultWidth : 200,
             features: [groupingFeature]
         };  
           
@@ -87,7 +88,7 @@ Ext.define('LSP.view.dynamicgrid.Grid', {
         if(typeof(this.store.proxy.reader.jsonData.columns) === 'object') {  
             var columns = [];
             //console.log(this);
-            if(this.rowNumberer) { columns.push(Ext.create('Ext.grid.RowNumberer')); }  
+            if(this.rowNumberer) { columns.push(Ext.create('Ext.grid.RowNumberer',{width:40})); }  
             Ext.each(this.store.proxy.reader.jsonData.columns, function(column){
                 columns.push(column);  
             });

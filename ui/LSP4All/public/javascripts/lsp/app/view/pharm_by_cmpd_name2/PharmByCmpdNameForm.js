@@ -32,36 +32,51 @@
 #  
 ########################################################################################*/
 
-Ext.define('LSP.view.concept.SummeryForm', {
-    extend: 'Ext.form.Panel',
-    alias: 'widget.SummeryForm',
+Ext.define('LSP.view.pharm_by_cmpd_name2.PharmByCmpdNameForm', {
+    extend: 'Ext.form.Panel',  
+    alias: 'widget.PharmByCmpdNameForm',
     closable: true,
     
-    initComponent: function() {
-        var me = this;
-        me.items = [
-            {
+     initComponent: function() {
+        
+        this.items = [
+                   {
                 xtype: 'container',
-                height: '6%',
+                height: '8%',
                 margin: '5 5 5 5',
                 name: 'form_fields',
                 layout: {
                     type: 'column'
                 },
-                items: [
-                    {
+                style: 'background-color: #fff;',
+                items: [                      
+                      {
+                        name: 'utf8',
+                        xtype: 'hidden',
+                        value: '&#x2713;'
+                      },
+                      {
+                        name: 'cmpd_uuid',
+                        xtype: 'hidden',
+                        value: ''
+                      },
+                      {
+                        name: 'authenticity_token',
+                        xtype: 'hidden',
+                        value: $$('meta[name=csrf-token]')[0].readAttribute('content')
+                      },
+                      {
                         xtype: 'combo',
-                        valueField:'concept_url',
+                        valueField:'cmpd_url',
                       	store:  Ext.create('Ext.data.Store',{
                                       fields: [
-                                        {type: 'string', name: 'concept_label'},
-                                        {type: 'string', name: 'concept_type'},
-                                        {type: 'string', name: 'concept_url'}
+                                        {type: 'string', name: 'cmpd_name'},
+                                        {type: 'string', name: 'cmpd_url'}
                                       ],
                                       proxy: {
                                           type: 'ajax',
                                           api: {
-                                              read: 'sparql_endpoint/concept_name_lookup.json'
+                                              read: 'sparql_endpoint/cmpd_name_lookup.json'
                                           },
                                           reader: {
                                               type: 'json',
@@ -71,57 +86,43 @@ Ext.define('LSP.view.concept.SummeryForm', {
                                       }
                                   }),
                       	queryMode: 'remote',
-                      	displayField: 'concept_url',
+                      	displayField: 'cmpd_name',
                       	minChars:4,
                       	hideTrigger:true,
                       	forceSelection:true,
                       	typeAhead:true,
                         emptyText: 'Start typing...',
-                        name: 'concept_uuid',
+                        name: 'cmpd_uuid',
                         margin: '5 5 5 5',
                         width: 800,
-                        fieldLabel: 'Concept',
+                        fieldLabel: 'Compound name',
                         labelWidth: 120,
                         listConfig: {
                           loadingText: 'Searching...',
-                          emptyText: 'No matching concepts found.',
+                          emptyText: 'No matching compounds found.',
                         },
                         listeners: {
                             select: function(combo, selection) {
                             var post = selection[0];
                               if (post) {
                                  var fields = this.up().items.items;
-                                 fields.forEach(function(item) { if(item.name == 'concept_uuid'){item.setValue(post.data.concept_url);}});
+                                 fields.forEach(function(item) { if(item.name == 'cmpd_uuid'){item.setValue(post.data.cmpd_name);}});
                               }
                             }
                         }
                       },
-                    {
+                      {
                         xtype: 'button',
                         padding: '5 5 5 5',
-                        text: 'Look up',
-                        action: 'look_up_concept'
-                    },
-                    {
-                        name: 'utf8',
-                        xtype: 'hidden',
-                        value: '&#x2713;'
-                    },
-                    {
-                        name: 'authenticity_token',
-                        xtype: 'hidden',
-                        value: $$('meta[name=csrf-token]')[0].readAttribute('content')
-                    }
-                ]},
-                  object_grid = Ext.widget('dynamicgrid'),
-                  subject_grid = Ext.widget('dynamicgrid')
-        ];
-        object_grid.setTitle('Concept Properties');
-        object_grid.setHeight('47%'); 
-        object_grid.buttonRender(['exporter']);
-        subject_grid.setTitle('Concept Relations');
-        subject_grid.setHeight('47%'); 
-        subject_grid.buttonRender(['exporter']);                       
-        me.callParent(arguments);
-    }
+                        text: 'Search',
+                        action: 'query_pharm_by_cmpd_name'
+                      }]},
+                      grid_pharmbycompoundname = Ext.widget('dynamicgrid')                             
+                ];
+        grid_pharmbycompoundname.timeout = 9000000;
+        grid_pharmbycompoundname.setTitle('Pharmacology by Compound name search results');
+        grid_pharmbycompoundname.setHeight('92%'); 
+        grid_pharmbycompoundname.buttonRender(['exporter']);                                  
+        this.callParent(arguments);
+    }    
 });

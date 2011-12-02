@@ -15,6 +15,7 @@ LSP4All::Application.routes.draw do
     collection do
       get :cmpd_name_lookup
       get :target_name_lookup
+      get :concept_name_lookup
       post :query
       post :similar2smiles
       post :search_by_smiles

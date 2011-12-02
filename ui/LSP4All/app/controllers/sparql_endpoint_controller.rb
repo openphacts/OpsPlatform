@@ -49,8 +49,8 @@ class SparqlEndpointController < ApplicationController
   
   def cmpd_name_lookup(name_lookup = params[:query])
       query_str = "PREFIX brenda: <http://brenda-enzymes.info/>\n"
-      query_str += "SELECT DISTINCT ?cmpd_name WHERE {\n"
-      query_str += "?ic50exp brenda:has_inhibitor ?cmpd_name .\n"
+      query_str += "SELECT DISTINCT ?cmpd_name ?cmpdurl WHERE {\n"
+      query_str += "{ ?cmpdurl brenda:has_inhibitor ?cmpd_name } UNION { ?cmpdurl <http://wiki.openphacts.org/index.php/PDSP_DB#has_test_ligand_name> ?cmpd_name } .\n"
       query_str += "FILTER regex(?cmpd_name, \"#{name_lookup}\", \"i\") }\n"
       query_str += "Limit 100"
  
@@ -58,12 +58,52 @@ class SparqlEndpointController < ApplicationController
       results = @endpoint.find_by_sparql(query_str)
       render :json => construct_column_objects(results).to_json, :layout => false
   end
+
+  def target_name_lookup(name_lookup = params[:query])
+      query_str = "PREFIX brenda: <http://brenda-enzymes.info/>\n"
+      query_str += "SELECT DISTINCT ?cmpd_name ?cmpdurl WHERE {\n"
+      query_str += "{ ?cmpdurl brenda:has_inhibitor ?cmpd_name } UNION { ?cmpdurl <http://wiki.openphacts.org/index.php/PDSP_DB#has_test_ligand_name> ?cmpd_name } .\n"
+      query_str += "FILTER regex(?cmpd_name, \"#{name_lookup}\", \"i\") }\n"
+      query_str += "Limit 100"
  
-  def cmpd_by_name
-     #TODO add query string here...
+      @endpoint = SparqlEndpoint.new(session[:endpoint])             
+      results = @endpoint.find_by_sparql(query_str)
+      render :json => construct_column_objects(results).to_json, :layout => false
+  end
+
+    def concept_name_lookup(url_lookup = params[:concept_url])
+      query_str = "SELECT DISTINCT ?concept ?label WHERE {\n"
+      query_str += "{ ?concept ?predicate ?object  .\n"
+      query_str += "OPTIONAL {?concept <http://www.w3.org/2000/01/rdf-schema#label> ?label }} .\n"
+      query_str += "FILTER regex(?concept, \"#{url_lookup}\", \"i\") }\n"
+      query_str += "Limit 150"
+ 
+      @endpoint = SparqlEndpoint.new(session[:endpoint])             
+      results = @endpoint.find_by_sparql(query_str)
+      render :json => construct_column_objects(results).to_json, :layout => false
+  end
+
+ 
+  def cmpd_by_name(cmpd_name = params[:cmpd_uuid])
+    query_str = "PREFIX brenda: <http://brenda-enzymes.info/> \n"
+    query_str += "SELECT ?cmpdurl ?compound_smiles ?compound_name  WHERE {\n"
+    query_str += "?cmpdurl ?p \"#{cmpd_name}\" . \n"
+    query_str += "OPTIONAL {?cmpdurl <http://wiki.openphacts.org/index.php/PDSP_DB#has_smiles_code> ?compound_smiles} .\n"
+    query_str += "OPTIONAL {{ ?cmpdurl brenda:has_inhibitor ?compound_name } UNION { ?cmpdurl <http://wiki.openphacts.org/index.php/PDSP_DB#has_test_ligand_name> ?compound_name }}} \n"
+    @endpoint = SparqlEndpoint.new(session[:endpoint])             
+    results = @endpoint.find_by_sparql(query_str)
+    render :json => construct_column_objects(results).to_json, :layout => false
   end
   # Do similar thing for target
-  
+  def target_by_name
+
+
+# SELECT * WHERE {?s  <http://brenda-enzymes.info/recommended_name> ?recomended_name .
+# OPTIONAL { ?s <http://brenda-enzymes.info/systematic_name> ?sys } .
+# OPTIONAL {?s <http://brenda-enzymes.info/has_ec_number> ?ec_number } .
+# OPTIONAL {?s <http://brenda-enzymes.info/cas_registry_number> ?cas_number } .
+# }
+  end 
   
   def pharm_enzyme_fam
   

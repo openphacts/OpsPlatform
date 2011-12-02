@@ -42,6 +42,8 @@ Ext.define('LSP.view.Viewer', {
 		'LSP.view.larkc_sim_search.SimSearchForm',
 		'LSP.view.cmpd_by_name.CmpdByNameForm',
 		'LSP.view.target_by_name.TargetByNameForm',
+		'LSP.view.pharm_by_cmpd_name2.PharmByCmpdNameForm',
+		'LSP.view.pharm_by_target_name2.PharmByTargetNameForm',
 		'LSP.view.concept.SummeryForm',
 		'LSP.view.placeholder.temp',
 		'LSP.view.larkc_pharm_by_target.PharmEnzymeForm'

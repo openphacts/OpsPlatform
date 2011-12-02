@@ -61,6 +61,11 @@ Ext.define('LSP.view.target_by_name.TargetByNameForm', {
                         value: $$('meta[name=csrf-token]')[0].readAttribute('content')
                       },
                       {
+                        name: 'target_uuid',
+                        xtype: 'hidden',
+                        value: ''
+                      },
+                      {
                         xtype: 'combo',
                         valueField:'target_url',
                       	store:  Ext.create('Ext.data.Store',{
@@ -87,10 +92,10 @@ Ext.define('LSP.view.target_by_name.TargetByNameForm', {
                       	forceSelection:true,
                       	typeAhead:true,
                         emptyText: 'Start typing...',
-                        name: 'compound_url',
+                        name: 'target_url',
                         margin: '5 5 5 5',
                         width: 800,
-                        fieldLabel: 'Compound name',
+                        fieldLabel: 'Target name',
                         labelWidth: 120,
                         listConfig: {
                           loadingText: 'Searching...',
@@ -105,7 +110,7 @@ Ext.define('LSP.view.target_by_name.TargetByNameForm', {
                               }
                             }
                         }
-                      },,
+                      },
                       {
                         xtype: 'button',
                         padding: '5 5 5 5',
