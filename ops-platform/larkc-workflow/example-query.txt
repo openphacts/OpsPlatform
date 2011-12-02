@@ -1,0 +1,1 @@
+select * where {<http://chem2bio2rdf.org/chebi/resource/chebi/CHEBI%3A15727> ?p ?o} 

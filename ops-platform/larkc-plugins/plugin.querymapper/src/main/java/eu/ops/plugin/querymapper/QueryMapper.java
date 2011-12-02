@@ -60,7 +60,7 @@ public class QueryMapper extends Plugin {
 	 */
 	@Override
 	public void onMessage(Message message) {
-		// TODO Auto-generated method stub
+		// TODO Auto-generated method stub 
 	}
 
 	/**
@@ -103,8 +103,9 @@ public class QueryMapper extends Plugin {
 	private Xref urlToId(String url) {
 		Map<String,DataSource> knownPrefixes = new HashMap<String,DataSource>();
 
-		knownPrefixes.put(BioDataSource.KEGG_COMPOUND.getUrl(""),BioDataSource.KEGG_COMPOUND);
-		knownPrefixes.put("http://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI:",BioDataSource.CHEBI);
+		knownPrefixes.put("http://chem2bio2rdf.org/kegg/resource/kegg_ligand/",BioDataSource.KEGG_COMPOUND);
+		knownPrefixes.put("http://chem2bio2rdf.org/chebi/resource/chebi/CHEBI%3A",BioDataSource.CHEBI);
+		logger.info("KnownPrefixes= " + knownPrefixes);
 		for (Map.Entry<String,DataSource> prefix : knownPrefixes.entrySet()) {
 			if (url.startsWith(prefix.getKey())) {
 				String u=url.substring(prefix.getKey().length());
@@ -123,7 +124,8 @@ public class QueryMapper extends Plugin {
 			try {
 				for (Xref x : mapper.mapID(xref, BioDataSource.KEGG_COMPOUND)) {
 					logger.info("Mapping found: " + x );
-					urls.add("<" + x.getUrl() + ">");
+					urls.add("<http://chem2bio2rdf.org/kegg/resource/kegg_ligand/" + x.getId() + ">");
+					//urls.add("<" + x.getUrl() + ">");
 				}
 				return urls;
 			} catch (IDMapperException ex) {
@@ -131,7 +133,7 @@ public class QueryMapper extends Plugin {
 			}
 		}
 		return urls;
-	}
+	} 
 
 	/**
 	 * Called on plug-in invokation. The actual "work" should be done in this
@@ -165,9 +167,12 @@ public class QueryMapper extends Plugin {
 
 				if (o == null) {
 					substitutedObjectIDs.add("?" + sp.getObjectVar().getName());
-				} else if (o instanceof Literal) {
-					substitutedObjectIDs = getIDs(((Literal) o).stringValue());
-				} else if (o instanceof URI) {
+				} 
+				else if (o instanceof Literal) {
+					substitutedObjectIDs = new HashSet<String>();
+					substitutedObjectIDs.add(o.toString());
+				}
+				else if (o instanceof URI) {
 					substitutedObjectIDs = getIDs(((URI) o).toString());
 				} else
 					throw new IllegalArgumentException(
