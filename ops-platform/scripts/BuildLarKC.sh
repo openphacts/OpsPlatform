@@ -3,6 +3,8 @@ export MAVEN_OPTS=-Xmx512m
 #LARKC_PATH - path where LarKC is checked out: svn co https://larkc.svn.sourceforge.net/svnroot/larkc/trunk larkc/trunk
 #OPS_PATH - path where OPS repository is checked out: svn co  https://trac.nbic.nl/svn/openphacts
 
+currentdir=`pwd`
+
 cd $LARKC_PATH/larkc/trunk/platform/
 mvn assembly:assembly -DdescriptorId=jar-with-dependencies -Dmaven.test.skip=true
 
@@ -31,3 +33,5 @@ mv ./target/plugin.EDFQueryTransformer-0.0.1-SNAPSHOT.jar $LARKC_PATH/larkc/trun
 cd ../plugin.edfsearch/
 mvn assembly:assembly
 mv ./target/plugin.EDFSearch-0.0.1-SNAPSHOT.jar $LARKC_PATH/larkc/trunk/platform/plugins
+
+cd $currentdir
