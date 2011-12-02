@@ -266,14 +266,15 @@ class SparqlEndpointController < ApplicationController
   # search_types: 1 = exact match, 2 = substructure search, 3 = similarity search
   def search_by_smiles(smiles = params[:smiles], search_type = params[:search_type].to_i)  
      endpoint = SparqlEndpoint.new(session[:endpoint]) 
-     ss_query = ''
+     ss_query = 'PREFIX cspr: <http://rdf.chemspider.com/#> '
      if search_type == 1 then
-        ss_query = 'SELECT * WHERE { ?csid_uri <http://wiki.openphacts.org/index.php/ext_function#has_exact_structure_match> "' + smiles + '"}'
+        ss_query += 'SELECT * WHERE {{ ?csid_uri <http://wiki.openphacts.org/index.php/ext_function#has_exact_structure_match> "' + smiles + '"} . '
      elsif search_type == 2 then
-        ss_query = 'SELECT * WHERE { ?csid_uri <http://wiki.openphacts.org/index.php/ext_function#has_substructure_match> "' + smiles + '"}'
+        ss_query += 'SELECT * WHERE {{ ?csid_uri <http://wiki.openphacts.org/index.php/ext_function#has_substructure_match> "' + smiles + '"} . '
      elsif search_type == 3 then
-        ss_query = 'SELECT * WHERE { ?csid_uri <http://wiki.openphacts.org/index.php/ext_function#has_similar> "' + smiles + '"}'
+        ss_query += 'SELECT * WHERE {{ ?csid_uri <http://wiki.openphacts.org/index.php/ext_function#has_similar> "' + smiles + '"} . '
      end
+	ss_query += 'OPTIONAL { ?csid_uri cspr:inchi ?compound_inchi ; cspr:inchikey ?compound_inchi_key; cspr:synonym ?compound_name ; cspr:smiles ?compound_smiles }}'
      results = endpoint.find_by_sparql(ss_query)
      render :json => construct_column_objects(format_chemspider_results(results)).to_json, :layout => false
    end
