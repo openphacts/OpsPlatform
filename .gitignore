@@ -33,3 +33,7 @@ usecases/usecase15/question15-nanomolar-full.xlsx
 datasets/wikipathways/Wikipathways.ttl
 datasets/wikipathways/Wikipathways.ttl.gz
 datasets/wikipathways/Wikipathways.nt.gz
+datasets/OPS-DS-TTL/ChEMBL.ttl.gz
+datasets/OPS-DS-TTL/KEGG.ttl.gz
+datasets/OPS-DS-TTL/PDSP.ttl.gz
+datasets/OPS-DS-TTL/PDSP_URIs.ttl.gz
