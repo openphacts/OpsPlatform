@@ -47,7 +47,7 @@ call:changeDirectory "%OPS_PATH%\ops-platform\larkc-plugins\plugin.edfsearch/"
 call mvn install
 call:moveFile target\plugin.EDFSearch-0.0.1-SNAPSHOT.jar "%LARKC_PATH%\platform\plugins"
 
-call:changeDirectory "%OPS_PATH%\ops-platform\larkc-plugins\plugin.ChemCallout/"
+call:changeDirectory "%OPS_PATH%\ops-platform\larkc-plugins\plugin.chemcallout/"
 call:copyFile plugin.ChemCallout-0.0.1-SNAPSHOT-LarkcPluginAssembly.jar "%LARKC_PATH%\platform\plugins"
 
 rem back to here to rerun
