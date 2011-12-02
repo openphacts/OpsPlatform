@@ -16,7 +16,7 @@ del ordi-trree
 call:check target\platform-2.5.0-SNAPSHOT-jar-with-dependencies.jar 
 call:check plugins\plugin.QueryMapper-0.0.1-SNAPSHOT-LarkcPluginAssembly\lib\derby.jar
 
-java -cp plugins\plugin.QueryMapper-0.0.1-SNAPSHOT-LarkcPluginAssembly\lib\derby.jar;target\platform-2.5.0-SNAPSHOT-jar-with-dependencies.jar -Xmx1G eu.larkc.core.Larkc
+java -cp plugins\plugin.QueryMapper-0.0.1-SNAPSHOT-LarkcPluginAssembly\lib\derby.jar;target\platform-3.0-SNAPSHOT-jar-with-dependencies.jar -Xmx1G eu.larkc.core.Larkc
 goto:eof
 
 ::--------------------------------------------------------
