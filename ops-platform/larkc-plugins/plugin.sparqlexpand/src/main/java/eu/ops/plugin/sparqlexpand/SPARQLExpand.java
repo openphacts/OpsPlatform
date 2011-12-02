@@ -243,7 +243,7 @@ public class SPARQLExpand extends Plugin
 	public static void main(String[] args) {
 		SPARQLExpand s=new SPARQLExpand(null);
 		s.endpoints=new ArrayList<String>();
-		s.endpoints.add("http://linkedlifedata.com/sparql");
+		s.endpoints.add("http://http://linkedlifedata.com/sparql");
 		String qStr = " SELECT ?interaction ?protein" +
 				" WHERE {" +
 				" ?interaction <http://www.biopax.org/release/biopax-level2.owl#PARTICIPANTS> ?p ." +
