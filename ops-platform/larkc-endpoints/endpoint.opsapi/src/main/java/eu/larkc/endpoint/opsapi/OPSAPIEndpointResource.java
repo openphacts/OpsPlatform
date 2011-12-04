@@ -400,7 +400,7 @@ public class OPSAPIEndpointResource extends ServerResource {
 				hasMethod = true;
 			} else if (name.equals("uri")) {
 				sparql="PREFIX drugbank: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/> " +
-						"SELECT ?name ?synonym ?gene_name ?locus ?no_residues ?mol_weight ?theoretical_pi " + 
+						"SELECT DISTINCT ?name ?synonym ?gene_name ?locus ?no_residues ?mol_weight ?theoretical_pi " + 
 						"?reaction ?signal ?transmembrane_regions ?swissprot_url " +
 							"WHERE { "+value+" drugbank:name ?name ; " + 
 							"drugbank:synonym ?synonym ; drugbank:geneName ?gene_name ; drugbank:drugReference ?drug_reference ; " + 
@@ -471,7 +471,7 @@ public class OPSAPIEndpointResource extends ServerResource {
 						"PREFIX db: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/> " + 
 						"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>  " +
 						"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>  " +
-						"SELECT ?synonym ?csid_uri  " +
+						"SELECT DISTINCT ?synonym ?csid_uri  " +
 						"?organism ?indication ?target ?fda_label_files ?protein_binding ?mechanism ?category ?description " + 
 						"?pharma ?biotrans ?dosage ?drug_type ?toxicity ?brand_name ?pos_dis_target ?absorption ?generic_name ?drug_name " +
 						"?species ?pubmed_id ?pdsp_target ?ki_value ?ki_unit ?pdsp_source " +
@@ -550,18 +550,18 @@ public class OPSAPIEndpointResource extends ServerResource {
 				hasMethod = true;
 			} else if (name.equals("uri")) {
 				sparql="PREFIX drugbank: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/> " +
-						"SELECT ?name ?synonym ?gene_name ?generic_function ?specific_function ?go_function ?go_process ?go_component ?essentiality " + 
-						"?chromosome_location ?cellular_location ?transmembraneRegions ?signal ?mol_weight ?gene_sequence ?protein_sequence  " +
-						"?swissprot_url ?genbank_protein_url ?genbank_gene_url ?r1 ?r2 WHERE { " +
+						"SELECT DISTINCT ?name ?synonym ?gene_name ?general_function ?specific_function ?go_function ?go_process ?go_component ?essentiality " + 
+						"?chromosome_location ?cellular_location ?mol_weight ?gene_sequence ?protein_sequence  " +
+						"?swissprot_url ?genbank_protein_url ?genbank_gene_url WHERE { " +
 							value+" drugbank:swissprotPage ?swissprot_url ; " +
 							"drugbank:proteinSequence ?protein_sequence ; drugbank:cellularLocation ?cellular_location ;  " +
 							"drugbank:genbankIdGenePage ?genbank_gene_url ; drugbank:genbankIdProteinPage ?genbank_protein_url ; " +
 							"drugbank:geneName ?gene_name ; drugbank:geneSequence ?gene_sequence ;  " +
 							"drugbank:generalFunction ?general_function ; drugbank:goClassificationProcess ?go_process ; " + 
 							"drugbank:specificFunction ?specific_function ; drugbank:synonym ?synonym ;  " +
-							"drugbank:essentiality ?essentiality ; drugbank:chromosomeLocation ?chromosomeLocation ; " +
+							"drugbank:essentiality ?essentiality ; drugbank:chromosome_location ?chromosomeLocation ; " +
 							"drugbank:goClassificationComponent ?go_component ; drugbank:goClassificationFunction ?go_function ; " + 
-							"drugbank:name ?name ; drugbank:molecularWeight ?mol_weight ; ?r1 ?r2 " +
+							"drugbank:name ?name ; drugbank:molecularWeight ?mol_weight ; " +
 						"}";
 			} else if (name.equals("default-graph-uri")) {
 				qr.addDefaultGraphUri(value);
@@ -624,16 +624,16 @@ public class OPSAPIEndpointResource extends ServerResource {
 						"PREFIX db: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/> " +
 						"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> " + 
 						"SELECT DISTINCT ?csid_uri ?inchi ?inchi_key ?smiles ?synonym " +
-						"?type ?med_chem_friendly ?molweight ?chembl_synonyms ?hhd ?alogp ?mw_freebase ?psa " + 
+						"?med_chem_friendly ?molweight ?chembl_synonyms ?hhd ?alogp ?mw_freebase ?psa " + 
 						"?molformula ?molregno ?ro5_violations ?ro3_pass ?hha ?rtb ?pred_water_sol ?exp_water_sol ?target " + 
 						"?weight_average ?category ?description ?generic_name ?half_life ?state ?pred_logs ?brand_name ?pred_hydrophob ?exp_hydrophob " +
 						"?pdsp_name ?pdsp_displaced ?cas ?pdsp_target ?pdsp_species ?pdsp_source " +
-						"?r1 ?r2 ?r3 ?r4 ?r5 ?r6 ?r7 ?r8 ?r9 ?r10 ?r11 ?r12 ?r13 ?r14 ?r15 ?r16 ?r17 ?r18 ?r19 ?r20 ?r21 ?r22 ?r23 ?r24 ?r25 ?r26 ?r27 " +
+						"?r1 ?r2 ?r3 ?r4 ?r5 ?r6 ?r7 ?r8 ?r9 ?r10 ?r11 ?r12 ?r13 ?r14 ?r15 ?r16 ?r17 ?r18 ?r19 ?r20 ?r21 ?r22 ?r23 ?r24 ?r25 ?r26 " +
 							"WHERE {"+value+" cspr:smiles ?smiles; " +
 							"cspr:synonym ?synonym ; cspr:inchi ?inchi ; cspr:inchikey ?inchi_key ; " +
 							"cspr:exturl ?mapping . ?csid_uri cspr:exturl ?mapping . " +
 								"{ ?mapping skos:exactMatch ?chebi . ?c2b2r_ChEMBL chembl:chebi ?chebi ; " +
-								"a ?type_uri; chembl:med_chem_friendly ?med_chem_friendly; " + 
+								"chembl:med_chem_friendly ?med_chem_friendly; " + 
 								"chembl:cid ?cid ; chembl:molweight ?molweight;  " +
 								"chembl:synonyms ?chembl_synonyms ; chembl:hhd ?hhd ; " +
 								"chembl:alogp ?alogp ; chembl:mw_freebase ?mw_freebase ;  " +
@@ -656,7 +656,7 @@ public class OPSAPIEndpointResource extends ServerResource {
 								"pdsp:has_cas_num ?cas ; pdsp:has_receptor_name ?pdsp_target ; " +
 								"pdsp:species ?pdsp_species ; pdsp:source ?pdsp_source ; " +
 								"?r1 ?r2 ; ?r3 ?r4 ; ?r5 ?r6 ; ?r7 ?r8; ?r9 ?r10; ?r11 ?r12; ?r13 ?r14; ?r15 ?r16; ?r17 ?r18; " + 
-								"?r19 ?r20; ?r21 ?r22; ?r23 ?r24; ?r25 ?r26; ?r27 ?28} " +
+								"?r19 ?r20; ?r21 ?r22; ?r23 ?r24; ?r25 ?r26;} " +
 							"}";
 			} else if (name.equals("default-graph-uri")) {
 				qr.addDefaultGraphUri(value);
@@ -1226,9 +1226,9 @@ public class OPSAPIEndpointResource extends ServerResource {
 			} else if (name.equals("named-graph-uri")) {
 				qr.addNamedGraphUri(value);
 			} else if (name.equals("limit")) {
-				sparql+="LIMIT "+value;
+				sparql+=" LIMIT "+value;
 			} else if (name.equals("offset")) {
-				sparql+="OFFSET "+value;
+				sparql+=" OFFSET "+value;
 			} 				
 			else {
 				throw new APIException("Unknown parameter name: \""+ name
@@ -1404,9 +1404,9 @@ public class OPSAPIEndpointResource extends ServerResource {
 			} else if (name.equals("named-graph-uri")) {
 				qr.addNamedGraphUri(value);
 			} else if (name.equals("limit")) {
-				sparql+="LIMIT "+value;
+				sparql+=" LIMIT "+value;
 			} else if (name.equals("offset")) {
-				sparql+="OFFSET "+value;
+				sparql+=" OFFSET "+value;
 			} 				
 			else {
 				throw new APIException("Unknown parameter name: \""
@@ -1461,9 +1461,9 @@ public class OPSAPIEndpointResource extends ServerResource {
 			} else if (name.equals("named-graph-uri")) {
 				qr.addNamedGraphUri(value);
 			} else if (name.equals("limit")) {
-				sparql+="LIMIT "+value;
+				sparql+=" LIMIT "+value;
 			} else if (name.equals("offset")) {
-				sparql+="OFFSET "+value;
+				sparql+=" OFFSET "+value;
 			} 				
 			else {
 				throw new APIException("Unknown parameter name: \""
@@ -1519,9 +1519,9 @@ public class OPSAPIEndpointResource extends ServerResource {
 			} else if (name.equals("named-graph-uri")) {
 				qr.addNamedGraphUri(value);
 			} else if (name.equals("limit")) {
-				sparql+="LIMIT "+value;
+				sparql+=" LIMIT "+value;
 			} else if (name.equals("offset")) {
-				sparql+="OFFSET "+value;
+				sparql+=" OFFSET "+value;
 			} 				
 			else {
 				throw new APIException("Unknown parameter name: \""
@@ -1575,10 +1575,10 @@ public class OPSAPIEndpointResource extends ServerResource {
 				qr.addDefaultGraphUri(value);
 			} else if (name.equals("named-graph-uri")) {
 				qr.addNamedGraphUri(value);
-			} else if (name.equals("limit")) {
-				sparql+="LIMIT "+value;
+			} else if (name.equals("limit") && !sparql.toUpperCase().contains("LIMIT")) {
+				sparql+=" LIMIT "+value;
 			} else if (name.equals("offset")) {
-				sparql+="OFFSET "+value;
+				sparql+=" OFFSET "+value;
 			} else {
 				throw new APIException("Unknown parameter name: \""
 					+ name + "\" for method sparql; "+
