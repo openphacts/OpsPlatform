@@ -613,7 +613,7 @@ public class OPSAPIEndpointResource extends ServerResource {
 							"drugbank:geneName ?gene_name ; drugbank:geneSequence ?gene_sequence ;  " +
 							"drugbank:generalFunction ?general_function ; drugbank:goClassificationProcess ?go_process ; " + 
 							"drugbank:specificFunction ?specific_function ; drugbank:synonym ?synonym ;  " +
-							"drugbank:essentiality ?essentiality ; drugbank:chromosome_location ?chromosomeLocation ; " +
+							"drugbank:essentiality ?essentiality ; drugbank:chromosomeLocation ?chromosome_location ; " +
 							"drugbank:goClassificationComponent ?go_component ; drugbank:goClassificationFunction ?go_function ; " + 
 							"drugbank:name ?name ; drugbank:molecularWeight ?mol_weight ; " +
 						"}";
