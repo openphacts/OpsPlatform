@@ -115,10 +115,11 @@ public class IRSSPARQLExpand extends Plugin {
                 if (found) {
                     queryFirstBlock = queryBuilder.toString();
                     queryBuilder = new StringBuilder();
+                    found = false;
                 } else {
                     queryBuilder.append(subject).append(" ");
                     queryBuilder.append(predicate).append(" ");
-                    queryBuilder.append(o.stringValue()).append(" . ");
+                    queryBuilder.append(varAsString(sp.getObjectVar())).append(" . ");
                 }
             }
             SPARQLQuery expandedQuery = expandQuery(queryStart, queryFirstBlock, 
