@@ -498,45 +498,39 @@ public class OPSAPIEndpointResource extends ServerResource {
 				}
 				hasMethod = true;
 			} else if (name.equals("uri")) {
-				if (value.contains("brenda")){
-					sparql= "PREFIX brenda: <http://brenda-enzymes.info/>" +
-						"PREFIX pdsp: <http://wiki.openphacts.org/index.php/PDSP_DB#>" +
-						"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>" +
-						"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>" +
-						" SELECT ?compound_name ?species ?ic50 ?target_name ?ki_value ?ki_unit ?pubmed_id" +
-						" WHERE {" +
-							"{"+value+" brenda:has_inhibitor ?compound_name ;" +
-							"brenda:has_ic50_value_of ?ic50 ;" +
-							"brenda:species ?species_uri ." +
-							"?species_uri rdfs:label ?species }" +
-						" UNION {"+value+" pdsp:has_test_ligand_name ?compound_name ;" +
-							"pdsp:has_receptor_name ?target_name;" +
-							"pdsp:species ?species ;" +
-							"pdsp:has_ki_value ?ki_entry ." +
-							"?ki_entry rdf:value ?ki_value ;" +
-							"pdsp:unit ?ki_unit " +
-							" OPTIONAL {"+value+" pdsp:pubmed_id ?pubmed_id }}" +
-						"}";
-				}else {
-					sparql= "PREFIX brenda: <http://brenda-enzymes.info/>" +
-						"PREFIX pdsp: <http://wiki.openphacts.org/index.php/PDSP_DB#>" +
-						"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>" +
-						"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>" +
-						" SELECT ?compound_name ?species ?target_name ?ki_value ?ki_unit ?pubmed_id ?ic50" +
-						" WHERE {" +
-							"{"+value+" brenda:has_inhibitor ?compound_name ;" +
-							"brenda:has_ic50_value_of ?ic50 ;" +
-							"brenda:species ?species_uri ." +
-							"?species_uri rdfs:label ?species }" +
-						" UNION {"+value+" pdsp:has_test_ligand_name ?compound_name ;" +
-							"pdsp:has_receptor_name ?target_name;" +
-							"pdsp:species ?species ;" +
-							"pdsp:has_ki_value ?ki_entry ." +
-							"?ki_entry rdf:value ?ki_value ;" +
-							"pdsp:unit ?ki_unit " +
-							" OPTIONAL {"+value+" pdsp:pubmed_id ?pubmed_id }}" +
-						"}";
-					}
+				sparql = "PREFIX cspr: <http://rdf.chemspider.com/#> " +
+						"PREFIX chembl: <http://chem2bio2rdf.org/chembl/resource/> " +
+						"PREFIX pdsp: <http://wiki.openphacts.org/index.php/PDSP_DB#> " +
+						"PREFIX skos: <http://www.w3.org/2004/02/skos/core#>  " +
+						"PREFIX db: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/>  " +
+						"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " +
+						"SELECT ?synonym ?mapping  " +
+						"?chebi ?c2b2r_ChEMBL ?cid ?drugbank_uri ?organism ?indication ?target ?fda_label_files ?protein_binding ?mechanism ?category ?description  " +
+						"?pharma ?biotrans ?dosage ?drug_type ?toxicity ?brand_name ?pos_dis_target ?absorption ?contraind ?patient_info ?generic_name ?drug_name " +
+						"?pubmed_id ?ki_value ?ki_unit " +
+						"?r1 ?r2 ?r3 ?r4 ?r5 ?r6 ?r7 ?r8 ?r9 ?r10 ?r11 ?r12 ?r13 ?r14 ?r15 ?r16 ?r17 ?r18 ?r19 ?r20 ?r21 ?r22 ?r23 ?r24 ?r25 ?r26 " +
+							"WHERE { " +
+							value + " cspr:synonym ?synonym; " +
+							"cspr:exturl ?mapping .  " +
+								"{?mapping skos:exactMatch ?chebi . ?c2b2r_ChEMBL chembl:chebi ?chebi ; " +
+								"chembl:cid ?cid . ?drugbank_uri db:pubchemCompoundURL ?cid .  " +
+								"?drugbank_uri db:affectedOrganism ?organism ; db:indication ?indication ; db:target ?target ; " +
+								"db:fdaLabelFiles ?fda_label_files; db:proteinBinding ?protein_binding ;  " +
+								"db:mechanismOfAction ?mechanism; db:drugCategory ?category ; db:description ?description; " +
+								"db:pharmacology ?pharma ; db:biotransformation ?biotrans ; db:dosageForm ?dosage ;  " +
+								"db:drugType ?drug_type ; db:toxicity ?toxicity ; db:brandName ?brand_name ;  " +
+								"db:possibleDiseaseTarget ?pos_dis_target ;  db:absorption ?absorption  " +
+									"OPTIONAL {?drugbank_uri db:contraindicationInsert ?contraind}   " +
+									"OPTIONAL {?drugbank_uri db:patientInformationInsert ?patient_info} " +
+									"OPTIONAL {?drugbank_uri db:generic_name ?generic_name} " +
+									"OPTIONAL {?drugbank_uri db:drug_name ?drug_name} " +
+								"} " +
+								"UNION{?mapping pdsp:has_ki_value ?ki_entry .  " +
+								"?ki_entry rdf:value ?ki_value ;  " +
+								"pdsp:unit ?ki_unit  . OPTIONAL {?mapping pdsp:pubmed_id ?pubmed_id } " + 
+								"?mapping ?r1 ?r2 ; ?r3 ?r4 ; ?r5 ?r6 ; ?r7 ?r8; ?r9 ?r10; ?r11 ?r12; ?r13 ?r14; ?r15 ?r16; ?r17 ?r18;  " +
+								"?r19 ?r20; ?r21 ?r22; ?r23 ?r24; ?r25 ?r26} " +
+							"} ";
 			} else if (name.equals("default-graph-uri")) {
 				qr.addDefaultGraphUri(value);
 			} else if (name.equals("named-graph-uri")) {
@@ -685,37 +679,52 @@ public class OPSAPIEndpointResource extends ServerResource {
 				}
 				hasMethod = true;
 			} else if (name.equals("uri")) {
-				if (value.contains("brenda")){
-					sparql= "PREFIX brenda: <http://brenda-enzymes.info/> " +
-						"PREFIX pdsp: <http://wiki.openphacts.org/index.php/PDSP_DB#> " +
-						"PREFIX cspr: <http://rdf.chemspider.com/#> " +
-						"PREFIX rdfs: <http://w3.org/2000/01/rdf-schema#> " +
-						" SELECT ?compound_name ?ic50 ?species ?csid_uri ?inchi ?inchi_key ?smiles ?synonym WHERE {" +
-							"{"+value+" brenda:has_inhibitor ?compound_name " +
-								" OPTIONAL {"+value+" brenda:has_ic50_value_of ?ic50}" +
-								" OPTIONAL {"+value+" brenda:species ?species_uri . ?species_uri rdfs:label ?species } }" +
-							" UNION {"+value+" pdsp:has_test_ligand_name ?compound_name  " +
-								" OPTIONAL {?csid_uri cspr:exturl "+value+" } " +
-								" OPTIONAL {?csid_uri cspr:smiles ?smiles}" +
-								" OPTIONAL {?csid_uri cspr:synonym ?synonym} " +
-								" OPTIONAL {?csid_uri cspr:inchi ?inchi ; cspr:inchikey ?inchi_key}}" +
+				sparql="PREFIX cspr: <http://rdf.chemspider.com/#> " +
+					"PREFIX chembl: <http://chem2bio2rdf.org/chembl/resource/> " +
+					"PREFIX pdsp: <http://wiki.openphacts.org/index.php/PDSP_DB#> " +
+					"PREFIX skos: <http://www.w3.org/2004/02/skos/core#>  " +
+					"PREFIX db: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/>  " +
+					"SELECT ?csid ?inchi ?inchi_key ?smiles ?synonym ?mapping " +
+					"?c2b2r_ChEMBL ?chebi ?type ?med_chem_friendly ?cid ?molweight ?chembl_synonyms ?hhd ?alogp ?mw_freebase ?psa  " +
+					"?molformula ?molregno ?ro5_violations ?ro3_pass ?hha ?rtb ?drugbank_uri ?pred_water_sol ?exp_water_sol ?target " + 
+					"?weight_average ?category ?description ?generic_name ?half_life ?state ?pred_logs ?brand_name ?pred_hydrophob ?exp_hydrophob " +
+					"?pdsp_name ?pdsp_displaced ?cas ?pdsp_target ?pdsp_species ?pdsp_source " +
+					"?r1 ?r2 ?r3 ?r4 ?r5 ?r6 ?r7 ?r8 ?r9 ?r10 ?r11 ?r12 ?r13 ?r14 ?r15 ?r16 ?r17 ?r18 ?r19 ?r20 ?r21 ?r22 ?r23 ?r24 ?r25 ?r26 ?r27 ?r28 ?r29 ?r30 ?r31 ?r32 " +
+						"WHERE { " +
+							value+" cspr:smiles ?smiles; " +
+							"cspr:synonym ?synonym ; " +
+							"cspr:inchi ?inchi ; " +
+							"cspr:inchikey ?inchi_key ; " +
+							"cspr:csid ?csid ; " +
+							"cspr:exturl ?mapping " +
+								"{ ?mapping skos:exactMatch ?chebi . " +
+								"?c2b2r_ChEMBL chembl:chebi ?chebi ; " +
+								"a ?type; chembl:med_chem_friendly ?med_chem_friendly;  " +
+								"chembl:cid ?cid ; chembl:molweight ?molweight;  " +
+								"chembl:synonyms ?chembl_synonyms ; chembl:hhd ?hhd ; " +
+								"chembl:alogp ?alogp ; chembl:mw_freebase ?mw_freebase ;  " +
+								"chembl:psa ?psa ; chembl:molformula ?molformula ;  " +
+								"chembl:molregno ?molregno ;  " +
+								"chembl:num_ro5_violations ?ro5_violations ;  " +
+								"chembl:ro3_pass ?ro3_pass ; chembl:hha ?hha ; chembl:rtb ?rtb .  " +
+									"OPTIONAL {?drugbank_uri db:pubchemCompoundURL ?cid .  " +
+									"FILTER (regex(str(?cid), ?id)) .  " +
+									"?drugbank_uri db:predictedWaterSolubility ?pred_water_sol ;  " +
+									"db:experimentalWaterSolubility ?exp_water_sol ;  " +
+									"db:target ?target ; db:molecularWeightAverage ?weight_average ;  " +
+									"db:drugCategory ?category ; db:description ?description ;  " +
+									"db:genericName ?generic_name ; db:halfLife ?half_life ;  " +
+									"db:state ?state ; db:predictedLogs ?pred_logs ; db:brandName ?brand_name} .  " +
+										"OPTIONAL {?drugbank_uri db:predictedLogpHydrophobicity ?pred_hydrophob } .  " +
+										"OPTIONAL {?drugbank_uri db:experimentalLogpHydrophobicity ?exp_hydrophob } " +
+									"} " +
+								"UNION { ?mapping pdsp:has_test_ligand_id ?pdsp_name ; " +
+								"pdsp:ligand_displaced ?pdsp_displaced; " +
+								"pdsp:has_cas_num ?cas ; pdsp:has_receptor_name ?pdsp_target ; " +
+								"pdsp:species ?pdsp_species ; pdsp:source ?pdsp_source ; " +
+								"?r1 ?r2 ; ?r3 ?r4 ; ?r5 ?r6 ; ?r7 ?r8; ?r9 ?r10; ?r11 ?r12; ?r13 ?r14; ?r15 ?r16; ?r17 ?r18;  " +
+								"?r19 ?r20; ?r21 ?r22; ?r23 ?r24; ?r25 ?r26; ?r27 ?r28; ?r29 ?r30; ?r31 ?r32} " +
 						"}";
-				}else {
-					sparql= "PREFIX brenda: <http://brenda-enzymes.info/> " +
-						"PREFIX pdsp: <http://wiki.openphacts.org/index.php/PDSP_DB#> " +
-						"PREFIX cspr: <http://rdf.chemspider.com/#> " +
-						"PREFIX rdfs: <http://w3.org/2000/01/rdf-schema#> " +
-						" SELECT ?compound_name ?csid_uri ?inchi ?inchi_key ?smiles ?synonym ?ic50 ?species WHERE {" +
-							"{"+value+" brenda:has_inhibitor ?compound_name " +
-								" OPTIONAL {"+value+" brenda:has_ic50_value_of ?ic50}" +
-								" OPTIONAL {"+value+" brenda:species ?species_uri . ?species_uri rdfs:label ?species } }" +
-							" UNION {"+value+" pdsp:has_test_ligand_name ?compound_name  " +
-								" OPTIONAL {?csid_uri cspr:exturl "+value+" } " +
-								" OPTIONAL {?csid_uri cspr:smiles ?smiles}" +
-								" OPTIONAL {?csid_uri cspr:synonym ?synonym} " +
-								" OPTIONAL {?csid_uri cspr:inchi ?inchi ; cspr:inchikey ?inchi_key}}" +
-						"}";
-				}
 			} else if (name.equals("default-graph-uri")) {
 				qr.addDefaultGraphUri(value);
 			} else if (name.equals("named-graph-uri")) {
@@ -845,9 +854,7 @@ public class OPSAPIEndpointResource extends ServerResource {
 						"PREFIX pdsp: <http://wiki.openphacts.org/index.php/PDSP_DB#>" +
 						"PREFIX cspr: <http://rdf.chemspider.com/#> " +
 						" SELECT DISTINCT ?compound_uri ?compound_name WHERE {" +
-							"{ ?compound_uri brenda:has_inhibitor ?compound_name } " +
-							" UNION { ?compund_uri pdsp:has_test_ligand_name ?compound_name } " +
-							" UNION { ?csid cspr:exturl ?compound_uri . ?csid cspr:synonym ?compound_name}" +
+							"?compound_uri cspr:synonym ?compound_name" +
 			 				"FILTER regex(?compound_name, \""+value+"\", \"i\") }";
 				}
 			} else if (name.equals("default-graph-uri")) {
