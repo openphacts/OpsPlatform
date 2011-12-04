@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:sc="http://sw.deri.org/2007/07/sitemapextension/scschema.xsd">
+  <sc:dataset>
+    <sc:datasetLabel>SCAIView TextMining Data</sc:datasetLabel>
+    <sc:sparqlEndpointLocation>http://petri.scai.fraunhofer.de:8080/openrdf-sesame/repositories/ops1</sc:sparqlEndpointLocation>
+    <sc:dataDumpLocation>https://trac.nbic.nl/openphacts/browser/datasets/textmining/documents/document.tar.gz</sc:dataDumpLocation>
+    <sc:dataDumpLocation>https://trac.nbic.nl/openphacts/browser/datasets/textmining/tm_concepts/textmining_concept.tar.gz</sc:dataDumpLocation>
+    <sc:dataDumpLocation>https://trac.nbic.nl/openphacts/browser/datasets/textmining/tm_hits/textmining_hit.tar.gz</sc:dataDumpLocation>
+    <lastmod>2011-11-22T12:01:26+01:00</lastmod>
+    <changefreq>monthly</changefreq>
+  </sc:dataset>
+</urlset>
