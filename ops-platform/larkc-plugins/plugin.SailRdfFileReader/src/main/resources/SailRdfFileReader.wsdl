@@ -7,14 +7,14 @@
 	<!-- LarKC plug-in interface -->
 	<wsdl:interface 
 		name="Plugin"
-		sawsdl:modelReference="http://larkc.eu/plugin#RDFReader">
+		sawsdl:modelReference="http://larkc.eu/plugin#SailRdfFileReader">
 	</wsdl:interface>
 	
 	<!-- Define service -->
 	<wsdl:service 
-		name="urn:eu.larkc.plugin.RDFReader.RDFReader" interface="Plugin"
-		sawsdl:modelReference="http://larkc.eu/plugin#RDFReader" >
+		name="urn:eu.larkc.plugin.SailRdfFileReader.SailRdfFileReader" interface="Plugin"
+		sawsdl:modelReference="http://larkc.eu/plugin#SailRdfFileReader" >
 		
-    	<wsdl:endpoint location="java:eu.larkc.plugin.RDFReader.RDFReader" />
+    	<wsdl:endpoint location="java:eu.larkc.plugin.SailRdfFileReader.SailRdfFileReader" />
 	</wsdl:service>
 </wsdl:description>
