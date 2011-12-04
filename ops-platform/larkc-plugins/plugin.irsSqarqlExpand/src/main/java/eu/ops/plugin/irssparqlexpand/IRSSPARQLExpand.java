@@ -56,14 +56,18 @@ public class IRSSPARQLExpand extends Plugin {
     @Override
     protected void initialiseInternal(SetOfStatements params) {
         try {
-            irsHandle = new IRSImpl();
+            irsHandle = instantiateIRS();
         } catch (IRSException ex) {
             System.err.println("Could not instantiate IRS.");
             logger.error("Could not instantiate IRS.");
         }
         logger.info("IRSSPARQLExpand initialized.");
     }
-
+    
+    protected IRS instantiateIRS() throws IRSException {
+            return new IRSImpl();
+    }
+    
     /**
      * Called on plug-in invokation. The actual "work" should be done in this method.
      * 
@@ -105,7 +109,10 @@ public class IRSSPARQLExpand extends Plugin {
                 try {
                     if (o instanceof URI) {
                         matches = irsHandle.getMappingsWithURI(o.stringValue(), null, null);
-                        System.out.println("Number of matches for " + o.stringValue() + " = " + matches.size());
+                        if (logger.isDebugEnabled()) {
+                            logger.debug("Number of matches for " + o.stringValue() + 
+                                    " = " + matches.size());
+                        }
                         spList = expandObjectURI(sp, matches);
                         found = true;
                     }
@@ -200,7 +207,7 @@ public class IRSSPARQLExpand extends Plugin {
      */
     private SPARQLQuery expandQuery(String queryStart, String queryFirstBlock,
             List<StatementPattern> spList, String queryLastBlock, String queryEnd) {
-        System.out.println("Expanding query:");
+        logger.debug("Expanding query:");
         StringBuilder queryBuilder = new StringBuilder(queryStart);
         Iterator<StatementPattern> it = spList.iterator();
         while (it.hasNext()) {
@@ -215,7 +222,9 @@ public class IRSSPARQLExpand extends Plugin {
             }
         }
         queryBuilder.append(queryEnd);
-        System.out.println("\t" + queryBuilder.toString());
+        if (logger.isDebugEnabled()) {
+            logger.debug("Expanded query: " + queryBuilder.toString());
+        }
         return new SPARQLQueryImpl(queryBuilder.toString());
     }
 

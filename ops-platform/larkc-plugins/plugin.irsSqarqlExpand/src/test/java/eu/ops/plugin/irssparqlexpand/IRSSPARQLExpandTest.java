@@ -1,38 +1,136 @@
 package eu.ops.plugin.irssparqlexpand;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+import eu.larkc.core.data.DataFactory;
+import static org.easymock.EasyMock.expect;
+import static org.junit.Assert.*;
+
+
+import eu.larkc.core.data.SetOfStatements;
+import eu.larkc.core.query.SPARQLQuery;
+import eu.larkc.core.query.SPARQLQueryImpl;
+import java.util.Iterator;
+import java.util.List;
+import org.easymock.EasyMockSupport;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.openrdf.model.impl.URIImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import uk.ac.manchester.cs.irs.IRS;
+import uk.ac.manchester.cs.irs.IRSException;
+import uk.ac.manchester.cs.irs.beans.Match;
 
 /**
  * Unit test for your LarKC plug-in.
  */
-public class IRSSPARQLExpandTest 
-    extends TestCase
-{
-    /**
-     * Create the test case
-     *
-     * @param testName name of the test case
-     */
-    public IRSSPARQLExpandTest( String testName )
-    {
-        super( testName );
+public class IRSSPARQLExpandTest
+        extends EasyMockSupport {
+
+    private static Logger logger = LoggerFactory.getLogger(IRSSPARQLExpand.class);
+
+    public IRSSPARQLExpandTest() {
+    }
+
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+    }
+
+    @AfterClass
+    public static void tearDownClass() throws Exception {
+    }
+
+    @Before
+    public void setUp() {
+    }
+
+    @After
+    public void tearDown() {
     }
 
     /**
-     * @return the suite of tests being tested
+     * Test that a query with a single basic graph pattern with a URI in the 
+     * object is expanded.
      */
-    public static Test suite()
-    {
-        return new TestSuite( IRSSPARQLExpandTest.class );
+    @Test
+    public void testOneBGPOneURI() throws IRSException {
+        final IRS mockIRS = createMock(IRS.class);
+        List<Match> mockList = createMock(List.class);
+        Iterator<Match> mockIterator = createMock(Iterator.class);
+        Match mockMatch = createMock(Match.class);
+        expect(mockIRS.getMappingsWithURI("http://brenda-enzymes.info/1.1.1.1", null, null)).andReturn(mockList);
+        expect(mockList.iterator()).andReturn(mockIterator);
+        expect(mockIterator.hasNext()).andReturn(Boolean.TRUE).andReturn(Boolean.FALSE);
+        expect(mockIterator.next()).andReturn(mockMatch);
+        expect(mockMatch.getMatchUri()).andReturn("http://equivalent.uri");
+        replayAll();
+
+        String expectedResult = "SELECT ?protein"
+                + " WHERE { {"
+                + " ?protein <http://www.biopax.org/release/biopax-level2.owl#EC-NUMBER> "
+                + "<http://brenda-enzymes.info/1.1.1.1> .  }  UNION  { "
+                + "?protein <http://www.biopax.org/release/biopax-level2.owl#EC-NUMBER> "
+                + "<http://equivalent.uri> .  }  }";
+        
+        IRSSPARQLExpand s = new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand")) {
+            protected IRS instantiateIRS() throws IRSException {
+                return mockIRS;
+            }
+        };
+        s.initialiseInternal(null);
+        String qStr = "SELECT ?protein"
+                + " WHERE {"
+                + " ?protein <http://www.biopax.org/release/biopax-level2.owl#EC-NUMBER> "
+                + " <http://brenda-enzymes.info/1.1.1.1> . "
+                + "}";
+        SetOfStatements eQuery = s.invokeInternal(new SPARQLQueryImpl(qStr).toRDF());
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        assertEquals(expectedResult, query.toString());
     }
 
     /**
-     * Rigorous Test
+     * Test that a query with a two basic graph patterns with a single URI in the 
+     * object is expanded.
      */
-    public void testMyPlugin()
-    {
-        assertTrue( true );
+    @Test
+    public void testTwoBGPOneURI() throws IRSException {
+        final IRS mockIRS = createMock(IRS.class);
+        List<Match> mockList = createMock(List.class);
+        Iterator<Match> mockIterator = createMock(Iterator.class);
+        Match mockMatch = createMock(Match.class);
+        expect(mockIRS.getMappingsWithURI("http://brenda-enzymes.info/1.1.1.1", null, null)).andReturn(mockList);
+        expect(mockList.iterator()).andReturn(mockIterator);
+        expect(mockIterator.hasNext()).andReturn(Boolean.TRUE).andReturn(Boolean.FALSE);
+        expect(mockIterator.next()).andReturn(mockMatch);
+        expect(mockMatch.getMatchUri()).andReturn("http://equivalent.uri");
+        replayAll();
+
+        String expectedResult = "SELECT ?protein"
+                + " WHERE { {"
+                + " ?protein <http://www.biopax.org/release/biopax-level2.owl#EC-NUMBER> "
+                + "<http://brenda-enzymes.info/1.1.1.1> . "
+                + "?protein <http://www.biopax.org/release.biopax-level2.owl#NAME> ?name .  }  UNION  { "
+                + "?protein <http://www.biopax.org/release/biopax-level2.owl#EC-NUMBER> "
+                + "<http://equivalent.uri> . "
+                + "?protein <http://www.biopax.org/release.biopax-level2.owl#NAME> ?name .  }  }";
+        
+        IRSSPARQLExpand s = new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand")) {
+            protected IRS instantiateIRS() throws IRSException {
+                return mockIRS;
+            }
+        };
+        s.initialiseInternal(null);
+        String qStr = "SELECT ?protein"
+                + " WHERE {"
+                + " ?protein <http://www.biopax.org/release/biopax-level2.owl#EC-NUMBER> "
+                + " <http://brenda-enzymes.info/1.1.1.1> . "
+                + " ?protein <http://www.biopax.org/release.biopax-level2.owl#NAME> ?name . "
+                + "}";
+        SetOfStatements eQuery = s.invokeInternal(new SPARQLQueryImpl(qStr).toRDF());
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        assertEquals(expectedResult, query.toString());
     }
+    
 }
