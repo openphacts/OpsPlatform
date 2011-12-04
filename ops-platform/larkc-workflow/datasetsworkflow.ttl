@@ -75,9 +75,9 @@ _:chemcallout larkc:hasParameter _:chemparam .
 _:chemparam larkc:defaultoutputname larkc:defaultgraph .
 
 #Define the endpoint for this workflow.
-<urn:eu.larkc.endpoint.sparql.ep1> a <urn:eu.larkc.endpoint.sparql> .
+_:ep a <urn:eu.larkc.endpoint.sparql.SparqlEndpoint> .
 #Endpoints are connected to paths in the workflow. Specify the path the above endpoint refers to.
-<urn:eu.larkc.endpoint.sparql.ep1> larkc:links _:path .
+_:ep larkc:links _:path .
 _:path a larkc:Path .
 #Connect the input of the path to a plugin
 _:path larkc:hasInput _:reasoner .
