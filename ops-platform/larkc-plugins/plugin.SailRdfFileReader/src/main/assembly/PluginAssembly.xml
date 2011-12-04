@@ -1,0 +1,35 @@
+<assembly>
+    <id>PluginAssembly</id>
+    <formats>
+        <format>jar</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+    <dependencySets>
+        <dependencySet>
+            <outputDirectory></outputDirectory>
+            <outputFileNameMapping></outputFileNameMapping>
+            <unpack>true</unpack>
+            <scope>runtime</scope>
+	    <useTransitiveDependencies>false</useTransitiveDependencies>
+
+	    <!--includes>
+	        <include>eu.larkc:TestDecider</include>
+	        <include>mylibs:mylib</include>
+	     </includes-->
+
+             <excludes>
+	        <exclude>eu.larkc:platform</exclude>
+	     </excludes>
+
+
+        </dependencySet>
+    </dependencySets>
+
+    <fileSets>
+        <fileSet>
+            <directory>target/classes</directory>
+            <outputDirectory></outputDirectory>
+
+        </fileSet>
+    </fileSets>
+</assembly>
