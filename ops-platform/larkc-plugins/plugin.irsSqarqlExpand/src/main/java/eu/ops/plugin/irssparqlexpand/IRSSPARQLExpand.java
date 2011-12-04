@@ -72,13 +72,17 @@ public class IRSSPARQLExpand extends Plugin {
     protected SetOfStatements invokeInternal(SetOfStatements input) {
         logger.info("SPARQLExpand working.");
 
-
         if (logger.isDebugEnabled()) {
             logger.debug("Input: " + input.getStatements().toString());
         }
 
         // Does not care about the input name since it has a single argument, use any named graph
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(input);
+        //Only working with select queries of BGP
+        if (!query.isSelect()) {
+            return input;
+        }
+        
         List<Match> matches;
         List<StatementPattern> spList = new ArrayList<StatementPattern>();
         boolean found;

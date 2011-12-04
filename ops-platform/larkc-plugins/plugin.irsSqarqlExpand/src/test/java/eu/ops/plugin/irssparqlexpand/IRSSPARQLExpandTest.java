@@ -49,6 +49,63 @@ public class IRSSPARQLExpandTest
     }
 
     /**
+     * Test that we do not do anything with CONSTRUCT queries
+     */
+    @Test
+    public void testConstructQuery() {
+        final IRSClient mockIRS = createMock(IRSClient.class);
+        replayAll();
+        String expectedResult = "CONSTRUCT { ?s ?p ?o } WHERE { ?o ?p ?s }";
+        IRSSPARQLExpand expander = new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand")) {
+            protected IRSClient instantiateIRSClient() {
+                return mockIRS;
+            }
+        };
+        expander.initialiseInternal(null);
+        SetOfStatements eQuery = expander.invoke(new SPARQLQueryImpl(expectedResult).toRDF());
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        assertEquals(expectedResult, query.toString());
+    }
+
+    /**
+     * Test that we do not do anything with DESCRIBE queries
+     */
+    @Test
+    public void testDescribeQuery() {
+        final IRSClient mockIRS = createMock(IRSClient.class);
+        replayAll();
+        String expectedResult = "DESCRIBE <http://brenda-enzymes.info/1.1.1.1>";
+        IRSSPARQLExpand expander = new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand")) {
+            protected IRSClient instantiateIRSClient() {
+                return mockIRS;
+            }
+        };
+        expander.initialiseInternal(null);
+        SetOfStatements eQuery = expander.invoke(new SPARQLQueryImpl(expectedResult).toRDF());
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        assertEquals(expectedResult, query.toString());
+    }
+
+    /**
+     * Test that we do not do anything with ASK queries
+     */
+    @Test
+    public void testAskQuery() {
+        final IRSClient mockIRS = createMock(IRSClient.class);
+        replayAll();
+        String expectedResult = "ASK { ?s ?p ?o }";
+        IRSSPARQLExpand expander = new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand")) {
+            protected IRSClient instantiateIRSClient() {
+                return mockIRS;
+            }
+        };
+        expander.initialiseInternal(null);
+        SetOfStatements eQuery = expander.invoke(new SPARQLQueryImpl(expectedResult).toRDF());
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        assertEquals(expectedResult, query.toString());
+    }
+    
+    /**
      * Test that a query with a single basic graph pattern with a URI in the 
      * object is expanded.
      */
