@@ -19,8 +19,6 @@ import org.junit.Test;
 import org.openrdf.model.impl.URIImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.manchester.cs.irs.IRS;
-import uk.ac.manchester.cs.irs.IRSException;
 import uk.ac.manchester.cs.irs.beans.Match;
 
 /**
@@ -55,12 +53,12 @@ public class IRSSPARQLExpandTest
      * object is expanded.
      */
     @Test
-    public void testOneBGPOneURI() throws IRSException {
-        final IRS mockIRS = createMock(IRS.class);
+    public void testOneBGPOneURI() {
+        final IRSClient mockIRS = createMock(IRSClient.class);
         List<Match> mockList = createMock(List.class);
         Iterator<Match> mockIterator = createMock(Iterator.class);
         Match mockMatch = createMock(Match.class);
-        expect(mockIRS.getMappingsWithURI("http://brenda-enzymes.info/1.1.1.1", null, null)).andReturn(mockList);
+        expect(mockIRS.getMatchesForURI("http://brenda-enzymes.info/1.1.1.1")).andReturn(mockList);
         expect(mockList.iterator()).andReturn(mockIterator);
         expect(mockIterator.hasNext()).andReturn(Boolean.TRUE).andReturn(Boolean.FALSE);
         expect(mockIterator.next()).andReturn(mockMatch);
@@ -75,7 +73,7 @@ public class IRSSPARQLExpandTest
                 + "<http://equivalent.uri> .  }  }";
         
         IRSSPARQLExpand s = new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand")) {
-            protected IRS instantiateIRS() throws IRSException {
+            protected IRSClient instantiateIRSClient() {
                 return mockIRS;
             }
         };
@@ -95,12 +93,12 @@ public class IRSSPARQLExpandTest
      * object is expanded.
      */
     @Test
-    public void testTwoBGPOneURI() throws IRSException {
-        final IRS mockIRS = createMock(IRS.class);
+    public void testTwoBGPOneURI() {
+        final IRSClient mockIRS = createMock(IRSClient.class);
         List<Match> mockList = createMock(List.class);
         Iterator<Match> mockIterator = createMock(Iterator.class);
         Match mockMatch = createMock(Match.class);
-        expect(mockIRS.getMappingsWithURI("http://brenda-enzymes.info/1.1.1.1", null, null)).andReturn(mockList);
+        expect(mockIRS.getMatchesForURI("http://brenda-enzymes.info/1.1.1.1")).andReturn(mockList);
         expect(mockList.iterator()).andReturn(mockIterator);
         expect(mockIterator.hasNext()).andReturn(Boolean.TRUE).andReturn(Boolean.FALSE);
         expect(mockIterator.next()).andReturn(mockMatch);
@@ -117,7 +115,7 @@ public class IRSSPARQLExpandTest
                 + "?protein <http://www.biopax.org/release.biopax-level2.owl#NAME> ?name .  }  }";
         
         IRSSPARQLExpand s = new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand")) {
-            protected IRS instantiateIRS() throws IRSException {
+            protected IRSClient instantiateIRSClient() {
                 return mockIRS;
             }
         };

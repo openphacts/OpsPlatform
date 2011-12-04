@@ -1,0 +1,55 @@
+package eu.ops.plugin.irssparqlexpand;
+
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.GenericType;
+import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.config.ClientConfig;
+import com.sun.jersey.api.client.config.DefaultClientConfig;
+import com.sun.jersey.core.util.MultivaluedMapImpl;
+import java.util.List;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import uk.ac.manchester.cs.irs.beans.Match;
+
+/**
+ * Client for interacting with the IRS service
+ */
+public class IRSClient {
+
+    String serviceAddress = 
+//            "http://localhost:8080/OPS-IRS-Prototype/";
+            "http://ondex2.cs.man.ac.uk:9090/OPS-IRS-Prototype/";
+
+    private final WebResource webResource;
+    
+    public IRSClient() {
+        ClientConfig config = new DefaultClientConfig();
+        Client client = Client.create(config);
+        webResource = client.resource(serviceAddress);        
+    }
+
+    public List<Match> getMatchesForURI(String uri) {
+        //Configure parameters
+        MultivaluedMap<String, String> params = new MultivaluedMapImpl();
+        params.add("uri", uri);
+        //Make service call
+        List<Match> matches = 
+                webResource.path("getMappings")
+                .queryParams(params)
+                .accept(MediaType.APPLICATION_XML_TYPE)
+                .get(new GenericType<List<Match>>() {});
+        return matches;
+    }
+
+    public static void main(String[] args) {
+        IRSClient irsClient = new IRSClient();
+        List<Match> matches = irsClient.getMatchesForURI("http://brenda-enzymes.info/1.1.1.1");
+        StringBuilder response = new StringBuilder("Response:\n");
+        for (Match match : matches) {
+            response.append("\t").append(match.getId())
+                    .append("\t").append(match.getMatchUri()).append("\n");
+        }
+        System.out.println(response.toString());
+    }
+    
+}

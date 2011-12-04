@@ -18,9 +18,6 @@ import eu.larkc.core.query.SPARQLQueryImpl;
 import eu.larkc.plugin.Plugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.manchester.cs.irs.IRS;
-import uk.ac.manchester.cs.irs.IRSException;
-import uk.ac.manchester.cs.irs.IRSImpl;
 import uk.ac.manchester.cs.irs.beans.Match;
 
 /**
@@ -32,7 +29,7 @@ import uk.ac.manchester.cs.irs.beans.Match;
 public class IRSSPARQLExpand extends Plugin {
 
     private static Logger logger = LoggerFactory.getLogger(IRSSPARQLExpand.class);
-    private IRS irsHandle = null;
+    private IRSClient irsClient = null;
 
     /**
      * Constructor.
@@ -55,17 +52,12 @@ public class IRSSPARQLExpand extends Plugin {
      */
     @Override
     protected void initialiseInternal(SetOfStatements params) {
-        try {
-            irsHandle = instantiateIRS();
-        } catch (IRSException ex) {
-            System.err.println("Could not instantiate IRS.");
-            logger.error("Could not instantiate IRS.");
-        }
+        irsClient = instantiateIRSClient();
         logger.info("IRSSPARQLExpand initialized.");
     }
     
-    protected IRS instantiateIRS() throws IRSException {
-            return new IRSImpl();
+    protected IRSClient instantiateIRSClient() {
+            return new IRSClient();
     }
     
     /**
@@ -106,18 +98,14 @@ public class IRSSPARQLExpand extends Plugin {
                 String predicate = varAsString(sp.getPredicateVar());
                 
                 Value o = (Value) sp.getObjectVar().getValue();
-                try {
-                    if (o instanceof URI) {
-                        matches = irsHandle.getMappingsWithURI(o.stringValue(), null, null);
-                        if (logger.isDebugEnabled()) {
-                            logger.debug("Number of matches for " + o.stringValue() + 
-                                    " = " + matches.size());
-                        }
-                        spList = expandObjectURI(sp, matches);
-                        found = true;
+                if (o instanceof URI) {
+                    matches = irsClient.getMatchesForURI(o.stringValue());
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Number of matches for " + o.stringValue() + 
+                                " = " + matches.size());
                     }
-                } catch (IRSException ex) {
-                    logger.warn("Unable to retrieve mappings.", ex);
+                    spList = expandObjectURI(sp, matches);
+                    found = true;
                 }
                 if (found) {
                     queryFirstBlock = queryBuilder.toString();
