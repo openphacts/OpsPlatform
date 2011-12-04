@@ -508,7 +508,7 @@ public class OPSAPIEndpointResource extends ServerResource {
 						"?chebi ?c2b2r_ChEMBL ?cid ?drugbank_uri ?organism ?indication ?target ?fda_label_files ?protein_binding ?mechanism ?category ?description  " +
 						"?pharma ?biotrans ?dosage ?drug_type ?toxicity ?brand_name ?pos_dis_target ?absorption ?contraind ?patient_info ?generic_name ?drug_name " +
 						"?pubmed_id ?ki_value ?ki_unit " +
-						"?r1 ?r2 ?r3 ?r4 ?r5 ?r6 ?r7 ?r8 ?r9 ?r10 ?r11 ?r12 ?r13 ?r14 ?r15 ?r16 ?r17 ?r18 ?r19 ?r20 ?r21 ?r22 ?r23 ?r24 ?r25 ?r26 " +
+						"?r1 ?r2 ?r3 ?r4 ?r5 ?r6 ?r7 ?r8 ?r9 ?r10 ?r11 ?r12 ?r13 ?r14 ?r15 ?r16 ?r17 ?r18 ?r19 ?r20 ?r21 ?r22 ?r23 ?r24 ?r25 " +
 							"WHERE { " +
 							value + " cspr:synonym ?synonym; " +
 							"cspr:exturl ?mapping .  " +
@@ -689,7 +689,7 @@ public class OPSAPIEndpointResource extends ServerResource {
 					"?molformula ?molregno ?ro5_violations ?ro3_pass ?hha ?rtb ?drugbank_uri ?pred_water_sol ?exp_water_sol ?target " + 
 					"?weight_average ?category ?description ?generic_name ?half_life ?state ?pred_logs ?brand_name ?pred_hydrophob ?exp_hydrophob " +
 					"?pdsp_name ?pdsp_displaced ?cas ?pdsp_target ?pdsp_species ?pdsp_source " +
-					"?r1 ?r2 ?r3 ?r4 ?r5 ?r6 ?r7 ?r8 ?r9 ?r10 ?r11 ?r12 ?r13 ?r14 ?r15 ?r16 ?r17 ?r18 ?r19 ?r20 ?r21 ?r22 ?r23 ?r24 ?r25 ?r26 ?r27 ?r28 ?r29 ?r30 ?r31 ?r32 " +
+					"?r1 ?r2 ?r3 ?r4 ?r5 ?r6 ?r7 ?r8 ?r9 ?r10 ?r11 ?r12 ?r13 ?r14 ?r15 ?r16 ?r17 ?r18 ?r19 ?r20 ?r21 ?r22 ?r23 ?r24 ?r25 ?r26 ?r27 ?r28 ?r29 ?r30 ?r31 " +
 						"WHERE { " +
 							value+" cspr:smiles ?smiles; " +
 							"cspr:synonym ?synonym ; " +
@@ -854,7 +854,7 @@ public class OPSAPIEndpointResource extends ServerResource {
 						"PREFIX pdsp: <http://wiki.openphacts.org/index.php/PDSP_DB#>" +
 						"PREFIX cspr: <http://rdf.chemspider.com/#> " +
 						" SELECT DISTINCT ?compound_uri ?compound_name WHERE {" +
-							"?compound_uri cspr:synonym ?compound_name" +
+							"?compound_uri cspr:synonym ?compound_name " +
 			 				"FILTER regex(?compound_name, \""+value+"\", \"i\") }";
 				}
 			} else if (name.equals("default-graph-uri")) {
