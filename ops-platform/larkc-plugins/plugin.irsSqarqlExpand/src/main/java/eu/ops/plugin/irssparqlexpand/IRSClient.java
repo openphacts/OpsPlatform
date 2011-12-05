@@ -6,9 +6,12 @@ import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
+import java.util.ArrayList;
 import java.util.List;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import org.openrdf.model.URI;
+import org.openrdf.model.impl.URIImpl;
 import uk.ac.manchester.cs.irs.beans.Match;
 
 /**
@@ -39,6 +42,28 @@ public class IRSClient {
                 .accept(MediaType.APPLICATION_XML_TYPE)
                 .get(new GenericType<List<Match>>() {});
         return matches;
+    }
+
+    List<URI> getMatchesForURI(URI uri) {
+        //Configure parameters
+        MultivaluedMap<String, String> params = new MultivaluedMapImpl();
+        params.add("uri", uri.stringValue());
+        //Make service call
+        List<Match> matches = 
+                webResource.path("getMappings")
+                .queryParams(params)
+                .accept(MediaType.APPLICATION_XML_TYPE)
+                .get(new GenericType<List<Match>>() {});
+        return extractMatches(matches);
+    }
+
+    private List<URI> extractMatches(List<Match> matches) {
+        List<URI> uriList = new ArrayList<URI>();
+        for (Match match : matches) {
+            URI uri = new URIImpl(match.getMatchUri());
+            uriList.add(uri);
+        }
+        return uriList;
     }
 
     public static void main(String[] args) {

@@ -15,7 +15,9 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
+import org.openrdf.model.URI;
 import org.openrdf.model.impl.URIImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -110,7 +112,97 @@ public class IRSSPARQLExpandTest
      * object is expanded.
      */
     @Test
-    public void testOneBGPOneURI() {
+    public void testOneBGPOneObjectURI() {
+        final IRSClient mockIRS = createMock(IRSClient.class);
+        List<URI> mockList = createMock(List.class);
+        Iterator<URI> mockIterator = createMock(Iterator.class);
+        expect(mockIRS.getMatchesForURI(
+                new URIImpl("http://foo.info/1.1.1.1"))).andReturn(mockList);
+        expect(mockList.size()).andReturn(1);
+        expect(mockList.iterator()).andReturn(mockIterator);
+        expect(mockIterator.hasNext()).andReturn(Boolean.TRUE).andReturn(Boolean.FALSE);
+        expect(mockIterator.next()).andReturn(new URIImpl("http://bar.com/8hd83"));
+        replayAll();
+
+        String expectedResult = "SELECT ?protein"
+                + " WHERE { {  "
+                + "?protein <http://www.foo.org/somePredicate> "
+                + "<http://foo.info/1.1.1.1> . } UNION {  "
+                + "?protein <http://www.foo.org/somePredicate> "
+                + "<http://bar.com/8hd83> . }  }";
+        
+        IRSSPARQLExpand s = new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand")) {
+            protected IRSClient instantiateIRSClient() {
+                return mockIRS;
+            }
+        };
+        s.initialiseInternal(null);
+        String qStr = "SELECT ?protein"
+                + " WHERE { "
+                + "?protein <http://www.foo.org/somePredicate> <http://foo.info/1.1.1.1> . "
+                + "}";
+        SetOfStatements eQuery = s.invokeInternal(new SPARQLQueryImpl(qStr).toRDF());
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        assertEquals(expectedResult, query.toString());
+    }
+    
+    /**
+     * Test that a query with a single basic graph pattern with a URI in the 
+     * subject is expanded.
+     */
+    @Test
+    public void testOneBGPOneSubjectURI() {
+        final IRSClient mockIRS = createMock(IRSClient.class);
+        List<URI> mockList = createMock(List.class);
+        Iterator<URI> mockIterator = createMock(Iterator.class);
+        Match mockMatch = createMock(Match.class);
+        expect(mockIRS.getMatchesForURI(new URIImpl("http://foo.com/45273"))).andReturn(mockList);
+        expect(mockList.size()).andReturn(2);
+        expect(mockList.iterator()).andReturn(mockIterator);
+        expect(mockIterator.hasNext())
+                .andReturn(Boolean.TRUE).times(2)
+                .andReturn(Boolean.FALSE);
+        expect(mockIterator.next())
+                .andReturn(new URIImpl("http://bar.co.uk/346579"))
+                .andReturn(new URIImpl("http://bar.ac.uk/19278"));
+        replayAll();
+
+        String expectedResult = "SELECT ?p ?o"
+                + " WHERE { { "
+                + " <http://foo.com/45273> "
+                + " ?p "
+                + " ?o . } UNION { "
+                + " <http://bar.co.uk/346579> "
+                + " ?p "
+                + " ?o . } UNION { "
+                + " <http://bar.ac.uk/19278> "
+                + " ?p "
+                + " ?o . }  }";
+        
+        IRSSPARQLExpand s = new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand")) {
+            protected IRSClient instantiateIRSClient() {
+                return mockIRS;
+            }
+        };
+        s.initialiseInternal(null);
+        String qStr = "SELECT ?p ?o"
+                + " WHERE {"
+                + " <http://foo.com/45273> "
+                + " ?p "
+                + " ?o . "
+                + "}";
+        SetOfStatements eQuery = s.invokeInternal(new SPARQLQueryImpl(qStr).toRDF());
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        System.out.println("Expanded query:\n\t" + query.toString());
+        assertEquals(expectedResult, query.toString());
+    }
+
+    /**
+     * Test that a query with a single basic graph pattern with a URI in the 
+     * subject and object is expanded.
+     */
+    @Test@Ignore
+    public void testOneBGPOneSubjectOneObjectURI() {
         final IRSClient mockIRS = createMock(IRSClient.class);
         List<Match> mockList = createMock(List.class);
         Iterator<Match> mockIterator = createMock(Iterator.class);
@@ -122,12 +214,20 @@ public class IRSSPARQLExpandTest
         expect(mockMatch.getMatchUri()).andReturn("http://equivalent.uri");
         replayAll();
 
-        String expectedResult = "SELECT ?protein"
+        String expectedResult = "SELECT ?p"
                 + " WHERE { {"
-                + " ?protein <http://www.biopax.org/release/biopax-level2.owl#EC-NUMBER> "
-                + "<http://brenda-enzymes.info/1.1.1.1> .  }  UNION  { "
-                + "?protein <http://www.biopax.org/release/biopax-level2.owl#EC-NUMBER> "
-                + "<http://equivalent.uri> .  }  }";
+                + " <http://rdf.chemspider.com/45273> "
+                + " ?p "
+                + " <http://brenda-enzymes.info/1.1.1.1> .  }  UNION  { "
+                + " <https://www.ebi.ac.uk/chembldb/index.php/compound/inspect/346579> "
+                + " ?p "
+                + " <http://brenda-enzymes.info/1.1.1.1> .  }  UNION  { "
+                + " <http://rdf.chemspider.com/45273> "
+                + " ?p "
+                + " <http://equivalent.uri> .  }  UNION  { "
+                + " <https://www.ebi.ac.uk/chembldb/index.php/compound/inspect/346579> "
+                + " ?p "
+                + " <http://equivalent.uri> .  }  }";
         
         IRSSPARQLExpand s = new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand")) {
             protected IRSClient instantiateIRSClient() {
@@ -135,9 +235,10 @@ public class IRSSPARQLExpandTest
             }
         };
         s.initialiseInternal(null);
-        String qStr = "SELECT ?protein"
+        String qStr = "SELECT ?p"
                 + " WHERE {"
-                + " ?protein <http://www.biopax.org/release/biopax-level2.owl#EC-NUMBER> "
+                + " <http://rdf.chemspider.com/45273> . "
+                + " ?p "
                 + " <http://brenda-enzymes.info/1.1.1.1> . "
                 + "}";
         SetOfStatements eQuery = s.invokeInternal(new SPARQLQueryImpl(qStr).toRDF());
@@ -150,26 +251,24 @@ public class IRSSPARQLExpandTest
      * object is expanded.
      */
     @Test
-    public void testTwoBGPOneURI() {
+    public void testTwoBGPOneObjectURI() {
         final IRSClient mockIRS = createMock(IRSClient.class);
-        List<Match> mockList = createMock(List.class);
-        Iterator<Match> mockIterator = createMock(Iterator.class);
-        Match mockMatch = createMock(Match.class);
-        expect(mockIRS.getMatchesForURI("http://brenda-enzymes.info/1.1.1.1")).andReturn(mockList);
+        List<URI> mockList = createMock(List.class);
+        Iterator<URI> mockIterator = createMock(Iterator.class);
+        expect(mockIRS.getMatchesForURI(new URIImpl("http://foo.info/1.1.1.1"))).andReturn(mockList);
+        expect(mockList.size()).andReturn(1);
         expect(mockList.iterator()).andReturn(mockIterator);
         expect(mockIterator.hasNext()).andReturn(Boolean.TRUE).andReturn(Boolean.FALSE);
-        expect(mockIterator.next()).andReturn(mockMatch);
-        expect(mockMatch.getMatchUri()).andReturn("http://equivalent.uri");
+        expect(mockIterator.next()).andReturn(new URIImpl("http://bar.com/9khd7"));
         replayAll();
 
         String expectedResult = "SELECT ?protein"
-                + " WHERE { {"
-                + " ?protein <http://www.biopax.org/release/biopax-level2.owl#EC-NUMBER> "
-                + "<http://brenda-enzymes.info/1.1.1.1> . "
-                + "?protein <http://www.biopax.org/release.biopax-level2.owl#NAME> ?name .  }  UNION  { "
-                + "?protein <http://www.biopax.org/release/biopax-level2.owl#EC-NUMBER> "
-                + "<http://equivalent.uri> . "
-                + "?protein <http://www.biopax.org/release.biopax-level2.owl#NAME> ?name .  }  }";
+                + " WHERE { { "
+                + "?protein <http://foo.com/somePredicate> <http://foo.info/1.1.1.1> . "
+                + "?protein <http://foo.com/anotherPredicate> ?name . "
+                + "} UNION { "
+                + "?protein <http://foo.com/somePredicate> <http://bar.com/9khd7> . "
+                + "?protein <http://foo.com/anotherPredicate> ?name . }  }";
         
         IRSSPARQLExpand s = new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand")) {
             protected IRSClient instantiateIRSClient() {
@@ -179,9 +278,8 @@ public class IRSSPARQLExpandTest
         s.initialiseInternal(null);
         String qStr = "SELECT ?protein"
                 + " WHERE {"
-                + " ?protein <http://www.biopax.org/release/biopax-level2.owl#EC-NUMBER> "
-                + " <http://brenda-enzymes.info/1.1.1.1> . "
-                + " ?protein <http://www.biopax.org/release.biopax-level2.owl#NAME> ?name . "
+                + "?protein <http://foo.com/somePredicate> <http://foo.info/1.1.1.1> . "
+                + "?protein <http://foo.com/anotherPredicate> ?name . "
                 + "}";
         SetOfStatements eQuery = s.invokeInternal(new SPARQLQueryImpl(qStr).toRDF());
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);

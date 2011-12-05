@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import java.util.Set;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.openrdf.model.impl.URIImpl;
@@ -16,6 +17,8 @@ import eu.larkc.core.data.SetOfStatements;
 import eu.larkc.core.query.SPARQLQuery;
 import eu.larkc.core.query.SPARQLQueryImpl;
 import eu.larkc.plugin.Plugin;
+import java.util.HashMap;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.manchester.cs.irs.beans.Match;
@@ -80,6 +83,7 @@ public class IRSSPARQLExpand extends Plugin {
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(input);
         //Only working with select queries of BGP
         if (!query.isSelect()) {
+            logger.info("No query exapnsion performed as not a select query.");
             return input;
         }
         
@@ -87,42 +91,49 @@ public class IRSSPARQLExpand extends Plugin {
         List<StatementPattern> spList = new ArrayList<StatementPattern>();
         boolean found;
         String queryFirstBlock = "";
+        Var s;
+        Var o;
 
         if (query instanceof SPARQLQuery) {
             String queryString = query.toString();
-            String queryStart = queryString.substring(0, queryString.indexOf("{")+1);
-            String queryEnd = queryString.substring(queryString.lastIndexOf("}")-1, queryString.length());
+            final int whereStartIndex = queryString.indexOf("{")+1;
+            final int whereEndIndex = queryString.lastIndexOf("}")-1;
+            String queryStart = queryString.substring(0, whereStartIndex);
+            String queryWhereClause = queryString.substring(whereStartIndex, whereEndIndex);
+            String queryEnd = queryString.substring(whereEndIndex, queryString.length());
+            System.out.println("Query:\n\t" + queryStart + "\n\t" + 
+                    queryWhereClause + "\n\t" + queryEnd + "\n\n");
 
             StatementPatternCollector spc = new StatementPatternCollector();
             ((SPARQLQueryImpl) query).getParsedQuery().getTupleExpr().visit(spc);
             StringBuilder queryBuilder = new StringBuilder();            
             found = false;
+            Map<URI, List<URI>> uriMap = new HashMap<URI, List<URI>>();
             for (StatementPattern sp : spc.getStatementPatterns()) {
                 String subject = varAsString(sp.getSubjectVar());
-                String predicate = varAsString(sp.getPredicateVar());
-                
-                Value o = (Value) sp.getObjectVar().getValue();
-                if (o instanceof URI) {
-                    matches = irsClient.getMatchesForURI(o.stringValue());
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Number of matches for " + o.stringValue() + 
-                                " = " + matches.size());
+                s = sp.getSubjectVar();
+                if (s.hasValue()) {
+                    Value value = s.getValue();
+                    if (value instanceof URI) {
+                        URI uri = (URI) value;
+                        List<URI> uriList = irsClient.getMatchesForURI(uri);
+                        uriMap.put(uri, uriList);
+System.out.println("Number of matches for " + uri + ": " + uriList.size());
                     }
-                    spList = expandObjectURI(sp, matches);
-                    found = true;
                 }
-                if (found) {
-                    queryFirstBlock = queryBuilder.toString();
-                    queryBuilder = new StringBuilder();
-                    found = false;
-                } else {
-                    queryBuilder.append(subject).append(" ");
-                    queryBuilder.append(predicate).append(" ");
-                    queryBuilder.append(varAsString(sp.getObjectVar())).append(" . ");
+                
+                o = sp.getObjectVar();
+                if (o.hasValue()) {
+                    Value value = o.getValue();
+                    if (value instanceof URI) {
+                        URI uri = (URI) value;
+                        List<URI> uriList = irsClient.getMatchesForURI(uri);
+                        uriMap.put(uri, uriList);
+System.out.println("Number of matches for " + uri + ": " + uriList.size());
+                    }
                 }
             }
-            SPARQLQuery expandedQuery = expandQuery(queryStart, queryFirstBlock, 
-                    spList, queryBuilder.toString(), queryEnd);
+            SPARQLQuery expandedQuery = constructExpandedQuery(queryStart, queryWhereClause, queryEnd, uriMap);
             return expandedQuery.toRDF();
         }
         if (logger.isInfoEnabled()) {
@@ -189,12 +200,42 @@ public class IRSSPARQLExpand extends Plugin {
         }
         return spList;
     }
+
+    /**
+     * Expand the supplied query into a set of UNION queries
+     * 
+     * @param queryStart select clause of the original SPARQL query with WHERE {
+     * @param queryWhereClause original text of the WHERE clause
+     * @param queryEnd everything from the close of the WHERE clause in the original query
+     * @param uriMap Map of equivalent URIs for all URIs that appear in the subject or object of BGP in the query
+     * @return expanded query
+     */
+    private SPARQLQuery constructExpandedQuery(String queryStart, 
+            String queryWhereClause, String queryEnd, Map<URI, List<URI>> uriMap) {
+        StringBuilder expandedWhereClause = new StringBuilder(" { " + queryWhereClause);
+        String whereClauseText;
+        for (URI uri : uriMap.keySet()) {
+            for (URI uriMatch : uriMap.get(uri)) {
+                expandedWhereClause.append(" } UNION { ");
+//                System.out.println(uri.stringValue());
+//                System.out.println(uriMatch.stringValue());
+                String equivalentWhereClause = queryWhereClause.replace(uri.stringValue(), uriMatch.stringValue());
+//                System.out.println(equivalentWhereClause);
+                expandedWhereClause.append(equivalentWhereClause);
+            }
+        }
+        expandedWhereClause.append(" } ");
+        return new SPARQLQueryImpl(queryStart + expandedWhereClause.toString() + queryEnd);
+    }
     
     /**
      * Expand the supplied query into a set of UNION queries
      * 
-     * @param query original SPARQL query
-     * @param uriMappings map of equivalent URIs for each URI in the query
+     * @param queryStart select clause of the original SPARQL query with WHERE {
+     * @param queryFirstBlock first part of the where clause up to where the URI was found
+     * @param spList List of equivalent statements
+     * @param queryLastBlock any BGP that appear after the URI was expanded
+     * @param queryEnd everything from the close of the WHERE clause in the original query
      * @return expanded query
      */
     private SPARQLQuery expandQuery(String queryStart, String queryFirstBlock,
@@ -237,7 +278,7 @@ public class IRSSPARQLExpand extends Plugin {
                 + " ?protein <http://www.biopax.org/release/biopax-level2.owl#EC-NUMBER> "
                 + " <http://brenda-enzymes.info/1.1.1.1> . "
 //                + " ?protein <http://www.biopax.org/release.biopax-level2.owl#NAME> ?name . "
-                + " <http://rdf.chemspider.com/37> ?p ?o ."
+//                + " <http://rdf.chemspider.com/37> ?p ?o ."
                 + "}";
 
         System.out.println("Original query:\n\t" + qStr + "\n");
