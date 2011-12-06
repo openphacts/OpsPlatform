@@ -101,8 +101,8 @@ public class IRSSPARQLExpand extends Plugin {
             String queryStart = queryString.substring(0, whereStartIndex);
             String queryWhereClause = queryString.substring(whereStartIndex, whereEndIndex);
             String queryEnd = queryString.substring(whereEndIndex, queryString.length());
-            System.out.println("Query:\n\t" + queryStart + "\n\t" + 
-                    queryWhereClause + "\n\t" + queryEnd + "\n\n");
+//            System.out.println("Query:\n\t" + queryStart + "\n\t" + 
+//                    queryWhereClause + "\n\t" + queryEnd + "\n\n");
 
             StatementPatternCollector spc = new StatementPatternCollector();
             ((SPARQLQueryImpl) query).getParsedQuery().getTupleExpr().visit(spc);
@@ -212,53 +212,24 @@ System.out.println("Number of matches for " + uri + ": " + uriList.size());
      */
     private SPARQLQuery constructExpandedQuery(String queryStart, 
             String queryWhereClause, String queryEnd, Map<URI, List<URI>> uriMap) {
-        StringBuilder expandedWhereClause = new StringBuilder(" { " + queryWhereClause);
-        String whereClauseText;
+        logger.debug("Expanding query:");
+        String whereClauseText = queryWhereClause;
         for (URI uri : uriMap.keySet()) {
+            StringBuilder expandedWhereClause = new StringBuilder(whereClauseText);
             for (URI uriMatch : uriMap.get(uri)) {
                 expandedWhereClause.append(" } UNION { ");
-//                System.out.println(uri.stringValue());
-//                System.out.println(uriMatch.stringValue());
-                String equivalentWhereClause = queryWhereClause.replace(uri.stringValue(), uriMatch.stringValue());
-//                System.out.println(equivalentWhereClause);
+                String equivalentWhereClause = 
+                        whereClauseText.replace(uri.stringValue(), uriMatch.stringValue());
                 expandedWhereClause.append(equivalentWhereClause);
             }
+            whereClauseText = expandedWhereClause.toString();
         }
-        expandedWhereClause.append(" } ");
-        return new SPARQLQueryImpl(queryStart + expandedWhereClause.toString() + queryEnd);
-    }
-    
-    /**
-     * Expand the supplied query into a set of UNION queries
-     * 
-     * @param queryStart select clause of the original SPARQL query with WHERE {
-     * @param queryFirstBlock first part of the where clause up to where the URI was found
-     * @param spList List of equivalent statements
-     * @param queryLastBlock any BGP that appear after the URI was expanded
-     * @param queryEnd everything from the close of the WHERE clause in the original query
-     * @return expanded query
-     */
-    private SPARQLQuery expandQuery(String queryStart, String queryFirstBlock,
-            List<StatementPattern> spList, String queryLastBlock, String queryEnd) {
-        logger.debug("Expanding query:");
-        StringBuilder queryBuilder = new StringBuilder(queryStart);
-        Iterator<StatementPattern> it = spList.iterator();
-        while (it.hasNext()) {
-            StatementPattern sp = it.next();
-            queryBuilder.append(" { ");
-            queryBuilder.append(queryFirstBlock);
-            queryBuilder.append(statementPatternAsString(sp));
-            queryBuilder.append(queryLastBlock);
-            queryBuilder.append(" } ");
-            if (it.hasNext()) {
-                queryBuilder.append(" UNION ");
-            }
-        }
-        queryBuilder.append(queryEnd);
+        final SPARQLQueryImpl expandedQuery = 
+                new SPARQLQueryImpl(queryStart + " { " + whereClauseText + " } " + queryEnd);
         if (logger.isDebugEnabled()) {
-            logger.debug("Expanded query: " + queryBuilder.toString());
+            logger.debug("Expanded query: " + expandedQuery.toString());
         }
-        return new SPARQLQueryImpl(queryBuilder.toString());
+        return expandedQuery;
     }
 
     /**
@@ -278,7 +249,7 @@ System.out.println("Number of matches for " + uri + ": " + uriList.size());
                 + " ?protein <http://www.biopax.org/release/biopax-level2.owl#EC-NUMBER> "
                 + " <http://brenda-enzymes.info/1.1.1.1> . "
 //                + " ?protein <http://www.biopax.org/release.biopax-level2.owl#NAME> ?name . "
-//                + " <http://rdf.chemspider.com/37> ?p ?o ."
+                + " <http://rdf.chemspider.com/37> ?p ?o ."
                 + "}";
 
         System.out.println("Original query:\n\t" + qStr + "\n");

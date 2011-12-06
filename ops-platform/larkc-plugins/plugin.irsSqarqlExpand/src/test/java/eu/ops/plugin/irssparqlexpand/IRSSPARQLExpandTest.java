@@ -201,33 +201,32 @@ public class IRSSPARQLExpandTest
      * Test that a query with a single basic graph pattern with a URI in the 
      * subject and object is expanded.
      */
-    @Test@Ignore
+    @Test
     public void testOneBGPOneSubjectOneObjectURI() {
         final IRSClient mockIRS = createMock(IRSClient.class);
-        List<Match> mockList = createMock(List.class);
-        Iterator<Match> mockIterator = createMock(Iterator.class);
-        Match mockMatch = createMock(Match.class);
-        expect(mockIRS.getMatchesForURI("http://brenda-enzymes.info/1.1.1.1")).andReturn(mockList);
-        expect(mockList.iterator()).andReturn(mockIterator);
-        expect(mockIterator.hasNext()).andReturn(Boolean.TRUE).andReturn(Boolean.FALSE);
-        expect(mockIterator.next()).andReturn(mockMatch);
-        expect(mockMatch.getMatchUri()).andReturn("http://equivalent.uri");
+        List<URI> mockList = createMock(List.class);
+        Iterator<URI> mockIterator = createMock(Iterator.class);
+        expect(mockIRS.getMatchesForURI(new URIImpl("http://example.org/chem/8j392"))).andReturn(mockList);
+        expect(mockIRS.getMatchesForURI(new URIImpl("http://foo.com/1.1.1.1"))).andReturn(mockList);
+        expect(mockList.size()).andReturn(1).times(2);
+        expect(mockList.iterator()).andReturn(mockIterator).times(2);
+        expect(mockIterator.hasNext()).andReturn(Boolean.TRUE).andReturn(Boolean.FALSE)
+                .andReturn(Boolean.TRUE).andReturn(Boolean.FALSE);
+        expect(mockIterator.next())
+                .andReturn(new URIImpl("http://result.com/90"))
+                .andReturn(new URIImpl("http://bar.info/u83hs"));
         replayAll();
 
         String expectedResult = "SELECT ?p"
-                + " WHERE { {"
-                + " <http://rdf.chemspider.com/45273> "
-                + " ?p "
-                + " <http://brenda-enzymes.info/1.1.1.1> .  }  UNION  { "
-                + " <https://www.ebi.ac.uk/chembldb/index.php/compound/inspect/346579> "
-                + " ?p "
-                + " <http://brenda-enzymes.info/1.1.1.1> .  }  UNION  { "
-                + " <http://rdf.chemspider.com/45273> "
-                + " ?p "
-                + " <http://equivalent.uri> .  }  UNION  { "
-                + " <https://www.ebi.ac.uk/chembldb/index.php/compound/inspect/346579> "
-                + " ?p "
-                + " <http://equivalent.uri> .  }  }";
+                + " WHERE { { "
+                + " <http://example.org/chem/8j392> ?p <http://foo.com/1.1.1.1> . "
+                + "} UNION { "
+                + " <http://result.com/90> ?p <http://foo.com/1.1.1.1> . "
+                + "} UNION { "
+                + " <http://example.org/chem/8j392> ?p <http://bar.info/u83hs> . "
+                + "} UNION { "
+                + " <http://result.com/90> ?p <http://bar.info/u83hs> . "
+                + "}  }";
         
         IRSSPARQLExpand s = new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand")) {
             protected IRSClient instantiateIRSClient() {
@@ -235,12 +234,9 @@ public class IRSSPARQLExpandTest
             }
         };
         s.initialiseInternal(null);
-        String qStr = "SELECT ?p"
-                + " WHERE {"
-                + " <http://rdf.chemspider.com/45273> . "
-                + " ?p "
-                + " <http://brenda-enzymes.info/1.1.1.1> . "
-                + "}";
+        String qStr = "SELECT ?p "
+                + "WHERE { "
+                + "<http://example.org/chem/8j392> ?p <http://foo.com/1.1.1.1> . }";
         SetOfStatements eQuery = s.invokeInternal(new SPARQLQueryImpl(qStr).toRDF());
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
         assertEquals(expectedResult, query.toString());
