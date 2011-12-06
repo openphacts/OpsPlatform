@@ -199,10 +199,10 @@ public class IRSSPARQLExpandTest
 
     /**
      * Test that a query with a single basic graph pattern with a URI in the 
-     * subject and object is expanded.
+     * subject and object is expanded when there is one match for each URI.
      */
     @Test
-    public void testOneBGPOneSubjectOneObjectURI() {
+    public void testOneBGPOneSubjectOneObjectURIOneMatchEach() {
         final IRSClient mockIRS = createMock(IRSClient.class);
         List<URI> mockList = createMock(List.class);
         Iterator<URI> mockIterator = createMock(Iterator.class);
@@ -226,6 +226,71 @@ public class IRSSPARQLExpandTest
                 + " <http://example.org/chem/8j392> ?p <http://bar.info/u83hs> . "
                 + "} UNION { "
                 + " <http://result.com/90> ?p <http://bar.info/u83hs> . "
+                + "}  }";
+        
+        IRSSPARQLExpand s = new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand")) {
+            protected IRSClient instantiateIRSClient() {
+                return mockIRS;
+            }
+        };
+        s.initialiseInternal(null);
+        String qStr = "SELECT ?p "
+                + "WHERE { "
+                + "<http://example.org/chem/8j392> ?p <http://foo.com/1.1.1.1> . }";
+        SetOfStatements eQuery = s.invokeInternal(new SPARQLQueryImpl(qStr).toRDF());
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        assertEquals(expectedResult, query.toString());
+    }
+
+    /**
+     * Test that a query with a single basic graph pattern with a URI in the 
+     * subject and object is expanded when there is one match for each URI.
+     */
+    @Test
+    public void testOneBGPOneSubjectOneObjectURIMultipleMatches() {
+        final IRSClient mockIRS = createMock(IRSClient.class);
+        List<URI> mockList = createMock(List.class);
+        Iterator<URI> mockIterator = createMock(Iterator.class);
+        expect(mockIRS.getMatchesForURI(new URIImpl("http://example.org/chem/8j392"))).andReturn(mockList);
+        expect(mockIRS.getMatchesForURI(new URIImpl("http://foo.com/1.1.1.1"))).andReturn(mockList);
+        expect(mockList.size()).andReturn(3).andReturn(2);
+        expect(mockList.iterator()).andReturn(mockIterator).times(2);
+        expect(mockIterator.hasNext()).andReturn(Boolean.TRUE).times(3).andReturn(Boolean.FALSE)
+                .andReturn(Boolean.TRUE).times(2).andReturn(Boolean.FALSE);
+        expect(mockIterator.next())
+                //TODO: Correctly work out the returned URIs and the expected query
+                .andReturn(new URIImpl("http://result.com/90"))
+                .andReturn(new URIImpl("http://somewhere.com/chebi/7s82"))
+                .andReturn(new URIImpl("http://another.com/maps/hsjnc"))
+                .andReturn(new URIImpl("http://bar.info/u83hs"))
+                .andReturn(new URIImpl("http://onemore.co.uk/892k3"));
+        replayAll();
+
+        String expectedResult = "SELECT ?p"
+                + " WHERE { { "
+                + " <http://example.org/chem/8j392> ?p <http://foo.com/1.1.1.1> . "
+                + "} UNION { "
+                + " <http://result.com/90> ?p <http://foo.com/1.1.1.1> . "
+                + "} UNION { "
+                + " <http://somewhere.com/chebi/7s82> ?p <http://foo.com/1.1.1.1> . "
+                + "} UNION { "
+                + " <http://another.com/maps/hsjnc> ?p <http://foo.com/1.1.1.1> . "
+                + "} UNION { "
+                + " <http://example.org/chem/8j392> ?p <http://bar.info/u83hs> . "
+                + "} UNION { "
+                + " <http://result.com/90> ?p <http://bar.info/u83hs> . "
+                + "} UNION { "
+                + " <http://somewhere.com/chebi/7s82> ?p <http://bar.info/u83hs> . "
+                + "} UNION { "
+                + " <http://another.com/maps/hsjnc> ?p <http://bar.info/u83hs> . "
+                + "} UNION { "
+                + " <http://example.org/chem/8j392> ?p <http://onemore.co.uk/892k3> . "
+                + "} UNION { "
+                + " <http://result.com/90> ?p <http://onemore.co.uk/892k3> . "
+                + "} UNION { "
+                + " <http://somewhere.com/chebi/7s82> ?p <http://onemore.co.uk/892k3> . "
+                + "} UNION { "
+                + " <http://another.com/maps/hsjnc> ?p <http://onemore.co.uk/892k3> . "
                 + "}  }";
         
         IRSSPARQLExpand s = new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand")) {
