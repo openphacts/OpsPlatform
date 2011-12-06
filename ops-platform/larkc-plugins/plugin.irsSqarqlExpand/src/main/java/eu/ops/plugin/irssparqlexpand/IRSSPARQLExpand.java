@@ -1,24 +1,20 @@
 package eu.ops.plugin.irssparqlexpand;
 
+import eu.larkc.core.data.DataFactory;
+import eu.larkc.core.data.SetOfStatements;
+import eu.larkc.core.query.SPARQLQuery;
+import eu.larkc.core.query.SPARQLQueryImpl;
+import eu.larkc.plugin.Plugin;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.List;
-
-import java.util.Set;
+import java.util.Map;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.algebra.StatementPattern;
 import org.openrdf.query.algebra.Var;
 import org.openrdf.query.algebra.helpers.StatementPatternCollector;
-
-import eu.larkc.core.data.DataFactory;
-import eu.larkc.core.data.SetOfStatements;
-import eu.larkc.core.query.SPARQLQuery;
-import eu.larkc.core.query.SPARQLQueryImpl;
-import eu.larkc.plugin.Plugin;
-import java.util.HashMap;
-import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.manchester.cs.irs.beans.Match;
@@ -97,11 +93,12 @@ public class IRSSPARQLExpand extends Plugin {
         if (query instanceof SPARQLQuery) {
             String queryString = query.toString();
             final int whereStartIndex = queryString.indexOf("{")+1;
-            final int whereEndIndex = queryString.lastIndexOf("}")-1;
+            final int whereEndIndex = queryString.lastIndexOf("}");
             String queryStart = queryString.substring(0, whereStartIndex);
             String queryWhereClause = queryString.substring(whereStartIndex, whereEndIndex);
             String queryEnd = queryString.substring(whereEndIndex, queryString.length());
-//            System.out.println("Query:\n\t" + queryStart + "\n\t" + 
+            
+//System.out.println("Query:\n\t" + queryStart + "\n\t" + 
 //                    queryWhereClause + "\n\t" + queryEnd + "\n\n");
 
             StatementPatternCollector spc = new StatementPatternCollector();
@@ -217,7 +214,7 @@ System.out.println("Number of matches for " + uri + ": " + uriList.size());
         for (URI uri : uriMap.keySet()) {
             StringBuilder expandedWhereClause = new StringBuilder(whereClauseText);
             for (URI uriMatch : uriMap.get(uri)) {
-                expandedWhereClause.append(" } UNION { ");
+                expandedWhereClause.append("} UNION {");
                 String equivalentWhereClause = 
                         whereClauseText.replace(uri.stringValue(), uriMatch.stringValue());
                 expandedWhereClause.append(equivalentWhereClause);
@@ -225,7 +222,7 @@ System.out.println("Number of matches for " + uri + ": " + uriList.size());
             whereClauseText = expandedWhereClause.toString();
         }
         final SPARQLQueryImpl expandedQuery = 
-                new SPARQLQueryImpl(queryStart + " { " + whereClauseText + " } " + queryEnd);
+                new SPARQLQueryImpl(queryStart + "{" + whereClauseText + "}" + queryEnd);
         if (logger.isDebugEnabled()) {
             logger.debug("Expanded query: " + expandedQuery.toString());
         }
@@ -246,15 +243,16 @@ System.out.println("Number of matches for " + uri + ": " + uriList.size());
         s.initialiseInternal(null);
         String qStr = " SELECT ?protein"
                 + " WHERE {"
-                + " ?protein <http://www.biopax.org/release/biopax-level2.owl#EC-NUMBER> "
-                + " <http://brenda-enzymes.info/1.1.1.1> . "
-//                + " ?protein <http://www.biopax.org/release.biopax-level2.owl#NAME> ?name . "
-                + " <http://rdf.chemspider.com/37> ?p ?o ."
+                + "?protein <http://www.biopax.org/release/biopax-level2.owl#EC-NUMBER> "
+                + "<http://brenda-enzymes.info/1.1.1.1> . "
+                + "?protein <http://www.biopax.org/release.biopax-level2.owl#NAME> ?name . "
+                + "<http://rdf.chemspider.com/37> ?p ?o ."
                 + "}";
 
         System.out.println("Original query:\n\t" + qStr + "\n");
         SetOfStatements eQuery = s.invokeInternal(new SPARQLQueryImpl(qStr).toRDF());
-        System.out.println("Expanded query:\n\t" + eQuery);
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        System.out.println("Expanded query:\n\t" + query);
     }
 
 }

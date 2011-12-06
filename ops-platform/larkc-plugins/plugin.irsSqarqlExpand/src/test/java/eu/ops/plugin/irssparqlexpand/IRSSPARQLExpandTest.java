@@ -15,7 +15,6 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openrdf.model.URI;
 import org.openrdf.model.impl.URIImpl;
@@ -107,6 +106,64 @@ public class IRSSPARQLExpandTest
         assertEquals(expectedResult, query.toString());
     }
     
+    @Test
+    public void testSpacing() {
+        final IRSClient mockIRS = createMock(IRSClient.class);
+        List<URI> mockList = createMock(List.class);
+        Iterator<URI> mockIterator = createMock(Iterator.class);
+        expect(mockIRS.getMatchesForURI(
+                new URIImpl("http://foo.info/1.1.1.1"))).andReturn(mockList);
+        expect(mockList.size()).andReturn(1);
+        expect(mockList.iterator()).andReturn(mockIterator);
+        expect(mockIterator.hasNext()).andReturn(Boolean.TRUE).andReturn(Boolean.FALSE);
+        expect(mockIterator.next()).andReturn(new URIImpl("http://bar.com/8hd83"));
+        replayAll();
+
+        String expectedResult = "SELECT ?book ?title WHERE{{?book <http://dc/title> ?title.}}";
+        
+        IRSSPARQLExpand s = new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand")) {
+            protected IRSClient instantiateIRSClient() {
+                return mockIRS;
+            }
+        };
+        s.initialiseInternal(null);
+        String qStr = "SELECT ?book ?title WHERE{?book <http://dc/title> ?title.}";
+        SetOfStatements eQuery = s.invokeInternal(new SPARQLQueryImpl(qStr).toRDF());
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        assertEquals(expectedResult, query.toString());
+    }
+    
+    @Test
+    public void testPrefixes() {
+        final IRSClient mockIRS = createMock(IRSClient.class);
+        List<URI> mockList = createMock(List.class);
+        Iterator<URI> mockIterator = createMock(Iterator.class);
+        expect(mockIRS.getMatchesForURI(
+                new URIImpl("http://foo.info/1.1.1.1"))).andReturn(mockList);
+        expect(mockList.size()).andReturn(1);
+        expect(mockList.iterator()).andReturn(mockIterator);
+        expect(mockIterator.hasNext()).andReturn(Boolean.TRUE).andReturn(Boolean.FALSE);
+        expect(mockIterator.next()).andReturn(new URIImpl("http://bar.com/8hd83"));
+        replayAll();
+
+        String expectedResult = "PREFIX books: <http://example.org/book/> "
+                + "PREFIX dc: <http://purl.org/dc/elements/1.1/>"
+                + "SELECT ?book ?title WHERE {{ ?book dc:title ?title . }}";
+        
+        IRSSPARQLExpand s = new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand")) {
+            protected IRSClient instantiateIRSClient() {
+                return mockIRS;
+            }
+        };
+        s.initialiseInternal(null);
+        String qStr = "PREFIX books: <http://example.org/book/> "
+                + "PREFIX dc: <http://purl.org/dc/elements/1.1/>"
+                + "SELECT ?book ?title WHERE { ?book dc:title ?title . }";
+        SetOfStatements eQuery = s.invokeInternal(new SPARQLQueryImpl(qStr).toRDF());
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        assertEquals(expectedResult, query.toString());
+    }
+    
     /**
      * Test that a query with a single basic graph pattern with a URI in the 
      * object is expanded.
@@ -125,11 +182,11 @@ public class IRSSPARQLExpandTest
         replayAll();
 
         String expectedResult = "SELECT ?protein"
-                + " WHERE { {  "
+                + " WHERE {{ "
                 + "?protein <http://www.foo.org/somePredicate> "
-                + "<http://foo.info/1.1.1.1> . } UNION {  "
+                + "<http://foo.info/1.1.1.1> . } UNION { "
                 + "?protein <http://www.foo.org/somePredicate> "
-                + "<http://bar.com/8hd83> . }  }";
+                + "<http://bar.com/8hd83> . }}";
         
         IRSSPARQLExpand s = new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand")) {
             protected IRSClient instantiateIRSClient() {
@@ -168,16 +225,16 @@ public class IRSSPARQLExpandTest
         replayAll();
 
         String expectedResult = "SELECT ?p ?o"
-                + " WHERE { { "
+                + " WHERE {{"
                 + " <http://foo.com/45273> "
                 + " ?p "
-                + " ?o . } UNION { "
+                + " ?o . } UNION {"
                 + " <http://bar.co.uk/346579> "
                 + " ?p "
-                + " ?o . } UNION { "
+                + " ?o . } UNION {"
                 + " <http://bar.ac.uk/19278> "
                 + " ?p "
-                + " ?o . }  }";
+                + " ?o . }}";
         
         IRSSPARQLExpand s = new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand")) {
             protected IRSClient instantiateIRSClient() {
@@ -218,15 +275,15 @@ public class IRSSPARQLExpandTest
         replayAll();
 
         String expectedResult = "SELECT ?p"
-                + " WHERE { { "
-                + " <http://example.org/chem/8j392> ?p <http://foo.com/1.1.1.1> . "
+                + " WHERE {{ "
+                + "<http://example.org/chem/8j392> ?p <http://foo.com/1.1.1.1> . "
                 + "} UNION { "
-                + " <http://result.com/90> ?p <http://foo.com/1.1.1.1> . "
+                + "<http://result.com/90> ?p <http://foo.com/1.1.1.1> . "
                 + "} UNION { "
-                + " <http://example.org/chem/8j392> ?p <http://bar.info/u83hs> . "
+                + "<http://example.org/chem/8j392> ?p <http://bar.info/u83hs> . "
                 + "} UNION { "
-                + " <http://result.com/90> ?p <http://bar.info/u83hs> . "
-                + "}  }";
+                + "<http://result.com/90> ?p <http://bar.info/u83hs> . "
+                + "}}";
         
         IRSSPARQLExpand s = new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand")) {
             protected IRSClient instantiateIRSClient() {
@@ -258,7 +315,6 @@ public class IRSSPARQLExpandTest
         expect(mockIterator.hasNext()).andReturn(Boolean.TRUE).times(3).andReturn(Boolean.FALSE)
                 .andReturn(Boolean.TRUE).times(2).andReturn(Boolean.FALSE);
         expect(mockIterator.next())
-                //TODO: Correctly work out the returned URIs and the expected query
                 .andReturn(new URIImpl("http://result.com/90"))
                 .andReturn(new URIImpl("http://somewhere.com/chebi/7s82"))
                 .andReturn(new URIImpl("http://another.com/maps/hsjnc"))
@@ -267,31 +323,31 @@ public class IRSSPARQLExpandTest
         replayAll();
 
         String expectedResult = "SELECT ?p"
-                + " WHERE { { "
+                + " WHERE {{"
                 + " <http://example.org/chem/8j392> ?p <http://foo.com/1.1.1.1> . "
-                + "} UNION { "
+                + "} UNION {"
                 + " <http://result.com/90> ?p <http://foo.com/1.1.1.1> . "
-                + "} UNION { "
+                + "} UNION {"
                 + " <http://somewhere.com/chebi/7s82> ?p <http://foo.com/1.1.1.1> . "
-                + "} UNION { "
+                + "} UNION {"
                 + " <http://another.com/maps/hsjnc> ?p <http://foo.com/1.1.1.1> . "
-                + "} UNION { "
+                + "} UNION {"
                 + " <http://example.org/chem/8j392> ?p <http://bar.info/u83hs> . "
-                + "} UNION { "
+                + "} UNION {"
                 + " <http://result.com/90> ?p <http://bar.info/u83hs> . "
-                + "} UNION { "
+                + "} UNION {"
                 + " <http://somewhere.com/chebi/7s82> ?p <http://bar.info/u83hs> . "
-                + "} UNION { "
+                + "} UNION {"
                 + " <http://another.com/maps/hsjnc> ?p <http://bar.info/u83hs> . "
-                + "} UNION { "
+                + "} UNION {"
                 + " <http://example.org/chem/8j392> ?p <http://onemore.co.uk/892k3> . "
-                + "} UNION { "
+                + "} UNION {"
                 + " <http://result.com/90> ?p <http://onemore.co.uk/892k3> . "
-                + "} UNION { "
+                + "} UNION {"
                 + " <http://somewhere.com/chebi/7s82> ?p <http://onemore.co.uk/892k3> . "
-                + "} UNION { "
+                + "} UNION {"
                 + " <http://another.com/maps/hsjnc> ?p <http://onemore.co.uk/892k3> . "
-                + "}  }";
+                + "}}";
         
         IRSSPARQLExpand s = new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand")) {
             protected IRSClient instantiateIRSClient() {
@@ -324,12 +380,12 @@ public class IRSSPARQLExpandTest
         replayAll();
 
         String expectedResult = "SELECT ?protein"
-                + " WHERE { { "
+                + " WHERE {{"
                 + "?protein <http://foo.com/somePredicate> <http://foo.info/1.1.1.1> . "
                 + "?protein <http://foo.com/anotherPredicate> ?name . "
-                + "} UNION { "
+                + "} UNION {"
                 + "?protein <http://foo.com/somePredicate> <http://bar.com/9khd7> . "
-                + "?protein <http://foo.com/anotherPredicate> ?name . }  }";
+                + "?protein <http://foo.com/anotherPredicate> ?name . }}";
         
         IRSSPARQLExpand s = new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand")) {
             protected IRSClient instantiateIRSClient() {
