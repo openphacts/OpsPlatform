@@ -115,7 +115,7 @@ public class IRSSPARQLExpand extends Plugin {
                         URI uri = (URI) value;
                         List<URI> uriList = irsClient.getMatchesForURI(uri);
                         uriMap.put(uri, uriList);
-System.out.println("Number of matches for " + uri + ": " + uriList.size());
+//System.out.println("Number of matches for " + uri + ": " + uriList.size());
                     }
                 }
                 
@@ -126,7 +126,7 @@ System.out.println("Number of matches for " + uri + ": " + uriList.size());
                         URI uri = (URI) value;
                         List<URI> uriList = irsClient.getMatchesForURI(uri);
                         uriMap.put(uri, uriList);
-System.out.println("Number of matches for " + uri + ": " + uriList.size());
+//System.out.println("Number of matches for " + uri + ": " + uriList.size());
                     }
                 }
             }

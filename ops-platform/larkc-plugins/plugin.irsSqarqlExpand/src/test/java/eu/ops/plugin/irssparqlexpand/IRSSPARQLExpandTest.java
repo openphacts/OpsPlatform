@@ -113,7 +113,7 @@ public class IRSSPARQLExpandTest
         Iterator<URI> mockIterator = createMock(Iterator.class);
         expect(mockIRS.getMatchesForURI(
                 new URIImpl("http://foo.info/1.1.1.1"))).andReturn(mockList);
-        expect(mockList.size()).andReturn(1);
+        expect(mockList.size()).andReturn(1).times(0, 1);
         expect(mockList.iterator()).andReturn(mockIterator);
         expect(mockIterator.hasNext()).andReturn(Boolean.TRUE).andReturn(Boolean.FALSE);
         expect(mockIterator.next()).andReturn(new URIImpl("http://bar.com/8hd83"));
@@ -140,7 +140,7 @@ public class IRSSPARQLExpandTest
         Iterator<URI> mockIterator = createMock(Iterator.class);
         expect(mockIRS.getMatchesForURI(
                 new URIImpl("http://foo.info/1.1.1.1"))).andReturn(mockList);
-        expect(mockList.size()).andReturn(1);
+        expect(mockList.size()).andReturn(1).times(0, 1);
         expect(mockList.iterator()).andReturn(mockIterator);
         expect(mockIterator.hasNext()).andReturn(Boolean.TRUE).andReturn(Boolean.FALSE);
         expect(mockIterator.next()).andReturn(new URIImpl("http://bar.com/8hd83"));
@@ -175,7 +175,7 @@ public class IRSSPARQLExpandTest
         Iterator<URI> mockIterator = createMock(Iterator.class);
         expect(mockIRS.getMatchesForURI(
                 new URIImpl("http://foo.info/1.1.1.1"))).andReturn(mockList);
-        expect(mockList.size()).andReturn(1);
+        expect(mockList.size()).andReturn(1).times(0, 1);
         expect(mockList.iterator()).andReturn(mockIterator);
         expect(mockIterator.hasNext()).andReturn(Boolean.TRUE).andReturn(Boolean.FALSE);
         expect(mockIterator.next()).andReturn(new URIImpl("http://bar.com/8hd83"));
@@ -214,7 +214,7 @@ public class IRSSPARQLExpandTest
         Iterator<URI> mockIterator = createMock(Iterator.class);
         Match mockMatch = createMock(Match.class);
         expect(mockIRS.getMatchesForURI(new URIImpl("http://foo.com/45273"))).andReturn(mockList);
-        expect(mockList.size()).andReturn(2);
+        expect(mockList.size()).andReturn(2).times(0, 1);
         expect(mockList.iterator()).andReturn(mockIterator);
         expect(mockIterator.hasNext())
                 .andReturn(Boolean.TRUE).times(2)
@@ -265,7 +265,7 @@ public class IRSSPARQLExpandTest
         Iterator<URI> mockIterator = createMock(Iterator.class);
         expect(mockIRS.getMatchesForURI(new URIImpl("http://example.org/chem/8j392"))).andReturn(mockList);
         expect(mockIRS.getMatchesForURI(new URIImpl("http://foo.com/1.1.1.1"))).andReturn(mockList);
-        expect(mockList.size()).andReturn(1).times(2);
+        expect(mockList.size()).andReturn(1).times(0, 1);
         expect(mockList.iterator()).andReturn(mockIterator).times(2);
         expect(mockIterator.hasNext()).andReturn(Boolean.TRUE).andReturn(Boolean.FALSE)
                 .andReturn(Boolean.TRUE).andReturn(Boolean.FALSE);
@@ -310,7 +310,7 @@ public class IRSSPARQLExpandTest
         Iterator<URI> mockIterator = createMock(Iterator.class);
         expect(mockIRS.getMatchesForURI(new URIImpl("http://example.org/chem/8j392"))).andReturn(mockList);
         expect(mockIRS.getMatchesForURI(new URIImpl("http://foo.com/1.1.1.1"))).andReturn(mockList);
-        expect(mockList.size()).andReturn(3).andReturn(2);
+        expect(mockList.size()).andReturn(3).andReturn(2).times(0, 2);
         expect(mockList.iterator()).andReturn(mockIterator).times(2);
         expect(mockIterator.hasNext()).andReturn(Boolean.TRUE).times(3).andReturn(Boolean.FALSE)
                 .andReturn(Boolean.TRUE).times(2).andReturn(Boolean.FALSE);
@@ -373,7 +373,7 @@ public class IRSSPARQLExpandTest
         List<URI> mockList = createMock(List.class);
         Iterator<URI> mockIterator = createMock(Iterator.class);
         expect(mockIRS.getMatchesForURI(new URIImpl("http://foo.info/1.1.1.1"))).andReturn(mockList);
-        expect(mockList.size()).andReturn(1);
+        expect(mockList.size()).andReturn(1).times(0, 1);
         expect(mockList.iterator()).andReturn(mockIterator);
         expect(mockIterator.hasNext()).andReturn(Boolean.TRUE).andReturn(Boolean.FALSE);
         expect(mockIterator.next()).andReturn(new URIImpl("http://bar.com/9khd7"));
