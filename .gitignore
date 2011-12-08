@@ -42,3 +42,4 @@ datasets/textmining/tm_concepts/textmining_concept.tar.gz
 datasets/textmining/tm_hits/textmining_hit.tar.gz
 linksets/brenda_uniprot.ttl
 linksets/cs_chembl.ttl
+/ops-platform/larkc-plugins/plugin.irsSqarqlExpand/nbactions.xml
