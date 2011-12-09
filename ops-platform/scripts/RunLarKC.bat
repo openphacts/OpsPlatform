@@ -13,10 +13,18 @@ set OLDDIR=%CD%
 
 call:changeDirectory "%LARKC_PATH%\platform\"
 del ordi-trree
-call:check target\platform-3.0-SNAPSHOT-jar-with-dependencies.jar 
-call:check plugins\plugin.QueryMapper-0.0.1-SNAPSHOT-LarkcPluginAssembly\lib\derby.jar
+call:check target\platform-3.0-SNAPSHOT-jar-with-dependencies.jar
+rem Removed December 8th 2011 By Christian
+rem Integeration tests where broken.
+rem Not used by current workflow according to Antonis
+rem call:check plugins\plugin.QueryMapper-0.0.1-SNAPSHOT-LarkcPluginAssembly\lib\derby.jar
 
-java -cp plugins\plugin.QueryMapper-0.0.1-SNAPSHOT-LarkcPluginAssembly\lib\derby.jar;target\platform-3.0-SNAPSHOT-jar-with-dependencies.jar -Xmx1G eu.larkc.core.Larkc
+rem Removed December 8th 2011 By Christian
+rem Integeration tests where broken.
+rem Not used by current workflow according to Antonis
+rem java -cp plugins\plugin.QueryMapper-0.0.1-SNAPSHOT-LarkcPluginAssembly\lib\derby.jar;target\platform-3.0-SNAPSHOT-jar-with-dependencies.jar -Xmx1G eu.larkc.core.Larkc
+rem replacement without QueryMapper
+java -cp target\platform-3.0-SNAPSHOT-jar-with-dependencies.jar -Xmx1G eu.larkc.core.Larkc
 goto:eof
 
 ::--------------------------------------------------------
