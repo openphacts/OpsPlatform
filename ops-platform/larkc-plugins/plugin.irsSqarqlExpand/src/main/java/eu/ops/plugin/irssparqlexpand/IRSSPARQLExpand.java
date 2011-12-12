@@ -27,7 +27,7 @@ import uk.ac.manchester.cs.irs.beans.Match;
  */
 public class IRSSPARQLExpand extends Plugin {
 
-    private static Logger logger = LoggerFactory.getLogger(IRSSPARQLExpand.class);
+    protected final Logger logger = LoggerFactory.getLogger(IRSSPARQLExpand.class);
     private IRSClient irsClient = null;
 
     /**
@@ -53,9 +53,11 @@ public class IRSSPARQLExpand extends Plugin {
     protected void initialiseInternal(SetOfStatements params) {
         irsClient = instantiateIRSClient();
         logger.info("IRSSPARQLExpand initialized.");
+        System.out.println("*********************Initialised!!!");
     }
     
     protected IRSClient instantiateIRSClient() {
+    	System.out.println("*********************");
             return new IRSClient();
     }
     
@@ -70,11 +72,11 @@ public class IRSSPARQLExpand extends Plugin {
     @Override
     protected SetOfStatements invokeInternal(SetOfStatements input) {
         logger.info("SPARQLExpand working.");
-
+        System.out.println("*********************Invoked!!!");
         if (logger.isDebugEnabled()) {
             logger.debug("Input: " + input.getStatements().toString());
         }
-
+        System.out.println("Input: " + input.getStatements().toString());
         // Does not care about the input name since it has a single argument, use any named graph
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(input);
         //Only working with select queries of BGP
@@ -98,8 +100,8 @@ public class IRSSPARQLExpand extends Plugin {
             String queryWhereClause = queryString.substring(whereStartIndex, whereEndIndex);
             String queryEnd = queryString.substring(whereEndIndex, queryString.length());
             
-//System.out.println("Query:\n\t" + queryStart + "\n\t" + 
-//                    queryWhereClause + "\n\t" + queryEnd + "\n\n");
+System.out.println("Query:\n\t" + queryStart + "\n\t" + 
+                    queryWhereClause + "\n\t" + queryEnd + "\n\n");
 
             StatementPatternCollector spc = new StatementPatternCollector();
             ((SPARQLQueryImpl) query).getParsedQuery().getTupleExpr().visit(spc);
@@ -115,7 +117,7 @@ public class IRSSPARQLExpand extends Plugin {
                         URI uri = (URI) value;
                         List<URI> uriList = irsClient.getMatchesForURI(uri);
                         uriMap.put(uri, uriList);
-//System.out.println("Number of matches for " + uri + ": " + uriList.size());
+System.out.println("***********Number of matches for " + uri + ": " + uriList.size());
                     }
                 }
                 
@@ -126,7 +128,7 @@ public class IRSSPARQLExpand extends Plugin {
                         URI uri = (URI) value;
                         List<URI> uriList = irsClient.getMatchesForURI(uri);
                         uriMap.put(uri, uriList);
-//System.out.println("Number of matches for " + uri + ": " + uriList.size());
+System.out.println("########Number of matches for " + uri + ": " /*+ uriList.size()*/);
                     }
                 }
             }
