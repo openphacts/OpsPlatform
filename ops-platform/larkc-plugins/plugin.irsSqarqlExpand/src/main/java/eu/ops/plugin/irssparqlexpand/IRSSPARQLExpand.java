@@ -5,19 +5,19 @@ import eu.larkc.core.data.SetOfStatements;
 import eu.larkc.core.query.SPARQLQuery;
 import eu.larkc.core.query.SPARQLQueryImpl;
 import eu.larkc.plugin.Plugin;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.algebra.StatementPattern;
 import org.openrdf.query.algebra.Var;
 import org.openrdf.query.algebra.helpers.StatementPatternCollector;
+import org.openrdf.query.parser.ParsedQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.manchester.cs.irs.beans.Match;
 
 /**
  * The <code>eu.ops.plugin.irssparqlexpand.IRSSPARQLExpand</code> is a LarKC
@@ -56,7 +56,7 @@ public class IRSSPARQLExpand extends Plugin {
         System.out.println("*********************Initialised!!!");
     }
     
-    protected IRSClient instantiateIRSClient() {
+    IRSClient instantiateIRSClient() {
     	System.out.println("*********************");
             return new IRSClient();
     }
@@ -80,65 +80,75 @@ public class IRSSPARQLExpand extends Plugin {
         // Does not care about the input name since it has a single argument, use any named graph
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(input);
         //Only working with select queries of BGP
-        if (!query.isSelect()) {
+        if (!query.isSelect() || query.toString().contains("OPTIONAL")) {
             logger.info("No query exapnsion performed as not a select query.");
             return input;
         }
-        
-        List<Match> matches;
-        List<StatementPattern> spList = new ArrayList<StatementPattern>();
-        boolean found;
-        String queryFirstBlock = "";
-        Var s;
-        Var o;
 
         if (query instanceof SPARQLQuery) {
             String queryString = query.toString();
             final int whereStartIndex = queryString.indexOf("{")+1;
             final int whereEndIndex = queryString.lastIndexOf("}");
             String queryStart = queryString.substring(0, whereStartIndex);
-            String queryWhereClause = queryString.substring(whereStartIndex, whereEndIndex);
             String queryEnd = queryString.substring(whereEndIndex, queryString.length());
-            
-System.out.println("Query:\n\t" + queryStart + "\n\t" + 
-                    queryWhereClause + "\n\t" + queryEnd + "\n\n");
 
             StatementPatternCollector spc = new StatementPatternCollector();
-            ((SPARQLQueryImpl) query).getParsedQuery().getTupleExpr().visit(spc);
-            StringBuilder queryBuilder = new StringBuilder();            
-            found = false;
-            Map<URI, List<URI>> uriMap = new HashMap<URI, List<URI>>();
-            for (StatementPattern sp : spc.getStatementPatterns()) {
-                String subject = varAsString(sp.getSubjectVar());
-                s = sp.getSubjectVar();
-                if (s.hasValue()) {
-                    Value value = s.getValue();
-                    if (value instanceof URI) {
-                        URI uri = (URI) value;
-                        List<URI> uriList = irsClient.getMatchesForURI(uri);
-                        uriMap.put(uri, uriList);
-System.out.println("***********Number of matches for " + uri + ": " + uriList.size());
-                    }
-                }
-                
-                o = sp.getObjectVar();
-                if (o.hasValue()) {
-                    Value value = o.getValue();
-                    if (value instanceof URI) {
-                        URI uri = (URI) value;
-                        List<URI> uriList = irsClient.getMatchesForURI(uri);
-                        uriMap.put(uri, uriList);
-System.out.println("########Number of matches for " + uri + ": " /*+ uriList.size()*/);
-                    }
+            final ParsedQuery parsedQuery = ((SPARQLQueryImpl) query).getParsedQuery();
+            parsedQuery.getTupleExpr().visit(spc);  
+
+            Map<URI, List<URI>> uriMappings = retrieveRequiredUriMappings(spc);
+            if (logger.isDebugEnabled()) {
+                logger.debug("Number of URIs in query " + uriMappings.size());
+            }
+            if (uriMappings.isEmpty()) {
+                return input;
+            } else {               
+                try {
+                    SPARQLQuery expandedQuery = constructExpandedQuery(queryStart, spc, queryEnd, uriMappings);
+                    return expandedQuery.toRDF();
+                } catch (QueryExpansionException ex) {
+                    logger.warn("Problem in query expansion. Returning original query.", ex);
+                    return input;
                 }
             }
-            SPARQLQuery expandedQuery = constructExpandedQuery(queryStart, queryWhereClause, queryEnd, uriMap);
-            return expandedQuery.toRDF();
         }
         if (logger.isInfoEnabled()) {
             logger.info("Unable to expand query " + input);
         }
         return input;
+    }
+
+    /**
+     * Scan query for all occurrences of instance URIs and retrieve
+     * equivalence mappings.
+     * 
+     * @param spc
+     * @return Map of equivalent URIs
+     */
+    private Map<URI, List<URI>> retrieveRequiredUriMappings(StatementPatternCollector spc) {
+        Value value;
+        Var s, o;
+        Set<URI> uriSet = new HashSet<URI>();
+        for (StatementPattern sp : spc.getStatementPatterns()) {
+            s = sp.getSubjectVar();
+            if (s.hasValue()) {
+                value = s.getValue();
+                if (value instanceof URI) {
+                    URI uri = (URI) value;
+                    uriSet.add(uri);
+                }
+            }
+            o = sp.getObjectVar();
+            if (o.hasValue()) {
+                value = o.getValue();
+                if (value instanceof URI) {
+                    URI uri = (URI) value;
+                    uriSet.add(uri);
+                }
+            }
+        }
+        Map<URI, List<URI>> uriMappings = irsClient.getMatchesForURIs(uriSet);
+        return uriMappings;
     }
 
     /**
@@ -177,28 +187,6 @@ System.out.println("########Number of matches for " + uri + ": " /*+ uriList.siz
         }
         return varString;
     }
-    
-    /**
-     * Expand a statement pattern by interchanging matches on the object
-     * 
-     * @param sp statement pattern to expand
-     * @param matches matches found for the object URI
-     * @return list of equivalent statement patterns
-     */
-    private List<StatementPattern> expandObjectURI(StatementPattern sp, List<Match> matches) {
-        List<StatementPattern> spList = new ArrayList<StatementPattern>();
-        spList.add(sp);
-        Var subject = sp.getSubjectVar();
-        Var predicate = sp.getPredicateVar();
-        for (Match match : matches) {
-            URI uri = new URIImpl(match.getMatchUri());
-            Var object = new Var();
-            object.setValue(uri);
-            StatementPattern spClone = new StatementPattern(subject, predicate, object);
-            spList.add(spClone);
-        }
-        return spList;
-    }
 
     /**
      * Expand the supplied query into a set of UNION queries
@@ -210,25 +198,74 @@ System.out.println("########Number of matches for " + uri + ": " /*+ uriList.siz
      * @return expanded query
      */
     private SPARQLQuery constructExpandedQuery(String queryStart, 
-            String queryWhereClause, String queryEnd, Map<URI, List<URI>> uriMap) {
+            StatementPatternCollector spc, String queryEnd, Map<URI, List<URI>> uriMap) 
+            throws QueryExpansionException {
         logger.debug("Expanding query:");
-        String whereClauseText = queryWhereClause;
-        for (URI uri : uriMap.keySet()) {
-            StringBuilder expandedWhereClause = new StringBuilder(whereClauseText);
-            for (URI uriMatch : uriMap.get(uri)) {
-                expandedWhereClause.append("} UNION {");
-                String equivalentWhereClause = 
-                        whereClauseText.replace(uri.stringValue(), uriMatch.stringValue());
-                expandedWhereClause.append(equivalentWhereClause);
+        Value value;
+        final List<StatementPattern> statementPatterns = spc.getStatementPatterns();
+        StringBuilder whereClause = new StringBuilder();
+        for (int i = 0; i < statementPatterns.size(); i++) {
+            int lineNumber = i + 1;
+            StatementPattern sp = statementPatterns.get(i);
+            String subject = "";
+            String subjectFilter = "";
+            String predicate = "";
+            String object = "";
+            String objectFilter = "";
+            Var s = sp.getSubjectVar();
+            if (s.hasValue() && s.getValue() instanceof URI) {
+                URI uri = (URI) s.getValue();
+                subject = "?subjectUriLine" + lineNumber;
+                final List<URI> mappings = uriMap.get(uri);
+                mappings.add(uri);
+                subjectFilter = constructFilter(subject, mappings);
+            } else {
+                subject = varAsString(s);
             }
-            whereClauseText = expandedWhereClause.toString();
+            predicate = varAsString(sp.getPredicateVar());
+            Var o = sp.getObjectVar();
+            if (o.hasValue() && o.getValue() instanceof URI) {
+                URI uri = (URI) o.getValue();
+                object = "?objectUriLine" + lineNumber;
+                final List<URI> mappings = uriMap.get(uri);
+                mappings.add(uri);
+                objectFilter = constructFilter(object, mappings);
+            } else {
+                object = varAsString(o);
+            }
+            whereClause.append(subject).append(" ")
+                    .append(predicate).append(" ")
+                    .append(object).append(" . ");
+            whereClause.append(subjectFilter);
+            whereClause.append(objectFilter);
         }
+        final String queryText = queryStart + whereClause.toString() + queryEnd;
+//System.out.println(queryText);        
         final SPARQLQueryImpl expandedQuery = 
-                new SPARQLQueryImpl(queryStart + "{" + whereClauseText + "}" + queryEnd);
+                new SPARQLQueryImpl(queryText);
         if (logger.isDebugEnabled()) {
             logger.debug("Expanded query: " + expandedQuery.toString());
         }
         return expandedQuery;
+    }
+    
+    /**
+     * Constructs the FILTER clause to check the given variable with all
+     * permutations of equivalent URIs.
+     * 
+     * @param variableName name of the new variable in the query
+     * @param mappings List of equivalent URIs
+     * @return FILTER clause checking the disjunction of the URIs
+     */
+    private String constructFilter(String variableName, List<URI> mappings) {
+        StringBuilder filterText = new StringBuilder("FILTER (");
+        for (URI uri : mappings) {
+            filterText.append(variableName).append(" = ");
+            filterText.append("<").append(uri.stringValue()).append(">");
+            filterText.append(" || ");
+        }
+        filterText.replace(filterText.length() - 4, filterText.length(), ") ");
+        return filterText.toString();
     }
 
     /**

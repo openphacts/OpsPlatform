@@ -7,7 +7,10 @@ import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import org.openrdf.model.URI;
@@ -54,6 +57,7 @@ public class IRSClient {
                 .queryParams(params)
                 .accept(MediaType.APPLICATION_XML_TYPE)
                 .get(new GenericType<List<Match>>() {});
+System.out.println("***********Number of matches for " + uri + ": " + matches.size());        
         return extractMatches(matches);
     }
 
@@ -64,6 +68,22 @@ public class IRSClient {
             uriList.add(uri);
         }
         return uriList;
+    }
+
+    /**
+     * Retrieve the matching URIs for each URI in the provided set.
+     * 
+     * @param uriSet set of URIs
+     * @return Map containing the matching URIs for each given URI in the provided set.
+     */
+    Map<URI, List<URI>> getMatchesForURIs(Set<URI> uriSet) {
+        Map<URI, List<URI>> uriMappings = new HashMap<URI, List<URI>>();
+        for (URI uri : uriSet) {
+            List<URI> matchesForURI = getMatchesForURI(uri);
+            uriMappings.put(uri, matchesForURI);
+//System.out.println(matchesForURI.size() + " matches exist for " + uri);
+        }
+        return uriMappings;
     }
 
     public static void main(String[] args) {
