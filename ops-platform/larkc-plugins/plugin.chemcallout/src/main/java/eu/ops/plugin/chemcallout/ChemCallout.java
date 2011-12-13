@@ -162,8 +162,8 @@ public class ChemCallout extends Plugin
 									Value html = new URIImpl("http://inchi.chemspider.com/Chemical-Structure."+csid+".html");
 									URI html_pred=new URIImpl(HTML);
 									myStore.addStatement(subj, html_pred, html, FIXEDCONTEXT, label);
-									logger.info("Created triple: "+subj.stringValue()+" has_similar "+o.stringValue());
-									logger.info("Created triple: "+subj.stringValue()+" html "+html.stringValue());
+									//logger.info("Created triple: "+subj.stringValue()+" has_similar "+o.stringValue());
+									//logger.info("Created triple: "+subj.stringValue()+" html "+html.stringValue());
 								}
 							}
 							gotResult = true;
@@ -200,8 +200,8 @@ public class ChemCallout extends Plugin
 									Value html = new URIImpl("http://inchi.chemspider.com/Chemical-Structure."+csid+".html");
 									URI html_pred=new URIImpl(HTML);
 									myStore.addStatement(subj, html_pred, html, FIXEDCONTEXT, label);;
-									logger.info("Created triple: "+subj.stringValue()+" has_substructure_match "+o.stringValue());
-									logger.info("Created triple: "+subj.stringValue()+" html "+html.stringValue());
+									//logger.info("Created triple: "+subj.stringValue()+" has_substructure_match "+o.stringValue());
+									//logger.info("Created triple: "+subj.stringValue()+" html "+html.stringValue());
 								}	
 							}
 							gotResult = true;
@@ -238,8 +238,8 @@ public class ChemCallout extends Plugin
 									Value html = new URIImpl("http://inchi.chemspider.com/Chemical-Structure."+csid+".html");
 									URI html_pred=new URIImpl(HTML);
 									myStore.addStatement(subj, html_pred, html, FIXEDCONTEXT, label);
-									logger.info("Created triple: "+subj.stringValue()+" has_substructure_match_or_tautomer "+o.stringValue());
-									logger.info("Created triple: "+subj.stringValue()+" html "+html.stringValue());
+									//logger.info("Created triple: "+subj.stringValue()+" has_substructure_match_or_tautomer "+o.stringValue());
+									//logger.info("Created triple: "+subj.stringValue()+" html "+html.stringValue());
 								}	
 							}
 							gotResult = true;
@@ -276,8 +276,8 @@ public class ChemCallout extends Plugin
 									Value html = new URIImpl("http://inchi.chemspider.com/Chemical-Structure."+csid+".html");
 									URI html_pred=new URIImpl(HTML);
 									myStore.addStatement(subj, html_pred, html, FIXEDCONTEXT, label);
-									logger.info("Created triple: "+subj.stringValue()+" has_exact_structure_match "+o.stringValue());
-									logger.info("Created triple: "+subj.stringValue()+" html "+html.stringValue());
+									//logger.info("Created triple: "+subj.stringValue()+" has_exact_structure_match "+o.stringValue());
+									//logger.info("Created triple: "+subj.stringValue()+" html "+html.stringValue());
 								}
 							}
 							gotResult = true;	
