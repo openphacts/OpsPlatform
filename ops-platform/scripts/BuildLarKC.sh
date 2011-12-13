@@ -34,7 +34,7 @@ cd openphacts/ops-platform/larkc-plugins/
 #mvn assembly:assembly
 #mv ./target/*SNAPSHOT.jar $LARKC_PATH/larkc/platform/plugins
 
-cd ../plugin.edffilter/
+cd plugin.edffilter/
 mvn install
 mv ./target/*SNAPSHOT.jar $LARKC_PATH/larkc/platform/plugins
 
