@@ -262,7 +262,10 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<UnexpectedQuer
 
     @Override
     public void meet(LeftJoin lj) throws UnexpectedQueryException {
-        throw new UnexpectedQueryException("LeftJoin not supported yet.");
+        lj.getLeftArg().visit(this);
+        queryString.append("OPTIONAL {");
+        lj.getRightArg().visit(this);
+        queryString.append("}");
     }
 
     @Override
