@@ -64,7 +64,6 @@ public class IRSSPARQLExpandTest
     public void testConstructQuery() {
         final IRSClient mockIRS = createMock(IRSClient.class);
         replayAll();
-        
         IRSSPARQLExpand expander = 
                 new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand")) {
             @Override
@@ -173,7 +172,7 @@ public class IRSSPARQLExpandTest
         expect(mockIRS.getMatchesForURIs(new HashSet<URI>()))
                 .andReturn(new HashMap<URI, List<URI>>());
         replayAll();
-        
+
         IRSSPARQLExpand s = new IRSSPARQLExpand(
                 new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand")) {
             @Override
@@ -189,7 +188,7 @@ public class IRSSPARQLExpandTest
     }
  
     
-    
+
     
     static String NO_URI_QUERY = "SELECT ?book ?author WHERE { "
                 + "?book <http://dc.org/author> ?author . "
@@ -212,7 +211,6 @@ public class IRSSPARQLExpandTest
             }
         };
         s.initialiseInternal(null);
-        String qStr = NO_URI_QUERY;
         SetOfStatements eQuery = s.invokeInternal(
                 new SPARQLQueryImpl(NO_URI_QUERY).toRDF());
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
@@ -307,6 +305,7 @@ public class IRSSPARQLExpandTest
                 .andReturn(new URIImpl("http://bar.ac.uk/19278"))
                 .andReturn(new URIImpl("http://foo.com/45273"));
         replayAll();
+
         
         IRSSPARQLExpand s = new IRSSPARQLExpand(
                 new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand")) {
