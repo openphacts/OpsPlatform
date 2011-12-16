@@ -99,6 +99,25 @@ public class QueryWriterModelVisitorTest {
         convertAndTest(IRSSPARQLExpandTest.NO_URI_QUERY);
 
     }
+    
+    @Test
+    @Ignore
+    public void test_ONE_BGP_OBJECT_WITH_FILTER_QUERY() throws MalformedQueryException, UnexpectedQueryException{
+        convertAndTest(QueryModelExpanderTest.ONE_BGP_OBJECT_WITH_FILTER_QUERY);
+    }
+
+    @Test
+    @Ignore
+    public void test_ONE_BPG_OBJECT_MULTIPLE_MATCHES_QUERY() throws MalformedQueryException, UnexpectedQueryException{
+        convertAndTest(QueryModelExpanderTest.ONE_BPG_OBJECT_MULTIPLE_MATCHES_QUERY);
+    }
+
+    @Test
+    @Ignore
+    public void test_ONE_BPG_OBJECT_MULTIPLE_MATCHES_QUERY_PLUS_FILTER() throws MalformedQueryException, UnexpectedQueryException{
+        convertAndTest(QueryModelExpanderTest.ONE_BPG_OBJECT_MULTIPLE_MATCHES_QUERY_PLUS_FILTER);
+    }
+
     @Test
     @Ignore
     public void test_OPTIONAL_QUERY() throws MalformedQueryException, UnexpectedQueryException{

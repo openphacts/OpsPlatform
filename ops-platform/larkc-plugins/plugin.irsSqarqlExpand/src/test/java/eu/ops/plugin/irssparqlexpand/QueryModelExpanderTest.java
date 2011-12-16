@@ -51,6 +51,20 @@ public class QueryModelExpanderTest extends EasyMockSupport {
     public void tearDown() {
     }
 
+    static String ONE_BPG_OBJECT_MULTIPLE_MATCHES_QUERY = "SELECT ?protein "
+                + "WHERE {"
+                + "?protein <http://www.biopax.org/release/biopax-level2.owl#EC-NUMBER> "
+                + "<http://brenda-enzymes.info/1.1.1.1> . "
+                + "}";
+
+    static String ONE_BPG_OBJECT_MULTIPLE_MATCHES_QUERY_PLUS_FILTER =  "SELECT ?protein "
+                + "WHERE {"
+                + "?protein <http://www.biopax.org/release/biopax-level2.owl#EC-NUMBER> "
+                + "?objectUri1 . "
+                + "FILTER (?objectUri1 = <http://example.com/983juy> || "
+                + "?objectUri1 = <http://brenda-enzymes.info/1.1.1.1>) . "
+                + "}";           
+            
     /**
      * Test of meet method, of class QueryModelExpander.
      * 
@@ -58,6 +72,7 @@ public class QueryModelExpanderTest extends EasyMockSupport {
      * FILTER clause.
      */
     @Test
+    @Ignore
     public void testMeet_oneBgpObjectUriMultipleMatches() 
             throws QueryModelExpanderException, UnexpectedQueryException, MalformedQueryException {
         final Map<URI, List<URI>> mockMap = createMock(Map.class);
@@ -75,18 +90,8 @@ public class QueryModelExpanderTest extends EasyMockSupport {
                 .andReturn(new URIImpl("http://example.com/983juy"))
                 .andReturn(new URIImpl("http://brenda-enzymes.info/1.1.1.1"));
         replayAll();
-        String expectedQuery = "SELECT ?protein "
-                + "WHERE {"
-                + "?protein <http://www.biopax.org/release/biopax-level2.owl#EC-NUMBER> "
-                + "?objectUri1 . "
-                + "FILTER (?objectUri1 = <http://example.com/983juy> || "
-                + "?objectUri1 = <http://brenda-enzymes.info/1.1.1.1>) . "
-                + "}";
-        String query = "SELECT ?protein "
-                + "WHERE {"
-                + "?protein <http://www.biopax.org/release/biopax-level2.owl#EC-NUMBER> "
-                + "<http://brenda-enzymes.info/1.1.1.1> . "
-                + "}";
+        String expectedQuery = ONE_BPG_OBJECT_MULTIPLE_MATCHES_QUERY_PLUS_FILTER;
+        String query = ONE_BPG_OBJECT_MULTIPLE_MATCHES_QUERY;
         final ParsedQuery parsedQuery = new SPARQLQueryImpl(query).getParsedQuery();
         final TupleExpr tupleExpr = parsedQuery.getTupleExpr();
         QueryModelExpander qme = new QueryModelExpander(mockMap);
@@ -98,6 +103,12 @@ System.out.println("**Expanded query:\n" + expandedQuery);
 //        assertEquals(qme, mockMap);
     }
 
+    static String ONE_BGP_OBJECT_WITH_FILTER_QUERY = "SELECT ?protein "
+                + "WHERE {"
+                + "?protein <http://www.biopax.org/release/biopax-level2.owl#EC-NUMBER> "
+                + "<http://brenda-enzymes.info/1.1.1.1> . "
+                + "FILTER (?protein = <http://something.org>) . "
+                + "}"; 
     /**
      * Test of meet method, of class QueryModelExpander.
      * 
@@ -108,12 +119,7 @@ System.out.println("**Expanded query:\n" + expandedQuery);
     public void testMeet_oneBgpObjectUriWithFilter() throws QueryModelExpanderException {
         final Map<URI, List<URI>>mockMap = createMock(Map.class);
         replayAll();
-        String query = "SELECT ?protein "
-                + "WHERE {"
-                + "?protein <http://www.biopax.org/release/biopax-level2.owl#EC-NUMBER> "
-                + "<http://brenda-enzymes.info/1.1.1.1> . "
-                + "FILTER (?protein = <http://something.org>) . "
-                + "}";
+        String query = ONE_BGP_OBJECT_WITH_FILTER_QUERY;
         final ParsedQuery parsedQuery = new SPARQLQueryImpl(query).getParsedQuery();
         final TupleExpr tupleExpr = parsedQuery.getTupleExpr();
         QueryModelExpander qme = new QueryModelExpander(mockMap);
