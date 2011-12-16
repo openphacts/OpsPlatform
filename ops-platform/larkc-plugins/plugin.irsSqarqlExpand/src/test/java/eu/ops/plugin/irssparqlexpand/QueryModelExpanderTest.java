@@ -68,8 +68,8 @@ public class QueryModelExpanderTest extends EasyMockSupport {
     /**
      * Test of meet method, of class QueryModelExpander.
      * 
-     * Test a query involving a BGP with an object URI and an existing
-     * FILTER clause.
+     * Test a query involving a single BGP with an object URI for which there 
+     * are multiple matches
      */
     @Test
     @Ignore
@@ -141,6 +141,52 @@ System.out.println("**Expanded query:\n" + expandedQuery);
                 + "FILTER (?protein = <http://something.org>) . "
                 + "}";
         String query = ONE_BGP_OBJECT_WITH_FILTER_QUERY;
+        final ParsedQuery parsedQuery = new SPARQLQueryImpl(query).getParsedQuery();
+        final TupleExpr tupleExpr = parsedQuery.getTupleExpr();
+        QueryModelExpander qme = new QueryModelExpander(mockMap);
+        tupleExpr.visit(qme);
+System.out.println("**Tuple Expr:\n" + tupleExpr);
+        String expandedQuery = QueryUtils.tupleExprToQueryString(tupleExpr);
+System.out.println("**Expanded query:\n" + expandedQuery);        
+        assertTrue(QueryUtils.sameTupleExpr(expectedQuery, expandedQuery));
+    }
+
+    /**
+     * Test of meet method, of class QueryModelExpander.
+     * 
+     * Test a query involving a single BGP with a subject URI for which there 
+     * are multiple matching URIs
+     */
+    @Test
+    public void testMeet_oneBgpSubjectUriMultipleMatches() 
+            throws QueryModelExpanderException, UnexpectedQueryException, MalformedQueryException {
+        final Map<URI, List<URI>> mockMap = createMock(Map.class);
+        final List<URI> mockList = createMock(List.class);
+        final Iterator<URI> mockIterator = createMock(Iterator.class);
+        expect(mockMap.get(new URIImpl("http://brenda-enzymes.info/1.1.1.1")))
+                .andReturn(mockList);
+        expect(mockList.size()).andReturn(3);
+        expect(mockList.add(new URIImpl("http://brenda-enzymes.info/1.1.1.1")))
+                .andReturn(Boolean.TRUE);
+        expect(mockList.iterator()).andReturn(mockIterator);
+        expect(mockIterator.hasNext())
+                .andReturn(Boolean.TRUE).times(3).andReturn(Boolean.FALSE);
+        expect(mockIterator.next())
+                .andReturn(new URIImpl("http://example.com/983juy"))
+                .andReturn(new URIImpl("http://bar.co.uk/liuw"))
+                .andReturn(new URIImpl("http://brenda-enzymes.info/1.1.1.1"));
+        replayAll();
+        String expectedQuery = "SELECT ?protein "
+                + "WHERE {"
+                + "?subjectUri1 <http://www.foo.com/predicate> ?protein . "
+                + "FILTER (?subjectUri1 = <http://example.com/983juy> || "
+                + "?subjectUri1 = <http://bar.co.uk/liuw> || "
+                + "?subjectUri1 = <http://brenda-enzymes.info/1.1.1.1>) . "
+                + "}";
+        String query = "SELECT ?protein "
+                + "WHERE {"
+                + "<http://brenda-enzymes.info/1.1.1.1> <http://www.foo.com/predicate> ?protein . "
+                + "}";
         final ParsedQuery parsedQuery = new SPARQLQueryImpl(query).getParsedQuery();
         final TupleExpr tupleExpr = parsedQuery.getTupleExpr();
         QueryModelExpander qme = new QueryModelExpander(mockMap);
