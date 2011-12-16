@@ -308,11 +308,11 @@ public class QueryWriterModelVisitor implements QueryModelVisitor{
         } else {
             selectElementAdded = true;
         }
-        queryString.append("(?");
+        queryString.append("?");
         queryString.append(pe.getSourceName());
-        queryString.append(" as ?");
-        queryString.append(pe.getTargetName() + "x");
-        queryString.append(")");
+        //queryString.append(" as ?");
+        //queryString.append(pe.getTargetName() + "x");
+        //queryString.append(")");
         //Don't expect any children but just in case
         pe.visitChildren(this);
     }
