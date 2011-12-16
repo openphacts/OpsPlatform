@@ -4,6 +4,7 @@
  */
 package eu.ops.plugin.irssparqlexpand;
 
+import org.junit.Ignore;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.algebra.TupleExpr;
 import org.junit.After;
@@ -55,4 +56,162 @@ public class QueryWriterModelVisitorTest {
                 + "}";
        convertAndTest(queryStr);
     }
+    
+    @Test
+    @Ignore
+    public void test_ASK_QUERY() throws MalformedQueryException, UnexpectedQueryException{
+        convertAndTest(IRSSPARQLExpandTest.ASK_QUERY);
+
+    }
+    
+    @Test
+    public void test_COMPLEX_CHAIN_QUERY() throws MalformedQueryException, UnexpectedQueryException{
+        convertAndTest(IRSSPARQLExpandTest.COMPLEX_CHAIN_QUERY);
+
+    }
+    
+    @Test
+    @Ignore
+    public void test_COMPLEX_CHAIN_QUERY_PLUS_FILTER() throws MalformedQueryException, UnexpectedQueryException{
+        convertAndTest(IRSSPARQLExpandTest.COMPLEX_CHAIN_QUERY_PLUS_FILTER);
+
+    }
+    
+    @Test
+    @Ignore
+    public void test_CONSTRUCT_QUERY() throws MalformedQueryException, UnexpectedQueryException{
+        convertAndTest(IRSSPARQLExpandTest.CONSTRUCT_QUERY);
+
+    }
+    @Test
+    @Ignore
+    public void test_DESSCRIBE_QUERY() throws MalformedQueryException, UnexpectedQueryException{
+        convertAndTest(IRSSPARQLExpandTest.DESSCRIBE_QUERY);
+
+    }
+    @Test
+    public void test_MINIMAL_SPACING_QUERY() throws MalformedQueryException, UnexpectedQueryException{
+        convertAndTest(IRSSPARQLExpandTest.MINIMAL_SPACING_QUERY);
+
+    }
+    @Test
+    public void test_NO_URI_QUERY() throws MalformedQueryException, UnexpectedQueryException{
+        convertAndTest(IRSSPARQLExpandTest.NO_URI_QUERY);
+
+    }
+    @Test
+    @Ignore
+    public void test_OPTIONAL_QUERY() throws MalformedQueryException, UnexpectedQueryException{
+        convertAndTest(IRSSPARQLExpandTest.OPTIONAL_QUERY);
+
+    }
+    @Test
+    public void test_PREFIX_QUERY() throws MalformedQueryException, UnexpectedQueryException{
+        convertAndTest(IRSSPARQLExpandTest.PREFIX_QUERY);
+
+    }
+    @Test
+    public void test_REPEATED_SUBJECT_PREDICATE_QUERY() throws MalformedQueryException, UnexpectedQueryException{
+        convertAndTest(IRSSPARQLExpandTest.REPEATED_SUBJECT_PREDICATE_QUERY);
+    }
+    @Test
+    @Ignore
+    public void test_REPEATED_SUBJECT_PREDICATE_QUERY_PLUS_FILTER() throws MalformedQueryException, UnexpectedQueryException{
+        convertAndTest(IRSSPARQLExpandTest.REPEATED_SUBJECT_PREDICATE_QUERY_PLUS_FILTER);
+
+    }
+    @Test
+    public void test_REPEATED_SUBJECT_SHORTHAND_QUERY() throws MalformedQueryException, UnexpectedQueryException{
+        convertAndTest(IRSSPARQLExpandTest.REPEATED_SUBJECT_SHORTHAND_QUERY);
+
+    }
+    @Test
+    @Ignore
+    public void test_REPEATED_SUBJECT_SHORTHAND_QUERY_PLUS_FILTER() throws MalformedQueryException, UnexpectedQueryException{
+        convertAndTest(IRSSPARQLExpandTest.REPEATED_SUBJECT_SHORTHAND_QUERY_PLUS_FILTER);
+
+    }
+    @Test
+    public void test_SHARED2_SUBJECT_URI_QUERY() throws MalformedQueryException, UnexpectedQueryException{
+        convertAndTest(IRSSPARQLExpandTest.SHARED2_SUBJECT_URI_QUERY);
+
+    }
+    @Test
+    @Ignore
+    public void test_SHARED2_SUBJECT_URI_QUERY_PLUS_FILTER() throws MalformedQueryException, UnexpectedQueryException{
+        convertAndTest(IRSSPARQLExpandTest.SHARED2_SUBJECT_URI_QUERY_PLUS_FILTER);
+
+    }
+    @Test
+    public void test_SHARED3_SUBJECT_URI_QUERY() throws MalformedQueryException, UnexpectedQueryException{
+        convertAndTest(IRSSPARQLExpandTest.SHARED3_SUBJECT_URI_QUERY);
+
+    }
+    @Test
+    @Ignore
+    public void test_SHARED3_SUBJECT_URI_QUERY_PLUS_FILTER() throws MalformedQueryException, UnexpectedQueryException{
+        convertAndTest(IRSSPARQLExpandTest.SHARED3_SUBJECT_URI_QUERY_PLUS_FILTER);
+
+    }
+    @Test
+    public void test_SIMPLE_CHAIN_QUERY() throws MalformedQueryException, UnexpectedQueryException{
+        convertAndTest(IRSSPARQLExpandTest.SIMPLE_CHAIN_QUERY);
+
+    }
+    @Test
+    @Ignore
+    public void test_SIMPLE_CHAIN_QUERY_PLUS_FILTERS() throws MalformedQueryException, UnexpectedQueryException{
+        convertAndTest(IRSSPARQLExpandTest.SIMPLE_CHAIN_QUERY_PLUS_FILTERS);
+
+    }
+    @Test
+    public void test_SINGLE_BOTH_URI_QUERY() throws MalformedQueryException, UnexpectedQueryException{
+        convertAndTest(IRSSPARQLExpandTest.SINGLE_BOTH_URI_QUERY);
+
+    }
+    @Test
+    @Ignore
+    public void test_SINGLE_BOTH_URI_QUERY_PLUS_4FILTER() throws MalformedQueryException, UnexpectedQueryException{
+        convertAndTest(IRSSPARQLExpandTest.SINGLE_BOTH_URI_QUERY_PLUS_4FILTER);
+
+    }
+    @Test
+    @Ignore
+    public void test_SINGLE_BOTH_URI_QUERY_PLUS_FILTER() throws MalformedQueryException, UnexpectedQueryException{
+        convertAndTest(IRSSPARQLExpandTest.SINGLE_BOTH_URI_QUERY_PLUS_FILTER);
+
+    }
+    @Test
+    public void test_SINGLE_OBJECT_URI_QUERY() throws MalformedQueryException, UnexpectedQueryException{
+        convertAndTest(IRSSPARQLExpandTest.SINGLE_OBJECT_URI_QUERY);
+
+    }
+    @Test
+    @Ignore
+    public void test_SINGLE_OBJECT_URI_QUERY_PLUS_FILTER() throws MalformedQueryException, UnexpectedQueryException{
+        convertAndTest(IRSSPARQLExpandTest.SINGLE_OBJECT_URI_QUERY_PLUS_FILTER);
+
+    }
+    @Test
+    public void test_SINGLE_SUBJECT_URI_QUERY() throws MalformedQueryException, UnexpectedQueryException{
+        convertAndTest(IRSSPARQLExpandTest.SINGLE_SUBJECT_URI_QUERY);
+
+    }
+    @Test
+    @Ignore
+    public void test_SINGLE_SUBJECT_URI_QUERY_PLUS_FILTER() throws MalformedQueryException, UnexpectedQueryException{
+        convertAndTest(IRSSPARQLExpandTest.SINGLE_SUBJECT_URI_QUERY_PLUS_FILTER);
+
+    }
+    @Test
+    public void test_TWO_STATEMENTS_ONE_OBJECT_URI_QUERY() throws MalformedQueryException, UnexpectedQueryException{
+        convertAndTest(IRSSPARQLExpandTest.TWO_STATEMENTS_ONE_OBJECT_URI_QUERY);
+
+    }
+    @Test
+    @Ignore
+    public void test_TWO_STATEMENTS_ONE_OBJECT_URI_QUERY_PLUS_FILTER() throws MalformedQueryException, UnexpectedQueryException{
+        convertAndTest(IRSSPARQLExpandTest.TWO_STATEMENTS_ONE_OBJECT_URI_QUERY_PLUS_FILTER);
+
+    } 
 }

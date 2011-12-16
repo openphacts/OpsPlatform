@@ -52,6 +52,8 @@ public class IRSSPARQLExpandTest
     public void tearDown() {
     }
 
+    static String CONSTRUCT_QUERY = "CONSTRUCT { ?s ?p ?o } WHERE { ?o ?p ?s }";
+            
     /**
      * Test that we do not do anything with CONSTRUCT queries
      */
@@ -59,7 +61,7 @@ public class IRSSPARQLExpandTest
     public void testConstructQuery() {
         final IRSClient mockIRS = createMock(IRSClient.class);
         replayAll();
-        String expectedResult = "CONSTRUCT { ?s ?p ?o } WHERE { ?o ?p ?s }";
+        String expectedResult = CONSTRUCT_QUERY;
         IRSSPARQLExpand expander = new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand")) {
             @Override
             IRSClient instantiateIRSClient() {
@@ -72,6 +74,7 @@ public class IRSSPARQLExpandTest
         assertEquals(expectedResult, query.toString());
     }
 
+    static String DESSCRIBE_QUERY = "DESCRIBE <http://brenda-enzymes.info/1.1.1.1>";
     /**
      * Test that we do not do anything with DESCRIBE queries
      */
@@ -79,7 +82,7 @@ public class IRSSPARQLExpandTest
     public void testDescribeQuery() {
         final IRSClient mockIRS = createMock(IRSClient.class);
         replayAll();
-        String expectedResult = "DESCRIBE <http://brenda-enzymes.info/1.1.1.1>";
+        String expectedResult = DESSCRIBE_QUERY;
         IRSSPARQLExpand expander = new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand")) {
             @Override
             IRSClient instantiateIRSClient() {
@@ -92,6 +95,7 @@ public class IRSSPARQLExpandTest
         assertEquals(expectedResult, query.toString());
     }
 
+    static String ASK_QUERY = "ASK { ?s ?p ?o }";
     /**
      * Test that we do not do anything with ASK queries
      */
@@ -99,7 +103,7 @@ public class IRSSPARQLExpandTest
     public void testAskQuery() {
         final IRSClient mockIRS = createMock(IRSClient.class);
         replayAll();
-        String expectedResult = "ASK { ?s ?p ?o }";
+        String expectedResult = ASK_QUERY;
         IRSSPARQLExpand expander = new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand")) {
             @Override
             IRSClient instantiateIRSClient() {
@@ -112,6 +116,7 @@ public class IRSSPARQLExpandTest
         assertEquals(expectedResult, query.toString());
     }
     
+    static String MINIMAL_SPACING_QUERY = "SELECT ?book ?title WHERE{?book <http://dc/title> ?title.}";
     /**
      * Test that a query with minimal spacing in its text is processed correctly
      */
@@ -121,7 +126,7 @@ public class IRSSPARQLExpandTest
         expect(mockIRS.getMatchesForURIs(new HashSet<URI>())).andReturn(new HashMap<URI, List<URI>>());
         replayAll();
 
-        String expectedResult = "SELECT ?book ?title WHERE{?book <http://dc/title> ?title.}";
+        String expectedResult = MINIMAL_SPACING_QUERY;
         
         IRSSPARQLExpand s = new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand")) {
             @Override
@@ -130,11 +135,15 @@ public class IRSSPARQLExpandTest
             }
         };
         s.initialiseInternal(null);
-        String qStr = "SELECT ?book ?title WHERE{?book <http://dc/title> ?title.}";
+        String qStr = MINIMAL_SPACING_QUERY;
         SetOfStatements eQuery = s.invokeInternal(new SPARQLQueryImpl(qStr).toRDF());
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
         assertEquals(expectedResult, query.toString());
     }
+    
+    static String PREFIX_QUERY = "PREFIX books: <http://example.org/book/> "
+                + "PREFIX dc: <http://purl.org/dc/elements/1.1/>"
+                + "SELECT ?book ?title WHERE { ?book dc:title ?title . }";
     
     /**
      * Test that a query involving prefixes is output correctly
@@ -145,9 +154,7 @@ public class IRSSPARQLExpandTest
         expect(mockIRS.getMatchesForURIs(new HashSet<URI>())).andReturn(new HashMap<URI, List<URI>>());
         replayAll();
 
-        String expectedResult = "PREFIX books: <http://example.org/book/> "
-                + "PREFIX dc: <http://purl.org/dc/elements/1.1/>"
-                + "SELECT ?book ?title WHERE { ?book dc:title ?title . }";
+        String expectedResult = PREFIX_QUERY;
         
         IRSSPARQLExpand s = new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand")) {
             @Override
@@ -156,13 +163,16 @@ public class IRSSPARQLExpandTest
             }
         };
         s.initialiseInternal(null);
-        String qStr = "PREFIX books: <http://example.org/book/> "
-                + "PREFIX dc: <http://purl.org/dc/elements/1.1/>"
-                + "SELECT ?book ?title WHERE { ?book dc:title ?title . }";
+        String qStr = PREFIX_QUERY;
         SetOfStatements eQuery = s.invokeInternal(new SPARQLQueryImpl(qStr).toRDF());
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
         assertEquals(expectedResult, query.toString());
     }
+    
+    static String OPTIONAL_QUERY = "SELECT ?book ?title ?author WHERE { "
+                + "?book <http://dc.com/title> ?title . "
+                + "OPTIONAL { ?book <http://dc.org/author> ?author .} "
+                + "}";
     
     /**
      * Test that a query involving an optional clause is output correctly.
@@ -174,10 +184,7 @@ public class IRSSPARQLExpandTest
         final IRSClient mockIRS = createMock(IRSClient.class);
         replayAll();
 
-        String expectedResult = "SELECT ?book ?title ?author WHERE { "
-                + "?book <http://dc.com/title> ?title . "
-                + "OPTIONAL { ?book <http://dc.org/author> ?author .} "
-                + "}";
+        String expectedResult = OPTIONAL_QUERY;
         
         IRSSPARQLExpand s = new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand")) {
             @Override
@@ -186,15 +193,15 @@ public class IRSSPARQLExpandTest
             }
         };
         s.initialiseInternal(null);
-        String qStr = "SELECT ?book ?title ?author WHERE { "
-                + "?book <http://dc.com/title> ?title . "
-                + "OPTIONAL { ?book <http://dc.org/author> ?author .} "
-                + "}";
+        String qStr = OPTIONAL_QUERY;
         SetOfStatements eQuery = s.invokeInternal(new SPARQLQueryImpl(qStr).toRDF());
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
         assertEquals(expectedResult, query.toString());
     }
     
+    static String NO_URI_QUERY = "SELECT ?book ?author WHERE { "
+                + "?book <http://dc.org/author> ?author . "
+                + "}";
     /**
      * Test that nothing happens to a query without any URIs present.
      */
@@ -204,9 +211,7 @@ public class IRSSPARQLExpandTest
         expect(mockIRS.getMatchesForURIs(new HashSet<URI>())).andReturn(new HashMap<URI, List<URI>>());
         replayAll();
 
-        String expectedResult = "SELECT ?book ?author WHERE { "
-                + "?book <http://dc.org/author> ?author . "
-                + "}";
+        String expectedResult = NO_URI_QUERY;
         
         IRSSPARQLExpand s = new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand")) {
             @Override
@@ -215,14 +220,24 @@ public class IRSSPARQLExpandTest
             }
         };
         s.initialiseInternal(null);
-        String qStr = "SELECT ?book ?author WHERE { "
-                + "?book <http://dc.org/author> ?author . "
-                + "}";
+        String qStr = NO_URI_QUERY;
         SetOfStatements eQuery = s.invokeInternal(new SPARQLQueryImpl(qStr).toRDF());
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
         assertEquals(expectedResult, query.toString());
     }
     
+    static String SINGLE_OBJECT_URI_QUERY = "SELECT ?protein"
+                + " WHERE { "
+                + "?protein <http://www.foo.org/somePredicate> <http://foo.info/1.1.1.1> . "
+                + "}";
+    static String SINGLE_OBJECT_URI_QUERY_PLUS_FILTER = "SELECT ?protein"
+                + " WHERE {"
+                + "?protein <http://www.foo.org/somePredicate> "
+                + "?objectUriLine1 . "
+                + "FILTER (?objectUriLine1 = <http://bar.com/8hd83> || "
+                + "?objectUriLine1 = <http://foo.info/1.1.1.1>) "
+                + "}";
+            
     /**
      * Test that a query with a single basic graph pattern with a URI in the 
      * object is expanded.
@@ -244,13 +259,7 @@ public class IRSSPARQLExpandTest
                 .andReturn(new URIImpl("http://foo.info/1.1.1.1"));
         replayAll();
 
-        String expectedResult = "SELECT ?protein"
-                + " WHERE {"
-                + "?protein <http://www.foo.org/somePredicate> "
-                + "?objectUriLine1 . "
-                + "FILTER (?objectUriLine1 = <http://bar.com/8hd83> || "
-                + "?objectUriLine1 = <http://foo.info/1.1.1.1>) "
-                + "}";
+        String expectedResult = SINGLE_OBJECT_URI_QUERY_PLUS_FILTER;
         
         IRSSPARQLExpand s = new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand")) {
             @Override
@@ -259,14 +268,25 @@ public class IRSSPARQLExpandTest
             }
         };
         s.initialiseInternal(null);
-        String qStr = "SELECT ?protein"
-                + " WHERE { "
-                + "?protein <http://www.foo.org/somePredicate> <http://foo.info/1.1.1.1> . "
-                + "}";
+        String qStr = SINGLE_OBJECT_URI_QUERY;
         SetOfStatements eQuery = s.invokeInternal(new SPARQLQueryImpl(qStr).toRDF());
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
         assertEquals(expectedResult, query.toString());
     }
+    
+    static String SINGLE_SUBJECT_URI_QUERY = "SELECT ?p ?o"
+                + " WHERE {"
+                + " <http://foo.com/45273> "
+                + " ?p "
+                + " ?o . "
+                + "}";
+    static String SINGLE_SUBJECT_URI_QUERY_PLUS_FILTER =  "SELECT ?p ?o"
+                + " WHERE {"
+                + "?subjectUriLine1 ?p ?o . "
+                + "FILTER (?subjectUriLine1 = <http://bar.co.uk/346579> || "
+                + "?subjectUriLine1 = <http://bar.ac.uk/19278> || "
+                + "?subjectUriLine1 = <http://foo.com/45273>) "
+                + "}"; 
     
     /**
      * Test that a query with a single basic graph pattern with a URI in the 
@@ -292,13 +312,7 @@ public class IRSSPARQLExpandTest
                 .andReturn(new URIImpl("http://foo.com/45273"));
         replayAll();
 
-        String expectedResult = "SELECT ?p ?o"
-                + " WHERE {"
-                + "?subjectUriLine1 ?p ?o . "
-                + "FILTER (?subjectUriLine1 = <http://bar.co.uk/346579> || "
-                + "?subjectUriLine1 = <http://bar.ac.uk/19278> || "
-                + "?subjectUriLine1 = <http://foo.com/45273>) "
-                + "}";
+        String expectedResult = SINGLE_SUBJECT_URI_QUERY_PLUS_FILTER;
         
         IRSSPARQLExpand s = new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand")) {
             @Override
@@ -307,17 +321,26 @@ public class IRSSPARQLExpandTest
             }
         };
         s.initialiseInternal(null);
-        String qStr = "SELECT ?p ?o"
-                + " WHERE {"
-                + " <http://foo.com/45273> "
-                + " ?p "
-                + " ?o . "
-                + "}";
+        String qStr = SINGLE_SUBJECT_URI_QUERY;
         SetOfStatements eQuery = s.invokeInternal(new SPARQLQueryImpl(qStr).toRDF());
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
         assertEquals(expectedResult, query.toString());
     }
 
+    static String SINGLE_BOTH_URI_QUERY = "SELECT ?p "
+                + "WHERE { "
+                + "<http://example.org/chem/8j392> ?p <http://foo.com/1.1.1.1> . "
+                + "}";
+    static String SINGLE_BOTH_URI_QUERY_PLUS_FILTER = "SELECT ?p"
+                + " WHERE {"
+                + "?subjectUriLine1 ?p ?objectUriLine1 . "
+                + "FILTER (?subjectUriLine1 = <http://result.com/90> || "
+                + "?subjectUriLine1 = <http://example.org/chem/8j392>) "
+                + "FILTER (?objectUriLine1 = <http://bar.info/u83hs> || "
+                + "?objectUriLine1 = <http://foo.com/1.1.1.1>) "
+                + "}";
+            
+            
     /**
      * Test that a query with a single basic graph pattern with a URI in the 
      * subject and object is expanded when there is one match for each URI.
@@ -344,14 +367,7 @@ public class IRSSPARQLExpandTest
                 .andReturn(new URIImpl("http://foo.com/1.1.1.1"));
         replayAll();
 
-        String expectedResult = "SELECT ?p"
-                + " WHERE {"
-                + "?subjectUriLine1 ?p ?objectUriLine1 . "
-                + "FILTER (?subjectUriLine1 = <http://result.com/90> || "
-                + "?subjectUriLine1 = <http://example.org/chem/8j392>) "
-                + "FILTER (?objectUriLine1 = <http://bar.info/u83hs> || "
-                + "?objectUriLine1 = <http://foo.com/1.1.1.1>) "
-                + "}";
+        String expectedResult = SINGLE_BOTH_URI_QUERY_PLUS_FILTER;
         
         IRSSPARQLExpand s = new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand")) {
             @Override
@@ -360,15 +376,24 @@ public class IRSSPARQLExpandTest
             }
         };
         s.initialiseInternal(null);
-        String qStr = "SELECT ?p "
-                + "WHERE { "
-                + "<http://example.org/chem/8j392> ?p <http://foo.com/1.1.1.1> . "
-                + "}";
+        String qStr = SINGLE_BOTH_URI_QUERY;
         SetOfStatements eQuery = s.invokeInternal(new SPARQLQueryImpl(qStr).toRDF());
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
         assertEquals(expectedResult, query.toString());
     }
 
+    static String SINGLE_BOTH_URI_QUERY_PLUS_4FILTER = "SELECT ?p"
+                + " WHERE {"
+                + "?subjectUriLine1 ?p ?objectUriLine1 . "
+                + "FILTER (?subjectUriLine1 = <http://result.com/90> || "
+                + "?subjectUriLine1 = <http://somewhere.com/chebi/7s82> || "
+                + "?subjectUriLine1 = <http://another.com/maps/hsjnc> || "
+                + "?subjectUriLine1 = <http://example.org/chem/8j392>) "
+                + "FILTER (?objectUriLine1 = <http://bar.info/u83hs> || "
+                + "?objectUriLine1 = <http://onemore.co.uk/892k3> || "
+                + "?objectUriLine1 = <http://foo.com/1.1.1.1>) "
+                + "}";
+    
     /**
      * Test that a query with a single basic graph pattern with a URI in the 
      * subject and object is expanded when there is more than one match for each URI.
@@ -398,17 +423,7 @@ public class IRSSPARQLExpandTest
                 .andReturn(new URIImpl("http://foo.com/1.1.1.1"));
         replayAll();
 
-        String expectedResult = "SELECT ?p"
-                + " WHERE {"
-                + "?subjectUriLine1 ?p ?objectUriLine1 . "
-                + "FILTER (?subjectUriLine1 = <http://result.com/90> || "
-                + "?subjectUriLine1 = <http://somewhere.com/chebi/7s82> || "
-                + "?subjectUriLine1 = <http://another.com/maps/hsjnc> || "
-                + "?subjectUriLine1 = <http://example.org/chem/8j392>) "
-                + "FILTER (?objectUriLine1 = <http://bar.info/u83hs> || "
-                + "?objectUriLine1 = <http://onemore.co.uk/892k3> || "
-                + "?objectUriLine1 = <http://foo.com/1.1.1.1>) "
-                + "}";
+        String expectedResult = SINGLE_BOTH_URI_QUERY_PLUS_4FILTER;
         
         IRSSPARQLExpand s = new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand")) {
             @Override
@@ -417,14 +432,26 @@ public class IRSSPARQLExpandTest
             }
         };
         s.initialiseInternal(null);
-        String qStr = "SELECT ?p "
-                + "WHERE { "
-                + "<http://example.org/chem/8j392> ?p <http://foo.com/1.1.1.1> . }";
+        String qStr = SINGLE_BOTH_URI_QUERY;
         SetOfStatements eQuery = s.invokeInternal(new SPARQLQueryImpl(qStr).toRDF());
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
         assertEquals(expectedResult, query.toString());
     }
 
+    
+    static String TWO_STATEMENTS_ONE_OBJECT_URI_QUERY = "SELECT ?protein"
+                + " WHERE {"
+                + "?protein <http://foo.com/somePredicate> <http://foo.info/1.1.1.1> . "
+                + "?protein <http://foo.com/anotherPredicate> ?name . "
+                + "}";
+    static String TWO_STATEMENTS_ONE_OBJECT_URI_QUERY_PLUS_FILTER =  "SELECT ?protein"
+                + " WHERE {"
+                + "?protein <http://foo.com/somePredicate> ?objectUriLine1 . "
+                + "FILTER (?objectUriLine1 = <http://bar.com/9khd7> || "
+                + "?objectUriLine1 = <http://foo.info/1.1.1.1>) "
+                + "?protein <http://foo.com/anotherPredicate> ?name . "
+                + "}";
+    
     /**
      * Test that a query with a two basic graph patterns with a single URI in the 
      * object is expanded.
@@ -445,13 +472,7 @@ public class IRSSPARQLExpandTest
                 .andReturn(new URIImpl("http://foo.info/1.1.1.1"));
         replayAll();
 
-        String expectedResult = "SELECT ?protein"
-                + " WHERE {"
-                + "?protein <http://foo.com/somePredicate> ?objectUriLine1 . "
-                + "FILTER (?objectUriLine1 = <http://bar.com/9khd7> || "
-                + "?objectUriLine1 = <http://foo.info/1.1.1.1>) "
-                + "?protein <http://foo.com/anotherPredicate> ?name . "
-                + "}";
+        String expectedResult = TWO_STATEMENTS_ONE_OBJECT_URI_QUERY_PLUS_FILTER;
         
         IRSSPARQLExpand s = new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand")) {
             @Override
@@ -460,16 +481,26 @@ public class IRSSPARQLExpandTest
             }
         };
         s.initialiseInternal(null);
-        String qStr = "SELECT ?protein"
-                + " WHERE {"
-                + "?protein <http://foo.com/somePredicate> <http://foo.info/1.1.1.1> . "
-                + "?protein <http://foo.com/anotherPredicate> ?name . "
-                + "}";
+        String qStr = TWO_STATEMENTS_ONE_OBJECT_URI_QUERY;
         SetOfStatements eQuery = s.invokeInternal(new SPARQLQueryImpl(qStr).toRDF());
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
         assertEquals(expectedResult, query.toString());
     }
     
+    static String SHARED2_SUBJECT_URI_QUERY = "SELECT ?protein ?name "
+                + "WHERE { "
+                + "<http://foo.info/1.1.1.1> <http://foo.com/somePredicate> ?protein . "
+                + "<http://foo.info/1.1.1.1> <http://foo.com/anotherPredicate> ?name . "
+                + "}";    
+    static String SHARED2_SUBJECT_URI_QUERY_PLUS_FILTER = "SELECT ?protein ?name "
+                + "WHERE {"
+                + "?subjectUriLine1 <http://foo.com/somePredicate> ?protein . "
+                + "FILTER (?subjectUriLine1 = <http://bar.com/9khd7> || "
+                + "?subjectUriLine1 = <http://foo.info/1.1.1.1>) "
+                + "?subjectUriLine2 <http://foo.com/anotherPredicate> ?name . "
+                + "FILTER (?subjectUriLine2 = <http://bar.com/9khd7> || "
+                + "?subjectUriLine2 = <http://foo.info/1.1.1.1>) "
+                + "}";
     /**
      * Test that a query with a two basic graph patterns which share a single 
      * subject URI is expanded to every combination.
@@ -493,15 +524,7 @@ public class IRSSPARQLExpandTest
                 .andReturn(new URIImpl("http://foo.info/1.1.1.1"));
         replayAll();
 
-        String expectedResult = "SELECT ?protein ?name "
-                + "WHERE {"
-                + "?subjectUriLine1 <http://foo.com/somePredicate> ?protein . "
-                + "FILTER (?subjectUriLine1 = <http://bar.com/9khd7> || "
-                + "?subjectUriLine1 = <http://foo.info/1.1.1.1>) "
-                + "?subjectUriLine2 <http://foo.com/anotherPredicate> ?name . "
-                + "FILTER (?subjectUriLine2 = <http://bar.com/9khd7> || "
-                + "?subjectUriLine2 = <http://foo.info/1.1.1.1>) "
-                + "}";
+        String expectedResult = SHARED2_SUBJECT_URI_QUERY_PLUS_FILTER;
         
         IRSSPARQLExpand s = new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand")) {
             @Override
@@ -510,15 +533,33 @@ public class IRSSPARQLExpandTest
             }
         };
         s.initialiseInternal(null);
-        String qStr = "SELECT ?protein ?name "
-                + "WHERE { "
-                + "<http://foo.info/1.1.1.1> <http://foo.com/somePredicate> ?protein . "
-                + "<http://foo.info/1.1.1.1> <http://foo.com/anotherPredicate> ?name . "
-                + "}";
+        String qStr = SHARED2_SUBJECT_URI_QUERY;
         SetOfStatements eQuery = s.invokeInternal(new SPARQLQueryImpl(qStr).toRDF());
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
         assertEquals(expectedResult, query.toString());
     }
+    
+    static String SHARED3_SUBJECT_URI_QUERY = "SELECT ?protein ?name ?enzyme "
+                + "WHERE { "
+                + "<http://foo.info/1.1.1.1> <http://foo.com/somePredicate> ?protein . "
+                + "<http://foo.info/1.1.1.1> <http://foo.com/anotherPredicate> ?name . "
+                + "<http://foo.info/1.1.1.1> <http://bar.org/relation> ?enzyme . "
+                + "}";    
+    static String SHARED3_SUBJECT_URI_QUERY_PLUS_FILTER = "SELECT ?protein ?name ?enzyme "
+                + "WHERE {"
+                + "?subjectUriLine1 <http://foo.com/somePredicate> ?protein . "
+                + "FILTER (?subjectUriLine1 = <http://bar.com/9khd7> || "
+                + "?subjectUriLine1 = <http://example.ac.uk/89ke> || "
+                + "?subjectUriLine1 = <http://foo.info/1.1.1.1>) "
+                + "?subjectUriLine2 <http://foo.com/anotherPredicate> ?name . "
+                + "FILTER (?subjectUriLine2 = <http://bar.com/9khd7> || "
+                + "?subjectUriLine2 = <http://example.ac.uk/89ke> || "
+                + "?subjectUriLine2 = <http://foo.info/1.1.1.1>) "
+                + "?subjectUriLine3 <http://bar.org/relation> ?enzyme . "
+                + "FILTER (?subjectUriLine3 = <http://bar.com/9khd7> || "
+                + "?subjectUriLine3 = <http://example.ac.uk/89ke> || "
+                + "?subjectUriLine3 = <http://foo.info/1.1.1.1>) "
+                + "}";
 
     /**
      * Test that a query with a three basic graph patterns which share a single 
@@ -550,21 +591,7 @@ public class IRSSPARQLExpandTest
                 .andReturn(new URIImpl("http://foo.info/1.1.1.1"));
         replayAll();
 
-        String expectedResult = "SELECT ?protein ?name ?enzyme "
-                + "WHERE {"
-                + "?subjectUriLine1 <http://foo.com/somePredicate> ?protein . "
-                + "FILTER (?subjectUriLine1 = <http://bar.com/9khd7> || "
-                + "?subjectUriLine1 = <http://example.ac.uk/89ke> || "
-                + "?subjectUriLine1 = <http://foo.info/1.1.1.1>) "
-                + "?subjectUriLine2 <http://foo.com/anotherPredicate> ?name . "
-                + "FILTER (?subjectUriLine2 = <http://bar.com/9khd7> || "
-                + "?subjectUriLine2 = <http://example.ac.uk/89ke> || "
-                + "?subjectUriLine2 = <http://foo.info/1.1.1.1>) "
-                + "?subjectUriLine3 <http://bar.org/relation> ?enzyme . "
-                + "FILTER (?subjectUriLine3 = <http://bar.com/9khd7> || "
-                + "?subjectUriLine3 = <http://example.ac.uk/89ke> || "
-                + "?subjectUriLine3 = <http://foo.info/1.1.1.1>) "
-                + "}";
+        String expectedResult = SHARED3_SUBJECT_URI_QUERY_PLUS_FILTER;
         
         IRSSPARQLExpand s = new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand")) {
             @Override
@@ -573,17 +600,29 @@ public class IRSSPARQLExpandTest
             }
         };
         s.initialiseInternal(null);
-        String qStr = "SELECT ?protein ?name ?enzyme "
-                + "WHERE { "
-                + "<http://foo.info/1.1.1.1> <http://foo.com/somePredicate> ?protein . "
-                + "<http://foo.info/1.1.1.1> <http://foo.com/anotherPredicate> ?name . "
-                + "<http://foo.info/1.1.1.1> <http://bar.org/relation> ?enzyme . "
-                + "}";
+        String qStr = SHARED3_SUBJECT_URI_QUERY;
         SetOfStatements eQuery = s.invokeInternal(new SPARQLQueryImpl(qStr).toRDF());
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
         assertEquals(expectedResult, query.toString());
     }
 
+    static String SIMPLE_CHAIN_QUERY =  "SELECT ?protein ?name "
+                + "WHERE { "
+                + "?protein <http://foo.com/somePredicate> <http://example.org/chem/2918> . "
+                + "<http://example.org/chem/2918> <http://foo.com/anotherPredicate> ?name . "
+                + "}";
+    static String SIMPLE_CHAIN_QUERY_PLUS_FILTERS = "SELECT ?protein ?name "
+                + "WHERE {"
+                + "?protein <http://foo.com/somePredicate> ?objectUriLine1 . "
+                + "FILTER (?objectUriLine1 = <http://bar.com/9khd7> || "
+                + "?objectUriLine1 = <http://foo.info/1.1.1.1> || "
+                + "?objectUriLine1 = <http://example.org/chem/2918>) "
+                + "?subjectUriLine2 <http://foo.com/anotherPredicate> ?name . "
+                + "FILTER (?subjectUriLine2 = <http://bar.com/9khd7> || "
+                + "?subjectUriLine2 = <http://foo.info/1.1.1.1> || "
+                + "?subjectUriLine2 = <http://example.org/chem/2918>) "
+                + "}";
+            
     /**
      * Test that a query with a two basic graph patterns which form a chain
      * based on the object URI of one with the subject URI of the second.
@@ -610,17 +649,7 @@ public class IRSSPARQLExpandTest
                 .andReturn(new URIImpl("http://example.org/chem/2918"));        
         replayAll();
 
-        String expectedResult = "SELECT ?protein ?name "
-                + "WHERE {"
-                + "?protein <http://foo.com/somePredicate> ?objectUriLine1 . "
-                + "FILTER (?objectUriLine1 = <http://bar.com/9khd7> || "
-                + "?objectUriLine1 = <http://foo.info/1.1.1.1> || "
-                + "?objectUriLine1 = <http://example.org/chem/2918>) "
-                + "?subjectUriLine2 <http://foo.com/anotherPredicate> ?name . "
-                + "FILTER (?subjectUriLine2 = <http://bar.com/9khd7> || "
-                + "?subjectUriLine2 = <http://foo.info/1.1.1.1> || "
-                + "?subjectUriLine2 = <http://example.org/chem/2918>) "
-                + "}";
+        String expectedResult = SIMPLE_CHAIN_QUERY_PLUS_FILTERS;
         
         IRSSPARQLExpand s = new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand")) {
             @Override
@@ -629,16 +658,50 @@ public class IRSSPARQLExpandTest
             }
         };
         s.initialiseInternal(null);
-        String qStr = "SELECT ?protein ?name "
-                + "WHERE { "
-                + "?protein <http://foo.com/somePredicate> <http://example.org/chem/2918> . "
-                + "<http://example.org/chem/2918> <http://foo.com/anotherPredicate> ?name . "
-                + "}";
+        String qStr = SIMPLE_CHAIN_QUERY;
         SetOfStatements eQuery = s.invokeInternal(new SPARQLQueryImpl(qStr).toRDF());
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
         assertEquals(expectedResult, query.toString());
     }
 
+    static String COMPLEX_CHAIN_QUERY = "SELECT ?name ?value1 ?value2 "
+                + "WHERE { "
+                + "<http://bar.co.uk/998234> <http://foo.com/somePredicate> <http://example.org/chem/2918> . "
+                + "<http://bar.co.uk/998234> <http://foo.com/predicate> ?value1 . "
+                + "<http://example.org/chem/2918> <http://foo.com/anotherPredicate> ?name . "
+                + "<http://example.org/chem/2918> <http://foo.com/aPredicate> <http://yetanother.com/-09824> ."
+                + "<http://yetanother.com/-09824> <http://bar.org/predicate> ?value2 . "
+                + "}";
+    static String COMPLEX_CHAIN_QUERY_PLUS_FILTER = "SELECT ?name ?value1 ?value2 "
+                + "WHERE {"
+                + "?subjectUriLine1 <http://foo.com/somePredicate> ?objectUriLine1 . "
+                + "FILTER (?subjectUriLine1 = <http://foo.info/1.1.1.1> || "
+                + "?subjectUriLine1 = <http://bar.co.uk/998234>) "               
+                + "FILTER (?objectUriLine1 = <http://bar.com/9khd7> || "
+                + "?objectUriLine1 = <http://hello.uk/87234> || "
+                + "?objectUriLine1 = <http://example.org/chem/2918>) "                
+                + "?subjectUriLine2 <http://foo.com/predicate> ?value1 . "                
+                + "FILTER (?subjectUriLine2 = <http://foo.info/1.1.1.1> || "
+                + "?subjectUriLine2 = <http://bar.co.uk/998234>) "                
+                + "?subjectUriLine3 <http://foo.com/anotherPredicate> ?name . "                
+                + "FILTER (?subjectUriLine3 = <http://bar.com/9khd7> || "
+                + "?subjectUriLine3 = <http://hello.uk/87234> || "
+                + "?subjectUriLine3 = <http://example.org/chem/2918>) "                
+                + "?subjectUriLine4 <http://foo.com/aPredicate> ?objectUriLine4 . "                
+                + "FILTER (?subjectUriLine4 = <http://bar.com/9khd7> || "
+                + "?subjectUriLine4 = <http://hello.uk/87234> || "
+                + "?subjectUriLine4 = <http://example.org/chem/2918>) "
+                + "FILTER (?objectUriLine4 = <http://yetmore.info/872342> || "
+                + "?objectUriLine4 = <http://ohboy.com/27393> || "
+                + "?objectUriLine4 = <http://imborednow.co/akuhe8> || "
+                + "?objectUriLine4 = <http://yetanother.com/-09824>) "                
+                + "?subjectUriLine5 <http://bar.org/predicate> ?value2 . "
+                + "FILTER (?subjectUriLine5 = <http://yetmore.info/872342> || "
+                + "?subjectUriLine5 = <http://ohboy.com/27393> || "
+                + "?subjectUriLine5 = <http://imborednow.co/akuhe8> || "
+                + "?subjectUriLine5 = <http://yetanother.com/-09824>) "
+                + "}";
+            
     /**
      * Test that a query with a several basic graph patterns which form a series
      * of chains based on the object URI of one BGP being the subject URI of 
@@ -706,35 +769,7 @@ public class IRSSPARQLExpandTest
                 .andReturn(new URIImpl("http://yetanother.com/-09824"));
         replayAll();
 
-        String expectedResult = "SELECT ?name ?value1 ?value2 "
-                + "WHERE {"
-                + "?subjectUriLine1 <http://foo.com/somePredicate> ?objectUriLine1 . "
-                + "FILTER (?subjectUriLine1 = <http://foo.info/1.1.1.1> || "
-                + "?subjectUriLine1 = <http://bar.co.uk/998234>) "               
-                + "FILTER (?objectUriLine1 = <http://bar.com/9khd7> || "
-                + "?objectUriLine1 = <http://hello.uk/87234> || "
-                + "?objectUriLine1 = <http://example.org/chem/2918>) "                
-                + "?subjectUriLine2 <http://foo.com/predicate> ?value1 . "                
-                + "FILTER (?subjectUriLine2 = <http://foo.info/1.1.1.1> || "
-                + "?subjectUriLine2 = <http://bar.co.uk/998234>) "                
-                + "?subjectUriLine3 <http://foo.com/anotherPredicate> ?name . "                
-                + "FILTER (?subjectUriLine3 = <http://bar.com/9khd7> || "
-                + "?subjectUriLine3 = <http://hello.uk/87234> || "
-                + "?subjectUriLine3 = <http://example.org/chem/2918>) "                
-                + "?subjectUriLine4 <http://foo.com/aPredicate> ?objectUriLine4 . "                
-                + "FILTER (?subjectUriLine4 = <http://bar.com/9khd7> || "
-                + "?subjectUriLine4 = <http://hello.uk/87234> || "
-                + "?subjectUriLine4 = <http://example.org/chem/2918>) "
-                + "FILTER (?objectUriLine4 = <http://yetmore.info/872342> || "
-                + "?objectUriLine4 = <http://ohboy.com/27393> || "
-                + "?objectUriLine4 = <http://imborednow.co/akuhe8> || "
-                + "?objectUriLine4 = <http://yetanother.com/-09824>) "                
-                + "?subjectUriLine5 <http://bar.org/predicate> ?value2 . "
-                + "FILTER (?subjectUriLine5 = <http://yetmore.info/872342> || "
-                + "?subjectUriLine5 = <http://ohboy.com/27393> || "
-                + "?subjectUriLine5 = <http://imborednow.co/akuhe8> || "
-                + "?subjectUriLine5 = <http://yetanother.com/-09824>) "
-                + "}";
+        String expectedResult = COMPLEX_CHAIN_QUERY_PLUS_FILTER; 
         
         IRSSPARQLExpand s = new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand")) {
             @Override
@@ -743,18 +778,33 @@ public class IRSSPARQLExpandTest
             }
         };
         s.initialiseInternal(null);
-        String qStr = "SELECT ?name ?value1 ?value2 "
-                + "WHERE { "
-                + "<http://bar.co.uk/998234> <http://foo.com/somePredicate> <http://example.org/chem/2918> . "
-                + "<http://bar.co.uk/998234> <http://foo.com/predicate> ?value1 . "
-                + "<http://example.org/chem/2918> <http://foo.com/anotherPredicate> ?name . "
-                + "<http://example.org/chem/2918> <http://foo.com/aPredicate> <http://yetanother.com/-09824> ."
-                + "<http://yetanother.com/-09824> <http://bar.org/predicate> ?value2 . "
-                + "}";
+        String qStr = COMPLEX_CHAIN_QUERY;
         SetOfStatements eQuery = s.invokeInternal(new SPARQLQueryImpl(qStr).toRDF());
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
         assertEquals(expectedResult, query.toString());
     }
+
+    static String REPEATED_SUBJECT_SHORTHAND_QUERY = "SELECT ?protein ?name ?enzyme "
+                + "WHERE { "
+                + "<http://foo.info/1.1.1.1> <http://foo.com/somePredicate> ?protein ; "
+                + "<http://foo.com/anotherPredicate> ?name ; "
+                + "<http://bar.org/relation> ?enzyme . "
+                + "}"; 
+    static String REPEATED_SUBJECT_SHORTHAND_QUERY_PLUS_FILTER = "SELECT ?protein ?name ?enzyme "
+                + "WHERE {"
+                + "?subjectUriLine1 <http://foo.com/somePredicate> ?protein . "
+                + "FILTER (?subjectUriLine1 = <http://bar.com/9khd7> || "
+                + "?subjectUriLine1 = <http://example.org/chem/2918> || "
+                + "?subjectUriLine1 = <http://foo.info/1.1.1.1>) "
+                + "?subjectUriLine2 <http://foo.com/anotherPredicate> ?name . "
+                + "FILTER (?subjectUriLine2 = <http://bar.com/9khd7> || "
+                + "?subjectUriLine2 = <http://example.org/chem/2918> || "
+                + "?subjectUriLine2 = <http://foo.info/1.1.1.1>) "
+                + "?subjectUriLine3 <http://bar.org/relation> ?enzyme . "
+                + "FILTER (?subjectUriLine3 = <http://bar.com/9khd7> || "
+                + "?subjectUriLine3 = <http://example.org/chem/2918> || "
+                + "?subjectUriLine3 = <http://foo.info/1.1.1.1>) "
+                + "}";
     
     /**
      * Test that a query written using the shorthand for repeated subject URI
@@ -787,21 +837,7 @@ public class IRSSPARQLExpandTest
                 .andReturn(new URIImpl("http://foo.info/1.1.1.1"));
         replayAll();
 
-        String expectedResult = "SELECT ?protein ?name ?enzyme "
-                + "WHERE {"
-                + "?subjectUriLine1 <http://foo.com/somePredicate> ?protein . "
-                + "FILTER (?subjectUriLine1 = <http://bar.com/9khd7> || "
-                + "?subjectUriLine1 = <http://example.org/chem/2918> || "
-                + "?subjectUriLine1 = <http://foo.info/1.1.1.1>) "
-                + "?subjectUriLine2 <http://foo.com/anotherPredicate> ?name . "
-                + "FILTER (?subjectUriLine2 = <http://bar.com/9khd7> || "
-                + "?subjectUriLine2 = <http://example.org/chem/2918> || "
-                + "?subjectUriLine2 = <http://foo.info/1.1.1.1>) "
-                + "?subjectUriLine3 <http://bar.org/relation> ?enzyme . "
-                + "FILTER (?subjectUriLine3 = <http://bar.com/9khd7> || "
-                + "?subjectUriLine3 = <http://example.org/chem/2918> || "
-                + "?subjectUriLine3 = <http://foo.info/1.1.1.1>) "
-                + "}";
+        String expectedResult = REPEATED_SUBJECT_SHORTHAND_QUERY_PLUS_FILTER;
         
         IRSSPARQLExpand s = new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand")) {
             @Override
@@ -810,16 +846,27 @@ public class IRSSPARQLExpandTest
             }
         };
         s.initialiseInternal(null);
-        String qStr = "SELECT ?protein ?name ?enzyme "
-                + "WHERE { "
-                + "<http://foo.info/1.1.1.1> <http://foo.com/somePredicate> ?protein ; "
-                + "<http://foo.com/anotherPredicate> ?name ; "
-                + "<http://bar.org/relation> ?enzyme . "
-                + "}";
+        String qStr = REPEATED_SUBJECT_SHORTHAND_QUERY;
         SetOfStatements eQuery = s.invokeInternal(new SPARQLQueryImpl(qStr).toRDF());
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
         assertEquals(expectedResult, query.toString());
     }
+    
+    static String REPEATED_SUBJECT_PREDICATE_QUERY =  "SELECT ?protein ?name "
+                + "WHERE { "
+                + "<http://foo.info/1.1.1.1> <http://foo.com/somePredicate> ?protein , ?name . "
+                + "}";   
+    static String REPEATED_SUBJECT_PREDICATE_QUERY_PLUS_FILTER =  "SELECT ?protein ?name "
+                + "WHERE {"
+                + "?subjectUriLine1 <http://foo.com/somePredicate> ?protein . "
+                + "FILTER (?subjectUriLine1 = <http://bar.com/9khd7> || "
+                + "?subjectUriLine1 = <http://example.org/chem/2918> || "
+                + "?subjectUriLine1 = <http://foo.info/1.1.1.1>) "
+                + "?subjectUriLine2 <http://foo.com/somePredicate> ?name . "
+                + "FILTER (?subjectUriLine2 = <http://bar.com/9khd7> || "
+                + "?subjectUriLine2 = <http://example.org/chem/2918> || "
+                + "?subjectUriLine2 = <http://foo.info/1.1.1.1>) "
+                + "}"; 
     
     /**
      * Test that a query written using the shorthand for repeated subject and
@@ -848,17 +895,7 @@ public class IRSSPARQLExpandTest
                 .andReturn(new URIImpl("http://foo.info/1.1.1.1"));
         replayAll();
 
-        String expectedResult = "SELECT ?protein ?name "
-                + "WHERE {"
-                + "?subjectUriLine1 <http://foo.com/somePredicate> ?protein . "
-                + "FILTER (?subjectUriLine1 = <http://bar.com/9khd7> || "
-                + "?subjectUriLine1 = <http://example.org/chem/2918> || "
-                + "?subjectUriLine1 = <http://foo.info/1.1.1.1>) "
-                + "?subjectUriLine2 <http://foo.com/somePredicate> ?name . "
-                + "FILTER (?subjectUriLine2 = <http://bar.com/9khd7> || "
-                + "?subjectUriLine2 = <http://example.org/chem/2918> || "
-                + "?subjectUriLine2 = <http://foo.info/1.1.1.1>) "
-                + "}";
+        String expectedResult = REPEATED_SUBJECT_PREDICATE_QUERY_PLUS_FILTER;
         
         IRSSPARQLExpand s = new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand")) {
             @Override
@@ -867,10 +904,7 @@ public class IRSSPARQLExpandTest
             }
         };
         s.initialiseInternal(null);
-        String qStr = "SELECT ?protein ?name "
-                + "WHERE { "
-                + "<http://foo.info/1.1.1.1> <http://foo.com/somePredicate> ?protein , ?name . "
-                + "}";
+        String qStr = REPEATED_SUBJECT_PREDICATE_QUERY;
         SetOfStatements eQuery = s.invokeInternal(new SPARQLQueryImpl(qStr).toRDF());
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
         assertEquals(expectedResult, query.toString());
