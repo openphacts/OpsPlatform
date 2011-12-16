@@ -119,12 +119,6 @@ public class QueryWriterModelVisitorTest {
     }
 
     @Test
-    @Ignore
-    public void test_OPTIONAL_QUERY() throws MalformedQueryException, UnexpectedQueryException{
-        convertAndTest(IRSSPARQLExpandTest.OPTIONAL_QUERY);
-
-    }
-    @Test
     public void test_PREFIX_QUERY() throws MalformedQueryException, UnexpectedQueryException{
         convertAndTest(IRSSPARQLExpandTest.PREFIX_QUERY);
 

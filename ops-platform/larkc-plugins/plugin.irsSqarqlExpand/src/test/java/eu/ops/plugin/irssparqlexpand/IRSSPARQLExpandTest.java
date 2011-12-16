@@ -19,6 +19,7 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openrdf.model.URI;
 import org.openrdf.model.impl.URIImpl;
@@ -164,36 +165,6 @@ public class IRSSPARQLExpandTest
         };
         s.initialiseInternal(null);
         String qStr = PREFIX_QUERY;
-        SetOfStatements eQuery = s.invokeInternal(new SPARQLQueryImpl(qStr).toRDF());
-        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
-        assertEquals(expectedResult, query.toString());
-    }
-    
-    static String OPTIONAL_QUERY = "SELECT ?book ?title ?author WHERE { "
-                + "?book <http://dc.com/title> ?title . "
-                + "OPTIONAL { ?book <http://dc.org/author> ?author .} "
-                + "}";
-    
-    /**
-     * Test that a query involving an optional clause is output correctly.
-     * 
-     * Currently we do nothing with these queries.
-     */
-    @Test
-    public void testOptionalQuery() {
-        final IRSClient mockIRS = createMock(IRSClient.class);
-        replayAll();
-
-        String expectedResult = OPTIONAL_QUERY;
-        
-        IRSSPARQLExpand s = new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand")) {
-            @Override
-            IRSClient instantiateIRSClient() {
-                return mockIRS;
-            }
-        };
-        s.initialiseInternal(null);
-        String qStr = OPTIONAL_QUERY;
         SetOfStatements eQuery = s.invokeInternal(new SPARQLQueryImpl(qStr).toRDF());
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
         assertEquals(expectedResult, query.toString());
@@ -912,4 +883,162 @@ public class IRSSPARQLExpandTest
    
     //TODO: Write test for OPTIONAL BGP expansion
     //TODO: Write test for OPTIONAL set of BGPs expansion
+    
+    /**
+     * Test that a query involving an optional clause is output correctly.
+     * 
+     * Currently we do nothing with these queries.
+     */
+    @Test
+    public void testOptionalQuery_Simple() {
+        final IRSClient mockIRS = createMock(IRSClient.class);
+        final Map<URI, List<URI>> mockMappings = createMock(Map.class);
+        final List<URI> mockList = createMock(List.class);
+        final Iterator<URI> mockIterator = createMock(Iterator.class);
+        expect(mockIRS.getMatchesForURIs(EasyMock.isA(Set.class))).andReturn(mockMappings);
+        expect(mockMappings.isEmpty()).andReturn(Boolean.FALSE);
+        expect(mockMappings.get(new URIImpl("http://foo.info/1.1.1.1"))).andReturn(mockList);
+        expect(mockList.add(new URIImpl("http://foo.info/1.1.1.1"))).andReturn(Boolean.TRUE);
+        expect(mockMappings.get(new URIImpl("http://bar.com/ijdu"))).andReturn(mockList);
+        expect(mockList.add(new URIImpl("http://bar.com/ijdu"))).andReturn(Boolean.TRUE);
+        expect(mockList.iterator()).andReturn(mockIterator).times(2);
+        expect(mockIterator.hasNext()).andReturn(Boolean.TRUE).times(2).andReturn(Boolean.FALSE)
+                .andReturn(Boolean.TRUE).times(2).andReturn(Boolean.FALSE);
+        expect(mockIterator.next()).andReturn(new URIImpl("http://example.com/9khd7"))
+                .andReturn(new URIImpl("http://foo.info/1.1.1.1"))
+                .andReturn(new URIImpl("http://another.org/82374"))
+                .andReturn(new URIImpl("http://bar.com/ijdu"));
+        replayAll();
+
+        String expectedResult = "SELECT ?protein ?name "
+                + "WHERE {"
+                + "?subjectUriLine1 <http://foo.com/somePredicate> ?protein . "
+                + "FILTER (?subjectUriLine1 = <http://example.com/9khd7> || "
+                + "?subjectUriLine1 = <http://foo.info/1.1.1.1>) "
+                + "OPTIONAL {?subjectUriLine2 <http://foo.com/anotherPredicate> ?name . "
+                + "FILTER (?subjectUriLine2 = <http://another.org/82374> || "
+                + "?subjectUriLine2 = <http://bar.com/ijdu>) } "
+                + "}";
+        
+        IRSSPARQLExpand s = new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand")) {
+            @Override
+            IRSClient instantiateIRSClient() {
+                return mockIRS;
+            }
+        };
+        s.initialiseInternal(null);
+        String qStr = "SELECT ?protein ?name "
+                + "WHERE { "
+                + "<http://foo.info/1.1.1.1> <http://foo.com/somePredicate> ?protein . "
+                + "OPTIONAL {<http://bar.com/ijdu> <http://foo.com/anotherPredicate> ?name . }"
+                + "}";
+        SetOfStatements eQuery = s.invokeInternal(new SPARQLQueryImpl(qStr).toRDF());
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        assertEquals(expectedResult, query.toString());
+    }
+    
+    /**
+     * Test that a query involving an optional clause is output correctly.
+     * 
+     * Currently we do nothing with these queries.
+     */
+    @Test@Ignore
+    public void testOptionalQuery_BothOptional() {
+        final IRSClient mockIRS = createMock(IRSClient.class);
+        final Map<URI, List<URI>> mockMappings = createMock(Map.class);
+        final List<URI> mockList = createMock(List.class);
+        final Iterator<URI> mockIterator = createMock(Iterator.class);
+        expect(mockIRS.getMatchesForURIs(EasyMock.isA(Set.class))).andReturn(mockMappings);
+        expect(mockMappings.isEmpty()).andReturn(Boolean.FALSE);
+        expect(mockMappings.get(new URIImpl("http://foo.info/1.1.1.1"))).andReturn(mockList).times(2);
+        expect(mockList.add(new URIImpl("http://foo.info/1.1.1.1"))).andReturn(Boolean.TRUE).times(2);
+        expect(mockList.iterator()).andReturn(mockIterator).times(2);
+        expect(mockIterator.hasNext()).andReturn(Boolean.TRUE).times(2).andReturn(Boolean.FALSE)
+                .andReturn(Boolean.TRUE).times(2).andReturn(Boolean.FALSE);
+        expect(mockIterator.next()).andReturn(new URIImpl("http://bar.com/9khd7"))
+                .andReturn(new URIImpl("http://foo.info/1.1.1.1"))
+                .andReturn(new URIImpl("http://bar.com/9khd7"))
+                .andReturn(new URIImpl("http://foo.info/1.1.1.1"));
+        replayAll();
+
+        String expectedResult = "SELECT ?protein ?name "
+                + "WHERE {"
+                + "OPTIONAL {?subjectUriLine1 <http://foo.com/somePredicate> ?protein . "
+                + "FILTER (?subjectUriLine1 = <http://bar.com/9khd7> || "
+                + "?subjectUriLine1 = <http://foo.info/1.1.1.1>) } "
+                + "OPTIONAL {?subjectUriLine2 <http://foo.com/anotherPredicate> ?name . "
+                + "FILTER (?subjectUriLine2 = <http://bar.com/9khd7> || "
+                + "?subjectUriLine2 = <http://foo.info/1.1.1.1>) } "
+                + "}";
+        
+        IRSSPARQLExpand s = new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand")) {
+            @Override
+            IRSClient instantiateIRSClient() {
+                return mockIRS;
+            }
+        };
+        s.initialiseInternal(null);
+        String qStr = "SELECT ?protein ?name "
+                + "WHERE { "
+                + "OPTIONAL {<http://foo.info/1.1.1.1> <http://foo.com/somePredicate> ?protein . }"
+                + "OPTIONAL {<http://bar.com/ijdu> <http://foo.com/anotherPredicate> ?name . }"
+                + "}";
+        SetOfStatements eQuery = s.invokeInternal(new SPARQLQueryImpl(qStr).toRDF());
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        assertEquals(expectedResult, query.toString());
+    }
+    
+    /**
+     * Test that a query involving an optional clause is output correctly.
+     * 
+     * Currently we do nothing with these queries.
+     */
+    @Test@Ignore
+    public void testOptionalQuery_repeatedSubjectUri() {
+        final IRSClient mockIRS = createMock(IRSClient.class);
+        final Map<URI, List<URI>> mockMappings = createMock(Map.class);
+        final List<URI> mockList = createMock(List.class);
+        final Iterator<URI> mockIterator = createMock(Iterator.class);
+        expect(mockIRS.getMatchesForURIs(EasyMock.isA(Set.class))).andReturn(mockMappings);
+        expect(mockMappings.isEmpty()).andReturn(Boolean.FALSE);
+        expect(mockMappings.get(new URIImpl("http://foo.info/1.1.1.1"))).andReturn(mockList).times(2);
+        expect(mockList.add(new URIImpl("http://foo.info/1.1.1.1"))).andReturn(Boolean.TRUE).times(2);
+        expect(mockList.iterator()).andReturn(mockIterator).times(2);
+        expect(mockIterator.hasNext()).andReturn(Boolean.TRUE).times(2).andReturn(Boolean.FALSE)
+                .andReturn(Boolean.TRUE).times(2).andReturn(Boolean.FALSE);
+        expect(mockIterator.next()).andReturn(new URIImpl("http://bar.com/9khd7"))
+                .andReturn(new URIImpl("http://foo.info/1.1.1.1"))
+                .andReturn(new URIImpl("http://bar.com/9khd7"))
+                .andReturn(new URIImpl("http://foo.info/1.1.1.1"));
+        replayAll();
+
+        String expectedResult = "SELECT ?protein ?name "
+                + "WHERE {"
+                + "?subjectUriLine1 <http://foo.com/somePredicate> ?protein . "
+                + "FILTER (?subjectUriLine1 = <http://bar.com/9khd7> || "
+                + "?subjectUriLine1 = <http://foo.info/1.1.1.1>) "
+                + "OPTIONAL {?subjectUriLine2 <http://foo.com/anotherPredicate> ?name . "
+                + "FILTER (?subjectUriLine2 = <http://bar.com/9khd7> || "
+                + "?subjectUriLine2 = <http://foo.info/1.1.1.1>)} "
+                + "}";
+        
+        IRSSPARQLExpand s = new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand")) {
+            @Override
+            IRSClient instantiateIRSClient() {
+                return mockIRS;
+            }
+        };
+        s.initialiseInternal(null);
+        String qStr = "SELECT ?protein ?name "
+                + "WHERE { "
+                + "<http://foo.info/1.1.1.1> <http://foo.com/somePredicate> ?protein . "
+                + "OPTIONAL {<http://foo.info/1.1.1.1> <http://foo.com/anotherPredicate> ?name .} "
+                + "}";
+        SetOfStatements eQuery = s.invokeInternal(new SPARQLQueryImpl(qStr).toRDF());
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        assertEquals(expectedResult, query.toString());
+    }
+    
+    //TODO: Test queries with FILTERS already in them
+
 }

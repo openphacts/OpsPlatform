@@ -196,5 +196,5 @@ System.out.println("**Tuple Expr:\n" + tupleExpr);
 System.out.println("**Expanded query:\n" + expandedQuery);        
         assertTrue(QueryUtils.sameTupleExpr(expectedQuery, expandedQuery));
     }
-    
+//TODO: Complete testing of this class    
 }
