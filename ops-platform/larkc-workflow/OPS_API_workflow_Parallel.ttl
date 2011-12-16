@@ -1,0 +1,242 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix larkc: <http://larkc.eu/schema#> .
+
+# !!! Important: make sure to replace every occurrence of <OPSPWD> 
+# with the path on your system 
+#Define a plugin
+
+_:reasoner a <urn:eu.larkc.plugin.SparqlQueryEvaluationReasoner> .
+
+#Adding File - PDSP:
+_:rdfreader a <urn:eu.larkc.plugin.RDFReader.RDFReader> .
+_:rdfreader larkc:connectsTo _:reasoner .
+_:rdfreader larkc:hasParameter _:rdfreaderparam .
+_:rdfreaderparam larkc:defaultoutputname larkc:defaultgraph .
+_:fileidentifier a <urn:eu.larkc.plugin.newfileidentifier.NewFileIdentifier> .
+_:fileidentifier larkc:connectsTo _:rdfreader .
+_:fileidentifier larkc:hasParameter _:param .
+_:param larkc:filePath "<OPSPWD>/openphacts/datasets/pdspki/pdsp-v2.ttl" .
+
+#Adding File - Kegg
+_:rdfreader2 a <urn:eu.larkc.plugin.RDFReader.RDFReader> .
+_:rdfreader2 larkc:connectsTo _:reasoner .
+_:rdfreader2 larkc:hasParameter _:rdfreaderparam .
+_:fileidentifier2 a <urn:eu.larkc.plugin.newfileidentifier.NewFileIdentifier> .
+_:fileidentifier2 larkc:connectsTo _:rdfreader2 .
+_:fileidentifier2 larkc:hasParameter _:param2 .
+_:param2 larkc:filePath "<OPSPWD>/openphacts/datasets/chem2bio2rdf/kegg.nt" .
+
+#Adding File - Brenda
+_:rdfreader3 a <urn:eu.larkc.plugin.RDFReader.RDFReader> .
+_:rdfreader3 larkc:connectsTo _:reasoner .
+_:rdfreader3 larkc:hasParameter _:rdfreaderparam .
+_:fileidentifier3 a <urn:eu.larkc.plugin.newfileidentifier.NewFileIdentifier> .
+_:fileidentifier3 larkc:connectsTo _:rdfreader3 .
+_:fileidentifier3 larkc:hasParameter _:param3 .
+_:param3 larkc:filePath "<OPSPWD>/openphacts/datasets/brenda/brenda.ttl" .
+
+#Adding File - Uniprot enzyme
+_:rdfreader4 a <urn:eu.larkc.plugin.RDFReader.RDFReader> .
+_:rdfreader4 larkc:connectsTo _:reasoner .
+_:rdfreader4 larkc:hasParameter _:rdfreaderparam .
+_:fileidentifier4 a <urn:eu.larkc.plugin.newfileidentifier.NewFileIdentifier> .
+_:fileidentifier4 larkc:connectsTo _:rdfreader4 .
+_:fileidentifier4 larkc:hasParameter _:param4 .
+_:param4 larkc:filePath "<OPSPWD>/openphacts/datasets/uniprotrdf/enzyme.ttl" .
+
+#Adding File - Chebi 
+_:rdfreader5 a <urn:eu.larkc.plugin.RDFReader.RDFReader> .
+_:rdfreader5 larkc:connectsTo _:reasoner .
+_:rdfreader5 larkc:hasParameter _:rdfreaderparam .
+_:fileidentifier5 a <urn:eu.larkc.plugin.newfileidentifier.NewFileIdentifier> .
+_:fileidentifier5 larkc:connectsTo _:rdfreader5 .
+_:fileidentifier5 larkc:hasParameter _:param5 .
+_:param5 larkc:filePath "<OPSPWD>/openphacts/datasets/chem2bio2rdf/chebi.nt" .
+
+#Adding File - Chembl
+_:rdfreader6 a <urn:eu.larkc.plugin.RDFReader.RDFReader> .
+_:rdfreader6 larkc:connectsTo _:reasoner .
+_:rdfreader6 larkc:hasParameter _:rdfreaderparam .
+_:fileidentifier6 a <urn:eu.larkc.plugin.newfileidentifier.NewFileIdentifier> .
+_:fileidentifier6 larkc:connectsTo _:rdfreader6 .
+_:fileidentifier6 larkc:hasParameter _:param6 .
+_:param6 larkc:filePath "<OPSPWD>/openphacts/datasets/chem2bio2rdf/chembl.nt" .
+
+#Adding File - ChEMBL Mappings
+_:rdfreader7 a <urn:eu.larkc.plugin.RDFReader.RDFReader> .
+_:rdfreader7 larkc:connectsTo _:reasoner .
+_:rdfreader7 larkc:hasParameter _:rdfreaderparam .
+_:fileidentifier7 a <urn:eu.larkc.plugin.newfileidentifier.NewFileIdentifier> .
+_:fileidentifier7 larkc:connectsTo _:rdfreader7 .
+_:fileidentifier7 larkc:hasParameter _:param7 .
+_:param7 larkc:filePath "<OPSPWD>/openphacts/datasets/OPS-DS-TTL/ChEMBL.ttl" .
+
+#Adding File - KEGG Mappings
+_:rdfreader8 a <urn:eu.larkc.plugin.RDFReader.RDFReader> .
+_:rdfreader8 larkc:connectsTo _:reasoner .
+_:rdfreader8 larkc:hasParameter _:rdfreaderparam .
+_:fileidentifier8 a <urn:eu.larkc.plugin.newfileidentifier.NewFileIdentifier> .
+_:fileidentifier8 larkc:connectsTo _:rdfreader8 .
+_:fileidentifier8 larkc:hasParameter _:param8 .
+_:param8 larkc:filePath "<OPSPWD>/openphacts/datasets/OPS-DS-TTL/KEGG.ttl" .
+
+#Adding File - PDSP Mappings
+_:rdfreader9 a <urn:eu.larkc.plugin.RDFReader.RDFReader> .
+_:rdfreader9 larkc:connectsTo _:reasoner .
+_:rdfreader9 larkc:hasParameter _:rdfreaderparam .
+_:fileidentifier9 a <urn:eu.larkc.plugin.newfileidentifier.NewFileIdentifier> .
+_:fileidentifier9 larkc:connectsTo _:rdfreader9 .
+_:fileidentifier9 larkc:hasParameter _:param9 .
+_:param9 larkc:filePath "<OPSPWD>/openphacts/datasets/OPS-DS-TTL/PDSP.ttl" .
+
+#Adding File - PDSP URI Mappings
+_:rdfreader10 a <urn:eu.larkc.plugin.RDFReader.RDFReader> .
+_:rdfreader10 larkc:connectsTo _:reasoner .
+_:rdfreader10 larkc:hasParameter _:rdfreaderparam .
+_:fileidentifier10 a <urn:eu.larkc.plugin.newfileidentifier.NewFileIdentifier> .
+_:fileidentifier10 larkc:connectsTo _:rdfreader10 .
+_:fileidentifier10 larkc:hasParameter _:param10 .
+_:param10 larkc:filePath "<OPSPWD>/openphacts/datasets/OPS-DS-TTL/PDSP_URIs.ttl" .
+
+#Adding File - Wikipathways.nt
+_:rdfreader11 a <urn:eu.larkc.plugin.RDFReader.RDFReader> .
+_:rdfreader11 larkc:connectsTo _:reasoner .
+_:rdfreader11 larkc:hasParameter _:rdfreaderparam .
+_:fileidentifier11 a <urn:eu.larkc.plugin.newfileidentifier.NewFileIdentifier> .
+_:fileidentifier11 larkc:connectsTo _:rdfreader11 .
+_:fileidentifier11 larkc:hasParameter _:param11 .
+_:param11 larkc:filePath "<OPSPWD>/openphacts/datasets/wikipathways/Wikipathways.nt" .
+
+#Adding File - drugbank.trig
+_:rdfreader12 a <urn:eu.larkc.plugin.RDFReader.RDFReader> .
+_:rdfreader12 larkc:connectsTo _:reasoner .
+_:rdfreader12 larkc:hasParameter _:rdfreaderparam .
+_:fileidentifier12 a <urn:eu.larkc.plugin.newfileidentifier.NewFileIdentifier> .
+_:fileidentifier12 larkc:connectsTo _:rdfreader12 .
+_:fileidentifier12 larkc:hasParameter _:param12 .
+_:param12 larkc:filePath "<OPSPWD>/openphacts/datasets/lld/drugbank.trig" .
+
+#Adding File - geneontology.trig
+_:rdfreader13 a <urn:eu.larkc.plugin.RDFReader.RDFReader> .
+_:rdfreader13 larkc:connectsTo _:reasoner .
+_:rdfreader13 larkc:hasParameter _:rdfreaderparam .
+_:fileidentifier13 a <urn:eu.larkc.plugin.newfileidentifier.NewFileIdentifier> .
+_:fileidentifier13 larkc:connectsTo _:rdfreader13 .
+_:fileidentifier13 larkc:hasParameter _:param13 .
+_:param13 larkc:filePath "<OPSPWD>/openphacts/datasets/lld/geneontology.trig" .
+
+#Adding Directory - tm_hits
+_:rdfreader14 a <urn:eu.larkc.plugin.RDFReader.RDFReader> .
+_:rdfreader14 larkc:connectsTo _:reasoner .
+_:rdfreader14 larkc:hasParameter _:rdfreaderparam .
+_:fileidentifier14 a <urn:eu.larkc.plugin.newfileidentifier.NewFileIdentifier> .
+_:fileidentifier14 larkc:connectsTo _:rdfreader14 .
+_:fileidentifier14 larkc:hasParameter _:param14 .
+_:param14 larkc:filePath "<OPSPWD>/openphacts/datasets/textmining/tm_hits" .
+
+#Adding Directory - tm_concepts
+_:rdfreader15 a <urn:eu.larkc.plugin.RDFReader.RDFReader> .
+_:rdfreader15 larkc:connectsTo _:reasoner .
+_:rdfreader15 larkc:hasParameter _:rdfreaderparam .
+_:fileidentifier15 a <urn:eu.larkc.plugin.newfileidentifier.NewFileIdentifier> .
+_:fileidentifier15 larkc:connectsTo _:rdfreader15 .
+_:fileidentifier15 larkc:hasParameter _:param15 .
+_:param15 larkc:filePath "<OPSPWD>/openphacts/datasets/textmining/tm_concepts" .
+
+#Adding Directory - documents
+_:rdfreader16 a <urn:eu.larkc.plugin.RDFReader.RDFReader> .
+_:rdfreader16 larkc:connectsTo _:reasoner .
+_:rdfreader16 larkc:hasParameter _:rdfreaderparam .
+_:fileidentifier16 a <urn:eu.larkc.plugin.newfileidentifier.NewFileIdentifier> .
+_:fileidentifier16 larkc:connectsTo _:rdfreader16 .
+_:fileidentifier16 larkc:hasParameter _:param16 .
+_:param16 larkc:filePath "<OPSPWD>/openphacts/datasets/textmining/documents" .
+
+#Adding File - ChEMBL URI Mappings
+_:rdfreader17 a <urn:eu.larkc.plugin.RDFReader.RDFReader> .
+_:rdfreader17 larkc:connectsTo _:reasoner .
+_:rdfreader17 larkc:hasParameter _:rdfreaderparam .
+_:fileidentifier17 a <urn:eu.larkc.plugin.newfileidentifier.NewFileIdentifier> .
+_:fileidentifier17 larkc:connectsTo _:rdfreader17 .
+_:fileidentifier17 larkc:hasParameter _:param17 .
+_:param17 larkc:filePath "<OPSPWD>/openphacts/datasets/OPS-DS-TTL/ChEMBL_URIs.ttl" .
+
+#Adding File - ChEMBL (ebi) to ChEMBL (chem2bio2rdf) Mappings
+_:rdfreader18 a <urn:eu.larkc.plugin.RDFReader.RDFReader> .
+_:rdfreader18 larkc:connectsTo _:reasoner .
+_:rdfreader18 larkc:hasParameter _:rdfreaderparam .
+_:fileidentifier18 a <urn:eu.larkc.plugin.newfileidentifier.NewFileIdentifier> .
+_:fileidentifier18 larkc:connectsTo _:rdfreader18 .
+_:fileidentifier18 larkc:hasParameter _:param18 .
+_:param18 larkc:filePath "<OPSPWD>/openphacts/datasets/OPS-DS-TTL/chembl2c2b2rchembl.ttl" .
+
+#Adding File - DrugBank to PubChem URL Mappings
+_:rdfreader19 a <urn:eu.larkc.plugin.RDFReader.RDFReader> .
+_:rdfreader19 larkc:connectsTo _:reasoner .
+_:rdfreader19 larkc:hasParameter _:rdfreaderparam .
+_:fileidentifier19 a <urn:eu.larkc.plugin.newfileidentifier.NewFileIdentifier> .
+_:fileidentifier19 larkc:connectsTo _:rdfreader19 .
+_:fileidentifier19 larkc:hasParameter _:param19 .
+_:param19 larkc:filePath "<OPSPWD>/openphacts/datasets/OPS-DS-TTL/DB_to_PC_URLs.ttl" .
+
+#Adding File - Enzyme class hierarchy
+_:rdfreader20 a <urn:eu.larkc.plugin.RDFReader.RDFReader> .
+_:rdfreader20 larkc:connectsTo _:reasoner .
+_:rdfreader20 larkc:hasParameter _:rdfreaderparam .
+_:fileidentifier20 a <urn:eu.larkc.plugin.newfileidentifier.NewFileIdentifier> .
+_:fileidentifier20 larkc:connectsTo _:rdfreader20 .
+_:fileidentifier20 larkc:hasParameter _:param20 .
+_:param20 larkc:filePath "<OPSPWD>/openphacts/datasets/uniprotrdf/inference.ttl" . 
+
+#Adding File - Drugbank drug category labels
+_:rdfreader21 a <urn:eu.larkc.plugin.RDFReader.RDFReader> .
+_:rdfreader21 larkc:connectsTo _:reasoner .
+_:rdfreader21 larkc:hasParameter _:rdfreaderparam .
+_:fileidentifier21 a <urn:eu.larkc.plugin.newfileidentifier.NewFileIdentifier> .
+_:fileidentifier21 larkc:connectsTo _:rdfreader21 .
+_:fileidentifier21 larkc:hasParameter _:param21 .
+_:param21 larkc:filePath "<OPSPWD>/openphacts/datasets/lld/drug_category_labels.ttl" . 
+
+#Adding File - Diseasome
+_:rdfreader22 a <urn:eu.larkc.plugin.RDFReader.RDFReader> .
+_:rdfreader22 larkc:connectsTo _:reasoner .
+_:rdfreader22 larkc:hasParameter _:rdfreaderparam .
+_:fileidentifier22 a <urn:eu.larkc.plugin.newfileidentifier.NewFileIdentifier> .
+_:fileidentifier22 larkc:connectsTo _:rdfreader22 .
+_:fileidentifier22 larkc:hasParameter _:param22 .
+_:param22 larkc:filePath "<OPSPWD>/openphacts/datasets/lld/diseasome.trig" .
+
+#Adding File - Drugbank drug type labels
+_:rdfreader23 a <urn:eu.larkc.plugin.RDFReader.RDFReader> .
+_:rdfreader23 larkc:connectsTo _:reasoner .
+_:rdfreader23 larkc:hasParameter _:rdfreaderparam .
+_:fileidentifier23 a <urn:eu.larkc.plugin.newfileidentifier.NewFileIdentifier> .
+_:fileidentifier23 larkc:connectsTo _:rdfreader23 .
+_:fileidentifier23 larkc:hasParameter _:param23 .
+_:param23 larkc:filePath "<OPSPWD>/openphacts/datasets/lld/drug_type_labels.ttl" . 
+
+#Adding File - Drugbank drug type labels
+_:rdfreader24 a <urn:eu.larkc.plugin.RDFReader.RDFReader> .
+_:rdfreader24 larkc:connectsTo _:reasoner .
+_:rdfreader24 larkc:hasParameter _:rdfreaderparam .
+_:fileidentifier24 a <urn:eu.larkc.plugin.newfileidentifier.NewFileIdentifier> .
+_:fileidentifier24 larkc:connectsTo _:rdfreader24 .
+_:fileidentifier24 larkc:hasParameter _:param24 .
+_:param24 larkc:filePath "<OPSPWD>/openphacts/datasets/lld/dosage_forms_labels.ttl" . 
+
+#Define ChemCallout plugin
+_:chemcallout a <urn:eu.ops.plugin.chemcallout.ChemCallout> .
+_:path larkc:hasInput _:chemcallout .
+_:chemcallout larkc:connectsTo _:reasoner .
+_:chemcallout larkc:hasParameter _:chemparam .
+_:chemparam larkc:defaultoutputname larkc:defaultgraph .
+
+#Define the endpoint for this workflow.
+_:ep a <urn:eu.larkc.endpoint.opsapi.OPSAPIEndpoint> .
+#Endpoints are connected to paths in the workflow. Specify the path the above endpoint refers to.
+_:ep larkc:links _:path .
+_:path a larkc:Path .
+#Connect the input of the path to a plugin
+_:path larkc:hasInput _:reasoner .
+#Connect the output of the path to a plugin
+_:path larkc:hasOutput _:reasoner .

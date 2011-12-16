@@ -26,11 +26,15 @@ mvn install
 
 cd $OPS_PATH
 cd openphacts/ops-platform/larkc-plugins/
-cd plugin.querymapper/
-mvn assembly:assembly
-mv ./target/*SNAPSHOT.jar $LARKC_PATH/larkc/platform/plugins
 
-cd ../plugin.edffilter/
+# Removed December 8th 2011 By Christian
+# Integeration tests where broken.
+# Not used by current workflow according to Antonis
+#cd plugin.querymapper/
+#mvn assembly:assembly
+#mv ./target/*SNAPSHOT.jar $LARKC_PATH/larkc/platform/plugins
+
+cd plugin.edffilter/
 mvn install
 mv ./target/*SNAPSHOT.jar $LARKC_PATH/larkc/platform/plugins
 

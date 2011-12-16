@@ -33,6 +33,10 @@ import org.slf4j.LoggerFactory;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 
+import org.openrdf.query.MalformedQueryException;
+import org.openrdf.query.QueryLanguage;
+import org.openrdf.query.UnsupportedQueryLanguageException;
+import org.openrdf.query.parser.QueryParserUtil;
 import org.restlet.Application;
 import org.restlet.Request;
 import org.restlet.data.Form;
@@ -125,6 +129,15 @@ public class OPSAPIEndpointResource extends ServerResource {
 			qr=chemicalSimilaritySearch(parts);
 		} else {
 			throw new APIException("Unknown method name: "+method+". Use one of: " );
+		}
+		try {
+			QueryParserUtil.parseQuery(QueryLanguage.SPARQL,qr.getQuery(), null);
+		} catch (MalformedQueryException e) {
+			e.printStackTrace();
+			throw new APIException("Malformed query." );
+		} catch (UnsupportedQueryLanguageException e) {
+			e.printStackTrace();
+			throw new APIException("Should never happen" );
 		}
 		return qr;
 	}
@@ -613,7 +626,7 @@ public class OPSAPIEndpointResource extends ServerResource {
 							"drugbank:geneName ?gene_name ; drugbank:geneSequence ?gene_sequence ;  " +
 							"drugbank:generalFunction ?general_function ; drugbank:goClassificationProcess ?go_process ; " + 
 							"drugbank:specificFunction ?specific_function ; drugbank:synonym ?synonym ;  " +
-							"drugbank:essentiality ?essentiality ; drugbank:chromosome_location ?chromosomeLocation ; " +
+							"drugbank:essentiality ?essentiality ; drugbank:chromosomeLocation ?chromosome_location ; " +
 							"drugbank:goClassificationComponent ?go_component ; drugbank:goClassificationFunction ?go_function ; " + 
 							"drugbank:name ?name ; drugbank:molecularWeight ?mol_weight ; " +
 						"}";

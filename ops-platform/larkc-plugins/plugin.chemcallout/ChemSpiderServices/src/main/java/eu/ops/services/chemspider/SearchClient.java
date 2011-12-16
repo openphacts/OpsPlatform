@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,6 +62,15 @@ public class SearchClient {
 	public String similaritySearch(String molecule, String similarityType, double threshold,
 			String complexity, String isotopic, String hasSpectra,
 			String hasPatents) {	
+		log.info("ORIGINAL STRING = "+molecule);
+		try{
+			//molecule=URLEncoder.encode(molecule, "UTF-8");
+			log.info("ENCODED STRING = "+molecule);
+		}
+		catch (Exception e){
+			e.printStackTrace();
+			log.error("This should never happen.");
+		}
 		StringBuilder soapRequest = new StringBuilder();
 		soapRequest.append(SOAP_PREFIX);
 		soapRequest.append("<SimilaritySearch xmlns=\"http://www.chemspider.com/\">");
@@ -113,7 +123,9 @@ public class SearchClient {
 				int start = res.indexOf("<SimilaritySearchResult>");
 				int end = res.indexOf("<", start+24);
 				String rid = res.substring(start+24, end);
-				return rid;
+				if (!rid.contains("="))
+					return rid;
+				log.error("Invalid repsonse from ChemSpider: "+ res);
 			}
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
@@ -133,6 +145,15 @@ public class SearchClient {
 	public String substructureSearch(String molecule, boolean tautomers,
 			String complexity, String isotopic, String hasSpectra,
 			String hasPatents) {	
+		log.info("ORIGINAL STRING = "+molecule);
+		try{
+			//molecule=URLEncoder.encode(molecule, "UTF-8");
+			log.info("ENCODED STRING = "+molecule);
+		}
+		catch (Exception e){
+			e.printStackTrace();
+			log.error("This should never happen.");
+		}
 		StringBuilder soapRequest = new StringBuilder();
 		soapRequest.append(SOAP_PREFIX);
 		soapRequest.append("<SubstructureSearch xmlns=\"http://www.chemspider.com/\">");
@@ -184,7 +205,9 @@ public class SearchClient {
 				int start = res.indexOf("<SubstructureSearchResult>");
 				int end = res.indexOf("<", start+26);
 				String rid = res.substring(start+26, end);
-				return rid;
+				if (!rid.contains("="))
+					return rid;
+				log.error("Invalid repsonse from ChemSpider: "+ res);
 			}
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
@@ -204,6 +227,15 @@ public class SearchClient {
 	public String structureSearch(String molecule, String type,
 			String complexity, String isotopic, String hasSpectra,
 			String hasPatents) {	
+		log.info("ORIGINAL STRING = "+molecule);
+		try{
+			//molecule=URLEncoder.encode(molecule, "UTF-8");
+			log.info("ENCODED STRING = "+molecule);
+		}
+		catch (Exception e){
+			e.printStackTrace();
+			log.error("This should never happen.");
+		}
 		StringBuilder soapRequest = new StringBuilder();
 		soapRequest.append(SOAP_PREFIX);
 		soapRequest.append("<StructureSearch xmlns=\"http://www.chemspider.com/\">");
@@ -241,7 +273,6 @@ public class SearchClient {
 		HttpPost httppost = new HttpPost(serviceUrl);
 		httppost.setEntity(entity);
 		httppost.addHeader("SOAPAction", "\"http://www.chemspider.com/StructureSearch\"");
-
 		try {
 			HttpResponse response = httpclient.execute(httppost);
 			log.debug("Protocol="+response.getProtocolVersion());
@@ -255,7 +286,9 @@ public class SearchClient {
 				int start = res.indexOf("<StructureSearchResult>");
 				int end = res.indexOf("<", start+23);
 				String rid = res.substring(start+23, end);
-				return rid;
+				if (!rid.contains("="))
+					return rid;
+				log.error("Invalid repsonse from ChemSpider: "+ res);
 			}
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
@@ -264,7 +297,6 @@ public class SearchClient {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 		return null;		
 	}
 	
@@ -280,14 +312,20 @@ public class SearchClient {
 		url.append("/GetAsyncSearchStatus?rid=").append(rid);
 		url.append("&token=").append(token);
 		
-		String data = callService(url.toString());
-		if (data != null) {
-			try {
-				ERequestStatus status = (ERequestStatus) createUnmarshaller().unmarshal(new StreamSource(new StringReader(data)));
-				return status;
-			} catch (Exception e) {
-				log.error("getAsyncSearchStatus failed", e);
+		try{
+			String data = callService(url.toString());
+			if (data != null) {
+				try {
+					ERequestStatus status = (ERequestStatus) createUnmarshaller().unmarshal(new StreamSource(new StringReader(data)));
+					return status;
+				} catch (Exception e) {
+					log.error("getAsyncSearchStatus failed", e);
+				}
 			}
+		}
+		catch (Exception e){
+			e.printStackTrace();
+			log.error("Invalid response form chemspider: " +rid);
 		}
 		return null;
 	}
