@@ -57,7 +57,7 @@ public class QueryModelExpanderTest extends EasyMockSupport {
                 + "<http://brenda-enzymes.info/1.1.1.1> . "
                 + "}";
 
-    static String ONE_BPG_OBJECT_MULTIPLE_MATCHES_QUERY_PLUS_FILTER =  "SELECT ?protein "
+    static String ONE_BPG_OBJECT_MULTIPLE_MATCHES_QUERY_EXPECTED =  "SELECT ?protein "
                 + "WHERE {"
                 + "?protein <http://www.biopax.org/release/biopax-level2.owl#EC-NUMBER> "
                 + "?objectUri1 . "
@@ -90,7 +90,7 @@ public class QueryModelExpanderTest extends EasyMockSupport {
                 .andReturn(new URIImpl("http://example.com/983juy"))
                 .andReturn(new URIImpl("http://brenda-enzymes.info/1.1.1.1"));
         replayAll();
-        String expectedQuery = ONE_BPG_OBJECT_MULTIPLE_MATCHES_QUERY_PLUS_FILTER;
+        String expectedQuery = ONE_BPG_OBJECT_MULTIPLE_MATCHES_QUERY_EXPECTED;
         String query = ONE_BPG_OBJECT_MULTIPLE_MATCHES_QUERY;
         final ParsedQuery parsedQuery = new SPARQLQueryImpl(query).getParsedQuery();
         final TupleExpr tupleExpr = parsedQuery.getTupleExpr();
@@ -108,6 +108,14 @@ System.out.println("**Expanded query:\n" + expandedQuery);
                 + "<http://brenda-enzymes.info/1.1.1.1> . "
                 + "FILTER (?protein = <http://something.org>) . "
                 + "}"; 
+    static String ONE_BGP_OBJECT_WITH_FILTER_QUERY_EXPECTED = "SELECT ?protein "
+                + "WHERE {"
+                + "?protein <http://www.biopax.org/release/biopax-level2.owl#EC-NUMBER> "
+                + "?objectUri1 . "
+                + "FILTER (?objectUri1 = <http://example.com/983juy> || "
+                + "?objectUri1 = <http://brenda-enzymes.info/1.1.1.1>) . "
+                + "FILTER (?protein = <http://something.org>) . "
+                + "}";
     /**
      * Test of meet method, of class QueryModelExpander.
      * 
@@ -132,14 +140,7 @@ System.out.println("**Expanded query:\n" + expandedQuery);
                 .andReturn(new URIImpl("http://example.com/983juy"))
                 .andReturn(new URIImpl("http://brenda-enzymes.info/1.1.1.1"));
         replayAll();
-        String expectedQuery = "SELECT ?protein "
-                + "WHERE {"
-                + "?protein <http://www.biopax.org/release/biopax-level2.owl#EC-NUMBER> "
-                + "?objectUri1 . "
-                + "FILTER (?objectUri1 = <http://example.com/983juy> || "
-                + "?objectUri1 = <http://brenda-enzymes.info/1.1.1.1>) . "
-                + "FILTER (?protein = <http://something.org>) . "
-                + "}";
+        String expectedQuery = ONE_BGP_OBJECT_WITH_FILTER_QUERY_EXPECTED;
         String query = ONE_BGP_OBJECT_WITH_FILTER_QUERY;
         final ParsedQuery parsedQuery = new SPARQLQueryImpl(query).getParsedQuery();
         final TupleExpr tupleExpr = parsedQuery.getTupleExpr();
