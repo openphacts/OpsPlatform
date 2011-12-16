@@ -42,7 +42,7 @@ public class QueryUtils {
     }
     
     /**
-     * Compares to queryStrings to see if they generate the same TupleExpr.
+     * Compares two queryStrings to see if they generate the same TupleExpr.
      * <p>
      * This allows query Strings that differ only on whitespacing to be considered equal.
      * <p>
