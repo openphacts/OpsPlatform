@@ -71,7 +71,6 @@ public class QueryWriterModelVisitorTest {
     }
     
     @Test
-    @Ignore
     public void test_COMPLEX_CHAIN_QUERY_PLUS_FILTER() throws MalformedQueryException, UnexpectedQueryException{
         convertAndTest(IRSSPARQLExpandTest.COMPLEX_CHAIN_QUERY_PLUS_FILTER);
 
@@ -107,13 +106,11 @@ public class QueryWriterModelVisitorTest {
     }
 
     @Test
-    @Ignore
     public void test_ONE_BPG_OBJECT_MULTIPLE_MATCHES_QUERY() throws MalformedQueryException, UnexpectedQueryException{
         convertAndTest(QueryModelExpanderTest.ONE_BPG_OBJECT_MULTIPLE_MATCHES_QUERY);
     }
 
     @Test
-    @Ignore
     public void test_ONE_BPG_OBJECT_MULTIPLE_MATCHES_QUERY_PLUS_FILTER() throws MalformedQueryException, UnexpectedQueryException{
         convertAndTest(QueryModelExpanderTest.ONE_BPG_OBJECT_MULTIPLE_MATCHES_QUERY_PLUS_FILTER);
     }
@@ -134,7 +131,6 @@ public class QueryWriterModelVisitorTest {
         convertAndTest(IRSSPARQLExpandTest.REPEATED_SUBJECT_PREDICATE_QUERY);
     }
     @Test
-    @Ignore
     public void test_REPEATED_SUBJECT_PREDICATE_QUERY_PLUS_FILTER() throws MalformedQueryException, UnexpectedQueryException{
         convertAndTest(IRSSPARQLExpandTest.REPEATED_SUBJECT_PREDICATE_QUERY_PLUS_FILTER);
 
@@ -145,7 +141,6 @@ public class QueryWriterModelVisitorTest {
 
     }
     @Test
-    @Ignore
     public void test_REPEATED_SUBJECT_SHORTHAND_QUERY_PLUS_FILTER() throws MalformedQueryException, UnexpectedQueryException{
         convertAndTest(IRSSPARQLExpandTest.REPEATED_SUBJECT_SHORTHAND_QUERY_PLUS_FILTER);
 
@@ -156,7 +151,6 @@ public class QueryWriterModelVisitorTest {
 
     }
     @Test
-    @Ignore
     public void test_SHARED2_SUBJECT_URI_QUERY_PLUS_FILTER() throws MalformedQueryException, UnexpectedQueryException{
         convertAndTest(IRSSPARQLExpandTest.SHARED2_SUBJECT_URI_QUERY_PLUS_FILTER);
 
@@ -167,7 +161,6 @@ public class QueryWriterModelVisitorTest {
 
     }
     @Test
-    @Ignore
     public void test_SHARED3_SUBJECT_URI_QUERY_PLUS_FILTER() throws MalformedQueryException, UnexpectedQueryException{
         convertAndTest(IRSSPARQLExpandTest.SHARED3_SUBJECT_URI_QUERY_PLUS_FILTER);
 
@@ -178,7 +171,6 @@ public class QueryWriterModelVisitorTest {
 
     }
     @Test
-    @Ignore
     public void test_SIMPLE_CHAIN_QUERY_PLUS_FILTERS() throws MalformedQueryException, UnexpectedQueryException{
         convertAndTest(IRSSPARQLExpandTest.SIMPLE_CHAIN_QUERY_PLUS_FILTERS);
 
@@ -189,13 +181,11 @@ public class QueryWriterModelVisitorTest {
 
     }
     @Test
-    @Ignore
     public void test_SINGLE_BOTH_URI_QUERY_PLUS_4FILTER() throws MalformedQueryException, UnexpectedQueryException{
         convertAndTest(IRSSPARQLExpandTest.SINGLE_BOTH_URI_QUERY_PLUS_4FILTER);
 
     }
     @Test
-    @Ignore
     public void test_SINGLE_BOTH_URI_QUERY_PLUS_FILTER() throws MalformedQueryException, UnexpectedQueryException{
         convertAndTest(IRSSPARQLExpandTest.SINGLE_BOTH_URI_QUERY_PLUS_FILTER);
 
@@ -206,7 +196,6 @@ public class QueryWriterModelVisitorTest {
 
     }
     @Test
-    @Ignore
     public void test_SINGLE_OBJECT_URI_QUERY_PLUS_FILTER() throws MalformedQueryException, UnexpectedQueryException{
         convertAndTest(IRSSPARQLExpandTest.SINGLE_OBJECT_URI_QUERY_PLUS_FILTER);
 
@@ -217,7 +206,6 @@ public class QueryWriterModelVisitorTest {
 
     }
     @Test
-    @Ignore
     public void test_SINGLE_SUBJECT_URI_QUERY_PLUS_FILTER() throws MalformedQueryException, UnexpectedQueryException{
         convertAndTest(IRSSPARQLExpandTest.SINGLE_SUBJECT_URI_QUERY_PLUS_FILTER);
 
@@ -228,7 +216,6 @@ public class QueryWriterModelVisitorTest {
 
     }
     @Test
-    @Ignore
     public void test_TWO_STATEMENTS_ONE_OBJECT_URI_QUERY_PLUS_FILTER() throws MalformedQueryException, UnexpectedQueryException{
         convertAndTest(IRSSPARQLExpandTest.TWO_STATEMENTS_ONE_OBJECT_URI_QUERY_PLUS_FILTER);
 
