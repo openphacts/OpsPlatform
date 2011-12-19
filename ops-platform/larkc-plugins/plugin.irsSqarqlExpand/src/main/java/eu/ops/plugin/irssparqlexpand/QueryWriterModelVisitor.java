@@ -66,9 +66,6 @@ import org.openrdf.query.algebra.Var;
 
 /**
  *
- * The methods here all throw Exception because QueryModelNode.visitChildren which most methods will need to call does.
- * <p>
- * The only Exception that could actually be thrown is UnexpectedQueryException
  * @author Christian
  */
 public class QueryWriterModelVisitor implements QueryModelVisitor<UnexpectedQueryException>{
@@ -287,6 +284,7 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<UnexpectedQuer
 
     @Override
     public void meet(Projection prjctn) throws UnexpectedQueryException {
+        queryString.append("SELECT ");
         prjctn.getProjectionElemList().visit(this);
         newLine();
         queryString.append("{");
@@ -296,7 +294,6 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<UnexpectedQuer
 
     @Override
     public void meet(ProjectionElemList pel) throws UnexpectedQueryException {
-        queryString.append("SELECT ");
         List<ProjectionElem> elements = pel.getElements();
         for (ProjectionElem element:elements){
             element.visit(this);
@@ -334,6 +331,7 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<UnexpectedQuer
 
     @Override
     public void meet(Filter filter) throws UnexpectedQueryException {
+        newLine();
         queryString.append("FILTER (");
         filter.getCondition().visit(this);
         queryString.append(")");
@@ -342,7 +340,8 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<UnexpectedQuer
 
     @Override
     public void meet(SingletonSet ss) throws UnexpectedQueryException {
-        throw new UnexpectedQueryException("SingletonSet not supported yet.");
+        //Expected no children but just to be sure.
+        ss.visitChildren(this);
     }
 
     @Override
@@ -398,7 +397,7 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<UnexpectedQuer
         }
     }
     
-    private void newLine(){
+    void newLine(){
         queryString.append("\n");
     }
         
