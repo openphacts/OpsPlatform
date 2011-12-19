@@ -1,7 +1,10 @@
 package eu.ops.plugin.irssparqlexpand;
 
+import java.util.Set;
+import org.openrdf.model.URI;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.algebra.TupleExpr;
+import org.openrdf.query.algebra.helpers.QueryModelTreePrinter;
 import org.openrdf.query.parser.ParsedQuery;
 import org.openrdf.query.parser.sparql.SPARQLParser;
 
@@ -62,6 +65,22 @@ public class QueryUtils {
     public static boolean sameTupleExpr(String query1, String query2) throws MalformedQueryException{
         TupleExpr tupleExpr1 = queryStringToTupleExpr(query1);
         TupleExpr tupleExpr2 = queryStringToTupleExpr(query2);
-        return tupleExpr1.equals(tupleExpr2);
+        if (tupleExpr1.equals(tupleExpr2)){
+            return true;
+        }
+        System.out.println("*** Queries do not match ***");
+        System.out.println(query1);
+        //System.out.println(QueryModelTreePrinter.printTree(tupleExpr1));
+        System.out.println("*");
+        System.out.println(query2);
+        //System.out.println(QueryModelTreePrinter.printTree(tupleExpr2));
+        return false;
+    }
+    
+    public static Set<URI> getURIS(String query) throws MalformedQueryException, QueryModelExpanderException{
+        TupleExpr tupleExpr = queryStringToTupleExpr(query);
+        URIFinderVisitor visitor = new URIFinderVisitor();
+        tupleExpr.visit(visitor);
+        return visitor.getURIS();
     }
 }

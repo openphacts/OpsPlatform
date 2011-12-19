@@ -4,13 +4,18 @@
  */
 package eu.ops.plugin.irssparqlexpand;
 
+import java.util.Set;
+import org.openrdf.model.impl.ValueFactoryImpl;
+import org.openrdf.model.ValueFactory;
+import org.openrdf.model.URI;
+import java.util.HashSet;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import org.openrdf.query.algebra.TupleExpr;
+import org.openrdf.query.MalformedQueryException;
 
 /**
  *
@@ -169,4 +174,15 @@ public class QueryUtilsTest {
         boolean result = QueryUtils.sameTupleExpr(query1, query2);
         assertFalse(result);
     }*/
+    
+    @Test
+    public void test_getURIS() throws MalformedQueryException, QueryModelExpanderException{
+        String query = QueryModelExpanderTest.ONE_BGP_OBJECT_WITH_FILTER_QUERY;
+        HashSet<URI> expected = new HashSet<URI>();
+        ValueFactory factory = ValueFactoryImpl.getInstance();
+        expected.add(factory.createURI("http://brenda-enzymes.info/1.1.1.1"));
+        expected.add(factory.createURI("http://something.org"));
+        Set<URI> results = QueryUtils.getURIS(query);
+        assertEquals(results, expected);
+    }
 }
