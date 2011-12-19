@@ -5,7 +5,7 @@ package eu.ops.plugin.irssparqlexpand;
  * 
  * @author Christian
  */
-public class UnexpectedQueryException extends Exception {
+public class UnexpectedQueryException extends QueryExpansionException {
 
     /**
      * Constructs an instance of <code>UnexpectedQueryException</code> with the specified detail message.
