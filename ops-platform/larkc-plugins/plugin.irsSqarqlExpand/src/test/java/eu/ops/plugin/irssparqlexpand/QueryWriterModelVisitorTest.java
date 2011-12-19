@@ -100,6 +100,16 @@ public class QueryWriterModelVisitorTest {
     }
     
     @Test
+    public void test_ONLY_OPTIONAL_STATEMENTS_QUERY() throws MalformedQueryException, UnexpectedQueryException{
+        convertAndTest(IRSSPARQLExpand1Test.ONLY_OPTIONAL_STATEMENTS_QUERY);
+    }
+    
+    @Test
+    public void test_ONLY_OPTIONAL_STATEMENTS_QUERY_EXPECTED() throws MalformedQueryException, UnexpectedQueryException{
+        convertAndTest(IRSSPARQLExpand1Test.ONLY_OPTIONAL_STATEMENTS_QUERY_EXPECTED);
+    }
+
+    @Test
     public void test_ONE_BGP_OBJECT_WITH_FILTER_QUERY() throws MalformedQueryException, UnexpectedQueryException{
         convertAndTest(QueryModelExpanderTest.ONE_BGP_OBJECT_WITH_FILTER_QUERY);
     }
