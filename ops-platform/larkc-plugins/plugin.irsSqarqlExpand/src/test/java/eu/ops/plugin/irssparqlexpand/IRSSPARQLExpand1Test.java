@@ -304,9 +304,37 @@ public class IRSSPARQLExpand1Test {
         assertTrue(QueryUtils.sameTupleExpr(SINGLE_BOTH_URI_QUERY_EXPECTED_SINGLE_MATCH_EACH, query.toString()));
     }
 
-    
-    
-    
+    static String SINGLE_BOTH_URI_QUERY_EXPECTED_SINGLE_MATCH_ONLY_SUBJECT_EXPECTED = "SELECT ?p"
+                + " WHERE {"
+                + "?subjectUri1 ?p <http://foo.com/1.1.1.1> . "
+                + "FILTER (?subjectUri1 = <http://result.com/90> || "
+                + "?subjectUri1 = <http://example.org/chem/8j392>) "
+                + "}";                      
+    /**
+     * Test that a query with a single basic graph pattern with a URI in the 
+     * subject and object is expanded when there is one match for each URI.
+     */
+    @Test
+    public void testOneBGPOneSubjectOneObjectURIOnlySubjectMatch() throws MalformedQueryException {
+        final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
+        dummyIRSMapper.addMapping("http://example.org/chem/8j392","http://result.com/90");
+        dummyIRSMapper.addMapping("http://example.org/chem/8j392","http://example.org/chem/8j392");
+        dummyIRSMapper.addMapping("http://foo.com/1.1.1.1","http://foo.com/1.1.1.1");
+        
+        IRSSPARQLExpand1 s = new IRSSPARQLExpand1(
+                new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+            @Override
+            IRSMapper instantiateIRSMapper() {
+                return dummyIRSMapper;
+            }
+        };
+        s.initialiseInternal(null);
+        SetOfStatements eQuery = s.invokeInternal(
+                new SPARQLQueryImpl(SINGLE_BOTH_URI_QUERY).toRDF());
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        assertTrue(QueryUtils.sameTupleExpr(SINGLE_BOTH_URI_QUERY_EXPECTED_SINGLE_MATCH_ONLY_SUBJECT_EXPECTED, query.toString()));
+    }
+        
     static String SINGLE_BOTH_URI_QUERY_EXPECTED_MULTIPLE_MATCHES = "SELECT ?p"
                 + " WHERE {"
                 + "?subjectUri1 ?p ?objectUri1 . "
@@ -873,7 +901,7 @@ public class IRSSPARQLExpand1Test {
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
         dummyIRSMapper.addMapping("http://brenda-enzymes.info/1.1.1.1","http://example.com/983juy");
         dummyIRSMapper.addMapping("http://brenda-enzymes.info/1.1.1.1","http://brenda-enzymes.info/1.1.1.1");
-
+        dummyIRSMapper.addMapping("http://something.org","http://something.org");
         IRSSPARQLExpand1 s = new IRSSPARQLExpand1(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
             @Override
             IRSMapper instantiateIRSMapper() {
@@ -887,9 +915,41 @@ public class IRSSPARQLExpand1Test {
         assertTrue(QueryUtils.sameTupleExpr(ONE_BGP_OBJECT_WITH_FILTER_QUERY_EXPECTED, query.toString()));
     }
 
-    
-    
-    
+    static String ONE_BGP_OBJECT_WITH_FILTER_QUERY_EXPECTED_FILTER_EXPANDED = "SELECT ?protein "
+                + "WHERE {"
+                + "FILTER (?protein = <http://www.another.org> || ?protein = <http://something.org>) . "
+                + "?protein <http://www.biopax.org/release/biopax-level2.owl#EC-NUMBER> ?objectUri1 . "
+                + "FILTER (?objectUri1 = <http://example.com/983juy> || "
+                + "?objectUri1 = <http://brenda-enzymes.info/1.1.1.1>) . "
+                + "}";
+    /**
+     * Test of meet method, of class QueryModelExpander.
+     * 
+     * Test a query involving a single BGP with an object URI and an existing
+     * FILTER clause
+     */
+    @Test
+    public void testObjectAndFilter() 
+            throws QueryModelExpanderException, UnexpectedQueryException, MalformedQueryException {
+        final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
+        dummyIRSMapper.addMapping("http://brenda-enzymes.info/1.1.1.1","http://example.com/983juy");
+        dummyIRSMapper.addMapping("http://brenda-enzymes.info/1.1.1.1","http://brenda-enzymes.info/1.1.1.1");
+        dummyIRSMapper.addMapping("http://something.org","http://www.another.org");
+        dummyIRSMapper.addMapping("http://something.org","http://something.org");
+
+        IRSSPARQLExpand1 s = new IRSSPARQLExpand1(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+            @Override
+            IRSMapper instantiateIRSMapper() {
+                return dummyIRSMapper;
+            }
+        };
+        s.initialiseInternal(null);
+        SetOfStatements eQuery = s.invokeInternal(
+                new SPARQLQueryImpl(ONE_BGP_OBJECT_WITH_FILTER_QUERY).toRDF());
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        assertTrue(QueryUtils.sameTupleExpr(ONE_BGP_OBJECT_WITH_FILTER_QUERY_EXPECTED_FILTER_EXPANDED, query.toString()));
+    }
+        
     static String ONE_BGP_SUBJECT_QUERY = "SELECT ?protein "
             + "WHERE {"
             + "<http://brenda-enzymes.info/1.1.1.1> <http://www.foo.com/predicate> ?protein . "
@@ -927,6 +987,45 @@ public class IRSSPARQLExpand1Test {
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
         assertTrue(QueryUtils.sameTupleExpr(ONE_BGP_SUBJECT_QUERY_EXPECTED, query.toString()));
     }
-    //TODO: Test queries with FILTERS already in them
 
+    static String DOUBLE_OR_QUERY = "SELECT ?stuff ?protein "
+            + "WHERE {"
+            + "?stuff <http://www.foo.com/predicate> ?protein . "
+            + "FILTER (?stuff = <http://brenda-enzymes.info/1.1.1.1> || <http://Fishlink/123> = ?stuff)"
+            + "}";
+    static String DOUBLE_OR_QUERY_EXPECTED = "SELECT ?stuff ?protein "
+            + "WHERE {"
+            + "FILTER ((?stuff = <http://example.com/983juy> || ?stuff = <http://manchester.com/983juy> ||"
+            + "?stuff = <http://brenda-enzymes.info/1.1.1.1>) ||"
+            + "(?stuff = <http://Fishlink/456> || ?stuff = <http://Fishlink/123>))"
+            + "?stuff <http://www.foo.com/predicate> ?protein . "
+            + "}";
+    /**
+     * Test of meet method, of class QueryModelExpander.
+     * 
+     * Test a query involving a single BGP with a subject URI for which there 
+     * are multiple matching URIs
+     */
+    @Test
+    public void testMeet_DoubleOr() 
+            throws QueryModelExpanderException, UnexpectedQueryException, MalformedQueryException {
+        final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
+        dummyIRSMapper.addMapping("http://brenda-enzymes.info/1.1.1.1","http://example.com/983juy");
+        dummyIRSMapper.addMapping("http://brenda-enzymes.info/1.1.1.1","http://manchester.com/983juy");
+        dummyIRSMapper.addMapping("http://brenda-enzymes.info/1.1.1.1","http://brenda-enzymes.info/1.1.1.1");
+        dummyIRSMapper.addMapping("http://Fishlink/123","http://Fishlink/456");
+        dummyIRSMapper.addMapping("http://Fishlink/123","http://Fishlink/123");
+
+        IRSSPARQLExpand1 s = new IRSSPARQLExpand1(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+            @Override
+            IRSMapper instantiateIRSMapper() {
+                return dummyIRSMapper;
+            }
+        };
+        s.initialiseInternal(null);
+        SetOfStatements eQuery = s.invokeInternal(
+                new SPARQLQueryImpl(DOUBLE_OR_QUERY).toRDF());
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        assertTrue(QueryUtils.sameTupleExpr(DOUBLE_OR_QUERY_EXPECTED, query.toString()));
+    }
 }

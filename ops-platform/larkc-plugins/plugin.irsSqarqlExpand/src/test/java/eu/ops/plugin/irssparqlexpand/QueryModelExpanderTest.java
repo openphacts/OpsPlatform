@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 /**
  *
  */
+@Ignore
 public class QueryModelExpanderTest extends EasyMockSupport {
 
     private static Logger logger = LoggerFactory.getLogger(QueryModelExpanderTest.class);

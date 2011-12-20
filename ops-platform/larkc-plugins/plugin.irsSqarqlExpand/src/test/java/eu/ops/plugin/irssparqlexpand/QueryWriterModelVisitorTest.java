@@ -228,9 +228,24 @@ public class QueryWriterModelVisitorTest {
         convertAndTest(IRSSPARQLExpandTest.TWO_STATEMENTS_ONE_OBJECT_URI_QUERY);
 
     }
+
     @Test
     public void test_TWO_STATEMENTS_ONE_OBJECT_URI_QUERY_EXPECTED() throws MalformedQueryException, UnexpectedQueryException{
         convertAndTest(IRSSPARQLExpandTest.TWO_STATEMENTS_ONE_OBJECT_URI_QUERY_EXPECTED);
+    } 
+    
+    String AND_QUERY = "SELECT ?protein"
+                + " WHERE {"
+                + "{?protein <http://www.foo.org/somePredicate> "
+                + "?objectUriLine1 . "
+                + "FILTER (?objectUriLine1 = <http://bar.com/8hd83> || "
+                + "?objectUriLine1 = <http://foo.info/1.1.1.1> || "
+                + "(?objectUriLine1 = <http://bar.com/8hd83> && "
+                + "?objectUriLine1 = <http://foo.info/2.2.2.2>))} "
+                + "}";
 
+    @Test
+    public void test_AND_QUERY() throws MalformedQueryException, UnexpectedQueryException{
+        convertAndTest(AND_QUERY);
     } 
 }

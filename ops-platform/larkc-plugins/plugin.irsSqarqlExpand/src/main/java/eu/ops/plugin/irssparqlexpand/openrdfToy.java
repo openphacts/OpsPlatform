@@ -32,19 +32,41 @@ public class openrdfToy {
                 + "?objectUriLine1 = <http://foo.info/1.1.1.1>)} "
                 + "{?protein <http://www.foo.org/somePredicate> "
                 + "?objectUriLine2 . "
-                + "FILTER (?objectUriLine1 = <http://bar.com/8hd83> || "
-                + "?objectUriLine1 = <http://foo.info/2.2.2.2>)} "
+                + "FILTER (?objectUriLine = <http://bar.com/8hd83> || "
+                + "?objectUriLine2 = <http://foo.info/2.2.2.2>)} "
                 + "}";
          String queryStr2 = "SELECT ?protein ?name "
                 + "WHERE { "
                 + "<http://foo.info/1.1.1.1> <http://foo.com/somePredicate> ?protein . "
                 + "OPTIONAL {<http://bar.com/ijdu> <http://foo.com/anotherPredicate> ?name . }"
                 + "}";
-         String queryStr = "SELECT ?protein ?name "
-            + "WHERE { "
-            + "OPTIONAL {<http://foo.info/1.1.1.1> <http://foo.com/somePredicate> ?protein . }"
-            + "OPTIONAL {<http://bar.com/ijdu> <http://foo.com/anotherPredicate> ?name . }"
+         String queryStr3 = "SELECT ?protein ?name "
+                + "WHERE { "
+                + "OPTIONAL {<http://foo.info/1.1.1.1> <http://foo.com/somePredicate> ?protein . }"
+                + "OPTIONAL {<http://bar.com/ijdu> <http://foo.com/anotherPredicate> ?name . }"
+                + "}";
+         String queryStr4 = "SELECT ?protein"
+                + " WHERE {"
+                + "{?protein <http://www.foo.org/somePredicate> "
+                + "?objectUriLine1 . "
+                + "FILTER (?objectUriLine1 = <http://bar.com/8hd83> || "
+                + "?objectUriLine1 = <http://foo.info/1.1.1.1> || "
+                + "(?objectUriLine1 = <http://bar.com/8hd83> && "
+                + "?objectUriLine1 = <http://foo.info/2.2.2.2>))} "
+                + "}";
+         String queryStr5 = "SELECT  ?protein"
+                + "{"
+                + "FILTER (( ?protein = <http://www.another.org> ||  ?protein = <http://something.org>))"
+                + " ?protein <http://www.biopax.org/release/biopax-level2.owl#EC-NUMBER> ?objectUri1 ."
+                + " FILTER (?objectUri1 = <http://example.com/983juy> || ?objectUri1 = <http://brenda-enzymes.info/1.1.1.1>)"
+                +" }";
+         String queryStr6 = "SELECT ?stuff ?protein "
+            + "WHERE {"
+            + "?stuff <http://www.foo.com/predicate> ?protein . "
+            + "FILTER (?stuff = <http://brenda-enzymes.info/1.1.1.1> || <http://Fishlink/123> = ?stuff)"
             + "}";
+         String queryStr = "SELECT ?stuff ?protein WHERE {FILTER ((?stuff = <http://example.com/983juy> || ?stuff = <http://manchester.com/983juy> ||?stuff = <http://brenda-enzymes.info/1.1.1.1>) ||?stuff = (<http://Fishlink/456> || ?stuff = <http://Fishlink/123>))?stuff <http://www.foo.com/predicate> ?protein . }";
+
          ParsedQuery parsedQuery = parser.parseQuery(queryStr, null); 
          TupleExpr tupleExpr = parsedQuery.getTupleExpr();
          System.out.println(tupleExpr);

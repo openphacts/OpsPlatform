@@ -79,7 +79,11 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<UnexpectedQuer
 
     @Override
     public void meet(And and) throws UnexpectedQueryException {
-        throw new UnexpectedQueryException("And not supported yet.");
+        queryString.append("(");
+        and.getLeftArg().visit(this);
+        queryString.append(" && ");
+        and.getRightArg().visit(this);
+        queryString.append(")");
     }
 
     @Override
@@ -94,11 +98,13 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<UnexpectedQuer
 
     @Override
     public void meet(Compare cmpr) throws UnexpectedQueryException {
+        queryString.append("(");
         cmpr.getLeftArg().visit(this);
         queryString.append(" ");
         queryString.append(cmpr.getOperator().getSymbol());
         queryString.append(" ");
         cmpr.getRightArg().visit(this);
+        queryString.append(")");
     }
 
     @Override
@@ -267,9 +273,11 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<UnexpectedQuer
 
     @Override
     public void meet(Or or) throws UnexpectedQueryException {
+        queryString.append("(");
         or.getLeftArg().visit(this);
         queryString.append(" || ");
         or.getRightArg().visit(this);
+        queryString.append(")");
     }
 
     @Override
