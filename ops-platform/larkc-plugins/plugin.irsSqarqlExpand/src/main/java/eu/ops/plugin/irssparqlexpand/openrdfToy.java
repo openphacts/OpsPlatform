@@ -65,8 +65,17 @@ public class openrdfToy {
             + "?stuff <http://www.foo.com/predicate> ?protein . "
             + "FILTER (?stuff = <http://brenda-enzymes.info/1.1.1.1> || <http://Fishlink/123> = ?stuff)"
             + "}";
-         String queryStr = "SELECT ?stuff ?protein WHERE {FILTER ((?stuff = <http://example.com/983juy> || ?stuff = <http://manchester.com/983juy> ||?stuff = <http://brenda-enzymes.info/1.1.1.1>) ||?stuff = (<http://Fishlink/456> || ?stuff = <http://Fishlink/123>))?stuff <http://www.foo.com/predicate> ?protein . }";
-
+         String queryStr7 = "SELECT ?stuff ?protein WHERE {FILTER ((?stuff = <http://example.com/983juy> || ?stuff = <http://manchester.com/983juy> ||?stuff = <http://brenda-enzymes.info/1.1.1.1>) ||?stuff = (<http://Fishlink/456> || ?stuff = <http://Fishlink/123>))?stuff <http://www.foo.com/predicate> ?protein . }";
+         String queryStr = "PREFIX foaf:   <http://xmlns.com/foaf/0.1/>"
+            + "PREFIX org:    <http://example.com/ns#>"
+            + "CONSTRUCT { ?x foaf:name ?name }"
+            + "WHERE  { ?x org:employeeName ?name }";
+         
+         String queryStr9 = "PREFIX  dc:  <http://purl.org/dc/elements/1.1/>"
+            + "SELECT  ?title"
+            + "WHERE   { ?x dc:title ?title"
+            + "          FILTER regex(?title, \"web\", \"i\" ) " 
+            + "        }";
          ParsedQuery parsedQuery = parser.parseQuery(queryStr, null); 
          TupleExpr tupleExpr = parsedQuery.getTupleExpr();
          System.out.println(tupleExpr);

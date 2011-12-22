@@ -4,6 +4,7 @@
  */
 package eu.ops.plugin.irssparqlexpand;
 
+import java.util.HashMap;
 import java.util.List;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
@@ -60,8 +61,10 @@ import org.openrdf.query.algebra.SingletonSet;
 import org.openrdf.query.algebra.Slice;
 import org.openrdf.query.algebra.StatementPattern;
 import org.openrdf.query.algebra.Str;
+import org.openrdf.query.algebra.TupleExpr;
 import org.openrdf.query.algebra.Union;
 import org.openrdf.query.algebra.ValueConstant;
+import org.openrdf.query.algebra.ValueExpr;
 import org.openrdf.query.algebra.Var;
 
 /**
@@ -71,7 +74,7 @@ import org.openrdf.query.algebra.Var;
 public class QueryWriterModelVisitor implements QueryModelVisitor<UnexpectedQueryException>{
     
     StringBuilder queryString = new StringBuilder();
-     
+    
     @Override
     public void meet(QueryRoot qr) throws UnexpectedQueryException {
         throw new UnexpectedQueryException("QueryRoot not supported yet.");
@@ -149,11 +152,14 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<UnexpectedQuer
 
     @Override
     public void meet(Extension extnsn) throws UnexpectedQueryException {
-        throw new UnexpectedQueryException("Extension not supported yet.");
+        //I assume that this is also part of the ProjectionElemList so not required again.
+        //extnsn.getElements();
+        extnsn.getArg().visit(this);
     }
 
     @Override
     public void meet(ExtensionElem ee) throws UnexpectedQueryException {
+        //possibly never called as meet(Extension extnsn) ignores this part
         throw new UnexpectedQueryException("ExtensionElem not supported yet.");
     }
 
@@ -308,23 +314,90 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<UnexpectedQuer
         }
     }
 
+    /**
+     * Used by the Reduce (Construction query) to add looked ahead ExtensionElems
+     *
+     * @param pel
+     * @param mappedExstensionElements
+     * @throws UnexpectedQueryException 
+     */
+    private void meet(ProjectionElemList pel, HashMap<String, ValueExpr> mappedExstensionElements) throws UnexpectedQueryException {
+        List<ProjectionElem> elements = pel.getElements();
+        for (ProjectionElem element:elements){
+            meet(element, mappedExstensionElements);
+        }
+    }
+
     @Override
     public void meet(ProjectionElem pe) throws UnexpectedQueryException {
         queryString.append(" ?");
         queryString.append(pe.getSourceName());
-        //queryString.append(" as ?");
-        //queryString.append(pe.getTargetName() + "x");
-        //queryString.append(")");
+    }
+
+    /**
+     * Used by the Reduce (Construction query) to add looked ahead ExtensionElems
+     * 
+     * @param pe
+     * @param mappedExstensionElements
+     * @throws UnexpectedQueryException 
+     */
+    private void meet(ProjectionElem pe, HashMap<String, ValueExpr> mappedExstensionElements) throws UnexpectedQueryException {
+        String name = pe.getSourceName();
+        ValueExpr mapped = mappedExstensionElements.get(name);
+        if (mapped == null){
+            queryString.append(" ?");
+            queryString.append(pe.getSourceName());
+        } else {
+            mapped.visit(this);
+        }
     }
 
     @Override
     public void meet(Reduced rdcd) throws UnexpectedQueryException {
-        throw new UnexpectedQueryException("Reduced not supported yet.");
+        queryString.append("CONSTRUCT {");
+        TupleExpr arg = rdcd.getArg();
+        if (arg instanceof Projection){
+            Projection prjctn = (Projection)arg;
+            HashMap<String, ValueExpr> mappedExstensionElements = mapExensionElements(prjctn);
+            meet (prjctn.getProjectionElemList(), mappedExstensionElements);
+            queryString.append("}");
+            newLine();
+            queryString.append("{");
+            prjctn.getArg().visit(this);
+            queryString.append("}");
+        } else {
+            throw new UnexpectedQueryException("Reduced with non projection child supported yet.");
+        }
     }
 
+    //Look ahead function to match names ProjectionElem to ExtensionElem
+    private HashMap<String, ValueExpr> mapExensionElements(Projection prjctn) throws UnexpectedQueryException{
+        HashMap<String, ValueExpr> mappedExstensionElements = new HashMap<String, ValueExpr>();
+        TupleExpr prjctnArg = prjctn.getArg();
+        if (prjctnArg instanceof Extension){
+            Extension extnsn = (Extension) prjctnArg;
+            List<ExtensionElem> ees =  extnsn.getElements();
+            for (ExtensionElem ee:ees) {
+                mappedExstensionElements.put(ee.getName(), ee.getExpr());
+            }
+        } else {
+            throw new UnexpectedQueryException ("Project Arguement of Reduce(Consttruct query) was not an Extension.");
+        }
+        return  mappedExstensionElements;
+    }
+    
     @Override
     public void meet(Regex regex) throws UnexpectedQueryException {
-        throw new UnexpectedQueryException("Regex not supported yet.");
+        queryString.append("regex(");
+        regex.getArg().visit(this);
+        queryString.append(",");
+        regex.getPatternArg().visit(this);
+        ValueExpr flag = regex.getFlagsArg();
+        if (flag != null){
+            queryString.append(",");
+            flag.visit(this);
+        }
+        queryString.append(")");
     }
 
     @Override
