@@ -10,7 +10,6 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.MalformedQueryException;
@@ -42,9 +41,6 @@ public class IRSSPARQLExpand1Test {
     @After
     public void tearDown() {
     }
-
-    
-    
     
     static String CONSTRUCT_QUERY = "CONSTRUCT { ?s ?p ?o } WHERE { ?o ?p ?s }";           
     /**
@@ -121,7 +117,7 @@ public class IRSSPARQLExpand1Test {
      * Test that a query with minimal spacing in its text is processed correctly
      */
     @Test
-    public void testSpacing() throws MalformedQueryException {
+    public void testSpacing() throws MalformedQueryException, QueryModelExpanderException, UnexpectedQueryException {
         IRSSPARQLExpand1 s = new IRSSPARQLExpand1(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
             @Override
             IRSMapper instantiateIRSMapper() {
@@ -129,7 +125,7 @@ public class IRSSPARQLExpand1Test {
             }
         };
         s.initialiseInternal(null);
-        SetOfStatements eQuery = s.invokeInternal(
+        SetOfStatements eQuery = s.invokeInternalWithExceptions(
                 new SPARQLQueryImpl(MINIMAL_SPACING_QUERY).toRDF());
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
         assertTrue(QueryUtils.sameTupleExpr(MINIMAL_SPACING_QUERY, query.toString()));
@@ -145,7 +141,7 @@ public class IRSSPARQLExpand1Test {
      * Test that a query involving prefixes is output correctly
      */
     @Test
-    public void testPrefixes() throws MalformedQueryException {
+    public void testPrefixes() throws MalformedQueryException, QueryModelExpanderException, UnexpectedQueryException {
         IRSSPARQLExpand1 s = new IRSSPARQLExpand1(
                 new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
             IRSMapper instantiateIRSMapper() {
@@ -153,7 +149,7 @@ public class IRSSPARQLExpand1Test {
             }
         };
         s.initialiseInternal(null);
-        SetOfStatements eQuery = s.invokeInternal(
+        SetOfStatements eQuery = s.invokeInternalWithExceptions(
                 new SPARQLQueryImpl(PREFIX_QUERY).toRDF());
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
         assertTrue(QueryUtils.sameTupleExpr(PREFIX_QUERY, query.toString()));
@@ -169,7 +165,8 @@ public class IRSSPARQLExpand1Test {
      * Test that nothing happens to a query without any URIs present.
      */
     @Test
-    public void testQueryWithoutURIs() throws MalformedQueryException {
+    public void testQueryWithoutURIs() 
+            throws MalformedQueryException, QueryModelExpanderException, UnexpectedQueryException {
         IRSSPARQLExpand1 s = new IRSSPARQLExpand1(
                 new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
             @Override
@@ -178,7 +175,7 @@ public class IRSSPARQLExpand1Test {
             }
         };
         s.initialiseInternal(null);
-        SetOfStatements eQuery = s.invokeInternal(
+        SetOfStatements eQuery = s.invokeInternalWithExceptions(
                 new SPARQLQueryImpl(NO_URI_QUERY).toRDF());
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
         assertTrue(QueryUtils.sameTupleExpr(NO_URI_QUERY, query.toString()));
@@ -203,7 +200,8 @@ public class IRSSPARQLExpand1Test {
      * object is expanded.
      */
     @Test
-    public void testOneBGPOneObjectURI() throws MalformedQueryException {
+    public void testOneBGPOneObjectURI() 
+            throws MalformedQueryException, QueryModelExpanderException, UnexpectedQueryException {
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
         dummyIRSMapper.addMapping("http://foo.info/1.1.1.1", "http://bar.com/8hd83");
         dummyIRSMapper.addMapping("http://foo.info/1.1.1.1", "http://foo.info/1.1.1.1");
@@ -216,7 +214,7 @@ public class IRSSPARQLExpand1Test {
             }
         };
         s.initialiseInternal(null);
-        SetOfStatements eQuery = s.invokeInternal(
+        SetOfStatements eQuery = s.invokeInternalWithExceptions(
                 new SPARQLQueryImpl(SINGLE_OBJECT_URI_QUERY).toRDF());
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
         assertTrue(QueryUtils.sameTupleExpr(SINGLE_OBJECT_URI_QUERY_EXPECTED, query.toString()));
@@ -243,7 +241,8 @@ public class IRSSPARQLExpand1Test {
      * subject is expanded.
      */
     @Test
-    public void testOneBGPOneSubjectURI() throws MalformedQueryException {
+    public void testOneBGPOneSubjectURI() 
+            throws MalformedQueryException, QueryModelExpanderException, UnexpectedQueryException {
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
         dummyIRSMapper.addMapping("http://foo.com/45273","http://bar.co.uk/346579");
         dummyIRSMapper.addMapping("http://foo.com/45273","http://bar.ac.uk/19278");
@@ -257,7 +256,7 @@ public class IRSSPARQLExpand1Test {
             }
         };
         s.initialiseInternal(null);
-        SetOfStatements eQuery = s.invokeInternal(
+        SetOfStatements eQuery = s.invokeInternalWithExceptions(
                 new SPARQLQueryImpl(SINGLE_SUBJECT_URI_QUERY).toRDF());
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
         assertTrue(QueryUtils.sameTupleExpr(SINGLE_SUBJECT_URI_QUERY_EXPECTED, query.toString()));
@@ -283,7 +282,8 @@ public class IRSSPARQLExpand1Test {
      * subject and object is expanded when there is one match for each URI.
      */
     @Test
-    public void testOneBGPOneSubjectOneObjectURIOneMatchEach() throws MalformedQueryException {
+    public void testOneBGPOneSubjectOneObjectURIOneMatchEach() 
+            throws MalformedQueryException, QueryModelExpanderException, UnexpectedQueryException {
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
         dummyIRSMapper.addMapping("http://example.org/chem/8j392","http://result.com/90");
         dummyIRSMapper.addMapping("http://example.org/chem/8j392","http://example.org/chem/8j392");
@@ -298,7 +298,7 @@ public class IRSSPARQLExpand1Test {
             }
         };
         s.initialiseInternal(null);
-        SetOfStatements eQuery = s.invokeInternal(
+        SetOfStatements eQuery = s.invokeInternalWithExceptions(
                 new SPARQLQueryImpl(SINGLE_BOTH_URI_QUERY).toRDF());
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
         assertTrue(QueryUtils.sameTupleExpr(SINGLE_BOTH_URI_QUERY_EXPECTED_SINGLE_MATCH_EACH, query.toString()));
@@ -315,7 +315,8 @@ public class IRSSPARQLExpand1Test {
      * subject and object is expanded when there is one match for each URI.
      */
     @Test
-    public void testOneBGPOneSubjectOneObjectURIOnlySubjectMatch() throws MalformedQueryException {
+    public void testOneBGPOneSubjectOneObjectURIOnlySubjectMatch() 
+            throws MalformedQueryException, QueryModelExpanderException, UnexpectedQueryException {
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
         dummyIRSMapper.addMapping("http://example.org/chem/8j392","http://result.com/90");
         dummyIRSMapper.addMapping("http://example.org/chem/8j392","http://example.org/chem/8j392");
@@ -329,7 +330,7 @@ public class IRSSPARQLExpand1Test {
             }
         };
         s.initialiseInternal(null);
-        SetOfStatements eQuery = s.invokeInternal(
+        SetOfStatements eQuery = s.invokeInternalWithExceptions(
                 new SPARQLQueryImpl(SINGLE_BOTH_URI_QUERY).toRDF());
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
         assertTrue(QueryUtils.sameTupleExpr(SINGLE_BOTH_URI_QUERY_EXPECTED_SINGLE_MATCH_ONLY_SUBJECT_EXPECTED, query.toString()));
@@ -351,7 +352,8 @@ public class IRSSPARQLExpand1Test {
      * subject and object is expanded when there is more than one match for each URI.
      */
     @Test
-    public void testOneBGPOneSubjectOneObjectURIMultipleMatches() throws MalformedQueryException {
+    public void testOneBGPOneSubjectOneObjectURIMultipleMatches() 
+            throws MalformedQueryException, QueryModelExpanderException, UnexpectedQueryException {
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
         dummyIRSMapper.addMapping("http://example.org/chem/8j392","http://result.com/90");
         dummyIRSMapper.addMapping("http://example.org/chem/8j392","http://somewhere.com/chebi/7s82");
@@ -368,7 +370,7 @@ public class IRSSPARQLExpand1Test {
             }
         };
         s.initialiseInternal(null);
-        SetOfStatements eQuery = s.invokeInternal(
+        SetOfStatements eQuery = s.invokeInternalWithExceptions(
                 new SPARQLQueryImpl(SINGLE_BOTH_URI_QUERY).toRDF());
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
         assertTrue(QueryUtils.sameTupleExpr(SINGLE_BOTH_URI_QUERY_EXPECTED_MULTIPLE_MATCHES, query.toString()));
@@ -394,7 +396,8 @@ public class IRSSPARQLExpand1Test {
      * object is expanded.
      */
     @Test
-    public void testTwoBGPOneObjectURI() throws MalformedQueryException {
+    public void testTwoBGPOneObjectURI() 
+            throws MalformedQueryException, QueryModelExpanderException, UnexpectedQueryException {
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
         dummyIRSMapper.addMapping("http://foo.info/1.1.1.1","http://bar.com/9khd7");
         dummyIRSMapper.addMapping("http://foo.info/1.1.1.1","http://foo.info/1.1.1.1");
@@ -406,7 +409,7 @@ public class IRSSPARQLExpand1Test {
             }
         };
         s.initialiseInternal(null);
-        SetOfStatements eQuery = s.invokeInternal(
+        SetOfStatements eQuery = s.invokeInternalWithExceptions(
                 new SPARQLQueryImpl(TWO_STATEMENTS_ONE_OBJECT_URI_QUERY).toRDF());
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
         assertTrue(QueryUtils.sameTupleExpr(TWO_STATEMENTS_ONE_OBJECT_URI_QUERY_EXPECTED, query.toString()));
@@ -434,7 +437,8 @@ public class IRSSPARQLExpand1Test {
      * subject URI is expanded to every combination.
      */
     @Test
-    public void testTwoBGPShareSubjectURI() throws MalformedQueryException {
+    public void testTwoBGPShareSubjectURI() 
+            throws MalformedQueryException, QueryModelExpanderException, UnexpectedQueryException {
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
         dummyIRSMapper.addMapping("http://foo.info/1.1.1.1","http://bar.com/9khd7");
         dummyIRSMapper.addMapping("http://foo.info/1.1.1.1","http://foo.info/1.1.1.1");
@@ -446,7 +450,7 @@ public class IRSSPARQLExpand1Test {
             }
         };
         s.initialiseInternal(null);
-        SetOfStatements eQuery = s.invokeInternal(
+        SetOfStatements eQuery = s.invokeInternalWithExceptions(
                 new SPARQLQueryImpl(SHARED2_SUBJECT_URI_QUERY).toRDF());
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
         assertTrue(QueryUtils.sameTupleExpr(SHARED2_SUBJECT_URI_QUERY_EXPECTED, query.toString()));
@@ -481,7 +485,8 @@ public class IRSSPARQLExpand1Test {
      * subject URI is expanded to every combination.
      */
     @Test
-    public void testThreeBGPShareSubjectURI() throws MalformedQueryException {
+    public void testThreeBGPShareSubjectURI() 
+            throws MalformedQueryException, QueryModelExpanderException, UnexpectedQueryException {
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
         dummyIRSMapper.addMapping("http://foo.info/1.1.1.1","http://bar.com/9khd7");
         dummyIRSMapper.addMapping("http://foo.info/1.1.1.1","http://example.ac.uk/89ke");
@@ -494,7 +499,7 @@ public class IRSSPARQLExpand1Test {
             }
         };
         s.initialiseInternal(null);
-        SetOfStatements eQuery = s.invokeInternal(
+        SetOfStatements eQuery = s.invokeInternalWithExceptions(
                 new SPARQLQueryImpl(SHARED3_SUBJECT_URI_QUERY).toRDF());
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
         assertTrue(QueryUtils.sameTupleExpr(SHARED3_SUBJECT_URI_QUERY_EXPECTED, query.toString()));
@@ -524,7 +529,8 @@ public class IRSSPARQLExpand1Test {
      * based on the object URI of one with the subject URI of the second.
      */
     @Test
-    public void testBGPChainSimple() throws MalformedQueryException {
+    public void testBGPChainSimple() 
+            throws MalformedQueryException, QueryModelExpanderException, UnexpectedQueryException {
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
         dummyIRSMapper.addMapping("http://example.org/chem/2918","http://bar.com/9khd7");
         dummyIRSMapper.addMapping("http://example.org/chem/2918","http://foo.info/1.1.1.1");
@@ -537,7 +543,7 @@ public class IRSSPARQLExpand1Test {
             }
         };
         s.initialiseInternal(null);
-        SetOfStatements eQuery = s.invokeInternal(
+        SetOfStatements eQuery = s.invokeInternalWithExceptions(
                 new SPARQLQueryImpl(SIMPLE_CHAIN_QUERY).toRDF());
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
         assertTrue(QueryUtils.sameTupleExpr(SIMPLE_CHAIN_QUERY_EXPECTED, query.toString()));
@@ -589,7 +595,8 @@ public class IRSSPARQLExpand1Test {
      * another BGP.
      */
     @Test
-    public void testBGPChainComplex() throws MalformedQueryException {
+    public void testBGPChainComplex() 
+            throws MalformedQueryException, QueryModelExpanderException, UnexpectedQueryException {
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
         dummyIRSMapper.addMapping("http://bar.co.uk/998234","http://foo.info/1.1.1.1");
         dummyIRSMapper.addMapping("http://bar.co.uk/998234","http://bar.co.uk/998234");
@@ -608,7 +615,7 @@ public class IRSSPARQLExpand1Test {
             }
         };
         s.initialiseInternal(null);
-        SetOfStatements eQuery = s.invokeInternal(
+        SetOfStatements eQuery = s.invokeInternalWithExceptions(
                 new SPARQLQueryImpl(COMPLEX_CHAIN_QUERY).toRDF());
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
         assertTrue(QueryUtils.sameTupleExpr(COMPLEX_CHAIN_QUERY_EXPECTED, query.toString()));
@@ -643,7 +650,8 @@ public class IRSSPARQLExpand1Test {
      * gets expanded correctly.
      */
     @Test
-    public void testRepeatedSubjectShorthandQuery() throws MalformedQueryException{
+    public void testRepeatedSubjectShorthandQuery() 
+            throws MalformedQueryException, QueryModelExpanderException, UnexpectedQueryException{
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
         dummyIRSMapper.addMapping("http://foo.info/1.1.1.1","http://bar.com/9khd7");
         dummyIRSMapper.addMapping("http://foo.info/1.1.1.1","http://example.org/chem/2918");
@@ -657,7 +665,7 @@ public class IRSSPARQLExpand1Test {
             }
         };
         s.initialiseInternal(null);
-        SetOfStatements eQuery = s.invokeInternal(
+        SetOfStatements eQuery = s.invokeInternalWithExceptions(
                 new SPARQLQueryImpl(REPEATED_SUBJECT_SHORTHAND_QUERY).toRDF());
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
         assertTrue(QueryUtils.sameTupleExpr(REPEATED_SUBJECT_SHORTHAND_QUERY_EXPECTED, query.toString()));
@@ -685,7 +693,8 @@ public class IRSSPARQLExpand1Test {
      * predicate URIs gets expanded correctly.
      */
     @Test
-    public void testRepeatedSubjectPredicateShorthandQuery() throws MalformedQueryException{
+    public void testRepeatedSubjectPredicateShorthandQuery() 
+            throws MalformedQueryException, QueryModelExpanderException, UnexpectedQueryException{
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
         dummyIRSMapper.addMapping("http://foo.info/1.1.1.1","http://bar.com/9khd7");
         dummyIRSMapper.addMapping("http://foo.info/1.1.1.1","http://example.org/chem/2918");
@@ -698,7 +707,7 @@ public class IRSSPARQLExpand1Test {
             }
         };
         s.initialiseInternal(null);
-        SetOfStatements eQuery = s.invokeInternal(
+        SetOfStatements eQuery = s.invokeInternalWithExceptions(
                 new SPARQLQueryImpl(REPEATED_SUBJECT_PREDICATE_QUERY).toRDF());
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
         assertTrue(QueryUtils.sameTupleExpr(REPEATED_SUBJECT_PREDICATE_QUERY_EXPECTED, query.toString()));
@@ -730,7 +739,8 @@ public class IRSSPARQLExpand1Test {
      * query string generation
      */
     @Test
-    public void testOptionalQuery_Simple() throws MalformedQueryException {
+    public void testOptionalQuery_Simple() 
+            throws MalformedQueryException, QueryModelExpanderException, UnexpectedQueryException {
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
         dummyIRSMapper.addMapping("http://foo.info/1.1.1.1","http://example.com/9khd7");
         dummyIRSMapper.addMapping("http://foo.info/1.1.1.1","http://foo.info/1.1.1.1");
@@ -744,7 +754,7 @@ public class IRSSPARQLExpand1Test {
             }
         };
         s.initialiseInternal(null);
-        SetOfStatements eQuery = s.invokeInternal(
+        SetOfStatements eQuery = s.invokeInternalWithExceptions(
                 new SPARQLQueryImpl(SIMPLE_OPTIONAL_QUERY).toRDF());
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
         assertTrue(QueryUtils.sameTupleExpr(SIMPLE_OPTIONAL_QUERY_EXPECTED, query.toString()));
@@ -771,7 +781,8 @@ public class IRSSPARQLExpand1Test {
      * Test that a query involving only optional clauses is output correctly.
      */
     @Test
-    public void testOptionalQuery_BothOptional() throws MalformedQueryException {
+    public void testOptionalQuery_BothOptional() 
+            throws MalformedQueryException, QueryModelExpanderException, UnexpectedQueryException {
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
         dummyIRSMapper.addMapping("http://bar.com/ijdu","http://bar.com/9khd7");
         dummyIRSMapper.addMapping("http://bar.com/ijdu","http://foo.info/1.1.1.1");
@@ -785,7 +796,7 @@ public class IRSSPARQLExpand1Test {
             }
         };
         s.initialiseInternal(null);
-        SetOfStatements eQuery = s.invokeInternal(
+        SetOfStatements eQuery = s.invokeInternalWithExceptions(
                 new SPARQLQueryImpl(ONLY_OPTIONAL_STATEMENTS_QUERY).toRDF());
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
         System.out.println(query.toString());
@@ -815,7 +826,8 @@ public class IRSSPARQLExpand1Test {
      * 
      */
     @Test
-    public void testOptionalQuery_repeatedSubjectUri() throws MalformedQueryException {
+    public void testOptionalQuery_repeatedSubjectUri() 
+            throws MalformedQueryException, QueryModelExpanderException, UnexpectedQueryException {
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
         dummyIRSMapper.addMapping("http://foo.info/1.1.1.1","http://bar.com/9khd7");
         dummyIRSMapper.addMapping("http://foo.info/1.1.1.1","http://foo.info/1.1.1.1");
@@ -827,7 +839,7 @@ public class IRSSPARQLExpand1Test {
             }
         };
         s.initialiseInternal(null);
-        SetOfStatements eQuery = s.invokeInternal(
+        SetOfStatements eQuery = s.invokeInternalWithExceptions(
                 new SPARQLQueryImpl(OPTIONAL_REPEATED_SUBJECT_QUERY).toRDF());
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
         assertTrue(QueryUtils.sameTupleExpr(OPTIONAL_REPEATED_SUBJECT_QUERY_EXPECTED, query.toString()));
@@ -866,7 +878,7 @@ public class IRSSPARQLExpand1Test {
             }
         };
         s.initialiseInternal(null);
-        SetOfStatements eQuery = s.invokeInternal(
+        SetOfStatements eQuery = s.invokeInternalWithExceptions(
                 new SPARQLQueryImpl(ONE_BPG_OBJECT_MULTIPLE_MATCHES_QUERY).toRDF());
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
         assertTrue(QueryUtils.sameTupleExpr(ONE_BPG_OBJECT_MULTIPLE_MATCHES_QUERY_EXPECTED, query.toString()));
@@ -909,7 +921,7 @@ public class IRSSPARQLExpand1Test {
             }
         };
         s.initialiseInternal(null);
-        SetOfStatements eQuery = s.invokeInternal(
+        SetOfStatements eQuery = s.invokeInternalWithExceptions(
                 new SPARQLQueryImpl(ONE_BGP_OBJECT_WITH_FILTER_QUERY).toRDF());
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
         assertTrue(QueryUtils.sameTupleExpr(ONE_BGP_OBJECT_WITH_FILTER_QUERY_EXPECTED, query.toString()));
@@ -944,7 +956,7 @@ public class IRSSPARQLExpand1Test {
             }
         };
         s.initialiseInternal(null);
-        SetOfStatements eQuery = s.invokeInternal(
+        SetOfStatements eQuery = s.invokeInternalWithExceptions(
                 new SPARQLQueryImpl(ONE_BGP_OBJECT_WITH_FILTER_QUERY).toRDF());
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
         assertTrue(QueryUtils.sameTupleExpr(ONE_BGP_OBJECT_WITH_FILTER_QUERY_EXPECTED_FILTER_EXPANDED, query.toString()));
@@ -982,7 +994,7 @@ public class IRSSPARQLExpand1Test {
             }
         };
         s.initialiseInternal(null);
-        SetOfStatements eQuery = s.invokeInternal(
+        SetOfStatements eQuery = s.invokeInternalWithExceptions(
                 new SPARQLQueryImpl(ONE_BGP_SUBJECT_QUERY).toRDF());
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
         assertTrue(QueryUtils.sameTupleExpr(ONE_BGP_SUBJECT_QUERY_EXPECTED, query.toString()));
@@ -1023,9 +1035,95 @@ public class IRSSPARQLExpand1Test {
             }
         };
         s.initialiseInternal(null);
-        SetOfStatements eQuery = s.invokeInternal(
+        SetOfStatements eQuery = s.invokeInternalWithExceptions(
                 new SPARQLQueryImpl(DOUBLE_OR_QUERY).toRDF());
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
         assertTrue(QueryUtils.sameTupleExpr(DOUBLE_OR_QUERY_EXPECTED, query.toString()));
+    }
+    
+    static String ONE_BGP_OBJECT_WITH_NOT_FILTER_QUERY = "SELECT ?protein "
+                + "WHERE {"
+                + "?protein <http://www.biopax.org/release/biopax-level2.owl#EC-NUMBER> "
+                + "<http://brenda-enzymes.info/1.1.1.1> . "
+                + "FILTER (?protein != <http://my.org>) . "
+                + "}"; 
+    static String ONE_BGP_OBJECT_WITH_NOT_FILTER_QUERY_EXPECTED = "SELECT ?protein "
+                + "WHERE {"
+                + "FILTER (?protein != <http://my.org> && ?protein != <http://their.org> ) . "
+                + "?protein <http://www.biopax.org/release/biopax-level2.owl#EC-NUMBER> "
+                + "?objectUri1 . "
+                + "FILTER (?objectUri1 = <http://example.com/983juy> || "
+                + "?objectUri1 = <http://brenda-enzymes.info/1.1.1.1>) . "
+                + "}";
+    /**
+     * Test of meet method, of class QueryModelExpander.
+     * 
+     * Test a query involving a single BGP with an object URI and an existing
+     * FILTER clause
+     */
+    @Test
+    public void testMeet_oneBgpObjectUriWithNotFilter() 
+            throws QueryModelExpanderException, UnexpectedQueryException, MalformedQueryException {
+        final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
+        dummyIRSMapper.addMapping("http://brenda-enzymes.info/1.1.1.1","http://example.com/983juy");
+        dummyIRSMapper.addMapping("http://brenda-enzymes.info/1.1.1.1","http://brenda-enzymes.info/1.1.1.1");
+        dummyIRSMapper.addMapping("http://my.org","http://my.org");
+        dummyIRSMapper.addMapping("http://my.org","http://their.org");
+        IRSSPARQLExpand1 s = new IRSSPARQLExpand1(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+            @Override
+            IRSMapper instantiateIRSMapper() {
+                return dummyIRSMapper;
+            }
+        };
+        s.initialiseInternal(null);
+        SetOfStatements eQuery = s.invokeInternalWithExceptions(
+                new SPARQLQueryImpl(ONE_BGP_OBJECT_WITH_NOT_FILTER_QUERY).toRDF());
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        assertTrue(QueryUtils.sameTupleExpr(ONE_BGP_OBJECT_WITH_NOT_FILTER_QUERY_EXPECTED, query.toString()));
+    }
+
+    static String ONE_BGP_OBJECT_WITH_ANDDED_NOT_FILTER_QUERY = "SELECT ?protein "
+                + "WHERE {"
+                + "?protein <http://www.biopax.org/release/biopax-level2.owl#EC-NUMBER> "
+                + "<http://brenda-enzymes.info/1.1.1.1> . "
+                + "FILTER (?protein != <http://my.org> && ?protein != <http://mars.com>) . "
+                + "}"; 
+    static String ONE_BGP_OBJECT_WITH_ANDDED_NOT_FILTER_QUERY_EXPECTED = "SELECT ?protein "
+                + "WHERE {"
+                + "FILTER ((?protein != <http://my.org> && ?protein != <http://their.org> ) . "
+                + "(?protein != <http://earth.com> && ?protein != <http://mars.com> && ?protein != <http://war.com> ) . "
+                + "?protein <http://www.biopax.org/release/biopax-level2.owl#EC-NUMBER> "
+                + "?objectUri1 . "
+                + "FILTER (?objectUri1 = <http://example.com/983juy> || "
+                + "?objectUri1 = <http://brenda-enzymes.info/1.1.1.1>) . "
+                + "}";
+    /**
+     * Test of meet method, of class QueryModelExpander.
+     * 
+     * Test a query involving a single BGP with an object URI and an existing
+     * FILTER clause
+     */
+    @Test
+    public void testMeet_oneBgpObjectUriWithAnddedNotFilter() 
+            throws QueryModelExpanderException, UnexpectedQueryException, MalformedQueryException {
+        final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
+        dummyIRSMapper.addMapping("http://brenda-enzymes.info/1.1.1.1","http://example.com/983juy");
+        dummyIRSMapper.addMapping("http://brenda-enzymes.info/1.1.1.1","http://brenda-enzymes.info/1.1.1.1");
+        dummyIRSMapper.addMapping("http://my.org","http://my.org");
+        dummyIRSMapper.addMapping("http://my.org","http://their.org");
+        dummyIRSMapper.addMapping("http://mars.com","http://earth.com");
+        dummyIRSMapper.addMapping("http://mars.com","http://mars.com");
+        dummyIRSMapper.addMapping("http://mars.com","http://war.com");
+        IRSSPARQLExpand1 s = new IRSSPARQLExpand1(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+            @Override
+            IRSMapper instantiateIRSMapper() {
+                return dummyIRSMapper;
+            }
+        };
+        s.initialiseInternal(null);
+        SetOfStatements eQuery = s.invokeInternalWithExceptions(
+                new SPARQLQueryImpl(ONE_BGP_OBJECT_WITH_NOT_FILTER_QUERY).toRDF());
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        assertTrue(QueryUtils.sameTupleExpr(ONE_BGP_OBJECT_WITH_NOT_FILTER_QUERY_EXPECTED, query.toString()));
     }
 }

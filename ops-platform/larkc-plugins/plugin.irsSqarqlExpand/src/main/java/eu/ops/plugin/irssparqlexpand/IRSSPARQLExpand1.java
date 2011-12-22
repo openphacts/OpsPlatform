@@ -60,14 +60,15 @@ public class IRSSPARQLExpand1 extends Plugin {
     
     /**
      * Called on plug-in invokation. The actual "work" should be done in this method.
-     * 
+     * <p>
+     * For testing and none Larkc use it is better to throw the exceptions.
      * @param input 
      * 		a set of statements containing the input for this plug-in
      * 
      * @return a set of statements containing the output of this plug-in
      */
-    @Override
-    protected SetOfStatements invokeInternal(SetOfStatements input) {
+    public final SetOfStatements invokeInternalWithExceptions(SetOfStatements input) 
+            throws MalformedQueryException, QueryModelExpanderException, UnexpectedQueryException {
         logger.info("SPARQLExpand working.");
         System.out.println("*********************Invoked!!!");
         if (logger.isDebugEnabled()) {
@@ -84,30 +85,44 @@ public class IRSSPARQLExpand1 extends Plugin {
         if (query instanceof SPARQLQuery) {
             String queryString = query.toString();
             TupleExpr tupleExpr;
-            try {
-                tupleExpr = QueryUtils.queryStringToTupleExpr(queryString);
-                URIFinderVisitor uriFindervisitor = new URIFinderVisitor();
-                tupleExpr.visit(uriFindervisitor);
-                Set<URI> uriSet = uriFindervisitor.getURIS();
-                Map<URI, List<URI>> uriMappings = irsMapper.getMatchesForURIs(uriSet);    
-                QueryExpandAndWriteVisitor writerVisitor = 
-                        new QueryExpandAndWriteVisitor(uriMappings, showExpandedVariables);
-                tupleExpr.visit(writerVisitor);
-                String expandedQueryString = writerVisitor.getQuery();
-                //System.out.println(expandedQueryString);
-                SPARQLQuery expandedQuery = new SPARQLQueryImpl(expandedQueryString);
-                return expandedQuery.toRDF();
-            } catch (MalformedQueryException ex) {
-                logger.warn("Problem converting query String to TupleExpr.", ex);
-            } catch (QueryModelExpanderException ex) {
-                logger.warn("Problem extracting URIs.", ex);
-            } catch (UnexpectedQueryException ex) {
-                logger.warn("Problem writing expanded query.", ex);
-            }
-            //Failed so return input
-            return input;
+            tupleExpr = QueryUtils.queryStringToTupleExpr(queryString);
+            URIFinderVisitor uriFindervisitor = new URIFinderVisitor();
+            tupleExpr.visit(uriFindervisitor);
+            Set<URI> uriSet = uriFindervisitor.getURIS();
+            Map<URI, List<URI>> uriMappings = irsMapper.getMatchesForURIs(uriSet);    
+            QueryExpandAndWriteVisitor writerVisitor = 
+                    new QueryExpandAndWriteVisitor(uriMappings, showExpandedVariables);
+            tupleExpr.visit(writerVisitor);
+            String expandedQueryString = writerVisitor.getQuery();
+            //System.out.println(expandedQueryString);
+            SPARQLQuery expandedQuery = new SPARQLQueryImpl(expandedQueryString);
+            return expandedQuery.toRDF();
+        } else {
+            throw new UnexpectedQueryException("Not a SPARQL Query");
         }
-        //We don't do None SPARQL queries.
+    }
+
+    /**
+     * Called on plug-in invokation. The actual "work" should be done in this method.
+     * <p>
+     * Larkc can not handle exceptions so best to catch and log them and just return input.
+     * @param input 
+     * 		a set of statements containing the input for this plug-in
+     * 
+     * @return a set of statements containing the output of this plug-in
+     */
+    @Override
+    protected SetOfStatements invokeInternal(SetOfStatements input) {
+        try {
+            return invokeInternalWithExceptions(input);
+        } catch (MalformedQueryException ex) {
+            logger.warn("Problem converting query String to TupleExpr.", ex);
+        } catch (QueryModelExpanderException ex) {
+            logger.warn("Problem extracting URIs.", ex);
+        } catch (UnexpectedQueryException ex) {
+            logger.warn("Problem writing expanded query.", ex);
+        }
+        //Failed so return input
         return input;
     }
 
@@ -124,7 +139,7 @@ public class IRSSPARQLExpand1 extends Plugin {
         showExpandedVariables = show;
     }
     
-    public static void main(String[] args) {
+    public static void main(String[] args) throws MalformedQueryException, QueryModelExpanderException, UnexpectedQueryException {
         IRSSPARQLExpand1 s = new IRSSPARQLExpand1(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand"));
         s.initialiseInternal(null);
         String qStr = " SELECT ?protein"
@@ -139,7 +154,7 @@ public class IRSSPARQLExpand1 extends Plugin {
                 + "}";
 
         System.out.println("Original query:\n\t" + qStr + "\n");
-        SetOfStatements eQuery = s.invokeInternal(new SPARQLQueryImpl(qStr).toRDF());
+        SetOfStatements eQuery = s.invokeInternalWithExceptions(new SPARQLQueryImpl(qStr).toRDF());
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
         System.out.println("Expanded query:\n\t" + query);
     }
