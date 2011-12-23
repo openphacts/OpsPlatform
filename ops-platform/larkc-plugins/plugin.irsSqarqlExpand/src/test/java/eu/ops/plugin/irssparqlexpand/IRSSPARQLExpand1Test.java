@@ -845,6 +845,51 @@ public class IRSSPARQLExpand1Test {
         assertTrue(QueryUtils.sameTupleExpr(OPTIONAL_REPEATED_SUBJECT_QUERY_EXPECTED, query.toString()));
     }
     
+    String OPTIONAL_WITH_FILTER_QUERY = "SELECT ?protein ?name "
+            + "WHERE { "
+            + "<http://foo.info/1.1.1.1> <http://foo.com/somePredicate> ?protein . "
+            + "OPTIONAL {?protein <http://foo.com/anotherPredicate> ?name ."
+            + "         FILTER (?name == <htpp://bar.com/oneName> || ?name == <http://mike.org/anotherName>)} "
+            + "}";
+    String OPTIONAL_WITH_FILTER_QUERY_EXPECTED = "SELECT ?protein ?name "
+            + "WHERE { "
+            + "      ?subjectUri1 <http://foo.com/somePredicate> ?protein . "
+            + "      FILTER (?subjectUri1 = <http://bar.com/9khd7> || "
+            + "              ?subjectUri1 = <http://foo.info/1.1.1.1>) "
+            + "      OPTIONAL {?protein <http://foo.com/anotherPredicate> ?name ."
+            + "               FILTER (?name == <htpp://bar.com/oneName> || ?name == <htpp://nano.com/JohnSmith> "
+            + "                       || ?name == <http://us.gov.org/MikeBrown> "
+            + "                       || ?name == <http://mike.org/anotherName>)} "
+            + "}";
+    /**
+     * Test that a query with a repeated subject URI involving an optional clause 
+     * is output correctly.
+     * 
+     */
+    @Test
+    public void testOptionalWithFilterQuery() 
+            throws MalformedQueryException, QueryModelExpanderException, UnexpectedQueryException {
+        final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
+        dummyIRSMapper.addMapping("http://foo.info/1.1.1.1","http://bar.com/9khd7");
+        dummyIRSMapper.addMapping("http://foo.info/1.1.1.1","http://foo.info/1.1.1.1");
+        dummyIRSMapper.addMapping("htpp://bar.com/oneName","htpp://bar.com/oneName");
+        dummyIRSMapper.addMapping("htpp://bar.com/oneName","htpp://nano.com/JohnSmith");
+        dummyIRSMapper.addMapping("http://mike.org/anotherName","http://us.gov.org/MikeBrown");
+        dummyIRSMapper.addMapping("http://mike.org/anotherName","http://mike.org/anotherName");
+    
+        IRSSPARQLExpand1 s = new IRSSPARQLExpand1(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+            @Override
+            IRSMapper instantiateIRSMapper() {
+                return dummyIRSMapper;
+            }
+        };
+        s.initialiseInternal(null);
+        SetOfStatements eQuery = s.invokeInternalWithExceptions(
+                new SPARQLQueryImpl(OPTIONAL_REPEATED_SUBJECT_QUERY).toRDF());
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        assertTrue(QueryUtils.sameTupleExpr(OPTIONAL_REPEATED_SUBJECT_QUERY_EXPECTED, query.toString()));
+    }
+    
     static String ONE_BPG_OBJECT_MULTIPLE_MATCHES_QUERY = "SELECT ?protein "
                 + "WHERE {"
                 + "?protein <http://www.biopax.org/release/biopax-level2.owl#EC-NUMBER> "

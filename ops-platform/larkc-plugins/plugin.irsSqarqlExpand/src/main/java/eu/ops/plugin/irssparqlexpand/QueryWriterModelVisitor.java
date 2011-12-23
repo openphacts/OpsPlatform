@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package eu.ops.plugin.irssparqlexpand;
 
 import java.util.HashMap;
@@ -272,8 +268,14 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<UnexpectedQuer
     @Override
     public void meet(LeftJoin lj) throws UnexpectedQueryException {
         lj.getLeftArg().visit(this);
+        newLine();
         queryString.append("OPTIONAL {");
         lj.getRightArg().visit(this);
+        if (lj.hasCondition()){
+            newLine();
+            queryString.append("    FILTER ");
+            lj.getCondition().visit(this);
+        }
         queryString.append("}");
     }
 
