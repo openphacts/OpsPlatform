@@ -303,7 +303,7 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<UnexpectedQuer
         queryString.append("SELECT ");
         prjctn.getProjectionElemList().visit(this);
         newLine();
-        queryString.append("{");
+        queryString.append("WHERE {");
         prjctn.getArg().visit(this);
         queryString.append("}");
     }
@@ -445,7 +445,13 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<UnexpectedQuer
 
     @Override
     public void meet(Union union) throws UnexpectedQueryException {
-        throw new UnexpectedQueryException("Union not supported yet.");
+        queryString.append("{");
+        union.getLeftArg().visit(this);
+        newLine();
+        queryString.append("} UNION {");
+        union.getRightArg().visit(this);
+        newLine();
+        queryString.append("}");
     }
 
     @Override

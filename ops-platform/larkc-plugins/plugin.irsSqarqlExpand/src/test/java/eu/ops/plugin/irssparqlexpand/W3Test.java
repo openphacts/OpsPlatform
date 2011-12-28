@@ -252,7 +252,6 @@ public class W3Test {
         SetOfStatements eQuery = expander.invokeInternalWithExceptions(
                 new SPARQLQueryImpl(inputQuery).toRDF());
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
-        System.out.println(query.toString());
         assertTrue(QueryUtils.sameTupleExpr(expectedQuery, query.toString()));
     }
 
@@ -687,7 +686,6 @@ public class W3Test {
         SetOfStatements eQuery = expander.invokeInternalWithExceptions(
                 new SPARQLQueryImpl(inputQuery).toRDF());
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
-        System.out.println(query);
         assertTrue(QueryUtils.sameTupleExpr(expectedQuery, query.toString()));
     }
 
@@ -717,7 +715,60 @@ public class W3Test {
         SetOfStatements eQuery = expander.invokeInternalWithExceptions(
                 new SPARQLQueryImpl(inputQuery).toRDF());
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
-        System.out.println(query);
+        assertTrue(QueryUtils.sameTupleExpr(expectedQuery, query.toString()));
+    }
+
+    /**
+     * Test the first query found in Section 7
+     */
+    @Test
+    public void test7_a() throws MalformedQueryException, UnexpectedQueryException, QueryModelExpanderException {
+        String inputQuery ="PREFIX dc10:  <http://purl.org/dc/elements/1.0/> "
+            + "PREFIX dc11:  <http://purl.org/dc/elements/1.1/> "
+            + "SELECT ?title "
+            + "WHERE  { { ?book dc10:title  ?title } UNION { ?book dc11:title  ?title } } ";
+        String expectedQuery = inputQuery;
+        
+        final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
+        
+        IRSSPARQLExpand1 expander = 
+                new IRSSPARQLExpand1(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+            @Override
+            IRSMapper instantiateIRSMapper() {
+                return dummyIRSMapper;
+            }
+        };
+        expander.initialiseInternal(null);
+        SetOfStatements eQuery = expander.invokeInternalWithExceptions(
+                new SPARQLQueryImpl(inputQuery).toRDF());
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        assertTrue(QueryUtils.sameTupleExpr(expectedQuery, query.toString()));
+    }
+
+    /**
+     * Test the second query found in Section 7
+     */
+    @Test
+    public void test7_b() throws MalformedQueryException, UnexpectedQueryException, QueryModelExpanderException {
+        String inputQuery ="PREFIX dc10:  <http://purl.org/dc/elements/1.0/> "
+            + "PREFIX dc11:  <http://purl.org/dc/elements/1.1/> "
+            + "SELECT ?x ?y "
+            + "WHERE  { { ?x dc10:title  ?title } UNION { ?y dc11:title  ?title } } ";
+        String expectedQuery = inputQuery;
+        
+        final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
+        
+        IRSSPARQLExpand1 expander = 
+                new IRSSPARQLExpand1(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+            @Override
+            IRSMapper instantiateIRSMapper() {
+                return dummyIRSMapper;
+            }
+        };
+        expander.initialiseInternal(null);
+        SetOfStatements eQuery = expander.invokeInternalWithExceptions(
+                new SPARQLQueryImpl(inputQuery).toRDF());
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
         assertTrue(QueryUtils.sameTupleExpr(expectedQuery, query.toString()));
     }
 

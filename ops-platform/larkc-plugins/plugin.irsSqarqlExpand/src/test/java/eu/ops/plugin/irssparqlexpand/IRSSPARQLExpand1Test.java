@@ -1142,6 +1142,7 @@ public class IRSSPARQLExpand1Test {
                 + "FILTER (?objectUri1 = <http://example.com/983juy> || "
                 + "?objectUri1 = <http://brenda-enzymes.info/1.1.1.1>) . "
                 + "}";
+
     /**
      * Test of meet method, of class QueryModelExpander.
      * 
@@ -1171,4 +1172,56 @@ public class IRSSPARQLExpand1Test {
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
         assertTrue(QueryUtils.sameTupleExpr(ONE_BGP_OBJECT_WITH_NOT_FILTER_QUERY_EXPECTED, query.toString()));
     }
+
+    
+    static String SIMPLE_UNION_QUERY = "PREFIX dc10:  <http://purl.org/dc/elements/1.0/> "
+            + "PREFIX dc11:  <http://purl.org/dc/elements/1.1/> "
+            + "SELECT ?title "
+            + "WHERE  { { ?book dc10:title ?title .  "
+            + "?book dc10:creator <http://www.amazon.com/3432455> } "
+            + "         UNION "
+            + "         { ?book dc11:title ?title .  "
+            + "?book dc11:creator <http://www.amazon.com/3445355> "
+            + "} "
+            + "        }";
+    static String SIMPLE_UNION_QUERY_EXPECTED = "PREFIX dc10:  <http://purl.org/dc/elements/1.0/> " 
+            + "PREFIX dc11:  <http://purl.org/dc/elements/1.1/> "
+            + "SELECT ?title "
+            + "WHERE  { { ?book dc10:title ?title .  "
+            + "?book dc10:creator ?objectUri2 " 
+            + "FILTER (?objectUri2 = <http://barnes.com/983juy> || "
+            + "?objectUri2 = <http://www.amazon.com/3432455>) . "
+            + "} "
+            + "UNION {"
+            + " ?book dc11:title  ?title . "
+            + " ?book dc11:creator ?objectUri4 . "
+            + "FILTER (?objectUri4 = <http://barnes.com/ku78s2w> || ?objectUri4 = <http://www.amazon.com/3445355>) "
+            +  "}}";
+
+    /**
+     * Test of meet method, of class QueryModelExpander.
+     * 
+     * Test a query involving a union 
+     */
+    @Test
+    public void testMeet_SimpleUnion() 
+            throws QueryModelExpanderException, UnexpectedQueryException, MalformedQueryException {
+        final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
+        dummyIRSMapper.addMapping("http://www.amazon.com/3432455","http://barnes.com/983juy");
+        dummyIRSMapper.addMapping("http://www.amazon.com/3432455","http://www.amazon.com/3432455");
+        dummyIRSMapper.addMapping("http://www.amazon.com/3445355","http://barnes.com/ku78s2w");
+        dummyIRSMapper.addMapping("http://www.amazon.com/3445355","http://www.amazon.com/3445355");
+        IRSSPARQLExpand1 s = new IRSSPARQLExpand1(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+            @Override
+            IRSMapper instantiateIRSMapper() {
+                return dummyIRSMapper;
+            }
+        };
+        s.initialiseInternal(null);
+        SetOfStatements eQuery = s.invokeInternalWithExceptions(
+                new SPARQLQueryImpl(SIMPLE_UNION_QUERY).toRDF());
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        assertTrue(QueryUtils.sameTupleExpr(SIMPLE_UNION_QUERY_EXPECTED, query.toString()));
+    }
+
 }
