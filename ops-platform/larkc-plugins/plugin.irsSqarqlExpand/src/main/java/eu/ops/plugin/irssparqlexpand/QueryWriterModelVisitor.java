@@ -133,7 +133,12 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<UnexpectedQuer
 
     @Override
     public void meet(Distinct dstnct) throws UnexpectedQueryException {
-        throw new UnexpectedQueryException("Distinct  not supported yet.");
+        TupleExpr tupleExpr = dstnct.getArg();
+        if (tupleExpr instanceof Projection){
+            meet ((Projection)tupleExpr, true);
+        } else {
+            throw new UnexpectedQueryException("Distinct only supported followed by Projection.");
+        }
     }
 
     @Override
@@ -300,7 +305,14 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<UnexpectedQuer
 
     @Override
     public void meet(Projection prjctn) throws UnexpectedQueryException {
+        meet (prjctn, false);
+    }
+
+    public void meet(Projection prjctn, boolean distinct) throws UnexpectedQueryException {
         queryString.append("SELECT ");
+        if (distinct){
+             queryString.append("DISTINCT ");
+        }
         prjctn.getProjectionElemList().visit(this);
         newLine();
         queryString.append("WHERE {");

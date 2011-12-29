@@ -1224,4 +1224,85 @@ public class IRSSPARQLExpand1Test {
         assertTrue(QueryUtils.sameTupleExpr(SIMPLE_UNION_QUERY_EXPECTED, query.toString()));
     }
 
+    static String SIMPLE_STAR_QUERY = "SELECT * "
+            + "WHERE  {"
+            + "   ?s ?p ?o"
+            + "        }";
+    static String SIMPLE_STAR_QUERY_EXPECTED = "SELECT ?s ?p ?o " 
+            + "WHERE  {"
+            + "   ?s ?p ?o"
+            + "        }";
+    /**
+     * Test of meet method, of class QueryModelExpander.
+     * 
+     * Test a query involving a union 
+     */
+    @Test
+    public void testMeet_SimpleStar() 
+            throws QueryModelExpanderException, UnexpectedQueryException, MalformedQueryException {
+        final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
+        IRSSPARQLExpand1 s = new IRSSPARQLExpand1(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+            @Override
+            IRSMapper instantiateIRSMapper() {
+                return dummyIRSMapper;
+            }
+        };
+        s.initialiseInternal(null);
+        SetOfStatements eQuery = s.invokeInternalWithExceptions(
+                new SPARQLQueryImpl(SIMPLE_STAR_QUERY).toRDF());
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        //As itself
+        assertTrue(QueryUtils.sameTupleExpr(SIMPLE_STAR_QUERY, query.toString()));
+        //Same as expanded as the parser expands it.
+        assertTrue(QueryUtils.sameTupleExpr(SIMPLE_STAR_QUERY_EXPECTED, query.toString()));
+    }
+
+    static String STAR_BOTH_URI_QUERY = "SELECT * "
+                + "WHERE { "
+                + "<http://example.org/chem/8j392> ?p <http://foo.com/1.1.1.1> . "
+                + "}";
+    static String STAR_BOTH_URI_QUERY_EXPECTED_SINGLE_MATCH_EACH = "SELECT ?p"
+                + " WHERE {"
+                + "?subjectUri1 ?p ?objectUri1 . "
+                + "FILTER (?subjectUri1 = <http://result.com/90> || "
+                + "?subjectUri1 = <http://example.org/chem/8j392>) "
+                + "FILTER (?objectUri1 = <http://bar.info/u83hs> || "
+                + "?objectUri1 = <http://foo.com/1.1.1.1>) "
+                + "}";
+    //In this case the star would be wrong as it brings in the filter variables.
+    static String STAR_BOTH_URI_QUERY_NOT_EXPECTED_SINGLE_MATCH_EACH = "SELECT *"
+                + " WHERE {"
+                + "?subjectUri1 ?p ?objectUri1 . "
+                + "FILTER (?subjectUri1 = <http://result.com/90> || "
+                + "?subjectUri1 = <http://example.org/chem/8j392>) "
+                + "FILTER (?objectUri1 = <http://bar.info/u83hs> || "
+                + "?objectUri1 = <http://foo.com/1.1.1.1>) "
+                + "}";                      
+    /**
+     * Test that a query with a single basic graph pattern with a URI in the 
+     * subject and object is expanded when there is one match for each URI.
+     */
+    @Test
+    public void testStarSubjectOneObjectURIOneMatchEach() 
+            throws MalformedQueryException, QueryModelExpanderException, UnexpectedQueryException {
+        final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
+        dummyIRSMapper.addMapping("http://example.org/chem/8j392","http://result.com/90");
+        dummyIRSMapper.addMapping("http://example.org/chem/8j392","http://example.org/chem/8j392");
+        dummyIRSMapper.addMapping("http://foo.com/1.1.1.1","http://bar.info/u83hs");
+        dummyIRSMapper.addMapping("http://foo.com/1.1.1.1","http://foo.com/1.1.1.1");
+        
+        IRSSPARQLExpand1 s = new IRSSPARQLExpand1(
+                new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+            @Override
+            IRSMapper instantiateIRSMapper() {
+                return dummyIRSMapper;
+            }
+        };
+        s.initialiseInternal(null);
+        SetOfStatements eQuery = s.invokeInternalWithExceptions(
+                new SPARQLQueryImpl(STAR_BOTH_URI_QUERY).toRDF());
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        assertTrue(QueryUtils.sameTupleExpr(STAR_BOTH_URI_QUERY_EXPECTED_SINGLE_MATCH_EACH, query.toString()));
+        assertFalse(QueryUtils.sameTupleExpr(STAR_BOTH_URI_QUERY_NOT_EXPECTED_SINGLE_MATCH_EACH, query.toString()));
+    }
 }

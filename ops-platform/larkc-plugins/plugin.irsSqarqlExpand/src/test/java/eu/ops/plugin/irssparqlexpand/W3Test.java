@@ -9,6 +9,7 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.MalformedQueryException;
@@ -22,6 +23,8 @@ import org.slf4j.LoggerFactory;
  *    they are all tested against the same expected Query.
  * <p>
  * In each case there will be exactly 2 matches for each URI. Itself plus one more.
+ * <p>
+ * NOTE: Larkc uses openrdf 2.3.2 so sparql1.1 tests makes no sense here.
  * 
  * @author Christian
  */
@@ -771,5 +774,109 @@ public class W3Test {
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
         assertTrue(QueryUtils.sameTupleExpr(expectedQuery, query.toString()));
     }
+
+    /**
+     * Test the first query found in Section 8.1
+     * 
+     * Openrdf appears not able to handle this query. Likely cause is the EXISTS clause.
+     */
+    @Test
+    @Ignore
+    public void test8_1_a() throws MalformedQueryException, UnexpectedQueryException, QueryModelExpanderException {
+        String inputQuery ="PREFIX  rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
+            + "PREFIX  foaf:   <http://xmlns.com/foaf/0.1/> "
+            + "SELECT ?person "
+            + "WHERE "
+            + "{ "
+            + "    ?person rdf:type  foaf:Person ."
+            + "    FILTER NOT EXISTS { ?person foaf:name ?name }"
+            + "}";
+        String expectedQuery = inputQuery;
+        
+        final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
+        
+        IRSSPARQLExpand1 expander = 
+                new IRSSPARQLExpand1(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+            @Override
+            IRSMapper instantiateIRSMapper() {
+                return dummyIRSMapper;
+            }
+        };
+        expander.initialiseInternal(null);
+        SetOfStatements eQuery = expander.invokeInternalWithExceptions(
+                new SPARQLQueryImpl(inputQuery).toRDF());
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        assertTrue(QueryUtils.sameTupleExpr(expectedQuery, query.toString()));
+    }
+
+    /**
+     * Test the second query found in Section 8.2
+     * 
+     * Openrdf appears not able to handle this query. Likely cause is the EXISTS clause.
+     */
+    @Test
+    @Ignore
+    public void test8_1_b() throws MalformedQueryException, UnexpectedQueryException, QueryModelExpanderException {
+        String inputQuery ="PREFIX  rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
+            + "PREFIX  foaf:   <http://xmlns.com/foaf/0.1/> "
+            + "SELECT ?person "
+            + "WHERE "
+            + "{ "
+            + "    ?person rdf:type  foaf:Person ."
+            + "    FILTER EXISTS { ?person foaf:name ?name }"
+            + "}";
+        String expectedQuery = inputQuery;
+        
+        final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
+        
+        IRSSPARQLExpand1 expander = 
+                new IRSSPARQLExpand1(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+            @Override
+            IRSMapper instantiateIRSMapper() {
+                return dummyIRSMapper;
+            }
+        };
+        expander.initialiseInternal(null);
+        SetOfStatements eQuery = expander.invokeInternalWithExceptions(
+                new SPARQLQueryImpl(inputQuery).toRDF());
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        assertTrue(QueryUtils.sameTupleExpr(expectedQuery, query.toString()));
+    }
+
+    /**
+     * Test the query found in Section 8.2
+     * 
+     * Openrdf appears not able to handle this query. Likely cause is the MINUS clause.
+     */
+    @Test
+    @Ignore
+    public void test8_2() throws MalformedQueryException, UnexpectedQueryException, QueryModelExpanderException {
+         String inputQuery = "PREFIX :       <http://example/>" 
+            + "PREFIX foaf:   <http://xmlns.com/foaf/0.1/> "
+            + "SELECT DISTINCT ?s "
+            + "WHERE { "
+            + "   ?s ?p ?o ."
+            + "   MINUS {"
+            + "      ?s foaf:givenName \"Bob\" ."
+            + "   } "
+            + "}";
+        String expectedQuery = inputQuery;
+        
+        final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
+        
+        IRSSPARQLExpand1 expander = 
+                new IRSSPARQLExpand1(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+            @Override
+            IRSMapper instantiateIRSMapper() {
+                return dummyIRSMapper;
+            }
+        };
+        expander.initialiseInternal(null);
+        SetOfStatements eQuery = expander.invokeInternalWithExceptions(
+                new SPARQLQueryImpl(inputQuery).toRDF());
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        assertTrue(QueryUtils.sameTupleExpr(expectedQuery, query.toString()));
+    }
+
 
 }

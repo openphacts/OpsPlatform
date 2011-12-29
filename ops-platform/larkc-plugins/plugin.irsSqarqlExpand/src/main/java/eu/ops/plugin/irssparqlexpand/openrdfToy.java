@@ -17,7 +17,7 @@ import org.openrdf.query.parser.sparql.SPARQLParser;
 public class openrdfToy {
      public static void main(String[] args) throws MalformedQueryException, Exception {
          SPARQLParser parser = new SPARQLParser();
-         String queryStr0 = " SELECT ?protein ?protein2"
+         String queryStr0 = " SELECT  DISTINCT ?protein ?protein2"
                 + " WHERE {"
                 + "?protein <http://www.biopax.org/release/biopax-level2.owl#EC-NUMBER> "
                 + "<http://brenda-enzymes.info/1.1.1.1> . "
@@ -82,10 +82,40 @@ public class openrdfToy {
             + "WHERE   { ?x dc:title ?title ."
             + "          OPTIONAL { ?x ns:price ?price . FILTER (?price < 30) }"
             + "        }";
-         String queryStr = "PREFIX dc10:  <http://purl.org/dc/elements/1.0/>"
+         String queryStr11 = "PREFIX dc10:  <http://purl.org/dc/elements/1.0/>"
             + "PREFIX dc11:  <http://purl.org/dc/elements/1.1/>"
             + "SELECT ?title "
             + "WHERE  { { ?book dc10:title  ?title } UNION { ?book dc11:title  ?title } }";
+         String queryStrTooHard12 = "PREFIX  rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
+            + "PREFIX  foaf:   <http://xmlns.com/foaf/0.1/> "
+            + "SELECT ?person "
+            + "WHERE "
+            + "{"
+            + "    ?person rdf:type  foaf:Person ."
+            + "    FILTER EXISTS {?person foaf:name ?name }"
+            + "}     ";
+         String queryStrTooHard13 = "PREFIX :       <http://example/>" 
+            + "PREFIX foaf:   <http://xmlns.com/foaf/0.1/> "
+            + "SELECT DISTINCT ?s "
+            + "WHERE { "
+            + "   ?s ?p ?o ."
+            + "   MINUS {"
+            + "      ?s foaf:givenName \"Bob\" ."
+            + "   } "
+            + "}";
+         String queryStr14 = "SELECT * "
+            + "WHERE { "
+            + "   ?s ?p ?o ."
+            + "}";
+         String queryStr = "PREFIX :  <http://books.example/> "
+            + "SELECT (SUM(?lprice) AS ?totalPrice) "
+            + "WHERE { "
+            + "  ?org :affiliates ?auth . "
+            + "  ?auth :writesBook ?book . "
+            + "  ?book :price ?lprice . "
+            + "} "
+            + "GROUP BY ?org "
+            + "HAVING (SUM(?lprice) > 10) ";
          ParsedQuery parsedQuery = parser.parseQuery(queryStr, null); 
          TupleExpr tupleExpr = parsedQuery.getTupleExpr();
          System.out.println(tupleExpr);
