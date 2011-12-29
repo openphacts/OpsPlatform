@@ -28,11 +28,11 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Christian
  */
-public class W3Test {
+public class W3Sparql1_1Test {
         
     private static Logger logger = LoggerFactory.getLogger(IRSSPARQLExpand1.class);
 
-    public W3Test() {
+    public W3Sparql1_1Test() {
     }
 
     @BeforeClass
