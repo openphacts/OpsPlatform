@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
+import org.openrdf.query.Dataset;
 import org.openrdf.query.algebra.And;
 import org.openrdf.query.algebra.BNodeGenerator;
 import org.openrdf.query.algebra.Bound;
@@ -70,6 +71,11 @@ import org.openrdf.query.algebra.Var;
 public class QueryWriterModelVisitor implements QueryModelVisitor<UnexpectedQueryException>{
     
     StringBuilder queryString = new StringBuilder();
+    Dataset originalDataSet;
+    
+    QueryWriterModelVisitor(Dataset dataSet){
+        originalDataSet = dataSet;
+    }
     
     @Override
     public void meet(QueryRoot qr) throws UnexpectedQueryException {
@@ -308,18 +314,31 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<UnexpectedQuer
         meet (prjctn, false);
     }
 
+    /**
+     * Used by sub classes to add expaned list if required.
+     */
+    void addExpanded(Projection prjctn) throws UnexpectedQueryException{
+    }
+    
     public void meet(Projection prjctn, boolean distinct) throws UnexpectedQueryException {
         queryString.append("SELECT ");
         if (distinct){
              queryString.append("DISTINCT ");
         }
+        addExpanded(prjctn);
         prjctn.getProjectionElemList().visit(this);
         newLine();
+        printDataset();
         queryString.append("WHERE {");
         prjctn.getArg().visit(this);
         queryString.append("}");
     }
 
+    private void printDataset(){
+        if (originalDataSet == null) return;
+        queryString.append(originalDataSet);
+    }
+    
     @Override
     public void meet(ProjectionElemList pel) throws UnexpectedQueryException {
         List<ProjectionElem> elements = pel.getElements();
@@ -439,15 +458,26 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<UnexpectedQuer
         ss.visitChildren(this);
     }
 
+    void writeStatementPatternStart(StatementPattern sp) throws UnexpectedQueryException{
+        newLine();
+        Var context = sp.getContextVar();
+        if (context != null) {
+            queryString.append(" GRAPH ");
+            context.visit(this);
+        }
+        queryString.append(" {");
+    }
+    
+    //Make sure to add changes to QueryExpandAndWriteVisititor too!
     @Override
     public void meet(StatementPattern sp) throws UnexpectedQueryException {
-        newLine();
+        writeStatementPatternStart(sp);
         sp.getSubjectVar().visit(this);
         queryString.append(" ");
         sp.getPredicateVar().visit(this);
         queryString.append(" ");
         sp.getObjectVar().visit(this);
-        queryString.append(" .");
+        queryString.append(". }");
     }
 
     @Override

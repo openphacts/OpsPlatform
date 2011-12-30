@@ -4,9 +4,14 @@
  */
 package eu.ops.plugin.irssparqlexpand;
 
+import eu.larkc.core.data.DataFactory;
+import eu.larkc.core.data.SetOfStatements;
+import eu.larkc.core.query.SPARQLQuery;
+import eu.larkc.core.query.SPARQLQueryImpl;
+import org.openrdf.model.impl.URIImpl;
+import org.openrdf.query.Dataset;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.algebra.TupleExpr;
-import org.openrdf.query.algebra.helpers.QueryModelTreePrinter;
 import org.openrdf.query.parser.ParsedQuery;
 import org.openrdf.query.parser.sparql.SPARQLParser;
 
@@ -15,6 +20,39 @@ import org.openrdf.query.parser.sparql.SPARQLParser;
  * @author Christian
  */
 public class openrdfToy {
+     public static void expanderTest(String inputQuery, String expectedQuery) throws MalformedQueryException, QueryModelExpanderException, UnexpectedQueryException {
+         SetOfStatements larkc = new SPARQLQueryImpl(inputQuery).toRDF();
+         SPARQLQuery larkcQuery = DataFactory.INSTANCE.createSPARQLQuery(larkc);
+         String larkcString = larkcQuery.toString();
+         if (QueryUtils.sameTupleExpr(inputQuery,  larkcString)) {
+             System.out.println("larkc OK");
+         }
+         if (larkcQuery instanceof SPARQLQueryImpl){
+            SPARQLQueryImpl impl = (SPARQLQueryImpl)larkcQuery;
+            ParsedQuery larkcParsedQuery = impl.getParsedQuery();
+            Dataset larkcDataset = larkcParsedQuery.getDataset();
+            System.out.println(larkcDataset);
+         }
+         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
+        
+         IRSSPARQLExpand1 expander = 
+                new IRSSPARQLExpand1(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+            @Override
+            IRSMapper instantiateIRSMapper() {
+                return dummyIRSMapper;
+            }
+         };
+         expander.initialiseInternal(null);
+         SetOfStatements newLarkc = expander.invokeInternalWithExceptions(larkc);
+         SPARQLQuery expandedQuery = DataFactory.INSTANCE.createSPARQLQuery(newLarkc);
+         larkcString = expandedQuery.toString();
+         System.out.println("expanded query");
+         System.out.println(larkcString);
+         if (QueryUtils.sameTupleExpr(expectedQuery,  larkcString)) {
+             System.out.println("expanded OK");
+         }         
+     }
+
      public static void main(String[] args) throws MalformedQueryException, Exception {
          SPARQLParser parser = new SPARQLParser();
          String queryStr0 = " SELECT  DISTINCT ?protein ?protein2"
@@ -107,7 +145,7 @@ public class openrdfToy {
             + "WHERE { "
             + "   ?s ?p ?o ."
             + "}";
-         String queryStr = "PREFIX :  <http://books.example/> "
+         String queryStrTooHard15 = "PREFIX :  <http://books.example/> "
             + "SELECT (SUM(?lprice) AS ?totalPrice) "
             + "WHERE { "
             + "  ?org :affiliates ?auth . "
@@ -116,17 +154,58 @@ public class openrdfToy {
             + "} "
             + "GROUP BY ?org "
             + "HAVING (SUM(?lprice) > 10) ";
+         String queryStr16 = "PREFIX foaf: <http://xmlns.com/foaf/0.1/> "
+            + "SELECT  ?name "
+            + "FROM    <http://example.org/foaf/aliceFoaf> "
+            + "WHERE   { ?x foaf:name ?name }";
+         String queryStr17 = "         PREFIX foaf: <http://xmlns.com/foaf/0.1/> "
+            + "PREFIX dc: <http://purl.org/dc/elements/1.1/> "
+            + "SELECT ?who ?g ?mbox "
+            + "FROM <http://example.org/dft.ttl> "
+            + "FROM NAMED <http://example.org/alice> "
+            + "FROM NAMED <http://example.org/bob> "
+            + "WHERE "
+            + "{"
+               + "?g dc:publisher ?who ."
+               + "GRAPH ?g { ?x foaf:mbox ?mbox. }"
+            + "}";
+         String queryStr18 = "PREFIX foaf: <http://xmlns.com/foaf/0.1/> "
+            + "SELECT ?src ?bobNick "
+            + "FROM NAMED <http://example.org/foaf/aliceFoaf> "
+            + "FROM NAMED <http://example.org/foaf/bobFoaf> "
+            + "WHERE "
+            + "  {"
+            + "    GRAPH ?src "
+            + "    { ?x foaf:mbox <mailto:bob@work.example> ."
+            + "      ?x foaf:nick ?bobNick "
+            + "    }"
+            + "  }";
+        String queryStr ="PREFIX foaf: <http://xmlns.com/foaf/0.1/> "
+            + "PREFIX data: <http://example.org/foaf/> "
+            + "SELECT ?nick "
+            + "FROM NAMED <http://example.org/foaf/aliceFoaf> "
+            + "FROM NAMED <http://example.org/foaf/bobFoaf> "
+            + "WHERE "
+            + "  {"
+            + "     GRAPH data:bobFoaf {"
+            + "         ?x foaf:mbox \"mailto:bob@work.example\" ."
+            + "         ?x foaf:nick ?nick }"
+            + "  }";
+
          ParsedQuery parsedQuery = parser.parseQuery(queryStr, null); 
          TupleExpr tupleExpr = parsedQuery.getTupleExpr();
+         Dataset dataset = parsedQuery.getDataset();
          System.out.println(tupleExpr);
-         QueryWriterModelVisitor myVisitor = new QueryWriterModelVisitor();
+         QueryWriterModelVisitor myVisitor = new QueryWriterModelVisitor(dataset);
          tupleExpr.visit(myVisitor);
          String newQuery = myVisitor.getQuery();
          System.out.println(newQuery);
          ParsedQuery newParsedQuery = parser.parseQuery(newQuery, null); 
-         TupleExpr newTupleExpr = newParsedQuery.getTupleExpr();
-         if (newTupleExpr.equals(tupleExpr)){
+         if (QueryUtils.sameTupleExpr(queryStr,  newQuery)) {
              System.out.println("ok");
          }
+         //expanderTest(queryStr, queryStr);
      }
+     
+     
 }

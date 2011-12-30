@@ -1,10 +1,16 @@
 package eu.ops.plugin.irssparqlexpand;
 
+import eu.larkc.core.data.DataSet;
+import eu.larkc.core.data.RdfGraph;
 import java.util.Set;
 import org.openrdf.model.URI;
+import org.openrdf.query.Dataset;
 import org.openrdf.query.MalformedQueryException;
+import org.openrdf.query.algebra.StatementPattern;
 import org.openrdf.query.algebra.TupleExpr;
+import org.openrdf.query.algebra.Var;
 import org.openrdf.query.algebra.helpers.QueryModelTreePrinter;
+import org.openrdf.query.impl.DatasetImpl;
 import org.openrdf.query.parser.ParsedQuery;
 import org.openrdf.query.parser.sparql.SPARQLParser;
 
@@ -32,7 +38,7 @@ public class QueryUtils {
     }
     
     public static String tupleExprToQueryString (TupleExpr tupleExpr) throws UnexpectedQueryException{
-        QueryWriterModelVisitor queryWriter = new QueryWriterModelVisitor();
+        QueryWriterModelVisitor queryWriter = new QueryWriterModelVisitor(null);
         try {
             tupleExpr.visit(queryWriter);
             String newQuery = queryWriter.getQuery();
@@ -42,6 +48,77 @@ public class QueryUtils {
         } catch (Exception ex) {
             throw new UnexpectedQueryException("Exception converting TupleExpr to String", ex);
         }
+    }
+    
+    public static boolean compare(Dataset  dataset1, Dataset  dataset2) {
+        if (dataset1 == null){
+            if (dataset2 == null){
+                return true;
+            } else {
+                System.out.println("Dataset 1 is null while Dataset 2 is:");
+                System.out.println(dataset2);
+                return false;
+            }         
+        } else {
+            if (dataset2 == null){
+                System.out.println("Dataset 2 is null while Dataset 1 is:");
+                System.out.println(dataset1);
+                return false;
+            }         
+        }
+        Set<URI> defaultGraphs1 = dataset1.getDefaultGraphs();
+        Set<URI> defaultGraphs2 = dataset2.getDefaultGraphs();
+        System.out.println("defaultGraphs");
+        System.out.println(defaultGraphs1);
+        System.out.println(defaultGraphs2);
+        if (!(defaultGraphs1.equals(defaultGraphs2))){
+            System.out.println("*** defaultGraphs do not match ***");
+            return false;
+        }
+        Set<URI> namedGraphs1 = dataset1.getNamedGraphs();
+        Set<URI> namedGraphs2 = dataset2.getNamedGraphs();
+        System.out.println("namedGraphs");
+        System.out.println(namedGraphs1);
+        System.out.println(namedGraphs2);
+        if (!(namedGraphs1.equals(namedGraphs2))){
+            System.out.println("*** namedGraphs do not match ***");
+            return false;
+        }
+        return true;
+    }
+    
+    public static boolean compare(TupleExpr expr1, TupleExpr expr2) {
+        if (expr1 == null){
+            if (expr2 == null){
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            if (expr2 == null){
+                return false;
+            }            
+        }
+        if (!(expr1.getClass().equals(expr2.getClass()))) return false;
+        if (expr1 instanceof Var){
+            return compareType((Var)expr1,(Var)expr2);
+        }
+        throw new UnsupportedOperationException("Unexpected type in compare. " + expr1.getClass());
+    }
+    
+    private static boolean compareType(Var expr1, Var expr2){
+        if (expr1.hasValue()){
+            if (expr2.hasValue()){
+                return expr1.getValue().equals(expr2.getValue());
+            } else {
+                return false;
+            }
+        } else {
+            if (expr2.hasValue()){
+                return false;
+            }
+        }
+        return expr1.getName().equals(expr2.getName());
     }
     
     /**
@@ -63,18 +140,24 @@ public class QueryUtils {
      * @throws MalformedQueryException 
      */
     public static boolean sameTupleExpr(String query1, String query2) throws MalformedQueryException{
-        TupleExpr tupleExpr1 = queryStringToTupleExpr(query1);
-        TupleExpr tupleExpr2 = queryStringToTupleExpr(query2);
-        if (tupleExpr1.equals(tupleExpr2)){
-            return true;
+        ParsedQuery parsedQuery1 = parser.parseQuery(query1, null); 
+        TupleExpr tupleExpr1 =  parsedQuery1.getTupleExpr();
+        ParsedQuery parsedQuery2 = parser.parseQuery(query2, null); 
+        TupleExpr tupleExpr2 =  parsedQuery2.getTupleExpr();
+        //if (compare(tupleExpr1, tupleExpr2)){
+        if ((tupleExpr1.equals(tupleExpr2))){
+            Dataset  dataset1 = parsedQuery1.getDataset();
+            Dataset  dataset2 = parsedQuery2.getDataset();
+            return compare(dataset1, dataset2);
+        } else {
+            System.out.println("*** Queries do not match ***");
+            System.out.println(query1);
+            System.out.println(QueryModelTreePrinter.printTree(tupleExpr1));
+            System.out.println("*");
+            System.out.println(query2);
+            System.out.println(QueryModelTreePrinter.printTree(tupleExpr2));
+            return false;
         }
-        System.out.println("*** Queries do not match ***");
-        System.out.println(query1);
-        //System.out.println(QueryModelTreePrinter.printTree(tupleExpr1));
-        System.out.println("*");
-        System.out.println(query2);
-        //System.out.println(QueryModelTreePrinter.printTree(tupleExpr2));
-        return false;
     }
     
     public static Set<URI> getURIS(String query) throws MalformedQueryException, QueryModelExpanderException{
@@ -82,5 +165,18 @@ public class QueryUtils {
         URIFinderVisitor visitor = new URIFinderVisitor();
         tupleExpr.visit(visitor);
         return visitor.getURIS();
+    }
+
+    public static Dataset convertToOpenRdf (DataSet larkcDataset){
+        DatasetImpl openRdfDataSet = new DatasetImpl();
+        Set<RdfGraph> rdfGraphs = larkcDataset.getDefaultGraphs();
+        for (RdfGraph rdfGraph: rdfGraphs){
+            openRdfDataSet.addDefaultGraph(rdfGraph.getName());
+        }
+        rdfGraphs = larkcDataset.getNamedGraphs();
+        for (RdfGraph rdfGraph: rdfGraphs){
+            openRdfDataSet.addNamedGraph(rdfGraph.getName());
+        }
+        return openRdfDataSet;
     }
 }

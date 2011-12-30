@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
+import org.openrdf.query.Dataset;
 import org.openrdf.query.algebra.Compare;
 import org.openrdf.query.algebra.Projection;
 import org.openrdf.query.algebra.StatementPattern;
@@ -25,7 +26,8 @@ public class QueryExpandAndWriteVisitor extends QueryWriterModelVisitor{
     boolean showExpandedVariables;
     
     int statements = 0;
-    QueryExpandAndWriteVisitor (Map<URI, List<URI>> uriMappings, boolean showExpandedVariables){
+    QueryExpandAndWriteVisitor (Map<URI, List<URI>> uriMappings, Dataset dataset, boolean showExpandedVariables){
+        super(dataset);
         this.uriMappings = uriMappings;
         this.showExpandedVariables = showExpandedVariables;
     }
@@ -88,7 +90,7 @@ public class QueryExpandAndWriteVisitor extends QueryWriterModelVisitor{
     //@Override
     public void meet(StatementPattern sp) throws UnexpectedQueryException  {
         statements++;
-        newLine();
+        writeStatementPatternStart(sp);
         URI subjectURI = findMultipleMappedURI(sp.getSubjectVar());
         if (subjectURI == null) {
             sp.getSubjectVar().visit(this);
@@ -109,11 +111,11 @@ public class QueryExpandAndWriteVisitor extends QueryWriterModelVisitor{
         queryString.append(" .");
         writeFilterIfNeeded(subjectURI, "?subjectUri" + statements);
         writeFilterIfNeeded(objectURI, "?objectUri" + statements);
+        queryString.append("}");
     }
 
-        @Override
-    public void meet(Projection prjctn) throws UnexpectedQueryException {
-        queryString.append("SELECT ");
+    @Override
+    void addExpanded(Projection prjctn) throws UnexpectedQueryException{
         if (showExpandedVariables){
             ReplacementVariableFinderVisitor variableFinder = new ReplacementVariableFinderVisitor(statements, uriMappings);
             prjctn.getArg().visit(variableFinder);
@@ -123,11 +125,6 @@ public class QueryExpandAndWriteVisitor extends QueryWriterModelVisitor{
                 queryString.append(" ");
             }
         }
-        prjctn.getProjectionElemList().visit(this);
-        newLine();
-        queryString.append("{");
-        prjctn.getArg().visit(this);
-        queryString.append("}");
     }
 
    private void expandCompare(Compare cmpr, ValueExpr valueExpr,  List<URI> uriList) throws UnexpectedQueryException{

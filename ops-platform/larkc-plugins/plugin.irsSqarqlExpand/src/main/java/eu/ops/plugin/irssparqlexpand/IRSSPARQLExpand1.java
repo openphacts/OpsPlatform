@@ -10,8 +10,10 @@ import java.util.Map;
 import java.util.Set;
 import org.openrdf.model.URI;
 import org.openrdf.model.impl.URIImpl;
+import org.openrdf.query.Dataset;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.algebra.TupleExpr;
+import org.openrdf.query.parser.ParsedQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,6 +60,21 @@ public class IRSSPARQLExpand1 extends Plugin {
             return new IRSClient1();
     }
     
+   private SetOfStatements expandQuery(TupleExpr tupleExpr, Dataset dataset) 
+            throws QueryModelExpanderException, UnexpectedQueryException{
+        URIFinderVisitor uriFindervisitor = new URIFinderVisitor();
+        tupleExpr.visit(uriFindervisitor);
+        Set<URI> uriSet = uriFindervisitor.getURIS();
+        Map<URI, List<URI>> uriMappings = irsMapper.getMatchesForURIs(uriSet);   
+        QueryExpandAndWriteVisitor writerVisitor = 
+                new QueryExpandAndWriteVisitor(uriMappings, dataset, showExpandedVariables);
+        tupleExpr.visit(writerVisitor);
+        String expandedQueryString = writerVisitor.getQuery();
+        //ystem.out.println(expandedQueryString);
+        SPARQLQuery expandedQuery = new SPARQLQueryImpl(expandedQueryString);
+        return expandedQuery.toRDF();      
+    }
+    
     /**
      * Called on plug-in invokation. The actual "work" should be done in this method.
      * <p>
@@ -77,28 +94,23 @@ public class IRSSPARQLExpand1 extends Plugin {
         System.out.println("Input: " + input.getStatements().toString());
         // Does not care about the input name since it has a single argument, use any named graph
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(input);
-        //Only working with select queries of BGP
-        if (!query.isSelect()) {
-            logger.info("No query exapnsion performed as not a select query.");
-            return input;
-        }
-        if (query instanceof SPARQLQuery) {
-            String queryString = query.toString();
-            TupleExpr tupleExpr;
-            tupleExpr = QueryUtils.queryStringToTupleExpr(queryString);
-            URIFinderVisitor uriFindervisitor = new URIFinderVisitor();
-            tupleExpr.visit(uriFindervisitor);
-            Set<URI> uriSet = uriFindervisitor.getURIS();
-            Map<URI, List<URI>> uriMappings = irsMapper.getMatchesForURIs(uriSet);    
-            QueryExpandAndWriteVisitor writerVisitor = 
-                    new QueryExpandAndWriteVisitor(uriMappings, showExpandedVariables);
-            tupleExpr.visit(writerVisitor);
-            String expandedQueryString = writerVisitor.getQuery();
-            //System.out.println(expandedQueryString);
-            SPARQLQuery expandedQuery = new SPARQLQueryImpl(expandedQueryString);
-            return expandedQuery.toRDF();
+        if (query instanceof SPARQLQueryImpl){
+            SPARQLQueryImpl impl = (SPARQLQueryImpl)query;
+            ParsedQuery parsedQuery = impl.getParsedQuery();
+            TupleExpr tupleExpr = parsedQuery.getTupleExpr();
+            Dataset dataset = parsedQuery.getDataset();
+            return expandQuery (tupleExpr, dataset);
         } else {
-            throw new UnexpectedQueryException("Not a SPARQL Query");
+            String queryString = query.toString();
+            TupleExpr tupleExpr = QueryUtils.queryStringToTupleExpr(queryString);
+            Dataset dataset;
+            try {
+                dataset = QueryUtils.convertToOpenRdf(query.getDataSet());
+            } catch (NullPointerException e){
+                //crap implementation does not check if dataset is null.
+                dataset = null;
+            }       
+            return expandQuery (tupleExpr, dataset);
         }
     }
 

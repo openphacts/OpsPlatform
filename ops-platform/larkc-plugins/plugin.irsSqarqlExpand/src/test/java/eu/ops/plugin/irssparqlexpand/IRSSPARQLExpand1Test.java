@@ -386,9 +386,9 @@ public class IRSSPARQLExpand1Test {
                 + "}";
     static String TWO_STATEMENTS_ONE_OBJECT_URI_QUERY_EXPECTED =  "SELECT ?protein"
                 + " WHERE {"
-                + "?protein <http://foo.com/somePredicate> ?objectUri1 . "
+                + "{?protein <http://foo.com/somePredicate> ?objectUri1 . "
                 + "FILTER (?objectUri1 = <http://bar.com/9khd7> || "
-                + "?objectUri1 = <http://foo.info/1.1.1.1>) "
+                + "?objectUri1 = <http://foo.info/1.1.1.1>) }"
                 + "?protein <http://foo.com/anotherPredicate> ?name . "
                 + "}";
     /**
@@ -425,12 +425,12 @@ public class IRSSPARQLExpand1Test {
                 + "}";    
     static String SHARED2_SUBJECT_URI_QUERY_EXPECTED = "SELECT ?protein ?name "
                 + "WHERE {"
-                + "?subjectUri1 <http://foo.com/somePredicate> ?protein . "
-                + "FILTER (?subjectUri1 = <http://bar.com/9khd7> || "
-                + "?subjectUri1 = <http://foo.info/1.1.1.1>) "
-                + "?subjectUri2 <http://foo.com/anotherPredicate> ?name . "
-                + "FILTER (?subjectUri2 = <http://bar.com/9khd7> || "
-                + "?subjectUri2 = <http://foo.info/1.1.1.1>) "
+                + "{?subjectUri1 <http://foo.com/somePredicate> ?protein . "
+                + "   FILTER (?subjectUri1 = <http://bar.com/9khd7> || "
+                + "           ?subjectUri1 = <http://foo.info/1.1.1.1>) }"
+                + "{?subjectUri2 <http://foo.com/anotherPredicate> ?name . "
+                + "   FILTER (?subjectUri2 = <http://bar.com/9khd7> || "
+                + "           ?subjectUri2 = <http://foo.info/1.1.1.1>) }"
                 + "}";
     /**
      * Test that a query with a two basic graph patterns which share a single 
@@ -467,18 +467,18 @@ public class IRSSPARQLExpand1Test {
                 + "}";    
     static String SHARED3_SUBJECT_URI_QUERY_EXPECTED = "SELECT ?protein ?name ?enzyme "
                 + "WHERE {"
-                + "?subjectUri1 <http://foo.com/somePredicate> ?protein . "
-                + "FILTER (?subjectUri1 = <http://bar.com/9khd7> || "
-                + "?subjectUri1 = <http://example.ac.uk/89ke> || "
-                + "?subjectUri1 = <http://foo.info/1.1.1.1>) "
-                + "?subjectUri2 <http://foo.com/anotherPredicate> ?name . "
-                + "FILTER (?subjectUri2 = <http://bar.com/9khd7> || "
-                + "?subjectUri2 = <http://example.ac.uk/89ke> || "
-                + "?subjectUri2 = <http://foo.info/1.1.1.1>) "
-                + "?subjectUri3 <http://bar.org/relation> ?enzyme . "
-                + "FILTER (?subjectUri3 = <http://bar.com/9khd7> || "
-                + "?subjectUri3 = <http://example.ac.uk/89ke> || "
-                + "?subjectUri3 = <http://foo.info/1.1.1.1>) "
+                + "{?subjectUri1 <http://foo.com/somePredicate> ?protein . "
+                + "    FILTER (?subjectUri1 = <http://bar.com/9khd7> || "
+                + "            ?subjectUri1 = <http://example.ac.uk/89ke> || "
+                + "            ?subjectUri1 = <http://foo.info/1.1.1.1>) }"
+                + "{?subjectUri2 <http://foo.com/anotherPredicate> ?name ."
+                + "    FILTER (?subjectUri2 = <http://bar.com/9khd7> || "
+                + "            ?subjectUri2 = <http://example.ac.uk/89ke> || "
+                + "            ?subjectUri2 = <http://foo.info/1.1.1.1>) }"
+                + "{?subjectUri3 <http://bar.org/relation> ?enzyme . "
+                + "    FILTER (?subjectUri3 = <http://bar.com/9khd7> || "
+                + "            ?subjectUri3 = <http://example.ac.uk/89ke> || "
+                + "            ?subjectUri3 = <http://foo.info/1.1.1.1>) }"
                 + "}";
     /**
      * Test that a query with a three basic graph patterns which share a single 
@@ -515,14 +515,14 @@ public class IRSSPARQLExpand1Test {
                 + "}";
     static String SIMPLE_CHAIN_QUERY_EXPECTED = "SELECT ?protein ?name "
                 + "WHERE {"
-                + "?protein <http://foo.com/somePredicate> ?objectUri1 . "
-                + "FILTER (?objectUri1 = <http://bar.com/9khd7> || "
-                + "?objectUri1 = <http://foo.info/1.1.1.1> || "
-                + "?objectUri1 = <http://example.org/chem/2918>) "
-                + "?subjectUri2 <http://foo.com/anotherPredicate> ?name . "
-                + "FILTER (?subjectUri2 = <http://bar.com/9khd7> || "
-                + "?subjectUri2 = <http://foo.info/1.1.1.1> || "
-                + "?subjectUri2 = <http://example.org/chem/2918>) "
+                + "{?protein <http://foo.com/somePredicate> ?objectUri1 . "
+                + "     FILTER (?objectUri1 = <http://bar.com/9khd7> || "
+                + "             ?objectUri1 = <http://foo.info/1.1.1.1> || "
+                + "             ?objectUri1 = <http://example.org/chem/2918>) }"
+                + "{?subjectUri2 <http://foo.com/anotherPredicate> ?name . "
+                + "     FILTER (?subjectUri2 = <http://bar.com/9khd7> || "
+                + "             ?subjectUri2 = <http://foo.info/1.1.1.1> || "
+                + "             ?subjectUri2 = <http://example.org/chem/2918>) }"
                 + "}";            
     /**
      * Test that a query with a two basic graph patterns which form a chain
@@ -562,32 +562,32 @@ public class IRSSPARQLExpand1Test {
                 + "}";
     static String COMPLEX_CHAIN_QUERY_EXPECTED = "SELECT ?name ?value1 ?value2 "
                 + "WHERE {"
-                + "?subjectUri1 <http://foo.com/somePredicate> ?objectUri1 . "
-                + "FILTER (?subjectUri1 = <http://foo.info/1.1.1.1> || "
-                + "?subjectUri1 = <http://bar.co.uk/998234>) "               
-                + "FILTER (?objectUri1 = <http://bar.com/9khd7> || "
-                + "?objectUri1 = <http://hello.uk/87234> || "
-                + "?objectUri1 = <http://example.org/chem/2918>) "                
-                + "?subjectUri2 <http://foo.com/predicate> ?value1 . "                
-                + "FILTER (?subjectUri2 = <http://foo.info/1.1.1.1> || "
-                + "?subjectUri2 = <http://bar.co.uk/998234>) "                
-                + "?subjectUri3 <http://foo.com/anotherPredicate> ?name . "                
-                + "FILTER (?subjectUri3 = <http://bar.com/9khd7> || "
-                + "?subjectUri3 = <http://hello.uk/87234> || "
-                + "?subjectUri3 = <http://example.org/chem/2918>) "                
-                + "?subjectUri4 <http://foo.com/aPredicate> ?objectUri4 . "                
-                + "FILTER (?subjectUri4 = <http://bar.com/9khd7> || "
-                + "?subjectUri4 = <http://hello.uk/87234> || "
-                + "?subjectUri4 = <http://example.org/chem/2918>) "
-                + "FILTER (?objectUri4 = <http://yetmore.info/872342> || "
-                + "?objectUri4 = <http://ohboy.com/27393> || "
-                + "?objectUri4 = <http://imborednow.co/akuhe8> || "
-                + "?objectUri4 = <http://yetanother.com/-09824>) "                
-                + "?subjectUri5 <http://bar.org/predicate> ?value2 . "
-                + "FILTER (?subjectUri5 = <http://yetmore.info/872342> || "
-                + "?subjectUri5 = <http://ohboy.com/27393> || "
-                + "?subjectUri5 = <http://imborednow.co/akuhe8> || "
-                + "?subjectUri5 = <http://yetanother.com/-09824>) "
+                + "{?subjectUri1 <http://foo.com/somePredicate> ?objectUri1 . "
+                + "    FILTER (?subjectUri1 = <http://foo.info/1.1.1.1> || "
+                + "            ?subjectUri1 = <http://bar.co.uk/998234>) "               
+                + "    FILTER (?objectUri1 = <http://bar.com/9khd7> || "
+                + "            ?objectUri1 = <http://hello.uk/87234> || "
+                + "            ?objectUri1 = <http://example.org/chem/2918>) }"                
+                + "{?subjectUri2 <http://foo.com/predicate> ?value1 . "                
+                + "    FILTER (?subjectUri2 = <http://foo.info/1.1.1.1> || "
+                + "            ?subjectUri2 = <http://bar.co.uk/998234>) }"                
+                + "{?subjectUri3 <http://foo.com/anotherPredicate> ?name . "                
+                + "    FILTER (?subjectUri3 = <http://bar.com/9khd7> || "
+                + "            ?subjectUri3 = <http://hello.uk/87234> || "
+                + "            ?subjectUri3 = <http://example.org/chem/2918>) }"                
+                + "{?subjectUri4 <http://foo.com/aPredicate> ?objectUri4 . "                
+                + "    FILTER (?subjectUri4 = <http://bar.com/9khd7> || "
+                + "            ?subjectUri4 = <http://hello.uk/87234> || "
+                + "            ?subjectUri4 = <http://example.org/chem/2918>) "
+                + "    FILTER (?objectUri4 = <http://yetmore.info/872342> || "
+                + "            ?objectUri4 = <http://ohboy.com/27393> || "
+                + "            ?objectUri4 = <http://imborednow.co/akuhe8> || "
+                + "            ?objectUri4 = <http://yetanother.com/-09824>) }"                
+                + "{?subjectUri5 <http://bar.org/predicate> ?value2 . "
+                + "    FILTER (?subjectUri5 = <http://yetmore.info/872342> || "
+                + "            ?subjectUri5 = <http://ohboy.com/27393> || "
+                + "            ?subjectUri5 = <http://imborednow.co/akuhe8> || "
+                + "            ?subjectUri5 = <http://yetanother.com/-09824>) }"
                 + "}";            
     /**
      * Test that a query with a several basic graph patterns which form a series
@@ -632,18 +632,18 @@ public class IRSSPARQLExpand1Test {
                 + "}"; 
     static String REPEATED_SUBJECT_SHORTHAND_QUERY_EXPECTED = "SELECT ?protein ?name ?enzyme "
                 + "WHERE {"
-                + "?subjectUri1 <http://foo.com/somePredicate> ?protein . "
-                + "FILTER (?subjectUri1 = <http://bar.com/9khd7> || "
-                + "?subjectUri1 = <http://example.org/chem/2918> || "
-                + "?subjectUri1 = <http://foo.info/1.1.1.1>) "
-                + "?subjectUri2 <http://foo.com/anotherPredicate> ?name . "
-                + "FILTER (?subjectUri2 = <http://bar.com/9khd7> || "
-                + "?subjectUri2 = <http://example.org/chem/2918> || "
-                + "?subjectUri2 = <http://foo.info/1.1.1.1>) "
-                + "?subjectUri3 <http://bar.org/relation> ?enzyme . "
-                + "FILTER (?subjectUri3 = <http://bar.com/9khd7> || "
-                + "?subjectUri3 = <http://example.org/chem/2918> || "
-                + "?subjectUri3 = <http://foo.info/1.1.1.1>) "
+                + "{?subjectUri1 <http://foo.com/somePredicate> ?protein . "
+                + "    FILTER (?subjectUri1 = <http://bar.com/9khd7> || "
+                + "            ?subjectUri1 = <http://example.org/chem/2918> || "
+                + "            ?subjectUri1 = <http://foo.info/1.1.1.1>) }"
+                + "{?subjectUri2 <http://foo.com/anotherPredicate> ?name . "
+                + "    FILTER (?subjectUri2 = <http://bar.com/9khd7> || "
+                + "            ?subjectUri2 = <http://example.org/chem/2918> || "
+                + "            ?subjectUri2 = <http://foo.info/1.1.1.1>) }"
+                + "{?subjectUri3 <http://bar.org/relation> ?enzyme . "
+                + "    FILTER (?subjectUri3 = <http://bar.com/9khd7> || "
+                + "            ?subjectUri3 = <http://example.org/chem/2918> || "
+                + "            ?subjectUri3 = <http://foo.info/1.1.1.1>) }"
                 + "}";    
     /**
      * Test that a query written using the shorthand for repeated subject URI
@@ -679,14 +679,14 @@ public class IRSSPARQLExpand1Test {
                 + "}";   
     static String REPEATED_SUBJECT_PREDICATE_QUERY_EXPECTED =  "SELECT ?protein ?name "
                 + "WHERE {"
-                + "?subjectUri1 <http://foo.com/somePredicate> ?protein . "
-                + "FILTER (?subjectUri1 = <http://bar.com/9khd7> || "
-                + "?subjectUri1 = <http://example.org/chem/2918> || "
-                + "?subjectUri1 = <http://foo.info/1.1.1.1>) "
-                + "?subjectUri2 <http://foo.com/somePredicate> ?name . "
-                + "FILTER (?subjectUri2 = <http://bar.com/9khd7> || "
-                + "?subjectUri2 = <http://example.org/chem/2918> || "
-                + "?subjectUri2 = <http://foo.info/1.1.1.1>) "
+                + "{?subjectUri1 <http://foo.com/somePredicate> ?protein . "
+                + "    FILTER (?subjectUri1 = <http://bar.com/9khd7> || "
+                + "            ?subjectUri1 = <http://example.org/chem/2918> || "
+                + "            ?subjectUri1 = <http://foo.info/1.1.1.1>) }"
+                + "{?subjectUri2 <http://foo.com/somePredicate> ?name . "
+                + "    FILTER (?subjectUri2 = <http://bar.com/9khd7> || "
+                + "            ?subjectUri2 = <http://example.org/chem/2918> || "
+                + "            ?subjectUri2 = <http://foo.info/1.1.1.1>) }"
                 + "}";     
     /**
      * Test that a query written using the shorthand for repeated subject and
@@ -725,12 +725,12 @@ public class IRSSPARQLExpand1Test {
                 + "}";
     static String SIMPLE_OPTIONAL_QUERY_EXPECTED = "SELECT ?protein ?name "
                 + "WHERE {"
-                + "?subjectUri1 <http://foo.com/somePredicate> ?protein . "
-                + "FILTER (?subjectUri1 = <http://example.com/9khd7> || "
-                + "?subjectUri1 = <http://foo.info/1.1.1.1>) "
-                + "OPTIONAL {?subjectUri2 <http://foo.com/anotherPredicate> ?name . "
-                + "FILTER (?subjectUri2 = <http://another.org/82374> || "
-                + "?subjectUri2 = <http://bar.com/ijdu>) } "
+                + "{?subjectUri1 <http://foo.com/somePredicate> ?protein . "
+                + "    FILTER (?subjectUri1 = <http://example.com/9khd7> || "
+                + "            ?subjectUri1 = <http://foo.info/1.1.1.1>) }"
+                + "OPTIONAL {{?subjectUri2 <http://foo.com/anotherPredicate> ?name . "
+                + "    FILTER (?subjectUri2 = <http://another.org/82374> || "
+                + "            ?subjectUri2 = <http://bar.com/ijdu>) }} "
                 + "}";
     /**
      * Test that a query involving an optional clause is output correctly.
@@ -770,12 +770,12 @@ public class IRSSPARQLExpand1Test {
             + "}";
     static String ONLY_OPTIONAL_STATEMENTS_QUERY_EXPECTED = "SELECT ?protein ?name "
             + "WHERE {"
-            + "OPTIONAL {?subjectUri1 <http://foo.com/somePredicate> ?protein . "
-            + "FILTER (?subjectUri1 = <http://bar.com/9khd7> || "
-            + "?subjectUri1 = <http://foo.info/1.1.1.1>) } "
-            + "OPTIONAL {?subjectUri2 <http://foo.com/anotherPredicate> ?name . "
-            + "FILTER (?subjectUri2 = <http://bar.com/9khd7> || "
-            + "?subjectUri2 = <http://foo.info/1.1.1.1>) } "
+            + "OPTIONAL {{?subjectUri1 <http://foo.com/somePredicate> ?protein . "
+            + "    FILTER (?subjectUri1 = <http://bar.com/9khd7> || "
+            + "            ?subjectUri1 = <http://foo.info/1.1.1.1>) }} "
+            + "OPTIONAL {{?subjectUri2 <http://foo.com/anotherPredicate> ?name . "
+            + "    FILTER (?subjectUri2 = <http://bar.com/9khd7> || "
+            + "            ?subjectUri2 = <http://foo.info/1.1.1.1>) }} "
             + "}";
     /**
      * Test that a query involving only optional clauses is output correctly.
@@ -813,12 +813,12 @@ public class IRSSPARQLExpand1Test {
             + "}";
     String OPTIONAL_REPEATED_SUBJECT_QUERY_EXPECTED = "SELECT ?protein ?name "
             + "WHERE {"
-            + "?subjectUri1 <http://foo.com/somePredicate> ?protein . "
-            + "FILTER (?subjectUri1 = <http://bar.com/9khd7> || "
-            + "?subjectUri1 = <http://foo.info/1.1.1.1>) "
-            + "OPTIONAL {?subjectUri2 <http://foo.com/anotherPredicate> ?name . "
-            + "FILTER (?subjectUri2 = <http://bar.com/9khd7> || "
-            + "?subjectUri2 = <http://foo.info/1.1.1.1>)} "
+            + "{?subjectUri1 <http://foo.com/somePredicate> ?protein . "
+            + "    FILTER (?subjectUri1 = <http://bar.com/9khd7> || "
+            + "            ?subjectUri1 = <http://foo.info/1.1.1.1>) }"
+            + "OPTIONAL {{?subjectUri2 <http://foo.com/anotherPredicate> ?name . "
+            + "    FILTER (?subjectUri2 = <http://bar.com/9khd7> || "
+            + "            ?subjectUri2 = <http://foo.info/1.1.1.1>)}} "
             + "}";
     /**
      * Test that a query with a repeated subject URI involving an optional clause 
@@ -853,13 +853,13 @@ public class IRSSPARQLExpand1Test {
             + "}";
     String OPTIONAL_WITH_FILTER_QUERY_EXPECTED = "SELECT ?protein ?name "
             + "WHERE { "
-            + "      ?subjectUri1 <http://foo.com/somePredicate> ?protein . "
+            + "      {?subjectUri1 <http://foo.com/somePredicate> ?protein . "
             + "      FILTER (?subjectUri1 = <http://bar.com/9khd7> || "
-            + "              ?subjectUri1 = <http://foo.info/1.1.1.1>) "
-            + "      OPTIONAL {?protein <http://foo.com/anotherPredicate> ?name ."
+            + "              ?subjectUri1 = <http://foo.info/1.1.1.1>)} "
+            + "      OPTIONAL {{?protein <http://foo.com/anotherPredicate> ?name ."
             + "               FILTER (?name == <htpp://bar.com/oneName> || ?name == <htpp://nano.com/JohnSmith> "
             + "                       || ?name == <http://us.gov.org/MikeBrown> "
-            + "                       || ?name == <http://mike.org/anotherName>)} "
+            + "                       || ?name == <http://mike.org/anotherName>)}} "
             + "}";
     /**
      * Test that a query with a repeated subject URI involving an optional clause 
@@ -941,10 +941,9 @@ public class IRSSPARQLExpand1Test {
     static String ONE_BGP_OBJECT_WITH_FILTER_QUERY_EXPECTED = "SELECT ?protein "
                 + "WHERE {"
                 + "FILTER (?protein = <http://something.org>) . "
-                + "?protein <http://www.biopax.org/release/biopax-level2.owl#EC-NUMBER> "
-                + "?objectUri1 . "
-                + "FILTER (?objectUri1 = <http://example.com/983juy> || "
-                + "?objectUri1 = <http://brenda-enzymes.info/1.1.1.1>) . "
+                + "{?protein <http://www.biopax.org/release/biopax-level2.owl#EC-NUMBER> ?objectUri1 . "
+                + "    FILTER (?objectUri1 = <http://example.com/983juy> || "
+                + "            ?objectUri1 = <http://brenda-enzymes.info/1.1.1.1>) }. "
                 + "}";
     /**
      * Test of meet method, of class QueryModelExpander.
@@ -975,9 +974,9 @@ public class IRSSPARQLExpand1Test {
     static String ONE_BGP_OBJECT_WITH_FILTER_QUERY_EXPECTED_FILTER_EXPANDED = "SELECT ?protein "
                 + "WHERE {"
                 + "FILTER (?protein = <http://www.another.org> || ?protein = <http://something.org>) . "
-                + "?protein <http://www.biopax.org/release/biopax-level2.owl#EC-NUMBER> ?objectUri1 . "
-                + "FILTER (?objectUri1 = <http://example.com/983juy> || "
-                + "?objectUri1 = <http://brenda-enzymes.info/1.1.1.1>) . "
+                + "{?protein <http://www.biopax.org/release/biopax-level2.owl#EC-NUMBER> ?objectUri1 . "
+                + "    FILTER (?objectUri1 = <http://example.com/983juy> || "
+                + "            ?objectUri1 = <http://brenda-enzymes.info/1.1.1.1>) }. "
                 + "}";
     /**
      * Test of meet method, of class QueryModelExpander.
@@ -1095,10 +1094,9 @@ public class IRSSPARQLExpand1Test {
     static String ONE_BGP_OBJECT_WITH_NOT_FILTER_QUERY_EXPECTED = "SELECT ?protein "
                 + "WHERE {"
                 + "FILTER (?protein != <http://my.org> && ?protein != <http://their.org> ) . "
-                + "?protein <http://www.biopax.org/release/biopax-level2.owl#EC-NUMBER> "
-                + "?objectUri1 . "
-                + "FILTER (?objectUri1 = <http://example.com/983juy> || "
-                + "?objectUri1 = <http://brenda-enzymes.info/1.1.1.1>) . "
+                + "{?protein <http://www.biopax.org/release/biopax-level2.owl#EC-NUMBER> ?objectUri1 . "
+                + "    FILTER (?objectUri1 = <http://example.com/983juy> || "
+                + "            ?objectUri1 = <http://brenda-enzymes.info/1.1.1.1>) }. "
                 + "}";
     /**
      * Test of meet method, of class QueryModelExpander.
@@ -1137,10 +1135,9 @@ public class IRSSPARQLExpand1Test {
                 + "WHERE {"
                 + "FILTER ((?protein != <http://my.org> && ?protein != <http://their.org> ) . "
                 + "(?protein != <http://earth.com> && ?protein != <http://mars.com> && ?protein != <http://war.com> ) . "
-                + "?protein <http://www.biopax.org/release/biopax-level2.owl#EC-NUMBER> "
-                + "?objectUri1 . "
-                + "FILTER (?objectUri1 = <http://example.com/983juy> || "
-                + "?objectUri1 = <http://brenda-enzymes.info/1.1.1.1>) . "
+                + "{?protein <http://www.biopax.org/release/biopax-level2.owl#EC-NUMBER> ?objectUri1 . "
+                + "    FILTER (?objectUri1 = <http://example.com/983juy> || "
+                + "            ?objectUri1 = <http://brenda-enzymes.info/1.1.1.1>) }. "
                 + "}";
 
     /**
@@ -1188,14 +1185,15 @@ public class IRSSPARQLExpand1Test {
             + "PREFIX dc11:  <http://purl.org/dc/elements/1.1/> "
             + "SELECT ?title "
             + "WHERE  { { ?book dc10:title ?title .  "
-            + "?book dc10:creator ?objectUri2 " 
-            + "FILTER (?objectUri2 = <http://barnes.com/983juy> || "
-            + "?objectUri2 = <http://www.amazon.com/3432455>) . "
+            + "{?book dc10:creator ?objectUri2 " 
+            + "    FILTER (?objectUri2 = <http://barnes.com/983juy> || "
+            + "            ?objectUri2 = <http://www.amazon.com/3432455>) }. "
             + "} "
             + "UNION {"
-            + " ?book dc11:title  ?title . "
-            + " ?book dc11:creator ?objectUri4 . "
-            + "FILTER (?objectUri4 = <http://barnes.com/ku78s2w> || ?objectUri4 = <http://www.amazon.com/3445355>) "
+            + "?book dc11:title  ?title . "
+            + "{?book dc11:creator ?objectUri4 . "
+            + "     FILTER (?objectUri4 = <http://barnes.com/ku78s2w> || "
+            + "             ?objectUri4 = <http://www.amazon.com/3445355>) }"
             +  "}}";
 
     /**
