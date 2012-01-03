@@ -14,7 +14,7 @@ import org.openrdf.query.algebra.helpers.QueryModelVisitorBase;
  *
  * @author Christian
  */
-public class ReplacementVariableFinderVisitor extends QueryModelVisitorBase<UnexpectedQueryException>{
+public class ReplacementVariableFinderVisitor extends QueryModelVisitorBase<QueryExpansionException>{
    
    int statements;
    Map<URI, List<URI>> uriMappings;

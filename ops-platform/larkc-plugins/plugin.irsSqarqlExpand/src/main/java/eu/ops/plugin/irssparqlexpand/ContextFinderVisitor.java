@@ -9,14 +9,14 @@ import org.openrdf.query.algebra.helpers.QueryModelVisitorBase;
  * 
  * @author Christian
  */
-public class ContextFinderVisitor extends QueryModelVisitorBase<UnexpectedQueryException>{
+public class ContextFinderVisitor extends QueryModelVisitorBase<QueryExpansionException>{
     
     private Var context = null;
     private boolean nullContext = false;
     private boolean multipleContexts = false;
         
     @Override
-    public void meet(StatementPattern sp) throws UnexpectedQueryException {
+    public void meet(StatementPattern sp) throws QueryExpansionException {
         //ystem.out.println(sp);
         Var localContext = sp.getContextVar();
         System.out.println(localContext);

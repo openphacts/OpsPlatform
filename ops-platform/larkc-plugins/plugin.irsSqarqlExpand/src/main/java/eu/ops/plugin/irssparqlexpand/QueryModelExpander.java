@@ -27,7 +27,7 @@ import org.openrdf.query.algebra.helpers.QueryModelVisitorBase;
 /**
  *
  */
-class QueryModelExpander extends QueryModelVisitorBase<QueryModelExpanderException> {
+class QueryModelExpander extends QueryModelVisitorBase<QueryExpansionException> {
     
     private Map<URI, List<URI>> uriMappings;
     private ValueFactory valueFactory = new ValueFactoryImpl();

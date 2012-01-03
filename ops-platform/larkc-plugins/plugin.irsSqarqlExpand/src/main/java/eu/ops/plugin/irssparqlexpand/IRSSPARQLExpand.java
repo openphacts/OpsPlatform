@@ -61,7 +61,7 @@ public class IRSSPARQLExpand extends Plugin {
     }
     
    private SetOfStatements expandQuery(TupleExpr tupleExpr, Dataset dataset) 
-            throws QueryModelExpanderException, UnexpectedQueryException{
+            throws QueryExpansionException {
         URIFinderVisitor uriFindervisitor = new URIFinderVisitor();
         tupleExpr.visit(uriFindervisitor);
         Set<URI> uriSet = uriFindervisitor.getURIS();
@@ -85,7 +85,7 @@ public class IRSSPARQLExpand extends Plugin {
      * @return a set of statements containing the output of this plug-in
      */
     public final SetOfStatements invokeInternalWithExceptions(SetOfStatements input) 
-            throws MalformedQueryException, QueryModelExpanderException, UnexpectedQueryException {
+            throws MalformedQueryException, QueryExpansionException {
         logger.info("SPARQLExpand working.");
         System.out.println("*********************Invoked!!!");
         if (logger.isDebugEnabled()) {
@@ -129,9 +129,7 @@ public class IRSSPARQLExpand extends Plugin {
             return invokeInternalWithExceptions(input);
         } catch (MalformedQueryException ex) {
             logger.warn("Problem converting query String to TupleExpr.", ex);
-        } catch (QueryModelExpanderException ex) {
-            logger.warn("Problem extracting URIs.", ex);
-        } catch (UnexpectedQueryException ex) {
+        } catch (QueryExpansionException ex) {
             logger.warn("Problem writing expanded query.", ex);
         }
         //Failed so return input
@@ -151,7 +149,7 @@ public class IRSSPARQLExpand extends Plugin {
         showExpandedVariables = show;
     }
     
-    public static void main(String[] args) throws MalformedQueryException, QueryModelExpanderException, UnexpectedQueryException {
+    public static void main(String[] args) throws MalformedQueryException, QueryExpansionException {
         IRSSPARQLExpand s = new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand"));
         s.initialiseInternal(null);
         String qStr = " SELECT ?protein"

@@ -20,7 +20,8 @@ import org.openrdf.query.parser.sparql.SPARQLParser;
  * @author Christian
  */
 public class openrdfToy {
-     public static void expanderTest(String inputQuery, String expectedQuery) throws MalformedQueryException, QueryModelExpanderException, UnexpectedQueryException {
+     public static void expanderTest(String inputQuery, String expectedQuery) 
+             throws MalformedQueryException, QueryExpansionException {
          SetOfStatements larkc = new SPARQLQueryImpl(inputQuery).toRDF();
          SPARQLQuery larkcQuery = DataFactory.INSTANCE.createSPARQLQuery(larkc);
          String larkcString = larkcQuery.toString();

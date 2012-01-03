@@ -47,7 +47,7 @@ public class URiFinderVisitorTest {
     }
 
     @Test
-    public void test_ONE_BGP_OBJECT_WITH_FILTER_QUERY() throws MalformedQueryException, QueryModelExpanderException{
+    public void test_ONE_BGP_OBJECT_WITH_FILTER_QUERY() throws MalformedQueryException, QueryExpansionException {
         String query = QueryModelExpanderTest.ONE_BGP_OBJECT_WITH_FILTER_QUERY;
         HashSet<URI> expected = new HashSet<URI>();
         expected.add(factory.createURI("http://brenda-enzymes.info/1.1.1.1"));

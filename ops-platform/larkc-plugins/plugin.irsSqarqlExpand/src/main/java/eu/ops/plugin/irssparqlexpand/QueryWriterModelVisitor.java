@@ -68,7 +68,7 @@ import org.openrdf.query.algebra.Var;
  *
  * @author Christian
  */
-public class QueryWriterModelVisitor implements QueryModelVisitor<UnexpectedQueryException>{
+public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansionException>{
     
     StringBuilder queryString = new StringBuilder();
     Dataset originalDataSet;
@@ -79,12 +79,12 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<UnexpectedQuer
     }
     
     @Override
-    public void meet(QueryRoot qr) throws UnexpectedQueryException {
-        throw new UnexpectedQueryException("QueryRoot not supported yet.");
+    public void meet(QueryRoot qr) throws QueryExpansionException {
+        throw new QueryExpansionException("QueryRoot not supported yet.");
     }
 
     @Override
-    public void meet(And and) throws UnexpectedQueryException {
+    public void meet(And and) throws QueryExpansionException {
         queryString.append("(");
         and.getLeftArg().visit(this);
         queryString.append(" && ");
@@ -93,17 +93,17 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<UnexpectedQuer
     }
 
     @Override
-    public void meet(BNodeGenerator bng) throws UnexpectedQueryException {
-        throw new UnexpectedQueryException("BNodeGenerator not supported yet.");
+    public void meet(BNodeGenerator bng) throws QueryExpansionException {
+        throw new QueryExpansionException("BNodeGenerator not supported yet.");
     }
 
     @Override
-    public void meet(Bound bound) throws UnexpectedQueryException {
-        throw new UnexpectedQueryException("Bound not supported yet.");
+    public void meet(Bound bound) throws QueryExpansionException {
+        throw new QueryExpansionException("Bound not supported yet.");
     }
 
     @Override
-    public void meet(Compare cmpr) throws UnexpectedQueryException {
+    public void meet(Compare cmpr) throws QueryExpansionException {
         queryString.append("(");
         cmpr.getLeftArg().visit(this);
         queryString.append(" ");
@@ -114,110 +114,110 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<UnexpectedQuer
     }
 
     @Override
-    public void meet(CompareAll ca) throws UnexpectedQueryException {
-        throw new UnexpectedQueryException("CompareAl not supported yet.");
+    public void meet(CompareAll ca) throws QueryExpansionException {
+        throw new QueryExpansionException("CompareAl not supported yet.");
     }
 
     @Override
-    public void meet(CompareAny ca) throws UnexpectedQueryException {
-        throw new UnexpectedQueryException("CompareAny not supported yet.");
+    public void meet(CompareAny ca) throws QueryExpansionException {
+        throw new QueryExpansionException("CompareAny not supported yet.");
     }
 
     @Override
-    public void meet(Count count) throws UnexpectedQueryException {
-        throw new UnexpectedQueryException("Count not supported yet.");
+    public void meet(Count count) throws QueryExpansionException {
+        throw new QueryExpansionException("Count not supported yet.");
     }
 
     @Override
-    public void meet(Datatype dtp) throws UnexpectedQueryException {
-        throw new UnexpectedQueryException("Datatype not supported yet.");
+    public void meet(Datatype dtp) throws QueryExpansionException {
+        throw new QueryExpansionException("Datatype not supported yet.");
     }
 
     @Override
-    public void meet(Difference dfrnc) throws UnexpectedQueryException {
-        throw new UnexpectedQueryException("Difference not supported yet.");
+    public void meet(Difference dfrnc) throws QueryExpansionException {
+        throw new QueryExpansionException("Difference not supported yet.");
     }
 
     @Override
-    public void meet(Distinct dstnct) throws UnexpectedQueryException {
+    public void meet(Distinct dstnct) throws QueryExpansionException {
         TupleExpr tupleExpr = dstnct.getArg();
         if (tupleExpr instanceof Projection){
             meet ((Projection)tupleExpr, true);
         } else {
-            throw new UnexpectedQueryException("Distinct only supported followed by Projection.");
+            throw new QueryExpansionException("Distinct only supported followed by Projection.");
         }
     }
 
     @Override
-    public void meet(EmptySet es) throws UnexpectedQueryException {
-        throw new UnexpectedQueryException("EmptySet not supported yet.");
+    public void meet(EmptySet es) throws QueryExpansionException {
+        throw new QueryExpansionException("EmptySet not supported yet.");
     }
 
     @Override
-    public void meet(Exists exists) throws UnexpectedQueryException {
-        throw new UnexpectedQueryException("Exists not supported yet.");
+    public void meet(Exists exists) throws QueryExpansionException {
+        throw new QueryExpansionException("Exists not supported yet.");
     }
 
     @Override
-    public void meet(Extension extnsn) throws UnexpectedQueryException {
+    public void meet(Extension extnsn) throws QueryExpansionException {
         //I assume that this is also part of the ProjectionElemList so not required again.
         //extnsn.getElements();
         extnsn.getArg().visit(this);
     }
 
     @Override
-    public void meet(ExtensionElem ee) throws UnexpectedQueryException {
+    public void meet(ExtensionElem ee) throws QueryExpansionException {
         //possibly never called as meet(Extension extnsn) ignores this part
-        throw new UnexpectedQueryException("ExtensionElem not supported yet.");
+        throw new QueryExpansionException("ExtensionElem not supported yet.");
     }
 
     @Override
-    public void meet(FunctionCall fc) throws UnexpectedQueryException {
-        throw new UnexpectedQueryException("FunctionCall not supported yet.");
+    public void meet(FunctionCall fc) throws QueryExpansionException {
+        throw new QueryExpansionException("FunctionCall not supported yet.");
     }
 
     @Override
-    public void meet(Group group) throws UnexpectedQueryException {
-        throw new UnexpectedQueryException("Group not supported yet.");
+    public void meet(Group group) throws QueryExpansionException {
+        throw new QueryExpansionException("Group not supported yet.");
     }
 
     @Override
-    public void meet(GroupElem ge) throws UnexpectedQueryException {
-        throw new UnexpectedQueryException("GroupElem not supported yet.");
+    public void meet(GroupElem ge) throws QueryExpansionException {
+        throw new QueryExpansionException("GroupElem not supported yet.");
     }
 
     @Override
-    public void meet(In in) throws UnexpectedQueryException {
-        throw new UnexpectedQueryException("In not supported yet.");
+    public void meet(In in) throws QueryExpansionException {
+        throw new QueryExpansionException("In not supported yet.");
     }
 
     @Override
-    public void meet(Intersection i) throws UnexpectedQueryException {
-        throw new UnexpectedQueryException("Intersection not supported yet.");
+    public void meet(Intersection i) throws QueryExpansionException {
+        throw new QueryExpansionException("Intersection not supported yet.");
     }
 
     @Override
-    public void meet(IsBNode ibn) throws UnexpectedQueryException {
-        throw new UnexpectedQueryException("IsBNode not supported yet.");
+    public void meet(IsBNode ibn) throws QueryExpansionException {
+        throw new QueryExpansionException("IsBNode not supported yet.");
     }
 
     @Override
-    public void meet(IsLiteral il) throws UnexpectedQueryException {
-        throw new UnexpectedQueryException("IsLiteral not supported yet.");
+    public void meet(IsLiteral il) throws QueryExpansionException {
+        throw new QueryExpansionException("IsLiteral not supported yet.");
     }
 
     @Override
-    public void meet(IsResource ir) throws UnexpectedQueryException {
-        throw new UnexpectedQueryException("IsResource not supported yet.");
+    public void meet(IsResource ir) throws QueryExpansionException {
+        throw new QueryExpansionException("IsResource not supported yet.");
     }
 
     @Override
-    public void meet(IsURI isuri) throws UnexpectedQueryException {
-        throw new UnexpectedQueryException("IsURI not supported yet.");
+    public void meet(IsURI isuri) throws QueryExpansionException {
+        throw new QueryExpansionException("IsURI not supported yet.");
     }
 
     @Override
-    public void meet(Join join) throws UnexpectedQueryException {
+    public void meet(Join join) throws QueryExpansionException {
         //ystem.out.println("join");
         boolean newContext = startContext(join); 
         join.getLeftArg().visit(this);
@@ -226,62 +226,62 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<UnexpectedQuer
     }
 
     @Override
-    public void meet(Label label) throws UnexpectedQueryException {
-        throw new UnexpectedQueryException("Label not supported yet.");
+    public void meet(Label label) throws QueryExpansionException {
+        throw new QueryExpansionException("Label not supported yet.");
     }
 
     @Override
-    public void meet(Lang lang) throws UnexpectedQueryException {
-        throw new UnexpectedQueryException("Lang not supported yet.");
+    public void meet(Lang lang) throws QueryExpansionException {
+        throw new QueryExpansionException("Lang not supported yet.");
     }
 
     @Override
-    public void meet(LangMatches lm) throws UnexpectedQueryException {
-        throw new UnexpectedQueryException("LangMatches not supported yet.");
+    public void meet(LangMatches lm) throws QueryExpansionException {
+        throw new QueryExpansionException("LangMatches not supported yet.");
     }
 
     @Override
-    public void meet(Like like) throws UnexpectedQueryException {
-        throw new UnexpectedQueryException("Like not supported yet.");
+    public void meet(Like like) throws QueryExpansionException {
+        throw new QueryExpansionException("Like not supported yet.");
     }
 
     @Override
-    public void meet(LocalName ln) throws UnexpectedQueryException {
-        throw new UnexpectedQueryException("LocalName not supported yet.");
+    public void meet(LocalName ln) throws QueryExpansionException {
+        throw new QueryExpansionException("LocalName not supported yet.");
     }
 
     @Override
-    public void meet(MathExpr me) throws UnexpectedQueryException {
-        throw new UnexpectedQueryException("MathExpr not supported yet.");
+    public void meet(MathExpr me) throws QueryExpansionException {
+        throw new QueryExpansionException("MathExpr not supported yet.");
     }
 
     @Override
-    public void meet(Max max) throws UnexpectedQueryException {
-        throw new UnexpectedQueryException("Max not supported yet.");
+    public void meet(Max max) throws QueryExpansionException {
+        throw new QueryExpansionException("Max not supported yet.");
     }
 
     @Override
-    public void meet(Min min) throws UnexpectedQueryException {
-        throw new UnexpectedQueryException("Min not supported yet.");
+    public void meet(Min min) throws QueryExpansionException {
+        throw new QueryExpansionException("Min not supported yet.");
     }
 
     @Override
-    public void meet(MultiProjection mp) throws UnexpectedQueryException {
-        throw new UnexpectedQueryException("MultiProjection not supported yet.");
+    public void meet(MultiProjection mp) throws QueryExpansionException {
+        throw new QueryExpansionException("MultiProjection not supported yet.");
     }
 
     @Override
-    public void meet(Namespace nmspc) throws UnexpectedQueryException {
-        throw new UnexpectedQueryException("Namespace not supported yet.");
+    public void meet(Namespace nmspc) throws QueryExpansionException {
+        throw new QueryExpansionException("Namespace not supported yet.");
     }
 
     @Override
-    public void meet(Not not) throws UnexpectedQueryException {
-        throw new UnexpectedQueryException("\"Not\" not supported yet.");
+    public void meet(Not not) throws QueryExpansionException {
+        throw new QueryExpansionException("\"Not\" not supported yet.");
     }
 
     @Override
-    public void meet(LeftJoin lj) throws UnexpectedQueryException {
+    public void meet(LeftJoin lj) throws QueryExpansionException {
         boolean newContext = startContext(lj); 
         lj.getLeftArg().visit(this);
         newLine();
@@ -297,7 +297,7 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<UnexpectedQuer
     }
 
     @Override
-    public void meet(Or or) throws UnexpectedQueryException {
+    public void meet(Or or) throws QueryExpansionException {
         queryString.append("(");
         or.getLeftArg().visit(this);
         queryString.append(" || ");
@@ -306,27 +306,27 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<UnexpectedQuer
     }
 
     @Override
-    public void meet(Order order) throws UnexpectedQueryException {
-        throw new UnexpectedQueryException("Order not supported yet.");
+    public void meet(Order order) throws QueryExpansionException {
+        throw new QueryExpansionException("Order not supported yet.");
     }
 
     @Override
-    public void meet(OrderElem oe) throws UnexpectedQueryException {
-        throw new UnexpectedQueryException("OrderElem not supported yet.");
+    public void meet(OrderElem oe) throws QueryExpansionException {
+        throw new QueryExpansionException("OrderElem not supported yet.");
     }
 
     @Override
-    public void meet(Projection prjctn) throws UnexpectedQueryException {
+    public void meet(Projection prjctn) throws QueryExpansionException {
         meet (prjctn, false);
     }
 
     /**
      * Used by sub classes to add expaned list if required.
      */
-    void addExpanded(Projection prjctn) throws UnexpectedQueryException{
+    void addExpanded(Projection prjctn) throws QueryExpansionException{
     }
     
-    public void meet(Projection prjctn, boolean distinct) throws UnexpectedQueryException {
+    public void meet(Projection prjctn, boolean distinct) throws QueryExpansionException {
         queryString.append("SELECT ");
         if (distinct){
              queryString.append("DISTINCT ");
@@ -346,7 +346,7 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<UnexpectedQuer
     }
     
     @Override
-    public void meet(ProjectionElemList pel) throws UnexpectedQueryException {
+    public void meet(ProjectionElemList pel) throws QueryExpansionException {
         List<ProjectionElem> elements = pel.getElements();
         for (ProjectionElem element:elements){
             element.visit(this);
@@ -358,9 +358,9 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<UnexpectedQuer
      *
      * @param pel
      * @param mappedExstensionElements
-     * @throws UnexpectedQueryException 
+     * @throws QueryExpansionException 
      */
-    private void meet(ProjectionElemList pel, HashMap<String, ValueExpr> mappedExstensionElements) throws UnexpectedQueryException {
+    private void meet(ProjectionElemList pel, HashMap<String, ValueExpr> mappedExstensionElements) throws QueryExpansionException {
         List<ProjectionElem> elements = pel.getElements();
         for (ProjectionElem element:elements){
             meet(element, mappedExstensionElements);
@@ -368,7 +368,7 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<UnexpectedQuer
     }
 
     @Override
-    public void meet(ProjectionElem pe) throws UnexpectedQueryException {
+    public void meet(ProjectionElem pe) throws QueryExpansionException {
         queryString.append(" ?");
         queryString.append(pe.getSourceName());
     }
@@ -378,9 +378,9 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<UnexpectedQuer
      * 
      * @param pe
      * @param mappedExstensionElements
-     * @throws UnexpectedQueryException 
+     * @throws QueryExpansionException 
      */
-    private void meet(ProjectionElem pe, HashMap<String, ValueExpr> mappedExstensionElements) throws UnexpectedQueryException {
+    private void meet(ProjectionElem pe, HashMap<String, ValueExpr> mappedExstensionElements) throws QueryExpansionException {
         String name = pe.getSourceName();
         ValueExpr mapped = mappedExstensionElements.get(name);
         if (mapped == null){
@@ -392,7 +392,7 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<UnexpectedQuer
     }
 
     @Override
-    public void meet(Reduced rdcd) throws UnexpectedQueryException {
+    public void meet(Reduced rdcd) throws QueryExpansionException {
         queryString.append("CONSTRUCT {");
         TupleExpr arg = rdcd.getArg();
         if (arg instanceof Projection){
@@ -405,12 +405,12 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<UnexpectedQuer
             prjctn.getArg().visit(this);
             queryString.append("}");
         } else {
-            throw new UnexpectedQueryException("Reduced with non projection child supported yet.");
+            throw new QueryExpansionException("Reduced with non projection child supported yet.");
         }
     }
 
     //Look ahead function to match names ProjectionElem to ExtensionElem
-    private HashMap<String, ValueExpr> mapExensionElements(Projection prjctn) throws UnexpectedQueryException{
+    private HashMap<String, ValueExpr> mapExensionElements(Projection prjctn) throws QueryExpansionException{
         HashMap<String, ValueExpr> mappedExstensionElements = new HashMap<String, ValueExpr>();
         TupleExpr prjctnArg = prjctn.getArg();
         if (prjctnArg instanceof Extension){
@@ -420,13 +420,13 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<UnexpectedQuer
                 mappedExstensionElements.put(ee.getName(), ee.getExpr());
             }
         } else {
-            throw new UnexpectedQueryException ("Project Arguement of Reduce(Consttruct query) was not an Extension.");
+            throw new QueryExpansionException ("Project Arguement of Reduce(Consttruct query) was not an Extension.");
         }
         return  mappedExstensionElements;
     }
     
     @Override
-    public void meet(Regex regex) throws UnexpectedQueryException {
+    public void meet(Regex regex) throws QueryExpansionException {
         queryString.append("regex(");
         regex.getArg().visit(this);
         queryString.append(",");
@@ -440,17 +440,17 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<UnexpectedQuer
     }
 
     @Override
-    public void meet(Slice slice) throws UnexpectedQueryException {
-        throw new UnexpectedQueryException("Slice not supported yet.");
+    public void meet(Slice slice) throws QueryExpansionException {
+        throw new QueryExpansionException("Slice not supported yet.");
     }
 
     @Override
-    public void meet(SameTerm st) throws UnexpectedQueryException {
-        throw new UnexpectedQueryException("SameTerm not supported yet.");
+    public void meet(SameTerm st) throws QueryExpansionException {
+        throw new QueryExpansionException("SameTerm not supported yet.");
     }
 
     @Override
-    public void meet(Filter filter) throws UnexpectedQueryException {
+    public void meet(Filter filter) throws QueryExpansionException {
         newLine();
         queryString.append("FILTER (");
         filter.getCondition().visit(this);
@@ -459,12 +459,12 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<UnexpectedQuer
     }
 
     @Override
-    public void meet(SingletonSet ss) throws UnexpectedQueryException {
+    public void meet(SingletonSet ss) throws QueryExpansionException {
         //Expected no children but just to be sure.
         ss.visitChildren(this);
     }
 
-    boolean startContext(TupleExpr expr) throws UnexpectedQueryException{
+    boolean startContext(TupleExpr expr) throws QueryExpansionException{
         if (inContext) return false;
         ContextFinderVisitor contextFinder = new ContextFinderVisitor();
         expr.visit(contextFinder);
@@ -488,7 +488,7 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<UnexpectedQuer
     }
     //Make sure to add changes to QueryExpandAndWriteVisititor too!
     @Override
-    public void meet(StatementPattern sp) throws UnexpectedQueryException {
+    public void meet(StatementPattern sp) throws QueryExpansionException {
         newLine();
         boolean newContext = startContext(sp); 
         sp.getSubjectVar().visit(this);
@@ -501,12 +501,12 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<UnexpectedQuer
     }
 
     @Override
-    public void meet(Str str) throws UnexpectedQueryException {
-        throw new UnexpectedQueryException("Str not supported yet.");
+    public void meet(Str str) throws QueryExpansionException {
+        throw new QueryExpansionException("Str not supported yet.");
     }
 
     @Override
-    public void meet(Union union) throws UnexpectedQueryException {
+    public void meet(Union union) throws QueryExpansionException {
         queryString.append("{");
         union.getLeftArg().visit(this);
         newLine();
@@ -517,13 +517,13 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<UnexpectedQuer
     }
 
     @Override
-    public void meet(ValueConstant vc) throws UnexpectedQueryException {
+    public void meet(ValueConstant vc) throws QueryExpansionException {
         Value value = vc.getValue();
         addValue(value);
     }
 
     @Override
-    public void meet(Var var) throws UnexpectedQueryException {
+    public void meet(Var var) throws QueryExpansionException {
          if (var.hasValue()){
             Value value = var.getValue();
             addValue(value);
@@ -534,8 +534,8 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<UnexpectedQuer
     }
 
     @Override
-    public void meetOther(QueryModelNode qmn) throws UnexpectedQueryException {
-        throw new UnexpectedQueryException("meetOther not supported yet.");
+    public void meetOther(QueryModelNode qmn) throws QueryExpansionException {
+        throw new QueryExpansionException("meetOther not supported yet.");
     }
     
     private void addValue(Value value){
@@ -557,9 +557,9 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<UnexpectedQuer
      * <p>
      * Works if and only if the model was visited exactly once.
      * @return query as a String
-     * @throws UnexpectedQueryException Declared as thrown to allow calling methods to catch it specifically.
+     * @throws QueryExpansionException Declared as thrown to allow calling methods to catch it specifically.
      */
-    public String getQuery() throws UnexpectedQueryException {
+    public String getQuery() throws QueryExpansionException {
         return queryString.toString();
     }
 }

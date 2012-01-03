@@ -55,7 +55,7 @@ public class W3Sparql1_1Test {
      * Test query found in Section 2.1
      */
     @Test
-    public void test2_1() throws MalformedQueryException, QueryModelExpanderException, UnexpectedQueryException {
+    public void test2_1() throws MalformedQueryException, QueryExpansionException {
         String inputQuery = "SELECT ?title WHERE {"
                 + "<http://example.org/book/book1> <http://purl.org/dc/elements/1.1/title> ?title .}";
         String expectedQuery = "SELECT ?title WHERE {"
@@ -84,7 +84,7 @@ public class W3Sparql1_1Test {
      * Test query found in Section 2.2
      */
     @Test
-    public void test2_2() throws MalformedQueryException, UnexpectedQueryException, QueryModelExpanderException {
+    public void test2_2() throws MalformedQueryException, QueryExpansionException {
         String inputQuery = "PREFIX foaf:   <http://xmlns.com/foaf/0.1/>"
             + "SELECT ?name ?mbox"
             + "WHERE"
@@ -113,7 +113,7 @@ public class W3Sparql1_1Test {
      * Test first query found in Section 2.3.1
      */
     @Test
-    public void test2_3_1_a() throws MalformedQueryException, UnexpectedQueryException, QueryModelExpanderException {
+    public void test2_3_1_a() throws MalformedQueryException, QueryExpansionException {
         String inputQuery = "SELECT ?v WHERE { ?v ?p \"cat\" }";
         String expectedQuery = inputQuery;
 
@@ -137,7 +137,7 @@ public class W3Sparql1_1Test {
      * Test second query found in Section 2.3.1
      */
     @Test
-    public void test2_3_1_b() throws MalformedQueryException, UnexpectedQueryException, QueryModelExpanderException {
+    public void test2_3_1_b() throws MalformedQueryException, QueryExpansionException {
         String inputQuery = "SELECT ?v WHERE { ?v ?p \"cat\"@en }";
         String expectedQuery = inputQuery;
 
@@ -161,7 +161,7 @@ public class W3Sparql1_1Test {
      * Test third query found in Section 2.3.1
      */
     @Test
-    public void test2_3_1_c() throws MalformedQueryException, UnexpectedQueryException, QueryModelExpanderException {
+    public void test2_3_1_c() throws MalformedQueryException, QueryExpansionException {
         String inputQuery = "SELECT ?v WHERE { ?v ?p 42 }";
         String expectedQuery = inputQuery;
 
@@ -185,7 +185,7 @@ public class W3Sparql1_1Test {
      * Test query found in Section 2.3.2
      */
     @Test
-    public void test2_3_2() throws MalformedQueryException, UnexpectedQueryException, QueryModelExpanderException {
+    public void test2_3_2() throws MalformedQueryException, QueryExpansionException {
         String inputQuery = "SELECT ?v WHERE { ?v ?p \"abc\"^^<http://example.org/datatype#specialDatatype> }";
         String expectedQuery = inputQuery;
 
@@ -209,7 +209,7 @@ public class W3Sparql1_1Test {
      * Test query found in Section 2.4
      */
     @Test
-    public void test2_4() throws MalformedQueryException, UnexpectedQueryException, QueryModelExpanderException {
+    public void test2_4() throws MalformedQueryException, QueryExpansionException {
         String inputQuery = "PREFIX foaf:   <http://xmlns.com/foaf/0.1/>"
                 + "SELECT ?x ?name"
                 + "WHERE  { ?x foaf:name ?name }";
@@ -235,7 +235,7 @@ public class W3Sparql1_1Test {
      * Test query found in Section 2.6
      */
     @Test
-    public void test2_6() throws MalformedQueryException, UnexpectedQueryException, QueryModelExpanderException {
+    public void test2_6() throws MalformedQueryException, QueryExpansionException {
         String inputQuery = "PREFIX foaf:   <http://xmlns.com/foaf/0.1/>"
             + "PREFIX org:    <http://example.com/ns#>"
             + "CONSTRUCT { ?x foaf:name ?name }"
@@ -262,7 +262,7 @@ public class W3Sparql1_1Test {
      * Test first query found in Section 3.1
      */
     @Test
-    public void test3_1_a() throws MalformedQueryException, UnexpectedQueryException, QueryModelExpanderException {
+    public void test3_1_a() throws MalformedQueryException, QueryExpansionException {
         String inputQuery = "PREFIX  dc:  <http://purl.org/dc/elements/1.1/>"
             + "SELECT  ?title"
             + "WHERE   { ?x dc:title ?title"
@@ -290,7 +290,7 @@ public class W3Sparql1_1Test {
      * Test second query found in Section 3.1
      */
     @Test
-    public void test3_1_b() throws MalformedQueryException, UnexpectedQueryException, QueryModelExpanderException {
+    public void test3_1_b() throws MalformedQueryException, QueryExpansionException {
         String inputQuery = "PREFIX  dc:  <http://purl.org/dc/elements/1.1/>"
             + "SELECT  ?title"
             + "WHERE   { ?x dc:title ?title"
@@ -318,7 +318,7 @@ public class W3Sparql1_1Test {
      * Test query found in Section 3.2
      */
     @Test
-    public void test3_2() throws MalformedQueryException, UnexpectedQueryException, QueryModelExpanderException {
+    public void test3_2() throws MalformedQueryException, QueryExpansionException {
         String inputQuery = "PREFIX  dc:  <http://purl.org/dc/elements/1.1/>"
             + "PREFIX  ns:  <http://example.org/ns#>"
             + "SELECT  ?title ?price"
@@ -354,7 +354,7 @@ public class W3Sparql1_1Test {
      * All 4.2 input queries are the same.
      */
     @Test
-    public void test4_2_a() throws MalformedQueryException, UnexpectedQueryException, QueryModelExpanderException {
+    public void test4_2_a() throws MalformedQueryException, QueryExpansionException {
         String inputQuery = "PREFIX  dc: <http://purl.org/dc/elements/1.1/>"
             + "SELECT  ?title"
             + "WHERE   { <http://example.org/book/book1> dc:title ?title } ";
@@ -383,7 +383,7 @@ public class W3Sparql1_1Test {
      * All 4.2 input queries are the same.
      */
     @Test
-    public void test4_2_b() throws MalformedQueryException, UnexpectedQueryException, QueryModelExpanderException {
+    public void test4_2_b() throws MalformedQueryException, QueryExpansionException {
         String inputQuery = "PREFIX  dc: <http://purl.org/dc/elements/1.1/>"
             + "PREFIX  : <http://example.org/book/>"
             + "SELECT  $title"
@@ -413,7 +413,7 @@ public class W3Sparql1_1Test {
      * All 4.2 input queries are the same.
      */
     @Test
-    public void test4_2_c() throws MalformedQueryException, UnexpectedQueryException, QueryModelExpanderException {
+    public void test4_2_c() throws MalformedQueryException, QueryExpansionException {
         String inputQuery = "BASE    <http://example.org/book/>"
             + "PREFIX  dc: <http://purl.org/dc/elements/1.1/>"
             + "SELECT  $title"
@@ -451,7 +451,7 @@ public class W3Sparql1_1Test {
      * All 5.2 input queries are the same.
      */
     @Test
-    public void test5_2_a() throws MalformedQueryException, UnexpectedQueryException, QueryModelExpanderException {
+    public void test5_2_a() throws MalformedQueryException, QueryExpansionException {
         String inputQuery = query5_2;
         String expectedQuery = query5_2;
         
@@ -477,7 +477,7 @@ public class W3Sparql1_1Test {
      * All 5.2 input queries are the same.
      */
     @Test
-    public void test5_2_b() throws MalformedQueryException, UnexpectedQueryException, QueryModelExpanderException {
+    public void test5_2_b() throws MalformedQueryException, QueryExpansionException {
         String inputQuery = "PREFIX foaf:    <http://xmlns.com/foaf/0.1/>"
             + "SELECT ?name ?mbox"
             + "WHERE  { { ?x foaf:name ?name . }"
@@ -516,7 +516,7 @@ public class W3Sparql1_1Test {
      * The openRDF parser pushes filters to the top no matter where they are in the query.
      */
     @Test
-    public void test5_2_2_a() throws MalformedQueryException, UnexpectedQueryException, QueryModelExpanderException {
+    public void test5_2_2_a() throws MalformedQueryException, QueryExpansionException {
         String inputQuery = query5_2_2;
         String expectedQuery = query5_2_2;
         
@@ -543,7 +543,7 @@ public class W3Sparql1_1Test {
      * The openRDF parser pushes filters to the top no matter where they are in the query.
      */
     @Test
-    public void test5_2_2_b() throws MalformedQueryException, UnexpectedQueryException, QueryModelExpanderException {
+    public void test5_2_2_b() throws MalformedQueryException, QueryExpansionException {
         String inputQuery ="PREFIX foaf:    <http://xmlns.com/foaf/0.1/>"
             + "SELECT ?name ?mbox"
             + "WHERE  {"
@@ -576,7 +576,7 @@ public class W3Sparql1_1Test {
      * The openRDF parser pushes filters to the top no matter where they are in the query.
      */
     @Test
-    public void test5_2_2_c() throws MalformedQueryException, UnexpectedQueryException, QueryModelExpanderException {
+    public void test5_2_2_c() throws MalformedQueryException, QueryExpansionException {
         String inputQuery ="PREFIX foaf:    <http://xmlns.com/foaf/0.1/>"
             + "SELECT ?name ?mbox"
             + "WHERE  {"
@@ -609,7 +609,7 @@ public class W3Sparql1_1Test {
      * The openRDF parser pushes filters to the top no matter where they are in the query.
      */
     @Test
-    public void test5_2_2_d() throws MalformedQueryException, UnexpectedQueryException, QueryModelExpanderException {
+    public void test5_2_2_d() throws MalformedQueryException, QueryExpansionException {
         String inputQuery ="PREFIX foaf:    <http://xmlns.com/foaf/0.1/>"
             + "SELECT ?name ?mbox"
             + "WHERE  {"
@@ -639,7 +639,7 @@ public class W3Sparql1_1Test {
      * Test the query found in Section 6.1
      */
     @Test
-    public void test6_1() throws MalformedQueryException, UnexpectedQueryException, QueryModelExpanderException {
+    public void test6_1() throws MalformedQueryException, QueryExpansionException {
         String inputQuery ="PREFIX foaf: <http://xmlns.com/foaf/0.1/>"
             + "SELECT ?name ?mbox"
             + "WHERE  { ?x foaf:name  ?name ."
@@ -667,7 +667,7 @@ public class W3Sparql1_1Test {
      * Test the query found in Section 6.2
      */
     @Test
-    public void test6_2() throws MalformedQueryException, UnexpectedQueryException, QueryModelExpanderException {
+    public void test6_2() throws MalformedQueryException, QueryExpansionException {
         String inputQuery ="PREFIX  dc:  <http://purl.org/dc/elements/1.1/>"
             + "PREFIX  ns:  <http://example.org/ns#>"
             + "SELECT  ?title ?price "
@@ -696,7 +696,7 @@ public class W3Sparql1_1Test {
      * Test the query found in Section 6.3
      */
     @Test
-    public void test6_3() throws MalformedQueryException, UnexpectedQueryException, QueryModelExpanderException {
+    public void test6_3() throws MalformedQueryException, QueryExpansionException {
         String inputQuery ="PREFIX foaf: <http://xmlns.com/foaf/0.1/>"
             + "SELECT ?name ?mbox ?hpage"
             + "WHERE  { ?x foaf:name  ?name ."
@@ -725,7 +725,7 @@ public class W3Sparql1_1Test {
      * Test the first query found in Section 7
      */
     @Test
-    public void test7_a() throws MalformedQueryException, UnexpectedQueryException, QueryModelExpanderException {
+    public void test7_a() throws MalformedQueryException, QueryExpansionException {
         String inputQuery ="PREFIX dc10:  <http://purl.org/dc/elements/1.0/> "
             + "PREFIX dc11:  <http://purl.org/dc/elements/1.1/> "
             + "SELECT ?title "
@@ -752,7 +752,7 @@ public class W3Sparql1_1Test {
      * Test the second query found in Section 7
      */
     @Test
-    public void test7_b() throws MalformedQueryException, UnexpectedQueryException, QueryModelExpanderException {
+    public void test7_b() throws MalformedQueryException, QueryExpansionException {
         String inputQuery ="PREFIX dc10:  <http://purl.org/dc/elements/1.0/> "
             + "PREFIX dc11:  <http://purl.org/dc/elements/1.1/> "
             + "SELECT ?x ?y "
@@ -782,7 +782,7 @@ public class W3Sparql1_1Test {
      */
     @Test
     @Ignore
-    public void test8_1_a() throws MalformedQueryException, UnexpectedQueryException, QueryModelExpanderException {
+    public void test8_1_a() throws MalformedQueryException, QueryExpansionException {
         String inputQuery ="PREFIX  rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
             + "PREFIX  foaf:   <http://xmlns.com/foaf/0.1/> "
             + "SELECT ?person "
@@ -816,7 +816,7 @@ public class W3Sparql1_1Test {
      */
     @Test
     @Ignore
-    public void test8_1_b() throws MalformedQueryException, UnexpectedQueryException, QueryModelExpanderException {
+    public void test8_1_b() throws MalformedQueryException, QueryExpansionException {
         String inputQuery ="PREFIX  rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
             + "PREFIX  foaf:   <http://xmlns.com/foaf/0.1/> "
             + "SELECT ?person "
@@ -850,7 +850,7 @@ public class W3Sparql1_1Test {
      */
     @Test
     @Ignore
-    public void test8_2() throws MalformedQueryException, UnexpectedQueryException, QueryModelExpanderException {
+    public void test8_2() throws MalformedQueryException, QueryExpansionException {
          String inputQuery = "PREFIX :       <http://example/>" 
             + "PREFIX foaf:   <http://xmlns.com/foaf/0.1/> "
             + "SELECT DISTINCT ?s "

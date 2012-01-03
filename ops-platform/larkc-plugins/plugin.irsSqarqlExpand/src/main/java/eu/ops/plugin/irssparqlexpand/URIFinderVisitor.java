@@ -12,7 +12,7 @@ import org.openrdf.query.algebra.helpers.QueryModelVisitorBase;
  *
  * @author Christian
  */
-public class URIFinderVisitor extends QueryModelVisitorBase<QueryModelExpanderException>{
+public class URIFinderVisitor extends QueryModelVisitorBase<QueryExpansionException>{
     
     HashSet<URI> uris = new HashSet<URI>();
         
@@ -31,7 +31,7 @@ public class URIFinderVisitor extends QueryModelVisitorBase<QueryModelExpanderEx
     }
     
     @Override
-    public void meet(StatementPattern sp) throws QueryModelExpanderException {
+    public void meet(StatementPattern sp) throws QueryExpansionException {
         sp.getSubjectVar().visit(this);
         //We don't want the predicate URIs so don't visit predicated
         //sp.getPredicateVar().visit(this);

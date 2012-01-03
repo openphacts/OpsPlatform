@@ -117,7 +117,7 @@ public class IRSSPARQLExpandTest {
      * Test that a query with minimal spacing in its text is processed correctly
      */
     @Test
-    public void testSpacing() throws MalformedQueryException, QueryModelExpanderException, UnexpectedQueryException {
+    public void testSpacing() throws MalformedQueryException, QueryExpansionException {
         IRSSPARQLExpand s = new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
             @Override
             IRSMapper instantiateIRSMapper() {
@@ -141,7 +141,7 @@ public class IRSSPARQLExpandTest {
      * Test that a query involving prefixes is output correctly
      */
     @Test
-    public void testPrefixes() throws MalformedQueryException, QueryModelExpanderException, UnexpectedQueryException {
+    public void testPrefixes() throws MalformedQueryException, QueryExpansionException {
         IRSSPARQLExpand s = new IRSSPARQLExpand(
                 new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
             IRSMapper instantiateIRSMapper() {
@@ -166,8 +166,7 @@ public class IRSSPARQLExpandTest {
      * Test that nothing happens to a query without any URIs present.
      */
     @Test
-    public void testQueryWithoutURIs() 
-            throws MalformedQueryException, QueryModelExpanderException, UnexpectedQueryException {
+    public void testQueryWithoutURIs() throws MalformedQueryException, QueryExpansionException {
         IRSSPARQLExpand s = new IRSSPARQLExpand(
                 new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
             @Override
@@ -200,8 +199,7 @@ public class IRSSPARQLExpandTest {
      * object is expanded.
      */
     @Test
-    public void testOneBGPOneObjectURI() 
-            throws MalformedQueryException, QueryModelExpanderException, UnexpectedQueryException {
+    public void testOneBGPOneObjectURI() throws MalformedQueryException, QueryExpansionException {
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
         dummyIRSMapper.addMapping("http://foo.info/1.1.1.1", "http://bar.com/8hd83");
         dummyIRSMapper.addMapping("http://foo.info/1.1.1.1", "http://foo.info/1.1.1.1");
@@ -239,8 +237,7 @@ public class IRSSPARQLExpandTest {
      * subject is expanded.
      */
     @Test
-    public void testOneBGPOneSubjectURI() 
-            throws MalformedQueryException, QueryModelExpanderException, UnexpectedQueryException {
+    public void testOneBGPOneSubjectURI() throws MalformedQueryException, QueryExpansionException {
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
         dummyIRSMapper.addMapping("http://foo.com/45273","http://bar.co.uk/346579");
         dummyIRSMapper.addMapping("http://foo.com/45273","http://bar.ac.uk/19278");
@@ -280,8 +277,7 @@ public class IRSSPARQLExpandTest {
      * subject and object is expanded when there is one match for each URI.
      */
     @Test
-    public void testOneBGPOneSubjectOneObjectURIOneMatchEach() 
-            throws MalformedQueryException, QueryModelExpanderException, UnexpectedQueryException {
+    public void testOneBGPOneSubjectOneObjectURIOneMatchEach() throws MalformedQueryException, QueryExpansionException {
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
         dummyIRSMapper.addMapping("http://example.org/chem/8j392","http://result.com/90");
         dummyIRSMapper.addMapping("http://example.org/chem/8j392","http://example.org/chem/8j392");
@@ -314,7 +310,7 @@ public class IRSSPARQLExpandTest {
      */
     @Test
     public void testOneBGPOneSubjectOneObjectURIOnlySubjectMatch() 
-            throws MalformedQueryException, QueryModelExpanderException, UnexpectedQueryException {
+            throws MalformedQueryException, QueryExpansionException {
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
         dummyIRSMapper.addMapping("http://example.org/chem/8j392","http://result.com/90");
         dummyIRSMapper.addMapping("http://example.org/chem/8j392","http://example.org/chem/8j392");
@@ -351,7 +347,7 @@ public class IRSSPARQLExpandTest {
      */
     @Test
     public void testOneBGPOneSubjectOneObjectURIMultipleMatches() 
-            throws MalformedQueryException, QueryModelExpanderException, UnexpectedQueryException {
+            throws MalformedQueryException, QueryExpansionException {
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
         dummyIRSMapper.addMapping("http://example.org/chem/8j392","http://result.com/90");
         dummyIRSMapper.addMapping("http://example.org/chem/8j392","http://somewhere.com/chebi/7s82");
@@ -394,8 +390,7 @@ public class IRSSPARQLExpandTest {
      * object is expanded.
      */
     @Test
-    public void testTwoBGPOneObjectURI() 
-            throws MalformedQueryException, QueryModelExpanderException, UnexpectedQueryException {
+    public void testTwoBGPOneObjectURI() throws MalformedQueryException, QueryExpansionException {
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
         dummyIRSMapper.addMapping("http://foo.info/1.1.1.1","http://bar.com/9khd7");
         dummyIRSMapper.addMapping("http://foo.info/1.1.1.1","http://foo.info/1.1.1.1");
@@ -435,8 +430,7 @@ public class IRSSPARQLExpandTest {
      * subject URI is expanded to every combination.
      */
     @Test
-    public void testTwoBGPShareSubjectURI() 
-            throws MalformedQueryException, QueryModelExpanderException, UnexpectedQueryException {
+    public void testTwoBGPShareSubjectURI() throws MalformedQueryException, QueryExpansionException {
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
         dummyIRSMapper.addMapping("http://foo.info/1.1.1.1","http://bar.com/9khd7");
         dummyIRSMapper.addMapping("http://foo.info/1.1.1.1","http://foo.info/1.1.1.1");
@@ -483,8 +477,7 @@ public class IRSSPARQLExpandTest {
      * subject URI is expanded to every combination.
      */
     @Test
-    public void testThreeBGPShareSubjectURI() 
-            throws MalformedQueryException, QueryModelExpanderException, UnexpectedQueryException {
+    public void testThreeBGPShareSubjectURI() throws MalformedQueryException, QueryExpansionException {
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
         dummyIRSMapper.addMapping("http://foo.info/1.1.1.1","http://bar.com/9khd7");
         dummyIRSMapper.addMapping("http://foo.info/1.1.1.1","http://example.ac.uk/89ke");
@@ -527,8 +520,7 @@ public class IRSSPARQLExpandTest {
      * based on the object URI of one with the subject URI of the second.
      */
     @Test
-    public void testBGPChainSimple() 
-            throws MalformedQueryException, QueryModelExpanderException, UnexpectedQueryException {
+    public void testBGPChainSimple() throws MalformedQueryException, QueryExpansionException {
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
         dummyIRSMapper.addMapping("http://example.org/chem/2918","http://bar.com/9khd7");
         dummyIRSMapper.addMapping("http://example.org/chem/2918","http://foo.info/1.1.1.1");
@@ -593,8 +585,7 @@ public class IRSSPARQLExpandTest {
      * another BGP.
      */
     @Test
-    public void testBGPChainComplex() 
-            throws MalformedQueryException, QueryModelExpanderException, UnexpectedQueryException {
+    public void testBGPChainComplex() throws MalformedQueryException, QueryExpansionException {
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
         dummyIRSMapper.addMapping("http://bar.co.uk/998234","http://foo.info/1.1.1.1");
         dummyIRSMapper.addMapping("http://bar.co.uk/998234","http://bar.co.uk/998234");
@@ -648,8 +639,7 @@ public class IRSSPARQLExpandTest {
      * gets expanded correctly.
      */
     @Test
-    public void testRepeatedSubjectShorthandQuery() 
-            throws MalformedQueryException, QueryModelExpanderException, UnexpectedQueryException{
+    public void testRepeatedSubjectShorthandQuery() throws MalformedQueryException, QueryExpansionException{
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
         dummyIRSMapper.addMapping("http://foo.info/1.1.1.1","http://bar.com/9khd7");
         dummyIRSMapper.addMapping("http://foo.info/1.1.1.1","http://example.org/chem/2918");
@@ -691,8 +681,7 @@ public class IRSSPARQLExpandTest {
      * predicate URIs gets expanded correctly.
      */
     @Test
-    public void testRepeatedSubjectPredicateShorthandQuery() 
-            throws MalformedQueryException, QueryModelExpanderException, UnexpectedQueryException{
+    public void testRepeatedSubjectPredicateShorthandQuery() throws MalformedQueryException, QueryExpansionException {
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
         dummyIRSMapper.addMapping("http://foo.info/1.1.1.1","http://bar.com/9khd7");
         dummyIRSMapper.addMapping("http://foo.info/1.1.1.1","http://example.org/chem/2918");
@@ -737,8 +726,7 @@ public class IRSSPARQLExpandTest {
      * query string generation
      */
     @Test
-    public void testOptionalQuery_Simple() 
-            throws MalformedQueryException, QueryModelExpanderException, UnexpectedQueryException {
+    public void testOptionalQuery_Simple() throws MalformedQueryException, QueryExpansionException {
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
         dummyIRSMapper.addMapping("http://foo.info/1.1.1.1","http://example.com/9khd7");
         dummyIRSMapper.addMapping("http://foo.info/1.1.1.1","http://foo.info/1.1.1.1");
@@ -779,8 +767,7 @@ public class IRSSPARQLExpandTest {
      * Test that a query involving only optional clauses is output correctly.
      */
     @Test
-    public void testOptionalQuery_BothOptional() 
-            throws MalformedQueryException, QueryModelExpanderException, UnexpectedQueryException {
+    public void testOptionalQuery_BothOptional() throws MalformedQueryException, QueryExpansionException {
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
         dummyIRSMapper.addMapping("http://bar.com/ijdu","http://bar.com/9khd7");
         dummyIRSMapper.addMapping("http://bar.com/ijdu","http://foo.info/1.1.1.1");
@@ -825,8 +812,7 @@ public class IRSSPARQLExpandTest {
      * 
      */
     @Test
-    public void testOptionalQuery_repeatedSubjectUri() 
-            throws MalformedQueryException, QueryModelExpanderException, UnexpectedQueryException {
+    public void testOptionalQuery_repeatedSubjectUri() throws MalformedQueryException, QueryExpansionException {
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
         dummyIRSMapper.addMapping("http://foo.info/1.1.1.1","http://bar.com/9khd7");
         dummyIRSMapper.addMapping("http://foo.info/1.1.1.1","http://foo.info/1.1.1.1");
@@ -867,8 +853,7 @@ public class IRSSPARQLExpandTest {
      * 
      */
     @Test
-    public void testOptionalWithFilterQuery() 
-            throws MalformedQueryException, QueryModelExpanderException, UnexpectedQueryException {
+    public void testOptionalWithFilterQuery() throws MalformedQueryException, QueryExpansionException {
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
         dummyIRSMapper.addMapping("http://foo.info/1.1.1.1","http://bar.com/9khd7");
         dummyIRSMapper.addMapping("http://foo.info/1.1.1.1","http://foo.info/1.1.1.1");
@@ -909,8 +894,7 @@ public class IRSSPARQLExpandTest {
      * are multiple matches
      */
     @Test
-    public void testMeet_oneBgpObjectUriMultipleMatches() 
-            throws QueryModelExpanderException, UnexpectedQueryException, MalformedQueryException {
+    public void testMeet_oneBgpObjectUriMultipleMatches() throws QueryExpansionException, MalformedQueryException {
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
         dummyIRSMapper.addMapping("http://brenda-enzymes.info/1.1.1.1","http://example.com/983juy");
         dummyIRSMapper.addMapping("http://brenda-enzymes.info/1.1.1.1","http://brenda-enzymes.info/1.1.1.1");
@@ -951,8 +935,7 @@ public class IRSSPARQLExpandTest {
      * FILTER clause
      */
     @Test
-    public void testMeet_oneBgpObjectUriWithFilter() 
-            throws QueryModelExpanderException, UnexpectedQueryException, MalformedQueryException {
+    public void testMeet_oneBgpObjectUriWithFilter() throws QueryExpansionException, MalformedQueryException {
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
         dummyIRSMapper.addMapping("http://brenda-enzymes.info/1.1.1.1","http://example.com/983juy");
         dummyIRSMapper.addMapping("http://brenda-enzymes.info/1.1.1.1","http://brenda-enzymes.info/1.1.1.1");
@@ -984,8 +967,7 @@ public class IRSSPARQLExpandTest {
      * FILTER clause
      */
     @Test
-    public void testObjectAndFilter() 
-            throws QueryModelExpanderException, UnexpectedQueryException, MalformedQueryException {
+    public void testObjectAndFilter() throws QueryExpansionException, MalformedQueryException {
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
         dummyIRSMapper.addMapping("http://brenda-enzymes.info/1.1.1.1","http://example.com/983juy");
         dummyIRSMapper.addMapping("http://brenda-enzymes.info/1.1.1.1","http://brenda-enzymes.info/1.1.1.1");
@@ -1023,8 +1005,7 @@ public class IRSSPARQLExpandTest {
      * are multiple matching URIs
      */
     @Test
-    public void testMeet_oneBgpSubjectUriMultipleMatches() 
-            throws QueryModelExpanderException, UnexpectedQueryException, MalformedQueryException {
+    public void testMeet_oneBgpSubjectUriMultipleMatches() throws QueryExpansionException, MalformedQueryException {
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
         dummyIRSMapper.addMapping("http://brenda-enzymes.info/1.1.1.1","http://example.com/983juy");
         dummyIRSMapper.addMapping("http://brenda-enzymes.info/1.1.1.1","http://bar.co.uk/liuw");
@@ -1072,8 +1053,7 @@ public class IRSSPARQLExpandTest {
      * are multiple matching URIs
      */
     @Test
-    public void testMeet_DoubleOr() 
-            throws QueryModelExpanderException, UnexpectedQueryException, MalformedQueryException {
+    public void testMeet_DoubleOr() throws QueryExpansionException, MalformedQueryException {
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
         dummyIRSMapper.addMapping("http://brenda-enzymes.info/1.1.1.1","http://example.com/983juy");
         dummyIRSMapper.addMapping("http://brenda-enzymes.info/1.1.1.1","http://manchester.com/983juy");
@@ -1115,8 +1095,7 @@ public class IRSSPARQLExpandTest {
      * FILTER clause
      */
     @Test
-    public void testMeet_oneBgpObjectUriWithNotFilter() 
-            throws QueryModelExpanderException, UnexpectedQueryException, MalformedQueryException {
+    public void testMeet_oneBgpObjectUriWithNotFilter() throws QueryExpansionException, MalformedQueryException {
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
         dummyIRSMapper.addMapping("http://brenda-enzymes.info/1.1.1.1","http://example.com/983juy");
         dummyIRSMapper.addMapping("http://brenda-enzymes.info/1.1.1.1","http://brenda-enzymes.info/1.1.1.1");
@@ -1165,8 +1144,7 @@ public class IRSSPARQLExpandTest {
      * FILTER clause
      */
     @Test
-    public void testMeet_oneBgpObjectUriWithAnddedNotFilter() 
-            throws QueryModelExpanderException, UnexpectedQueryException, MalformedQueryException {
+    public void testMeet_oneBgpObjectUriWithAnddedNotFilter() throws QueryExpansionException, MalformedQueryException {
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
         dummyIRSMapper.addMapping("http://brenda-enzymes.info/1.1.1.1","http://example.com/983juy");
         dummyIRSMapper.addMapping("http://brenda-enzymes.info/1.1.1.1","http://brenda-enzymes.info/1.1.1.1");
@@ -1222,8 +1200,7 @@ public class IRSSPARQLExpandTest {
      * Test a query involving a union 
      */
     @Test
-    public void testMeet_SimpleUnion() 
-            throws QueryModelExpanderException, UnexpectedQueryException, MalformedQueryException {
+    public void testMeet_SimpleUnion() throws QueryExpansionException, MalformedQueryException {
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
         dummyIRSMapper.addMapping("http://www.amazon.com/3432455","http://barnes.com/983juy");
         dummyIRSMapper.addMapping("http://www.amazon.com/3432455","http://www.amazon.com/3432455");
@@ -1256,8 +1233,7 @@ public class IRSSPARQLExpandTest {
      * Test a query involving a union 
      */
     @Test
-    public void testMeet_SimpleStar() 
-            throws QueryModelExpanderException, UnexpectedQueryException, MalformedQueryException {
+    public void testMeet_SimpleStar() throws QueryExpansionException, MalformedQueryException {
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
         IRSSPARQLExpand s = new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
             @Override
@@ -1301,8 +1277,7 @@ public class IRSSPARQLExpandTest {
      * subject and object is expanded when there is one match for each URI.
      */
     @Test
-    public void testStarSubjectOneObjectURIOneMatchEach() 
-            throws MalformedQueryException, QueryModelExpanderException, UnexpectedQueryException {
+    public void testStarSubjectOneObjectURIOneMatchEach() throws MalformedQueryException, QueryExpansionException {
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
         dummyIRSMapper.addMapping("http://example.org/chem/8j392","http://result.com/90");
         dummyIRSMapper.addMapping("http://example.org/chem/8j392","http://example.org/chem/8j392");

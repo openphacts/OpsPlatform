@@ -176,7 +176,7 @@ public class QueryUtilsTest {
     }*/
     
     @Test
-    public void test_getURIS() throws MalformedQueryException, QueryModelExpanderException{
+    public void test_getURIS() throws MalformedQueryException, QueryExpansionException {
         String query = QueryModelExpanderTest.ONE_BGP_OBJECT_WITH_FILTER_QUERY;
         HashSet<URI> expected = new HashSet<URI>();
         ValueFactory factory = ValueFactoryImpl.getInstance();

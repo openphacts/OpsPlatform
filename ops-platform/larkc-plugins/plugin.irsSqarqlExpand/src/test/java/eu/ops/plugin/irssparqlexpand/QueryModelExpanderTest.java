@@ -76,8 +76,7 @@ public class QueryModelExpanderTest extends EasyMockSupport {
      */
     @Test
     @Ignore
-    public void testMeet_oneBgpObjectUriMultipleMatches() 
-            throws QueryModelExpanderException, UnexpectedQueryException, MalformedQueryException {
+    public void testMeet_oneBgpObjectUriMultipleMatches() throws QueryExpansionException, MalformedQueryException {
         final Map<URI, List<URI>> mockMap = createMock(Map.class);
         final List<URI> mockList = createMock(List.class);
         final Iterator<URI> mockIterator = createMock(Iterator.class);
@@ -130,8 +129,7 @@ System.out.println("**Expanded query:\n" + expandedQuery);
      * FILTER clause
      */
     @Test@Ignore
-    public void testMeet_oneBgpObjectUriWithFilter() 
-            throws QueryModelExpanderException, UnexpectedQueryException, MalformedQueryException {
+    public void testMeet_oneBgpObjectUriWithFilter() throws QueryExpansionException, MalformedQueryException {
         final Map<URI, List<URI>> mockMap = createMock(Map.class);
         final List<URI> mockList = createMock(List.class);
         final Iterator<URI> mockIterator = createMock(Iterator.class);
@@ -179,8 +177,7 @@ System.out.println("**Expanded query:\n" + expandedQuery);
      * are multiple matching URIs
      */
     @Test
-    public void testMeet_oneBgpSubjectUriMultipleMatches() 
-            throws QueryModelExpanderException, UnexpectedQueryException, MalformedQueryException {
+    public void testMeet_oneBgpSubjectUriMultipleMatches() throws QueryExpansionException, MalformedQueryException {
         final Map<URI, List<URI>> mockMap = createMock(Map.class);
         final List<URI> mockList = createMock(List.class);
         final Iterator<URI> mockIterator = createMock(Iterator.class);

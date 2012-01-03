@@ -37,16 +37,16 @@ public class QueryUtils {
         return parsedQuery.getTupleExpr();
     }
     
-    public static String tupleExprToQueryString (TupleExpr tupleExpr) throws UnexpectedQueryException{
+    public static String tupleExprToQueryString (TupleExpr tupleExpr) throws QueryExpansionException {
         QueryWriterModelVisitor queryWriter = new QueryWriterModelVisitor(null);
         try {
             tupleExpr.visit(queryWriter);
             String newQuery = queryWriter.getQuery();
             return newQuery; 
-        } catch (UnexpectedQueryException ex){
+        } catch (QueryExpansionException ex){
             throw ex;
         } catch (Exception ex) {
-            throw new UnexpectedQueryException("Exception converting TupleExpr to String", ex);
+            throw new QueryExpansionException("Exception converting TupleExpr to String", ex);
         }
     }
     
@@ -160,7 +160,7 @@ public class QueryUtils {
         }
     }
     
-    public static Set<URI> getURIS(String query) throws MalformedQueryException, QueryModelExpanderException{
+    public static Set<URI> getURIS(String query) throws MalformedQueryException, QueryExpansionException{
         TupleExpr tupleExpr = queryStringToTupleExpr(query);
         URIFinderVisitor visitor = new URIFinderVisitor();
         tupleExpr.visit(visitor);

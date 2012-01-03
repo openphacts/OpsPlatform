@@ -67,7 +67,7 @@ public class QueryExpandAndWriteVisitor extends QueryWriterModelVisitor{
         return uriList;
     }
     
-    private void writeFilterIfNeeded(URI uri, String variableName) throws UnexpectedQueryException{
+    private void writeFilterIfNeeded(URI uri, String variableName) throws QueryExpansionException {
         if (uri == null) return;
         //ystem.out.println(uriMappings);
         List<URI> uriList = getMappedList(uri);
@@ -88,7 +88,7 @@ public class QueryExpandAndWriteVisitor extends QueryWriterModelVisitor{
     }
     
     //@Override
-    public void meet(StatementPattern sp) throws UnexpectedQueryException  {
+    public void meet(StatementPattern sp) throws QueryExpansionException  {
         statements++;
         newLine();
         boolean newContext = startContext(sp); 
@@ -116,7 +116,7 @@ public class QueryExpandAndWriteVisitor extends QueryWriterModelVisitor{
     }
 
     @Override
-    void addExpanded(Projection prjctn) throws UnexpectedQueryException{
+    void addExpanded(Projection prjctn) throws QueryExpansionException {
         if (showExpandedVariables){
             ReplacementVariableFinderVisitor variableFinder = new ReplacementVariableFinderVisitor(statements, uriMappings);
             prjctn.getArg().visit(variableFinder);
@@ -128,7 +128,7 @@ public class QueryExpandAndWriteVisitor extends QueryWriterModelVisitor{
         }
     }
 
-   private void expandCompare(Compare cmpr, ValueExpr valueExpr,  List<URI> uriList) throws UnexpectedQueryException{
+   private void expandCompare(Compare cmpr, ValueExpr valueExpr,  List<URI> uriList) throws QueryExpansionException {
         valueExpr.visit(this);
         queryString.append(" ");
         queryString.append(cmpr.getOperator().getSymbol());
@@ -144,7 +144,7 @@ public class QueryExpandAndWriteVisitor extends QueryWriterModelVisitor{
                     queryString.append(" && ");        
                     break;
                 default:  //LT, LE, GE, GT do not make sense applied to a URI: 
-                    throw new UnexpectedQueryException ("Did not expect " + cmpr.getOperator() + " in a Compare with URIs");
+                    throw new QueryExpansionException ("Did not expect " + cmpr.getOperator() + " in a Compare with URIs");
             }
             valueExpr.visit(this);
             queryString.append(" ");
@@ -156,7 +156,7 @@ public class QueryExpandAndWriteVisitor extends QueryWriterModelVisitor{
    }
 
     @Override
-    public void meet(Compare cmpr) throws UnexpectedQueryException {
+    public void meet(Compare cmpr) throws QueryExpansionException {
         queryString.append("(");
         URI leftURI = findMultipleMappedURI(cmpr.getLeftArg());
         if (leftURI == null){
