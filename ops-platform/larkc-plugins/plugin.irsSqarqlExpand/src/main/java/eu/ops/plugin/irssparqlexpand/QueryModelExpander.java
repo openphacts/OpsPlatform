@@ -139,7 +139,6 @@ class QueryModelExpander extends QueryModelVisitorBase<QueryExpansionException> 
                 }
             }
         }
-//System.out.print(qmn);        
         return qmn;
     }
     
@@ -154,7 +153,6 @@ class QueryModelExpander extends QueryModelVisitorBase<QueryExpansionException> 
     private Compare constructCompare(Var variable, URI uri) {
         ValueConstant value = new ValueConstant(uri);
         Compare compare = new Compare(variable, value, Compare.CompareOp.EQ);
-//System.out.println(compare);
         return compare;
     }
 

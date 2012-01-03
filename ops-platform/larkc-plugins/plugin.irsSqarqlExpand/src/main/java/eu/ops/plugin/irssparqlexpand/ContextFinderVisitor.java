@@ -19,7 +19,6 @@ public class ContextFinderVisitor extends QueryModelVisitorBase<QueryExpansionEx
     public void meet(StatementPattern sp) throws QueryExpansionException {
         //ystem.out.println(sp);
         Var localContext = sp.getContextVar();
-        System.out.println(localContext);
         if (localContext == null){
             nullContext = true;
         } else {
