@@ -90,7 +90,8 @@ public class QueryExpandAndWriteVisitor extends QueryWriterModelVisitor{
     //@Override
     public void meet(StatementPattern sp) throws UnexpectedQueryException  {
         statements++;
-        writeStatementPatternStart(sp);
+        newLine();
+        boolean newContext = startContext(sp); 
         URI subjectURI = findMultipleMappedURI(sp.getSubjectVar());
         if (subjectURI == null) {
             sp.getSubjectVar().visit(this);
@@ -111,7 +112,7 @@ public class QueryExpandAndWriteVisitor extends QueryWriterModelVisitor{
         queryString.append(" .");
         writeFilterIfNeeded(subjectURI, "?subjectUri" + statements);
         writeFilterIfNeeded(objectURI, "?objectUri" + statements);
-        queryString.append("}");
+        closeContext(newContext);
     }
 
     @Override

@@ -72,6 +72,7 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<UnexpectedQuer
     
     StringBuilder queryString = new StringBuilder();
     Dataset originalDataSet;
+    boolean inContext = false;
     
     QueryWriterModelVisitor(Dataset dataSet){
         originalDataSet = dataSet;
@@ -217,8 +218,11 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<UnexpectedQuer
 
     @Override
     public void meet(Join join) throws UnexpectedQueryException {
+        //ystem.out.println("join");
+        boolean newContext = startContext(join); 
         join.getLeftArg().visit(this);
         join.getRightArg().visit(this);
+        closeContext(newContext);
     }
 
     @Override
@@ -278,6 +282,7 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<UnexpectedQuer
 
     @Override
     public void meet(LeftJoin lj) throws UnexpectedQueryException {
+        boolean newContext = startContext(lj); 
         lj.getLeftArg().visit(this);
         newLine();
         queryString.append("OPTIONAL {");
@@ -288,6 +293,7 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<UnexpectedQuer
             lj.getCondition().visit(this);
         }
         queryString.append("}");
+        closeContext(newContext);
     }
 
     @Override
@@ -458,26 +464,40 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<UnexpectedQuer
         ss.visitChildren(this);
     }
 
-    void writeStatementPatternStart(StatementPattern sp) throws UnexpectedQueryException{
-        newLine();
-        Var context = sp.getContextVar();
-        if (context != null) {
+    boolean startContext(TupleExpr expr) throws UnexpectedQueryException{
+        if (inContext) return false;
+        ContextFinderVisitor contextFinder = new ContextFinderVisitor();
+        expr.visit(contextFinder);
+        Var context = contextFinder.getContext();   
+        if (context == null) {
+            return false;
+        } else {
             queryString.append(" GRAPH ");
             context.visit(this);
+            queryString.append(" {");   
+            inContext = true;
+            return true;
         }
-        queryString.append(" {");
     }
     
+    void closeContext (boolean startedHere){
+        if (startedHere){
+            queryString.append(" } ");
+            inContext = false;
+        }
+    }
     //Make sure to add changes to QueryExpandAndWriteVisititor too!
     @Override
     public void meet(StatementPattern sp) throws UnexpectedQueryException {
-        writeStatementPatternStart(sp);
+        newLine();
+        boolean newContext = startContext(sp); 
         sp.getSubjectVar().visit(this);
         queryString.append(" ");
         sp.getPredicateVar().visit(this);
         queryString.append(" ");
         sp.getObjectVar().visit(this);
-        queryString.append(". }");
+        closeContext(newContext);
+        queryString.append(". ");
     }
 
     @Override

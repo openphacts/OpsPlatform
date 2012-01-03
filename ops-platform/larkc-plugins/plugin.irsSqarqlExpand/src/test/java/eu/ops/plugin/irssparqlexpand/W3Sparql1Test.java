@@ -9,7 +9,6 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.MalformedQueryException;
@@ -807,16 +806,15 @@ public class W3Sparql1Test {
      */
     @Test
     public void test8_2_3() throws MalformedQueryException, UnexpectedQueryException, QueryModelExpanderException {
-        String inputQuery ="PREFIX foaf: <http://xmlns.com/foaf/0.1/> "
+        String inputQuery = "PREFIX foaf: <http://xmlns.com/foaf/0.1/> "
             + "PREFIX dc: <http://purl.org/dc/elements/1.1/> "
             + "SELECT ?who ?g ?mbox "
             + "FROM <http://example.org/dft.ttl> "
             + "FROM NAMED <http://example.org/alice> "
             + "FROM NAMED <http://example.org/bob> "
-            + "WHERE "
-            + "{"
-               + "?g dc:publisher ?who ."
-               + "GRAPH ?g { ?x foaf:mbox ?mbox }"
+            + "WHERE { "
+            + "    ?g dc:publisher ?who ."
+            + "    GRAPH ?g { ?x foaf:mbox ?mbox. }"
             + "}";
         String expectedQuery = inputQuery;
         
@@ -893,10 +891,10 @@ public class W3Sparql1Test {
             + "WHERE "
             + "  {"
             + "    GRAPH ?src {"
-            + "    { ?x foaf:mbox ?objectUri1 ."
-            + "       FILTER (?objectUri1 = <mailto:bob@work.example> || "
-            + "            ?objectUri1 = <mailto:bob.smith@work.example>) }. "
-            + "      ?x foaf:nick ?bobNick "
+            + "       ?x foaf:mbox ?objectUri1 ."
+            + "           FILTER (?objectUri1 = <mailto:bob@work.example> || "
+            + "                   ?objectUri1 = <mailto:bob.smith@work.example>) . "
+            + "       ?x foaf:nick ?bobNick "
             + "    }"
             + "  }";
         
@@ -958,32 +956,29 @@ public class W3Sparql1Test {
      * Test the query found in Section 8_3_2
      */
     @Test
-    @Ignore
     public void test8_3_2() throws MalformedQueryException, UnexpectedQueryException, QueryModelExpanderException {
         String inputQuery ="PREFIX foaf: <http://xmlns.com/foaf/0.1/> "
             + "PREFIX data: <http://example.org/foaf/> "
             + "SELECT ?nick "
             + "FROM NAMED <http://example.org/foaf/aliceFoaf> "
             + "FROM NAMED <http://example.org/foaf/bobFoaf> "
-            + "WHERE "
-            + "  {"
-            + "     GRAPH data:bobFoaf {"
-            + "         ?x foaf:mbox <mailto:bob@work.example> ."
-            + "         ?x foaf:nick ?nick }"
-            + "  }";
+            + "WHERE {"
+            + "    GRAPH data:bobFoaf {"
+            + "        ?x foaf:mbox <mailto:bob@work.example> ."
+            + "        ?x foaf:nick ?nick }"
+            + "}";
         String expectedQuery = "PREFIX foaf: <http://xmlns.com/foaf/0.1/> "
             + "PREFIX data: <http://example.org/foaf/> "
             + "SELECT ?nick "
             + "FROM NAMED <http://example.org/foaf/aliceFoaf> "
             + "FROM NAMED <http://example.org/foaf/bobFoaf> "
-            + "WHERE "
-            + "  {"
-            + "     GRAPH data:bobFoaf {"
-            + "    { ?x foaf:mbox ?objectUri1 ."
-            + "       FILTER (?objectUri1 = <mailto:bob@work.example> || "
-            + "            ?objectUri1 = <mailto:bob.smith@work.example>) }. "
-            + "         ?x foaf:nick ?nick }"
-            + "  }";
+            + "WHERE {"
+            + "    GRAPH data:bobFoaf {"
+            + "    ?x foaf:mbox ?objectUri1 ."
+            + "        FILTER (?objectUri1 = <mailto:bob@work.example> || "
+            + "                ?objectUri1 = <mailto:bob.smith@work.example>) . "
+            + "    ?x foaf:nick ?nick }"
+            + "}";
               
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
         dummyIRSMapper.addMapping("mailto:bob@work.example","mailto:bob@work.example");

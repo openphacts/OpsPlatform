@@ -152,10 +152,10 @@ public class QueryUtils {
         } else {
             System.out.println("*** Queries do not match ***");
             System.out.println(query1);
-            System.out.println(QueryModelTreePrinter.printTree(tupleExpr1));
+            //ystem.out.println(QueryModelTreePrinter.printTree(tupleExpr1));
             System.out.println("*");
             System.out.println(query2);
-            System.out.println(QueryModelTreePrinter.printTree(tupleExpr2));
+            //ystem.out.println(QueryModelTreePrinter.printTree(tupleExpr2));
             return false;
         }
     }
