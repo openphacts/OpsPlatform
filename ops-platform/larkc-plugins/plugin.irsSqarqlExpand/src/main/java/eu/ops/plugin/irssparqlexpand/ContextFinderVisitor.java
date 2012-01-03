@@ -3,8 +3,10 @@ package eu.ops.plugin.irssparqlexpand;
 import org.openrdf.query.algebra.StatementPattern;
 import org.openrdf.query.algebra.Var;
 import org.openrdf.query.algebra.helpers.QueryModelVisitorBase;
+
 /**
- *
+ * This class preforms a look ahead to see if a single context is shared by the sub tree.
+ * 
  * @author Christian
  */
 public class ContextFinderVisitor extends QueryModelVisitorBase<UnexpectedQueryException>{
@@ -29,6 +31,15 @@ public class ContextFinderVisitor extends QueryModelVisitorBase<UnexpectedQueryE
         }
     }
 
+    /**
+     * Obtrains the single context from a query or sub query.
+     * <p>
+     * As the OpenRdf parse assigns two indices of equal literals different names, 
+     *     this class considers then as unequal.
+     * 
+     * @return The context is all Statements in this query or subquery have the same none null Context. 
+     *    Otherwise null.
+     */
     public Var getContext(){
         if (multipleContexts) {
             //ystem.out.println("Multiple Contexts");
