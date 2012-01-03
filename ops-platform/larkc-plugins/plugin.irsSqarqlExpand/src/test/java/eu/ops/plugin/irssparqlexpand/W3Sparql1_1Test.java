@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  */
 public class W3Sparql1_1Test {
         
-    private static Logger logger = LoggerFactory.getLogger(IRSSPARQLExpand1.class);
+    private static Logger logger = LoggerFactory.getLogger(IRSSPARQLExpand.class);
 
     public W3Sparql1_1Test() {
     }
@@ -66,8 +66,8 @@ public class W3Sparql1_1Test {
         dummyIRSMapper.addMapping("http://example.org/book/book1","http://example.org/book/book1");
         dummyIRSMapper.addMapping("http://example.org/book/book1","http://example.org/book/other");
 
-        IRSSPARQLExpand1 expander = 
-                new IRSSPARQLExpand1(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+        IRSSPARQLExpand expander = 
+                new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
             @Override
             IRSMapper instantiateIRSMapper() {
                 return dummyIRSMapper;
@@ -94,8 +94,8 @@ public class W3Sparql1_1Test {
 
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
 
-        IRSSPARQLExpand1 expander = 
-                new IRSSPARQLExpand1(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+        IRSSPARQLExpand expander = 
+                new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
             @Override
             IRSMapper instantiateIRSMapper() {
                 return dummyIRSMapper;
@@ -119,8 +119,8 @@ public class W3Sparql1_1Test {
 
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
 
-        IRSSPARQLExpand1 expander = 
-                new IRSSPARQLExpand1(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+        IRSSPARQLExpand expander = 
+                new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
             @Override
             IRSMapper instantiateIRSMapper() {
                 return dummyIRSMapper;
@@ -143,8 +143,8 @@ public class W3Sparql1_1Test {
 
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
 
-        IRSSPARQLExpand1 expander = 
-                new IRSSPARQLExpand1(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+        IRSSPARQLExpand expander = 
+                new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
             @Override
             IRSMapper instantiateIRSMapper() {
                 return dummyIRSMapper;
@@ -167,8 +167,8 @@ public class W3Sparql1_1Test {
 
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
 
-        IRSSPARQLExpand1 expander = 
-                new IRSSPARQLExpand1(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+        IRSSPARQLExpand expander = 
+                new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
             @Override
             IRSMapper instantiateIRSMapper() {
                 return dummyIRSMapper;
@@ -191,8 +191,8 @@ public class W3Sparql1_1Test {
 
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
 
-        IRSSPARQLExpand1 expander = 
-                new IRSSPARQLExpand1(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+        IRSSPARQLExpand expander = 
+                new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
             @Override
             IRSMapper instantiateIRSMapper() {
                 return dummyIRSMapper;
@@ -217,8 +217,8 @@ public class W3Sparql1_1Test {
 
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
 
-        IRSSPARQLExpand1 expander = 
-                new IRSSPARQLExpand1(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+        IRSSPARQLExpand expander = 
+                new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
             @Override
             IRSMapper instantiateIRSMapper() {
                 return dummyIRSMapper;
@@ -244,8 +244,8 @@ public class W3Sparql1_1Test {
 
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
 
-        IRSSPARQLExpand1 expander = 
-                new IRSSPARQLExpand1(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+        IRSSPARQLExpand expander = 
+                new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
             @Override
             IRSMapper instantiateIRSMapper() {
                 return dummyIRSMapper;
@@ -272,8 +272,8 @@ public class W3Sparql1_1Test {
 
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
 
-        IRSSPARQLExpand1 expander = 
-                new IRSSPARQLExpand1(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+        IRSSPARQLExpand expander = 
+                new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
             @Override
             IRSMapper instantiateIRSMapper() {
                 return dummyIRSMapper;
@@ -300,8 +300,8 @@ public class W3Sparql1_1Test {
 
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
 
-        IRSSPARQLExpand1 expander = 
-                new IRSSPARQLExpand1(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+        IRSSPARQLExpand expander = 
+                new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
             @Override
             IRSMapper instantiateIRSMapper() {
                 return dummyIRSMapper;
@@ -329,8 +329,8 @@ public class W3Sparql1_1Test {
 
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
 
-        IRSSPARQLExpand1 expander = 
-                new IRSSPARQLExpand1(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+        IRSSPARQLExpand expander = 
+                new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
             @Override
             IRSMapper instantiateIRSMapper() {
                 return dummyIRSMapper;
@@ -363,8 +363,8 @@ public class W3Sparql1_1Test {
         dummyIRSMapper.addMapping("http://example.org/book/book1", "http://example.org/book/book1");
         dummyIRSMapper.addMapping("http://example.org/book/book1", "http://other.com/livre/2345");
         
-        IRSSPARQLExpand1 expander = 
-                new IRSSPARQLExpand1(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+        IRSSPARQLExpand expander = 
+                new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
             @Override
             IRSMapper instantiateIRSMapper() {
                 return dummyIRSMapper;
@@ -393,8 +393,8 @@ public class W3Sparql1_1Test {
         dummyIRSMapper.addMapping("http://example.org/book/book1", "http://example.org/book/book1");
         dummyIRSMapper.addMapping("http://example.org/book/book1", "http://other.com/livre/2345");
         
-        IRSSPARQLExpand1 expander = 
-                new IRSSPARQLExpand1(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+        IRSSPARQLExpand expander = 
+                new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
             @Override
             IRSMapper instantiateIRSMapper() {
                 return dummyIRSMapper;
@@ -424,8 +424,8 @@ public class W3Sparql1_1Test {
         dummyIRSMapper.addMapping("http://example.org/book/book1", "http://example.org/book/book1");
         dummyIRSMapper.addMapping("http://example.org/book/book1", "http://other.com/livre/2345");
         
-        IRSSPARQLExpand1 expander = 
-                new IRSSPARQLExpand1(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+        IRSSPARQLExpand expander = 
+                new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
             @Override
             IRSMapper instantiateIRSMapper() {
                 return dummyIRSMapper;
@@ -457,8 +457,8 @@ public class W3Sparql1_1Test {
         
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
         
-        IRSSPARQLExpand1 expander = 
-                new IRSSPARQLExpand1(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+        IRSSPARQLExpand expander = 
+                new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
             @Override
             IRSMapper instantiateIRSMapper() {
                 return dummyIRSMapper;
@@ -487,8 +487,8 @@ public class W3Sparql1_1Test {
         
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
         
-        IRSSPARQLExpand1 expander = 
-                new IRSSPARQLExpand1(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+        IRSSPARQLExpand expander = 
+                new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
             @Override
             IRSMapper instantiateIRSMapper() {
                 return dummyIRSMapper;
@@ -522,8 +522,8 @@ public class W3Sparql1_1Test {
         
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
         
-        IRSSPARQLExpand1 expander = 
-                new IRSSPARQLExpand1(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+        IRSSPARQLExpand expander = 
+                new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
             @Override
             IRSMapper instantiateIRSMapper() {
                 return dummyIRSMapper;
@@ -555,8 +555,8 @@ public class W3Sparql1_1Test {
         
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
         
-        IRSSPARQLExpand1 expander = 
-                new IRSSPARQLExpand1(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+        IRSSPARQLExpand expander = 
+                new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
             @Override
             IRSMapper instantiateIRSMapper() {
                 return dummyIRSMapper;
@@ -588,8 +588,8 @@ public class W3Sparql1_1Test {
         
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
         
-        IRSSPARQLExpand1 expander = 
-                new IRSSPARQLExpand1(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+        IRSSPARQLExpand expander = 
+                new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
             @Override
             IRSMapper instantiateIRSMapper() {
                 return dummyIRSMapper;
@@ -621,8 +621,8 @@ public class W3Sparql1_1Test {
         
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
         
-        IRSSPARQLExpand1 expander = 
-                new IRSSPARQLExpand1(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+        IRSSPARQLExpand expander = 
+                new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
             @Override
             IRSMapper instantiateIRSMapper() {
                 return dummyIRSMapper;
@@ -649,8 +649,8 @@ public class W3Sparql1_1Test {
         
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
         
-        IRSSPARQLExpand1 expander = 
-                new IRSSPARQLExpand1(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+        IRSSPARQLExpand expander = 
+                new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
             @Override
             IRSMapper instantiateIRSMapper() {
                 return dummyIRSMapper;
@@ -678,8 +678,8 @@ public class W3Sparql1_1Test {
         
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
         
-        IRSSPARQLExpand1 expander = 
-                new IRSSPARQLExpand1(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+        IRSSPARQLExpand expander = 
+                new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
             @Override
             IRSMapper instantiateIRSMapper() {
                 return dummyIRSMapper;
@@ -707,8 +707,8 @@ public class W3Sparql1_1Test {
         
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
         
-        IRSSPARQLExpand1 expander = 
-                new IRSSPARQLExpand1(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+        IRSSPARQLExpand expander = 
+                new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
             @Override
             IRSMapper instantiateIRSMapper() {
                 return dummyIRSMapper;
@@ -734,8 +734,8 @@ public class W3Sparql1_1Test {
         
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
         
-        IRSSPARQLExpand1 expander = 
-                new IRSSPARQLExpand1(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+        IRSSPARQLExpand expander = 
+                new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
             @Override
             IRSMapper instantiateIRSMapper() {
                 return dummyIRSMapper;
@@ -761,8 +761,8 @@ public class W3Sparql1_1Test {
         
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
         
-        IRSSPARQLExpand1 expander = 
-                new IRSSPARQLExpand1(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+        IRSSPARQLExpand expander = 
+                new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
             @Override
             IRSMapper instantiateIRSMapper() {
                 return dummyIRSMapper;
@@ -795,8 +795,8 @@ public class W3Sparql1_1Test {
         
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
         
-        IRSSPARQLExpand1 expander = 
-                new IRSSPARQLExpand1(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+        IRSSPARQLExpand expander = 
+                new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
             @Override
             IRSMapper instantiateIRSMapper() {
                 return dummyIRSMapper;
@@ -829,8 +829,8 @@ public class W3Sparql1_1Test {
         
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
         
-        IRSSPARQLExpand1 expander = 
-                new IRSSPARQLExpand1(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+        IRSSPARQLExpand expander = 
+                new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
             @Override
             IRSMapper instantiateIRSMapper() {
                 return dummyIRSMapper;
@@ -864,8 +864,8 @@ public class W3Sparql1_1Test {
         
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
         
-        IRSSPARQLExpand1 expander = 
-                new IRSSPARQLExpand1(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+        IRSSPARQLExpand expander = 
+                new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
             @Override
             IRSMapper instantiateIRSMapper() {
                 return dummyIRSMapper;

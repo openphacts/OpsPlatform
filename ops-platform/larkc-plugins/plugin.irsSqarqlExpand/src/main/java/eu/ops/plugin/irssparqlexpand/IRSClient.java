@@ -20,7 +20,7 @@ import uk.ac.manchester.cs.irs.beans.Match;
 /**
  * Client for interacting with the IRS service
  */
-public class IRSClient1 implements IRSMapper{
+public class IRSClient implements IRSMapper{
 
     String serviceAddress = 
 //            "http://localhost:8080/OPS-IRS-Prototype/";
@@ -28,7 +28,7 @@ public class IRSClient1 implements IRSMapper{
 
     private final WebResource webResource;
     
-    public IRSClient1() {
+    public IRSClient() {
         ClientConfig config = new DefaultClientConfig();
         Client client = Client.create(config);
         webResource = client.resource(serviceAddress);        
@@ -88,7 +88,7 @@ System.out.println("***********Number of matches for " + uri + ": " + matches.si
     }
 
     public static void main(String[] args) {
-        IRSClient1 irsClient = new IRSClient1();
+        IRSClient irsClient = new IRSClient();
         List<Match> matches = irsClient.getMatchesForURI("http://brenda-enzymes.info/1.1.1.1");
         StringBuilder response = new StringBuilder("Response:\n");
         for (Match match : matches) {

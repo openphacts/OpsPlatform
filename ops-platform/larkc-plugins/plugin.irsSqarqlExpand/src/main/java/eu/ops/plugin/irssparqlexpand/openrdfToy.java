@@ -35,8 +35,8 @@ public class openrdfToy {
          }
          final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
         
-         IRSSPARQLExpand1 expander = 
-                new IRSSPARQLExpand1(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+         IRSSPARQLExpand expander = 
+                new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
             @Override
             IRSMapper instantiateIRSMapper() {
                 return dummyIRSMapper;

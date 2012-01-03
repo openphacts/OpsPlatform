@@ -23,9 +23,9 @@ import org.slf4j.LoggerFactory;
  * sub-query uses different, but equivalent URIs. The equivalent URIs are
  * retrieved from the the prototype IRS service.
  */
-public class IRSSPARQLExpand1 extends Plugin {
+public class IRSSPARQLExpand extends Plugin {
 
-    protected final Logger logger = LoggerFactory.getLogger(IRSSPARQLExpand1.class);
+    protected final Logger logger = LoggerFactory.getLogger(IRSSPARQLExpand.class);
     private IRSMapper irsMapper = null;
     private boolean showExpandedVariables = false;
     
@@ -36,7 +36,7 @@ public class IRSSPARQLExpand1 extends Plugin {
      * 		a URI representing the plug-in type, e.g. 
      * 		<code>eu.larkc.plugin.myplugin.MyPlugin</code>
      */
-    public IRSSPARQLExpand1(URI pluginUri) {
+    public IRSSPARQLExpand(URI pluginUri) {
         super(pluginUri);
     }
 
@@ -57,7 +57,7 @@ public class IRSSPARQLExpand1 extends Plugin {
     
     IRSMapper instantiateIRSMapper() {
     	System.out.println("*********************");
-            return new IRSClient1();
+            return new IRSClient();
     }
     
    private SetOfStatements expandQuery(TupleExpr tupleExpr, Dataset dataset) 
@@ -152,7 +152,7 @@ public class IRSSPARQLExpand1 extends Plugin {
     }
     
     public static void main(String[] args) throws MalformedQueryException, QueryModelExpanderException, UnexpectedQueryException {
-        IRSSPARQLExpand1 s = new IRSSPARQLExpand1(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand"));
+        IRSSPARQLExpand s = new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand"));
         s.initialiseInternal(null);
         String qStr = " SELECT ?protein"
                 + " WHERE {"
