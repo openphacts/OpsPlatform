@@ -86,26 +86,65 @@ public class QueryExpandAndWriteVisitor extends QueryWriterModelVisitor{
         }
         queryString.append(")");
     }
+ 
+    private URI writeVarOrGetURI(ValueExpr valueExpr) throws QueryExpansionException{
+        if (valueExpr instanceof Var){
+            Var var = (Var)valueExpr;
+            if (var.hasValue()){
+                Value value = var.getValue();
+                return writeValueOrGetURI(value);
+            } else {
+                queryString.append(" ?");
+                queryString.append(var.getName());
+                return null;
+            }
+        } else if (valueExpr instanceof ValueConstant){
+            Value value = ((ValueConstant)valueExpr).getValue();
+            return writeValueOrGetURI(value);
+        } else {
+            valueExpr.visit(this);
+            return null;
+        }
+    }
     
+    private URI writeValueOrGetURI(Value value) throws QueryExpansionException{
+        if (value instanceof URI){
+            URI uri = (URI) value;
+            List<URI> uriList = uriMappings.get(uri);
+            if (uriList == null || uriList.isEmpty()){
+                queryString.append("<");
+                queryString.append(uri.stringValue());
+                queryString.append(">");                
+                return null;
+            } else if (uriList.size() == 1){
+                queryString.append("<");
+                queryString.append(uriList.get(0));
+                queryString.append(">");                
+                return null;
+            } else {
+                return uri;
+            }
+        } else {
+            queryString.append(value);
+            return null;
+        }
+    }
+
     //@Override
     public void meet(StatementPattern sp) throws QueryExpansionException  {
         statements++;
         newLine();
         boolean newContext = startContext(sp); 
-        URI subjectURI = findMultipleMappedURI(sp.getSubjectVar());
-        if (subjectURI == null) {
-            sp.getSubjectVar().visit(this);
-        } else {
+        URI subjectURI = writeVarOrGetURI(sp.getSubjectVar());
+        if (subjectURI != null) {
             queryString.append("?subjectUri");
             queryString.append(statements);
         }
         queryString.append(" ");
         sp.getPredicateVar().visit(this);
         queryString.append(" ");
-        URI objectURI = findMultipleMappedURI(sp.getObjectVar());
-        if (objectURI == null) {
-            sp.getObjectVar().visit(this);
-        } else {
+        URI objectURI = writeVarOrGetURI(sp.getObjectVar());
+        if (objectURI != null) {
             queryString.append("?objectUri");
             queryString.append(statements);
         }
@@ -158,20 +197,19 @@ public class QueryExpandAndWriteVisitor extends QueryWriterModelVisitor{
     @Override
     public void meet(Compare cmpr) throws QueryExpansionException {
         queryString.append("(");
-        URI leftURI = findMultipleMappedURI(cmpr.getLeftArg());
-        if (leftURI == null){
-            URI rightURI = findMultipleMappedURI(cmpr.getRightArg());
-            if (rightURI == null){
-                cmpr.getLeftArg().visit(this);
+        URI rightURI = findMultipleMappedURI(cmpr.getRightArg());
+        if (rightURI == null){
+            URI leftURI = writeVarOrGetURI(cmpr.getLeftArg());
+            if (leftURI == null){
                 queryString.append(" ");
                 queryString.append(cmpr.getOperator().getSymbol());
                 queryString.append(" ");
-                cmpr.getRightArg().visit(this);
+                writeVarOrGetURI(cmpr.getRightArg());
             } else {
-                expandCompare(cmpr, cmpr.getLeftArg(), getMappedList(rightURI));
+                expandCompare(cmpr, cmpr.getRightArg(), getMappedList(leftURI));  
             }
         } else {
-            expandCompare(cmpr, cmpr.getRightArg(), getMappedList(leftURI));            
+            expandCompare(cmpr, cmpr.getLeftArg(), getMappedList(rightURI));                      
         }
         queryString.append(")");
     }
