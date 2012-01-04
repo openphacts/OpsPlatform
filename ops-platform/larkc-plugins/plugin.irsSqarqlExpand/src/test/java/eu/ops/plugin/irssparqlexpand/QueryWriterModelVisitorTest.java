@@ -111,17 +111,31 @@ public class QueryWriterModelVisitorTest {
 
     @Test
     public void test_ONE_BGP_OBJECT_WITH_FILTER_QUERY() throws MalformedQueryException, QueryExpansionException{
-        convertAndTest(QueryModelExpanderTest.ONE_BGP_OBJECT_WITH_FILTER_QUERY);
+        convertAndTest(QueryUtilsTest.ONE_BGP_OBJECT_WITH_FILTER_QUERY);
     }
+
+    static String ONE_BPG_OBJECT_MULTIPLE_MATCHES_QUERY = "SELECT ?protein "
+                + "WHERE {"
+                + "?protein <http://www.biopax.org/release/biopax-level2.owl#EC-NUMBER> "
+                + "<http://brenda-enzymes.info/1.1.1.1> . "
+                + "}";
+
+    static String ONE_BPG_OBJECT_MULTIPLE_MATCHES_QUERY_EXPECTED =  "SELECT ?protein "
+                + "WHERE {"
+                + "?protein <http://www.biopax.org/release/biopax-level2.owl#EC-NUMBER> "
+                + "?objectUri1 . "
+                + "FILTER (?objectUri1 = <http://example.com/983juy> || "
+                + "?objectUri1 = <http://brenda-enzymes.info/1.1.1.1>) . "
+                + "}";                       
 
     @Test
     public void test_ONE_BPG_OBJECT_MULTIPLE_MATCHES_QUERY() throws MalformedQueryException, QueryExpansionException{
-        convertAndTest(QueryModelExpanderTest.ONE_BPG_OBJECT_MULTIPLE_MATCHES_QUERY);
+        convertAndTest(ONE_BPG_OBJECT_MULTIPLE_MATCHES_QUERY);
     }
 
     @Test
     public void test_ONE_BPG_OBJECT_MULTIPLE_MATCHES_QUERY_PLUS_FILTER() throws MalformedQueryException, QueryExpansionException{
-        convertAndTest(QueryModelExpanderTest.ONE_BPG_OBJECT_MULTIPLE_MATCHES_QUERY_EXPECTED);
+        convertAndTest(ONE_BPG_OBJECT_MULTIPLE_MATCHES_QUERY_EXPECTED);
     }
 
     @Test

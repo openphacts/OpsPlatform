@@ -218,6 +218,78 @@ public class IRSSPARQLExpandTest {
         assertTrue(QueryUtils.sameTupleExpr(SINGLE_OBJECT_URI_QUERY_EXPECTED, query.toString()));
     }
     
+    static String SINGLE_OBJECT_URI_QUERY_EXPECTED_ONE_MAP = "SELECT ?protein "
+                + "WHERE {"
+                + "    ?protein <http://www.foo.org/somePredicate> <http://bar.com/8hd83> . "
+                + "}";            
+    /**
+     * Test that a query with a single basic graph pattern with a URI in the 
+     * object is expanded.
+     */
+    @Test
+    public void testOneBGPOneObjectURIOneMap() throws MalformedQueryException, QueryExpansionException {
+        final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
+        dummyIRSMapper.addMapping("http://foo.info/1.1.1.1", "http://bar.com/8hd83");
+
+        IRSSPARQLExpand s = new IRSSPARQLExpand(
+                new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+            @Override
+            IRSMapper instantiateIRSMapper() {
+                return dummyIRSMapper;
+            }
+        };
+        s.initialiseInternal(null);
+        SetOfStatements eQuery = s.invokeInternalWithExceptions(
+                new SPARQLQueryImpl(SINGLE_OBJECT_URI_QUERY).toRDF());
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        assertTrue(QueryUtils.sameTupleExpr(SINGLE_OBJECT_URI_QUERY_EXPECTED_ONE_MAP, query.toString()));
+    }
+    
+    /**
+     * Test that a query with a single basic graph pattern with a URI in the 
+     * object is expanded only to itself.
+     */
+    @Test
+    public void testOneBGPOneObjectURIMapsToSlefOnly() throws MalformedQueryException, QueryExpansionException {
+        final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
+        dummyIRSMapper.addMapping("http://foo.info/1.1.1.1", "http://foo.info/1.1.1.1");
+
+        IRSSPARQLExpand s = new IRSSPARQLExpand(
+                new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+            @Override
+            IRSMapper instantiateIRSMapper() {
+                return dummyIRSMapper;
+            }
+        };
+        s.initialiseInternal(null);
+        SetOfStatements eQuery = s.invokeInternalWithExceptions(
+                new SPARQLQueryImpl(SINGLE_OBJECT_URI_QUERY).toRDF());
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        assertTrue(QueryUtils.sameTupleExpr(SINGLE_OBJECT_URI_QUERY, query.toString()));
+    }
+    
+    /**
+     * Test that a query with a single basic graph pattern with a URI in the 
+     * object is not expanded.
+     */
+    @Test
+    public void testOneBGPOneObjectURIMapsToNothing() throws MalformedQueryException, QueryExpansionException {
+        final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
+
+        IRSSPARQLExpand s = new IRSSPARQLExpand(
+                new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+            @Override
+            IRSMapper instantiateIRSMapper() {
+                return dummyIRSMapper;
+            }
+        };
+        s.initialiseInternal(null);
+        SetOfStatements eQuery = s.invokeInternalWithExceptions(
+                new SPARQLQueryImpl(SINGLE_OBJECT_URI_QUERY).toRDF());
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        assertTrue(QueryUtils.sameTupleExpr(SINGLE_OBJECT_URI_QUERY, query.toString()));
+    }
+    
     
     
     

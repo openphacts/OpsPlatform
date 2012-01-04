@@ -175,9 +175,24 @@ public class QueryUtilsTest {
         assertFalse(result);
     }*/
     
+    static String ONE_BGP_OBJECT_WITH_FILTER_QUERY = "SELECT ?protein "
+                + "WHERE {"
+                + "?protein <http://www.biopax.org/release/biopax-level2.owl#EC-NUMBER> "
+                + "<http://brenda-enzymes.info/1.1.1.1> . "
+                + "FILTER (?protein = <http://something.org>) . "
+                + "}"; 
+    static String ONE_BGP_OBJECT_WITH_FILTER_QUERY_EXPECTED = "SELECT ?protein "
+                + "WHERE {"
+                + "?protein <http://www.biopax.org/release/biopax-level2.owl#EC-NUMBER> "
+                + "?objectUri1 . "
+                + "FILTER (?objectUri1 = <http://example.com/983juy> || "
+                + "?objectUri1 = <http://brenda-enzymes.info/1.1.1.1>) . "
+                + "FILTER (?protein = <http://something.org>) . "
+                + "}";
+ 
     @Test
     public void test_getURIS() throws MalformedQueryException, QueryExpansionException {
-        String query = QueryModelExpanderTest.ONE_BGP_OBJECT_WITH_FILTER_QUERY;
+        String query = ONE_BGP_OBJECT_WITH_FILTER_QUERY;
         HashSet<URI> expected = new HashSet<URI>();
         ValueFactory factory = ValueFactoryImpl.getInstance();
         expected.add(factory.createURI("http://brenda-enzymes.info/1.1.1.1"));
