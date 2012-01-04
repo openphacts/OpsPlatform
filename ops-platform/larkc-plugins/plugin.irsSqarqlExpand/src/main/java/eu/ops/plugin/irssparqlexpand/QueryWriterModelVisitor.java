@@ -307,12 +307,25 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
 
     @Override
     public void meet(Order order) throws QueryExpansionException {
-        throw new QueryExpansionException("Order not supported yet.");
+        order.getArg().visit(this);
+        queryString.append(" } ");
+        newLine();
+        queryString.append("ORDER BY");
+        List<OrderElem> orderElems = order.getElements();
+        for (OrderElem orderElem: orderElems){
+            meet(orderElem);
+        }
     }
 
     @Override
     public void meet(OrderElem oe) throws QueryExpansionException {
-        throw new QueryExpansionException("OrderElem not supported yet.");
+        if (oe.isAscending()){
+            queryString.append(" ASC(");    
+        } else {
+            queryString.append(" DESC(");                
+        }
+        oe.getExpr().visit(this);
+        queryString.append(")");    
     }
 
     @Override
@@ -337,7 +350,11 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
         printDataset();
         queryString.append("WHERE {");
         prjctn.getArg().visit(this);
-        queryString.append("}");
+        if (prjctn.getArg() instanceof Order){
+            //do nothing as order has already closed the WHERE
+        } else {
+            queryString.append("}");
+        }
     }
 
     private void printDataset(){

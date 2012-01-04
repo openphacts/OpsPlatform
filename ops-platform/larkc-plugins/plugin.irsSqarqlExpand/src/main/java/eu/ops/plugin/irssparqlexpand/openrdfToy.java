@@ -191,7 +191,7 @@ public class openrdfToy {
             + "         ?x foaf:mbox \"mailto:bob@work.example\" ."
             + "         ?x foaf:nick ?nick }"
             + "  }";
-        String queryStr = 
+        String queryStr20 = 
                 " PREFIX cspr: <http://rdf.chemspider.com/#> "
                 + " PREFIX chembl: <http://chem2bio2rdf.org/chembl/resource/> "
                 + " PREFIX pdsp: <http://wiki.openphacts.org/index.php/PDSP_DB#> "
@@ -231,7 +231,12 @@ public class openrdfToy {
                 + "       ?r1 ?r2 ; ?r3 ?r4 ; ?r5 ?r6 ; ?r7 ?r8; ?r9 ?r10; ?r11 ?r12; ?r13 ?r14; ?r15 ?r16; ?r17 ?r18; "
                 + "       ?r19 ?r20; ?r21 ?r22; ?r23 ?r24; ?r25 ?r26;} "
                 + "}";
-
+         String queryStr = "PREFIX foaf:    <http://xmlns.com/foaf/0.1/>"
+                + "SELECT ?name "
+                + "WHERE { ?x foaf:name ?name }"
+                + "ORDER BY ?name";
+                 
+                 
          ParsedQuery parsedQuery = parser.parseQuery(queryStr, null); 
          TupleExpr tupleExpr = parsedQuery.getTupleExpr();
          Dataset dataset = parsedQuery.getDataset();

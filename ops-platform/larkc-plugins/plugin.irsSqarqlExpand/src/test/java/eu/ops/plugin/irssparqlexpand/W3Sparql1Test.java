@@ -9,7 +9,6 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.MalformedQueryException;
@@ -1110,7 +1109,6 @@ public class W3Sparql1Test {
      * Test the first query found in Section 9.1
      */ 
     @Test
-    @Ignore
     public void test9_1_a() throws MalformedQueryException, QueryExpansionException {
         String inputQuery ="PREFIX foaf:    <http://xmlns.com/foaf/0.1/>"
 
@@ -1140,7 +1138,6 @@ public class W3Sparql1Test {
      * Test the second query found in Section 9.1
      */ 
     @Test
-    @Ignore
     public void test9_1_b() throws MalformedQueryException, QueryExpansionException {
         String inputQuery ="PREFIX     :    <http://example.org/ns#>"
             + "PREFIX foaf:    <http://xmlns.com/foaf/0.1/>"
@@ -1172,7 +1169,6 @@ public class W3Sparql1Test {
      * Test the second query found in Section 9.1 with ASC
      */ 
     @Test
-    @Ignore
     public void test9_1_b_ASC() throws MalformedQueryException, QueryExpansionException {
         String inputQuery ="PREFIX     :    <http://example.org/ns#>"
             + "PREFIX foaf:    <http://xmlns.com/foaf/0.1/>"
@@ -1204,13 +1200,13 @@ public class W3Sparql1Test {
      * Test the third query found in Section 9.1
      */ 
     @Test
-    @Ignore
     public void test9_1_c() throws MalformedQueryException, QueryExpansionException {
-        String inputQuery ="PREFIX foaf:    <http://xmlns.com/foaf/0.1/>"
-
-            + "SELECT ?name "
-            + "WHERE { ?x foaf:name ?name ; :empId ?emp }"
-            + "ORDER BY ?name DESC(?emp)";
+        String inputQuery ="PREFIX     :    <http://example.org/ns#>"
+                + "PREFIX foaf:    <http://xmlns.com/foaf/0.1/>"
+                + "SELECT ?name "
+                + "WHERE { ?x foaf:name ?name ; "
+                + "           :empId ?emp }"
+                + "ORDER BY ?name DESC(?emp)";
 //
         String expectedQuery = inputQuery;
               
@@ -1231,12 +1227,15 @@ public class W3Sparql1Test {
     }
 
     /**
-     * Test the query found in Section 
-     * / 
+     * Test the query found in Section 9.2
+     */ 
     @Test
-    public void test() throws MalformedQueryException, QueryExpansionException {
-        String inputQuery ="";
-//            + "
+    public void test9_2() throws MalformedQueryException, QueryExpansionException {
+        String inputQuery ="PREFIX foaf:       <http://xmlns.com/foaf/0.1/>"
+            + "SELECT ?name "
+            + "WHERE "
+            + " { ?x foaf:name ?name }";
+
         String expectedQuery = inputQuery;
               
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
