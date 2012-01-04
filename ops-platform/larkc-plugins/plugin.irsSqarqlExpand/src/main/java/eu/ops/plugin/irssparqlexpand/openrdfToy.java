@@ -12,6 +12,7 @@ import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.Dataset;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.algebra.TupleExpr;
+import org.openrdf.query.algebra.helpers.QueryModelTreePrinter;
 import org.openrdf.query.parser.ParsedQuery;
 import org.openrdf.query.parser.sparql.SPARQLParser;
 
@@ -231,16 +232,38 @@ public class openrdfToy {
                 + "       ?r1 ?r2 ; ?r3 ?r4 ; ?r5 ?r6 ; ?r7 ?r8; ?r9 ?r10; ?r11 ?r12; ?r13 ?r14; ?r15 ?r16; ?r17 ?r18; "
                 + "       ?r19 ?r20; ?r21 ?r22; ?r23 ?r24; ?r25 ?r26;} "
                 + "}";
-         String queryStr = "PREFIX foaf:    <http://xmlns.com/foaf/0.1/>"
+         String queryStr21 = "PREFIX foaf:    <http://xmlns.com/foaf/0.1/>"
                 + "SELECT ?name "
                 + "WHERE { ?x foaf:name ?name }"
                 + "ORDER BY ?name";
                  
-                 
+         String queryStr22 = "PREFIX foaf:    <http://xmlns.com/foaf/0.1/>"
+                 + "SELECT REDUCED ?name WHERE { ?x foaf:name ?name }";
+         String queryStr23 = "CONSTRUCT { ?s ?p ?o } WHERE { ?o ?p ?s }";
+         String queryStr24 = "SELECT REDUCED ?s ?p ?o  WHERE { ?o ?p ?s }";
+         String queryStr25 = "PREFIX foaf:   <http://xmlns.com/foaf/0.1/>"
+            + "PREFIX org:    <http://example.com/ns#>"
+            + "CONSTRUCT { ?x foaf:name ?name }"
+            + "WHERE  { ?x org:employeeName ?name }";
+         String queryStr26 = "PREFIX foaf:    <http://xmlns.com/foaf/0.1/>"
+                 + "SELECT ?name "
+                 + "WHERE { ?x foaf:name ?name }"
+                 + "LIMIT 20";         
+         String queryStr = "PREFIX foaf:    <http://xmlns.com/foaf/0.1/>"
+                 + "SELECT  ?name "
+                 + "WHERE   { ?x foaf:name ?name }"
+                 + "ORDER BY ?name "
+                 + "LIMIT   5 "
+                 + "OFFSET  10 ";
+                 //ParsedQuery parsedQuery23 = parser.parseQuery(queryStr23, null); 
+         //TupleExpr tupleExpr23 = parsedQuery23.getTupleExpr();
+         //System.out.println("23:"+ tupleExpr23);
+        
          ParsedQuery parsedQuery = parser.parseQuery(queryStr, null); 
          TupleExpr tupleExpr = parsedQuery.getTupleExpr();
          Dataset dataset = parsedQuery.getDataset();
          System.out.println(tupleExpr);
+         
          QueryWriterModelVisitor myVisitor = new QueryWriterModelVisitor(dataset);
          tupleExpr.visit(myVisitor);
          String newQuery = myVisitor.getQuery();

@@ -142,7 +142,7 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
     public void meet(Distinct dstnct) throws QueryExpansionException {
         TupleExpr tupleExpr = dstnct.getArg();
         if (tupleExpr instanceof Projection){
-            meet ((Projection)tupleExpr, true);
+            meet ((Projection)tupleExpr, " DISTINCT");
         } else {
             throw new QueryExpansionException("Distinct only supported followed by Projection.");
         }
@@ -310,7 +310,7 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
         order.getArg().visit(this);
         queryString.append(" } ");
         newLine();
-        queryString.append("ORDER BY");
+        queryString.append("ORDER BY ");
         List<OrderElem> orderElems = order.getElements();
         for (OrderElem orderElem: orderElems){
             meet(orderElem);
@@ -320,17 +320,17 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
     @Override
     public void meet(OrderElem oe) throws QueryExpansionException {
         if (oe.isAscending()){
-            queryString.append(" ASC(");    
+            queryString.append("ASC(");    
         } else {
-            queryString.append(" DESC(");                
+            queryString.append("DESC(");                
         }
         oe.getExpr().visit(this);
-        queryString.append(")");    
+        queryString.append(") ");    
     }
 
     @Override
     public void meet(Projection prjctn) throws QueryExpansionException {
-        meet (prjctn, false);
+        meet (prjctn, "");
     }
 
     /**
@@ -339,11 +339,9 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
     void addExpanded(Projection prjctn) throws QueryExpansionException{
     }
     
-    public void meet(Projection prjctn, boolean distinct) throws QueryExpansionException {
+    public void meet(Projection prjctn, String modifier) throws QueryExpansionException {
         queryString.append("SELECT ");
-        if (distinct){
-             queryString.append("DISTINCT ");
-        }
+        queryString.append(modifier);
         addExpanded(prjctn);
         prjctn.getProjectionElemList().visit(this);
         newLine();
@@ -370,6 +368,20 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
         }
     }
 
+    /**
+     * Lookahead function to see if this is a contruction
+     * @param pel
+     * @return 
+     */
+    private boolean isConstruction(ProjectionElemList pel){
+        List<ProjectionElem> elements = pel.getElements();
+        if (elements.size() != 3) return false;
+        if (!(elements.get(0).getTargetName().equals("subject"))) return false;
+        if (!(elements.get(1).getTargetName().equals("predicate"))) return false;
+        if (!(elements.get(2).getTargetName().equals("object"))) return false;
+        return true;
+    }
+    
     /**
      * Used by the Reduce (Construction query) to add looked ahead ExtensionElems
      *
@@ -408,36 +420,40 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
         }
     }
 
+    //REDUCE is found both in CONSTRUCT AND SELECT QUERIES
     @Override
     public void meet(Reduced rdcd) throws QueryExpansionException {
-        queryString.append("CONSTRUCT {");
         TupleExpr arg = rdcd.getArg();
         if (arg instanceof Projection){
             Projection prjctn = (Projection)arg;
-            HashMap<String, ValueExpr> mappedExstensionElements = mapExensionElements(prjctn);
-            meet (prjctn.getProjectionElemList(), mappedExstensionElements);
-            queryString.append("}");
-            newLine();
-            queryString.append("{");
-            prjctn.getArg().visit(this);
-            queryString.append("}");
+            TupleExpr prjctnArg = prjctn.getArg();
+            if (isConstruction(prjctn.getProjectionElemList())){
+                queryString.append("CONSTRUCT {");
+                HashMap<String, ValueExpr> mappedExstensionElements = mapExensionElements(prjctnArg);
+                meet (prjctn.getProjectionElemList(), mappedExstensionElements);
+                queryString.append("}");
+                newLine();
+                queryString.append("{");
+                prjctn.getArg().visit(this);
+                queryString.append("}");
+            } else {
+                //SELECT QUERY
+                meet (prjctn, " REDUCED");
+            }
         } else {
-            throw new QueryExpansionException("Reduced with non projection child supported yet.");
+            throw new QueryExpansionException("Reduced with non projection child not supported yet.");
         }
     }
 
     //Look ahead function to match names ProjectionElem to ExtensionElem
-    private HashMap<String, ValueExpr> mapExensionElements(Projection prjctn) throws QueryExpansionException{
+    private HashMap<String, ValueExpr> mapExensionElements(TupleExpr tupleExpr) throws QueryExpansionException{
         HashMap<String, ValueExpr> mappedExstensionElements = new HashMap<String, ValueExpr>();
-        TupleExpr prjctnArg = prjctn.getArg();
-        if (prjctnArg instanceof Extension){
-            Extension extnsn = (Extension) prjctnArg;
+        if (tupleExpr instanceof Extension){
+            Extension extnsn = (Extension) tupleExpr;
             List<ExtensionElem> ees =  extnsn.getElements();
             for (ExtensionElem ee:ees) {
                 mappedExstensionElements.put(ee.getName(), ee.getExpr());
             }
-        } else {
-            throw new QueryExpansionException ("Project Arguement of Reduce(Consttruct query) was not an Extension.");
         }
         return  mappedExstensionElements;
     }
@@ -458,7 +474,18 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
 
     @Override
     public void meet(Slice slice) throws QueryExpansionException {
-        throw new QueryExpansionException("Slice not supported yet.");
+        slice.getArg().visit(this);
+        if (slice.hasLimit()){
+            newLine();
+            queryString.append("LIMIT ");
+            queryString.append(slice.getLimit());     
+        }
+        if (slice.hasOffset()){
+            newLine();
+            queryString.append("OFFSET ");
+            queryString.append(slice.getOffset());     
+        }
+//        throw new QueryExpansionException("Slice not supported yet.");
     }
 
     @Override
