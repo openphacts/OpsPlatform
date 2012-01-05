@@ -859,7 +859,7 @@ public class IRSSPARQLExpandTest {
         SetOfStatements eQuery = s.invokeInternalWithExceptions(
                 new SPARQLQueryImpl(ONLY_OPTIONAL_STATEMENTS_QUERY).toRDF());
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
-        System.out.println(query.toString());
+        //System.out.println(query.toString());
         assertTrue(QueryUtils.sameTupleExpr(ONLY_OPTIONAL_STATEMENTS_QUERY_EXPECTED, query.toString()));
     }
     
@@ -1371,6 +1371,6 @@ public class IRSSPARQLExpandTest {
                 new SPARQLQueryImpl(STAR_BOTH_URI_QUERY).toRDF());
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
         assertTrue(QueryUtils.sameTupleExpr(STAR_BOTH_URI_QUERY_EXPECTED_SINGLE_MATCH_EACH, query.toString()));
-        assertFalse(QueryUtils.sameTupleExpr(STAR_BOTH_URI_QUERY_NOT_EXPECTED_SINGLE_MATCH_EACH, query.toString()));
+        assertFalse(QueryUtils.sameTupleExpr(STAR_BOTH_URI_QUERY_NOT_EXPECTED_SINGLE_MATCH_EACH, query.toString(), false));
     }
 }

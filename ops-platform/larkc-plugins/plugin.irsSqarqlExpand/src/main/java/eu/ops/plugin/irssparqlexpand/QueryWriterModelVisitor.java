@@ -92,8 +92,25 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
         queryString.append(")");
     }
 
+    void writeAnon(String name){
+        //-anon-1
+        String numberPart = name.substring(6);
+        short anonNumber = Short.parseShort(numberPart); 
+        short anonBig = (short) (anonNumber / 26);
+        short anonSmall = (short) (anonNumber % 26);
+        char[] ending = Character.toChars(65 + anonSmall);
+        queryString.append("_:");
+        queryString.append(ending);
+        if (anonBig > 0) {
+            ending = Character.toChars(64 + anonBig);
+            queryString.append(ending);        
+        }
+    }
+    
     @Override
     public void meet(BNodeGenerator bng) throws QueryExpansionException {
+        //queryString.append(" [] ");
+        //queryString.append(" _:hjk ");
         throw new QueryExpansionException("BNodeGenerator not supported yet.");
     }
 
@@ -173,7 +190,18 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
 
     @Override
     public void meet(FunctionCall fc) throws QueryExpansionException {
-        throw new QueryExpansionException("FunctionCall not supported yet.");
+        queryString.append("<");
+        queryString.append(fc.getURI());
+        queryString.append(">(");
+        List<ValueExpr> args = fc.getArgs();
+        if (!args.isEmpty()) {
+           args.get(0).visit(this);
+        }
+        for (int i = 1; i < args.size(); i++){
+            queryString.append(" ,");
+            args.get(i).visit(this);
+        }
+        queryString.append(")");
     }
 
     @Override
@@ -348,13 +376,18 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
         printDataset();
         queryString.append("WHERE {");
         prjctn.getArg().visit(this);
-        if (prjctn.getArg() instanceof Order){
-            //do nothing as order has already closed the WHERE
-        } else {
-            queryString.append("}");
-        }
+        closeProjectionUnlessOrderHas(prjctn.getArg());
     }
 
+    private void closeProjectionUnlessOrderHas(TupleExpr expr){
+        if (expr instanceof Order) return;
+        if (expr instanceof Extension){
+            Extension extnsn = (Extension) expr;
+            if (extnsn.getArg() instanceof Order) return;
+        }
+        queryString.append("}");
+    }
+    
     private void printDataset(){
         if (originalDataSet == null) return;
         queryString.append(originalDataSet);
@@ -389,10 +422,26 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
      * @param mappedExstensionElements
      * @throws QueryExpansionException 
      */
+    private void meet(List<ProjectionElemList> pels, HashMap<String, ValueExpr> mappedExstensionElements) throws QueryExpansionException {
+        for (ProjectionElemList pel:pels){
+            newLine();
+            meet(pel, mappedExstensionElements);
+            queryString.append(" . ");
+        }
+    }
+
+    /**
+     * Used by the Reduce (Construction query) to add looked ahead ExtensionElems
+     *
+     * @param pel
+     * @param mappedExstensionElements
+     * @throws QueryExpansionException 
+     */
     private void meet(ProjectionElemList pel, HashMap<String, ValueExpr> mappedExstensionElements) throws QueryExpansionException {
         List<ProjectionElem> elements = pel.getElements();
         for (ProjectionElem element:elements){
             meet(element, mappedExstensionElements);
+            queryString.append(" ");
         }
     }
 
@@ -415,6 +464,8 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
         if (mapped == null){
             queryString.append(" ?");
             queryString.append(pe.getSourceName());
+        } else if (mapped instanceof BNodeGenerator) {
+            writeAnon(name);
         } else {
             mapped.visit(this);
         }
@@ -435,13 +486,25 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
                 newLine();
                 queryString.append("{");
                 prjctn.getArg().visit(this);
-                queryString.append("}");
+                closeProjectionUnlessOrderHas(prjctn.getArg());
             } else {
                 //SELECT QUERY
                 meet (prjctn, " REDUCED");
             }
+        }  else if (arg instanceof MultiProjection){
+            //Assuming it must be construct
+            MultiProjection mp = (MultiProjection)arg;
+            TupleExpr prjctnArg = mp.getArg();
+            queryString.append("CONSTRUCT {");
+            HashMap<String, ValueExpr> mappedExstensionElements = mapExensionElements(prjctnArg);
+            meet (mp.getProjections(), mappedExstensionElements);
+            queryString.append("}");
+            newLine();
+            queryString.append("{");
+            mp.getArg().visit(this);
+            queryString.append("}");
         } else {
-            throw new QueryExpansionException("Reduced with non projection child not supported yet.");
+            throw new QueryExpansionException("Reduced with non Projection/ MultiProjection child not supported yet.");
         }
     }
 
@@ -568,9 +631,11 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
 
     @Override
     public void meet(Var var) throws QueryExpansionException {
-         if (var.hasValue()){
+        if (var.hasValue()){
             Value value = var.getValue();
             addValue(value);
+        } else if (var.isAnonymous()){
+            writeAnon(var.getName());
         } else {
             queryString.append(" ?");
             queryString.append(var.getName());
@@ -586,7 +651,7 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
         if (value instanceof URI){
             queryString.append("<");
             queryString.append(value.stringValue());
-            queryString.append(">");                
+            queryString.append(">"); 
         } else {
             queryString.append(value);
         }

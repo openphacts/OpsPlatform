@@ -143,8 +143,7 @@ public class QueryUtilsTest {
                 + "?protein <http://www.biopax.org/release.biopax-level2.owl#NAME> ?name . "
                 + "<http://rdf.chemspider.com/37> ?p ?o ."
                 + "}";
-        boolean result = QueryUtils.sameTupleExpr(query1, query2);
-        assertFalse(result);
+        assertFalse(QueryUtils.sameTupleExpr(query1, query2, false));
     }
 
     /**

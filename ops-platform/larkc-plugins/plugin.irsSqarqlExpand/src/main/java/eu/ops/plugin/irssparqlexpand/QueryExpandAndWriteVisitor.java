@@ -93,6 +93,9 @@ public class QueryExpandAndWriteVisitor extends QueryWriterModelVisitor{
             if (var.hasValue()){
                 Value value = var.getValue();
                 return writeValueOrGetURI(value);
+            } if (var.isAnonymous()){
+                writeAnon(var.getName());
+                return null;
             } else {
                 queryString.append(" ?");
                 queryString.append(var.getName());

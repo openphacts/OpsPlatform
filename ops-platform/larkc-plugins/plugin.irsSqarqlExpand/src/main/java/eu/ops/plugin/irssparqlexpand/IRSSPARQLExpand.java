@@ -52,11 +52,11 @@ public class IRSSPARQLExpand extends Plugin {
     protected void initialiseInternal(SetOfStatements params) {
         irsMapper = instantiateIRSMapper();
         logger.info("IRSSPARQLExpand initialized.");
-        System.out.println("*********************Initialised!!!");
+        //ystem.out.println("*********************Initialised!!!");
     }
     
     IRSMapper instantiateIRSMapper() {
-    	System.out.println("*********************");
+    	//ystem.out.println("*********************");
             return new IRSClient();
     }
     
@@ -87,11 +87,11 @@ public class IRSSPARQLExpand extends Plugin {
     public final SetOfStatements invokeInternalWithExceptions(SetOfStatements input) 
             throws MalformedQueryException, QueryExpansionException {
         logger.info("SPARQLExpand working.");
-        System.out.println("*********************Invoked!!!");
+        //ystem.out.println("*********************Invoked!!!");
         if (logger.isDebugEnabled()) {
             logger.debug("Input: " + input.getStatements().toString());
         }
-        System.out.println("Input: " + input.getStatements().toString());
+        //ystem.out.println("Input: " + input.getStatements().toString());
         // Does not care about the input name since it has a single argument, use any named graph
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(input);
         if (query instanceof SPARQLQueryImpl){

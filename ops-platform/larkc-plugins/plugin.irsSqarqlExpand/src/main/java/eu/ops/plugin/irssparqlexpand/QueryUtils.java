@@ -50,43 +50,52 @@ public class QueryUtils {
         }
     }
     
-    public static boolean compare(Dataset  dataset1, Dataset  dataset2) {
+    public static boolean compare(Dataset  dataset1, Dataset  dataset2, boolean verbose) {
         if (dataset1 == null){
             if (dataset2 == null){
                 return true;
             } else {
-                System.out.println("Dataset 1 is null while Dataset 2 is:");
-                System.out.println(dataset2);
+                if (verbose){
+                    System.out.println("Dataset 1 is null while Dataset 2 is:");
+                    System.out.println(dataset2);
+                }
                 return false;
             }         
         } else {
             if (dataset2 == null){
-                System.out.println("Dataset 2 is null while Dataset 1 is:");
-                System.out.println(dataset1);
+                if (verbose){
+                    System.out.println("Dataset 2 is null while Dataset 1 is:");
+                    System.out.println(dataset1);
+                }
                 return false;
             }         
         }
         Set<URI> defaultGraphs1 = dataset1.getDefaultGraphs();
         Set<URI> defaultGraphs2 = dataset2.getDefaultGraphs();
-        System.out.println("defaultGraphs");
-        System.out.println(defaultGraphs1);
-        System.out.println(defaultGraphs2);
+        //ystem.out.println("defaultGraphs");
+        //ystem.out.println(defaultGraphs1);
+        //ystem.out.println(defaultGraphs2);
         if (!(defaultGraphs1.equals(defaultGraphs2))){
-            System.out.println("*** defaultGraphs do not match ***");
+            if (verbose){
+               System.out.println("*** defaultGraphs do not match ***");
+            }
             return false;
         }
         Set<URI> namedGraphs1 = dataset1.getNamedGraphs();
         Set<URI> namedGraphs2 = dataset2.getNamedGraphs();
-        System.out.println("namedGraphs");
-        System.out.println(namedGraphs1);
-        System.out.println(namedGraphs2);
+        //ystem.out.println("namedGraphs");
+        //ystem.out.println(namedGraphs1);
+        //ystem.out.println(namedGraphs2);
         if (!(namedGraphs1.equals(namedGraphs2))){
-            System.out.println("*** namedGraphs do not match ***");
+            if (verbose){
+                System.out.println("*** namedGraphs do not match ***");
+            }
             return false;
         }
         return true;
     }
     
+    /*
     public static boolean compare(TupleExpr expr1, TupleExpr expr2) {
         if (expr1 == null){
             if (expr2 == null){
@@ -119,7 +128,7 @@ public class QueryUtils {
             }
         }
         return expr1.getName().equals(expr2.getName());
-    }
+    }*/
     
     /**
      * Compares two queryStrings to see if they generate the same TupleExpr.
@@ -139,7 +148,7 @@ public class QueryUtils {
      * @return True if and only if the two queries generate equals TupleExpr. 
      * @throws MalformedQueryException 
      */
-    public static boolean sameTupleExpr(String query1, String query2) throws MalformedQueryException{
+    public static boolean sameTupleExpr(String query1, String query2, boolean verbose) throws MalformedQueryException{
         ParsedQuery parsedQuery1 = parser.parseQuery(query1, null); 
         TupleExpr tupleExpr1 =  parsedQuery1.getTupleExpr();
         ParsedQuery parsedQuery2 = parser.parseQuery(query2, null); 
@@ -148,16 +157,22 @@ public class QueryUtils {
         if ((tupleExpr1.equals(tupleExpr2))){
             Dataset  dataset1 = parsedQuery1.getDataset();
             Dataset  dataset2 = parsedQuery2.getDataset();
-            return compare(dataset1, dataset2);
+            return compare(dataset1, dataset2, verbose);
         } else {
-            System.out.println("*** Queries do not match ***");
-            System.out.println(query1);
-            //ystem.out.println(QueryModelTreePrinter.printTree(tupleExpr1));
-            System.out.println("*");
-            System.out.println(query2);
-            //ystem.out.println(QueryModelTreePrinter.printTree(tupleExpr2));
+            if (verbose){
+                System.out.println("*** Queries do not match ***");
+                System.out.println(query1);
+                System.out.println(QueryModelTreePrinter.printTree(tupleExpr1));
+                System.out.println("*");
+                System.out.println(query2);
+                System.out.println(QueryModelTreePrinter.printTree(tupleExpr2));
+            }
             return false;
         }
+    }
+    
+    public static boolean sameTupleExpr(String query1, String query2) throws MalformedQueryException{
+        return sameTupleExpr(query1, query2, true);
     }
     
     public static Set<URI> getURIS(String query) throws MalformedQueryException, QueryExpansionException{
