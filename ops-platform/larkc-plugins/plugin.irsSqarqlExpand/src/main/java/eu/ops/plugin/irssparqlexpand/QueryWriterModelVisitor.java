@@ -537,20 +537,40 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
 
     @Override
     public void meet(Slice slice) throws QueryExpansionException {
-        slice.getArg().visit(this);
-        if (slice.hasLimit()){
-            newLine();
-            queryString.append("LIMIT ");
-            queryString.append(slice.getLimit());     
+        if (isAsk(slice)){
+            queryString.append("ASK  {");
+            slice.getArg().visit(this);
+            queryString.append("}");
+        } else {
+            slice.getArg().visit(this);
+            if (slice.hasLimit()){
+                newLine();
+                queryString.append("LIMIT ");
+                queryString.append(slice.getLimit());     
+            }
+            if (slice.hasOffset()){
+                newLine();
+                queryString.append("OFFSET ");
+                queryString.append(slice.getOffset());     
+            }
         }
-        if (slice.hasOffset()){
-            newLine();
-            queryString.append("OFFSET ");
-            queryString.append(slice.getOffset());     
-        }
-//        throw new QueryExpansionException("Slice not supported yet.");
     }
 
+    private boolean isAsk(Slice slice){
+        if (!(slice.hasLimit())) return false;
+        if (slice.getLimit() > 1) return false;
+        TupleExpr arg = slice.getArg();
+        if (arg instanceof Reduced){
+            arg = ((Reduced)arg).getArg();
+        } else if (arg instanceof Distinct){
+            arg = ((Distinct)arg).getArg();
+        } 
+        if (arg instanceof Projection){
+            return false;
+        }
+        return true;
+    }
+    
     @Override
     public void meet(SameTerm st) throws QueryExpansionException {
         throw new QueryExpansionException("SameTerm not supported yet.");

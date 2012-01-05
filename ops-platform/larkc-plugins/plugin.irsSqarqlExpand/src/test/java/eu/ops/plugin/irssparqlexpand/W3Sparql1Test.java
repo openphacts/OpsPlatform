@@ -1551,11 +1551,12 @@ public class W3Sparql1Test {
     }
 
      /**
-     * Test the query found in Section 
-     * / 
+     * Test the query found in Section 10.3
+     */ 
     @Test
-    public void test() throws MalformedQueryException, QueryExpansionException {
-        String inputQuery ="";
+    public void test10_3() throws MalformedQueryException, QueryExpansionException {
+        String inputQuery ="PREFIX foaf:    <http://xmlns.com/foaf/0.1/>"
+               + "ASK  { ?x foaf:name  \"Alice\" }";
 
         String expectedQuery = inputQuery;
               
@@ -1575,7 +1576,94 @@ public class W3Sparql1Test {
         assertTrue(QueryUtils.sameTupleExpr(expectedQuery, query.toString()));
     }
 
-     /*Lastone*/
+     /**
+     * Test a query like the query found in Section 10.3
+     */ 
+    @Test
+    public void test10_3_a() throws MalformedQueryException, QueryExpansionException {
+        String inputQuery ="PREFIX foaf:    <http://xmlns.com/foaf/0.1/>"
+                + "SELECT * "
+                + "WHERE{ "
+                + "?x foaf:name  \"Alice\" }"
+                + "LIMIT 1";
+
+        String expectedQuery = inputQuery;
+              
+        final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
+        
+        IRSSPARQLExpand expander = 
+                new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+            @Override
+            IRSMapper instantiateIRSMapper() {
+                return dummyIRSMapper;
+            }
+        };
+        expander.initialiseInternal(null);
+        SetOfStatements eQuery = expander.invokeInternalWithExceptions(
+                new SPARQLQueryImpl(inputQuery).toRDF());
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        assertTrue(QueryUtils.sameTupleExpr(expectedQuery, query.toString()));
+    }
+
+     /**
+     * Test a query like the query found in Section 10.3
+     */ 
+    @Test
+    public void test10_3_b() throws MalformedQueryException, QueryExpansionException {
+        String inputQuery ="PREFIX foaf:    <http://xmlns.com/foaf/0.1/>"
+                + "SELECT REDUCED * "
+                + "WHERE{ "
+                + "?x foaf:name  \"Alice\" }"
+                + "LIMIT 1";
+
+        String expectedQuery = inputQuery;
+              
+        final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
+        
+        IRSSPARQLExpand expander = 
+                new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+            @Override
+            IRSMapper instantiateIRSMapper() {
+                return dummyIRSMapper;
+            }
+        };
+        expander.initialiseInternal(null);
+        SetOfStatements eQuery = expander.invokeInternalWithExceptions(
+                new SPARQLQueryImpl(inputQuery).toRDF());
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        assertTrue(QueryUtils.sameTupleExpr(expectedQuery, query.toString()));
+    }
+
+     /**
+     * Test a query like the query found in Section 10.3
+     */ 
+    @Test
+    public void test10_3_c() throws MalformedQueryException, QueryExpansionException {
+        String inputQuery ="PREFIX foaf:    <http://xmlns.com/foaf/0.1/>"
+                + "SELECT DISTINCT * "
+                + "WHERE{ "
+                + "?x foaf:name  \"Alice\" }"
+                + "LIMIT 1";
+
+        String expectedQuery = inputQuery;
+              
+        final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
+        
+        IRSSPARQLExpand expander = 
+                new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+            @Override
+            IRSMapper instantiateIRSMapper() {
+                return dummyIRSMapper;
+            }
+        };
+        expander.initialiseInternal(null);
+        SetOfStatements eQuery = expander.invokeInternalWithExceptions(
+                new SPARQLQueryImpl(inputQuery).toRDF());
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        assertTrue(QueryUtils.sameTupleExpr(expectedQuery, query.toString()));
+    }
+
+    /*Lastone*/
      /**
      * Test the query found in Section 
      * / 
