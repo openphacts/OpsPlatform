@@ -135,6 +135,7 @@ public class QueryExpandAndWriteVisitor extends QueryWriterModelVisitor{
 
     //@Override
     public void meet(StatementPattern sp) throws QueryExpansionException  {
+        if (isDescribePattern(sp)) return;
         statements++;
         newLine();
         boolean newContext = startContext(sp); 
@@ -215,6 +216,22 @@ public class QueryExpandAndWriteVisitor extends QueryWriterModelVisitor{
             expandCompare(cmpr, cmpr.getLeftArg(), getMappedList(rightURI));                      
         }
         queryString.append(")");
+    }
+
+    @Override
+    String getUriString(URI uri){
+        List<URI> uriList = uriMappings.get(uri);
+        if (uriList == null || uriList.isEmpty()) {
+            return (" <" + uri.stringValue() + ">"); 
+        } else {
+            StringBuilder builder = new StringBuilder();
+            for (URI mapped: uriList){
+                builder.append(" <");
+                builder.append(mapped.stringValue());
+                builder.append(">");
+            }
+            return builder.toString();
+        }
     }
 
 }

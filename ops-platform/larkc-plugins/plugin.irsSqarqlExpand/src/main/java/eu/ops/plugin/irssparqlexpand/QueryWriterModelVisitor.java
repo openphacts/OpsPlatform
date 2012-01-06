@@ -7,6 +7,7 @@ import org.openrdf.model.Value;
 import org.openrdf.query.Dataset;
 import org.openrdf.query.algebra.And;
 import org.openrdf.query.algebra.BNodeGenerator;
+import org.openrdf.query.algebra.BinaryValueOperator;
 import org.openrdf.query.algebra.Bound;
 import org.openrdf.query.algebra.Compare;
 import org.openrdf.query.algebra.CompareAll;
@@ -402,17 +403,24 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
     }
 
     /**
-     * Lookahead function to see if this is a contruction
-     * @param pel
-     * @return 
+     * Lookahead function to see what query type this ProjectionElemList.
+     * <p>
+     * Note; This method is built from a few test cases and is probably far from complete.
+     * It will err on the side of SELECT.
+     * 
+     * @param pel A ProjectionElemList
+     * @return CONSTRUCT or DESCRIBE if it fits the pattenr seen so far. Otherwise SELECT
      */
-    private boolean isConstruction(ProjectionElemList pel){
+    private QueryType workoutQueryType(ProjectionElemList pel){
         List<ProjectionElem> elements = pel.getElements();
-        if (elements.size() != 3) return false;
-        if (!(elements.get(0).getTargetName().equals("subject"))) return false;
-        if (!(elements.get(1).getTargetName().equals("predicate"))) return false;
-        if (!(elements.get(2).getTargetName().equals("object"))) return false;
-        return true;
+        if (elements.size() != 3) return QueryType.SELECT;
+        if (!(elements.get(0).getTargetName().equals("subject"))) return QueryType.SELECT;
+        if (!(elements.get(1).getTargetName().equals("predicate"))) return QueryType.SELECT;
+        if (!(elements.get(2).getTargetName().equals("object"))) return QueryType.SELECT;
+        if (!(elements.get(0).getSourceName().equals("-descr-subj"))) return QueryType.CONSTRUCT;
+        if (!(elements.get(1).getSourceName().equals("-descr-pred"))) return QueryType.CONSTRUCT;
+        if (!(elements.get(2).getSourceName().equals("-descr-obj"))) return QueryType.CONSTRUCT;
+        return QueryType.DESCRIBE;
     }
     
     /**
@@ -478,18 +486,30 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
         if (arg instanceof Projection){
             Projection prjctn = (Projection)arg;
             TupleExpr prjctnArg = prjctn.getArg();
-            if (isConstruction(prjctn.getProjectionElemList())){
-                queryString.append("CONSTRUCT {");
-                HashMap<String, ValueExpr> mappedExstensionElements = mapExensionElements(prjctnArg);
-                meet (prjctn.getProjectionElemList(), mappedExstensionElements);
-                queryString.append("}");
-                newLine();
-                queryString.append("{");
-                prjctn.getArg().visit(this);
-                closeProjectionUnlessOrderHas(prjctn.getArg());
-            } else {
-                //SELECT QUERY
-                meet (prjctn, " REDUCED");
+            switch (workoutQueryType(prjctn.getProjectionElemList())){
+                case CONSTRUCT:
+                    queryString.append("CONSTRUCT {");
+                    HashMap<String, ValueExpr> mappedExstensionElements = mapExensionElements(prjctnArg);
+                    meet (prjctn.getProjectionElemList(), mappedExstensionElements);
+                    queryString.append("}");
+                    newLine();
+                    queryString.append("{");
+                    prjctn.getArg().visit(this);
+                    closeProjectionUnlessOrderHas(prjctn.getArg());
+                    break;
+                case DESCRIBE:
+                    if (prjctnArg instanceof Filter){
+                        writeDescribe((Filter)prjctnArg);
+                    } else {
+                        throw new QueryExpansionException ("Reduced assumed to be a Describe but "
+                                + "Projection element is not a Filter");
+                    }
+                    break;
+                case SELECT:    
+                    meet (prjctn, " REDUCED");
+                    break;
+                default: 
+                    throw new QueryExpansionException("Unexpected QueryType");
             }
         }  else if (arg instanceof MultiProjection){
             //Assuming it must be construct
@@ -576,12 +596,78 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
         throw new QueryExpansionException("SameTerm not supported yet.");
     }
 
+    private void writeDescribe(Filter filter) throws QueryExpansionException {
+        queryString.append ("DESCRIBE ");
+        ValueExpr condition = filter.getCondition();
+        writeDescribeVariable(condition);
+        TupleExpr arg = filter.getArg();
+        if (arg instanceof StatementPattern){
+            //Do nothing as only statement patter is the automatically added -descr-subj -descr-pred -descr-obj
+        } else {
+            queryString.append (" {");
+            filter.getArg().visit(this);
+            queryString.append (" }");
+        }
+    }
+
+    private void writeDescribeVariable(ValueExpr condition) throws QueryExpansionException {
+        if (condition instanceof Or){
+           Or or = (Or)condition;
+           writeDescribeVariable(or.getLeftArg());
+           writeDescribeVariable(or.getRightArg());
+        } else if (condition instanceof SameTerm) {
+           SameTerm term = (SameTerm)condition;
+           String leftName = extractName(term.getLeftArg());
+           if (" ?-descr-subj".equals(leftName)){
+               queryString.append(extractName(term.getRightArg()));
+           } else {
+               System.out.println(leftName);
+           }
+        } else {
+            throw new QueryExpansionException ("Expected Or when extracting DescribeVariable");
+        }
+    }
+    
+    private String extractName(ValueExpr expr) throws QueryExpansionException{
+        if (expr instanceof Var){
+            Var var = (Var)expr;
+            String name = var.getName();
+            if (var != null){
+                return " ?" + name;
+            } else {
+                throw new QueryExpansionException ("Expected null name when extracting a name");
+            }
+        } if (expr instanceof ValueConstant){
+            Value value = ((ValueConstant)expr).getValue();
+            if (value instanceof URI){
+                return getUriString((URI) value);
+               
+            } else {
+                return value.stringValue();
+            }
+        } else {
+            throw new QueryExpansionException ("Expected Var when extracting a name");
+        }
+    }
+    
+    /**
+     * Gets the String for a URI.
+     * 
+     * Designed to be overwritten by a method that can get mapped uris.
+     * 
+     * @param uri
+     * @return 
+     */
+    String getUriString(URI uri){
+         return (" <" + uri.stringValue() + ">"); 
+    }
+    
     @Override
     public void meet(Filter filter) throws QueryExpansionException {
         newLine();
-        queryString.append("FILTER (");
+        queryString.append("FILTER ");
         filter.getCondition().visit(this);
-        queryString.append(")");
+        //queryString.append(")");
         filter.getArg().visit(this);
     }
 
@@ -616,6 +702,7 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
     //Make sure to add changes to QueryExpandAndWriteVisititor too!
     @Override
     public void meet(StatementPattern sp) throws QueryExpansionException {
+        if (isDescribePattern(sp)) return;
         newLine();
         boolean newContext = startContext(sp); 
         sp.getSubjectVar().visit(this);
@@ -627,6 +714,16 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
         queryString.append(". ");
     }
 
+    boolean isDescribePattern(StatementPattern sp){
+        if (!(sp.getSubjectVar().isAnonymous())) return false;
+        if (!(sp.getPredicateVar().isAnonymous())) return false;
+        if (!(sp.getObjectVar().isAnonymous())) return false;
+        if (!("-descr-subj".equals(sp.getSubjectVar().getName()))) return false;
+        if (!("-descr-pred".equals(sp.getPredicateVar().getName()))) return false;
+        if (!("-descr-obj".equals(sp.getObjectVar().getName()))) return false;
+        return true;        
+    }
+    
     @Override
     public void meet(Str str) throws QueryExpansionException {
         throw new QueryExpansionException("Str not supported yet.");
