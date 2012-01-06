@@ -59,7 +59,7 @@ do
  db=`grep -m 1 "$c2b2r" $c2b2r_db_file | sed 's/[[:print:]]* //' | tr -d '\r' | tr -d '\n'`
  #echo $db
  if [ "$db" != "" ]; then
-  echo $cw skos:exactmatch $db . >> $outputfile
+  echo $cw skos:exactMatch $db . >> $outputfile
  fi
 done < tmp
 rm tmp

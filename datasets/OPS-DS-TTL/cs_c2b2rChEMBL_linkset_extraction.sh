@@ -49,7 +49,7 @@ do
  c2b2r_chembl=`grep -m 1 "$chebi" CHEBIs_in_ChEMBL.uris | sed 's/ [[:print:]]*$//' | tr -d '\r' | tr -d '\n'`
  #echo $c2b2r_chembl
  if [ "$c2b2r_chembl" != "" ]; then
-  echo $cs skos:exactmatch $c2b2r_chembl . >> $outputfile
+  echo $cs skos:exactMatch $c2b2r_chembl . >> $outputfile
  fi
 done < $cs2chemblfile
 
