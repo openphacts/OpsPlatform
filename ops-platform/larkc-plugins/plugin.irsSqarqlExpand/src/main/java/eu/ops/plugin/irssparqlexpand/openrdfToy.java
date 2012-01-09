@@ -356,12 +356,18 @@ public class openrdfToy {
                + "DESCRIBE ?x ?y "
                + "WHERE    { "
                + "   FILTER ( ?x > 25) }";
-       String queryStr = "PREFIX foaf:   <http://xmlns.com/foaf/0.1/>"
+       String queryStr35 = "PREFIX foaf:   <http://xmlns.com/foaf/0.1/>"
                + "DESCRIBE ?x "
                + "WHERE    { ?x foaf:mbox <mailto:alice@org> }";
        String queryStr36 = "PREFIX foaf:    <http://xmlns.com/foaf/0.1/>"
                + "ASK  { ?x foaf:name  \"Alice\" }";
-       
+       String queryStr = "PREFIX foaf: <http://xmlns.com/foaf/0.1/>"
+                + "PREFIX dc:   <http://purl.org/dc/elements/1.1/>"
+                + "PREFIX xsd:   <http://www.w3.org/2001/XMLSchema#>"
+                + "SELECT ?name"
+                + " WHERE { ?x foaf:givenName  ?givenName ."
+                + "         OPTIONAL { ?x dc:date ?date } ."
+                + "         FILTER ( bound(?date) ) }";;
                  //ParsedQuery parsedQuery23 = parser.parseQuery(queryStr23, null); 
          //TupleExpr tupleExpr23 = parsedQuery23.getTupleExpr();
          //System.out.println("23:"+ tupleExpr23);

@@ -1848,9 +1848,17 @@ public class W3Sparql1Test {
                 + "DESCRIBE ?x "
                 + "WHERE    { ?x foaf:mbox <mailto:alice@org> }";
 
-        String expectedQuery = inputQuery;
+        String expectedQuery = "PREFIX foaf:   <http://xmlns.com/foaf/0.1/>"
+                + "DESCRIBE ?x "
+                + "WHERE {"
+                + "    ?x foaf:mbox ?objectUri1 "
+                + "        FILTER (?objectUri1 = <mailto:aliceJones@org>"
+                + "             || ?objectUri1 = <mailto:alice@org>)"     
+                + "}";
               
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
+        dummyIRSMapper.addMapping("mailto:alice@org", "mailto:aliceJones@org");
+        dummyIRSMapper.addMapping("mailto:alice@org", "mailto:alice@org");
         
         IRSSPARQLExpand expander = 
                 new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
@@ -1863,6 +1871,7 @@ public class W3Sparql1Test {
         SetOfStatements eQuery = expander.invokeInternalWithExceptions(
                 new SPARQLQueryImpl(inputQuery).toRDF());
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        System.out.println(query.toString());
         assertTrue(QueryUtils.sameTupleExpr(expectedQuery, query.toString()));
     }
 
@@ -1921,11 +1930,12 @@ public class W3Sparql1Test {
     }
 
      /**
-     * Test the query found in Section 
-     * / 
+     * Test the query found in Section 10.4.3
+     */ 
     @Test
-    public void test() throws MalformedQueryException, QueryExpansionException {
-        String inputQuery ="";
+    public void test10_4_3() throws MalformedQueryException, QueryExpansionException {
+        String inputQuery ="PREFIX ent:  <http://org.example.com/employees#> "
+                + "DESCRIBE ?x WHERE { ?x ent:employeeId \"1234\" }";
 
         String expectedQuery = inputQuery;
               
@@ -1946,11 +1956,17 @@ public class W3Sparql1Test {
     }
 
      /**
-     * Test the query found in Section 
-     * / 
+     * Test the query found in Section 11
+     */ 
     @Test
-    public void test() throws MalformedQueryException, QueryExpansionException {
-        String inputQuery ="";
+    public void test11() throws MalformedQueryException, QueryExpansionException {
+        String inputQuery ="PREFIX a:      <http://www.w3.org/2000/10/annotation-ns#>"
+                + "PREFIX dc:     <http://purl.org/dc/elements/1.1/>"
+                + "PREFIX xsd:    <http://www.w3.org/2001/XMLSchema#>"
+                + "SELECT ?annot "
+                + "WHERE { ?annot  a:annotates  <http://www.w3.org/TR/rdf-sparql-query/> ."
+                + "        ?annot  dc:date      ?date ."
+                + "        FILTER ( ?date > \"2005-01-01T00:00:00Z\"^^xsd:dateTime ) }";
 
         String expectedQuery = inputQuery;
               
@@ -1971,13 +1987,26 @@ public class W3Sparql1Test {
     }
 
      /**
-     * Test the query found in Section 
-     * / 
+     * Test the query found in Section 11.4.1
+     */ 
     @Test
-    public void test() throws MalformedQueryException, QueryExpansionException {
-        String inputQuery ="";
-
-        String expectedQuery = inputQuery;
+    public void test11_4_1() throws MalformedQueryException, QueryExpansionException {
+        String inputQuery ="PREFIX foaf: <http://xmlns.com/foaf/0.1/>"
+                + "PREFIX dc:   <http://purl.org/dc/elements/1.1/>"
+                + "PREFIX xsd:   <http://www.w3.org/2001/XMLSchema#>"
+                + "SELECT ?name"
+                + " WHERE { ?x foaf:givenName  ?givenName ."
+                + "         OPTIONAL { ?x dc:date ?date } ."
+                + "         FILTER ( bound(?date) ) }";
+        //Order of statements comes our diffeently but same query.
+        String expectedQuery = "PREFIX foaf: <http://xmlns.com/foaf/0.1/>"
+                + "PREFIX dc:   <http://purl.org/dc/elements/1.1/>"
+                + "PREFIX xsd:   <http://www.w3.org/2001/XMLSchema#>"
+                + "SELECT ?name"
+                + " WHERE { ?x foaf:givenName  ?givenName ."
+                + "         FILTER ( bound(?date) )"
+                + "         OPTIONAL { ?x dc:date ?date } "
+                + "}";
               
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
         
@@ -1996,11 +2025,18 @@ public class W3Sparql1Test {
     }
 
      /**
-     * Test the query found in Section 
-     * / 
+     * Test the query found in Section 11.4.2
+     * Slighlty changed order.
+     */
     @Test
-    public void test() throws MalformedQueryException, QueryExpansionException {
-        String inputQuery ="";
+    public void test11_4_2() throws MalformedQueryException, QueryExpansionException {
+        String inputQuery ="PREFIX foaf: <http://xmlns.com/foaf/0.1/>"
+                + "SELECT ?name ?mbox "
+                + "WHERE { "
+                + "       FILTER isIRI(?mbox) "
+                + "       ?x foaf:name  ?name ;"
+                + "          foaf:mbox  ?mbox ."
+                + "}";
 
         String expectedQuery = inputQuery;
               

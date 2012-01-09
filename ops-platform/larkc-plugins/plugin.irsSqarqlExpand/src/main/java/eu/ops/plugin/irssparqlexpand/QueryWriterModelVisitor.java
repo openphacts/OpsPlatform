@@ -117,7 +117,9 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
 
     @Override
     public void meet(Bound bound) throws QueryExpansionException {
-        throw new QueryExpansionException("Bound not supported yet.");
+        queryString.append("BOUND(");
+        bound.getArg().visit(this);
+        queryString.append(") ");        
     }
 
     @Override
