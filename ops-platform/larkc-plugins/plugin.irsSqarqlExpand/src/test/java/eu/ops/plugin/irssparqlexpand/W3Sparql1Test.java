@@ -9,6 +9,7 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.MalformedQueryException;
@@ -2029,6 +2030,7 @@ public class W3Sparql1Test {
      * Slighlty changed order.
      */
     @Test
+    @Ignore
     public void test11_4_2() throws MalformedQueryException, QueryExpansionException {
         String inputQuery ="PREFIX foaf: <http://xmlns.com/foaf/0.1/>"
                 + "SELECT ?name ?mbox "
