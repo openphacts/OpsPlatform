@@ -47,6 +47,7 @@ import eu.larkc.plugin.Plugin;
 public class ConceptWiki extends Plugin
 {
 	private static final String CW_QUERY = "http://wiki.openphacts.org/index.php/ext_function#conceptwiki_";
+	private static final String CW_PREFIX = "http://www.conceptwiki.org/wiki/concept/";
 	private static final String CW_SEARCH = "search";
 	private static final String CW_GET_CONCEPT = "get_concept";
 	private static final String CW_SEARCH_URL = "search_url";
@@ -230,14 +231,14 @@ public class ConceptWiki extends Plugin
 
 						for(String id: uuidCache) {
 							if(! id.startsWith("http")) {
-								id = "http://www.conceptwiki.org/wiki/concept/" + id;
+								id = CW_PREFIX + id;
 							}
 
                 			
 							if( var2 == null ) {
 								if(p.toString().endsWith(CW_GET_CONCEPT)) {
 									if(! obj.startsWith("http")) {
-										obj = "http://www.conceptwiki.org/wiki/concept/" + obj;
+										obj = CW_PREFIX + obj;
 									}
 									//System.out.println(id + " " + p.toString() + " " + obj);
 									myStore.addStatement(new URIImpl(id), new URIImpl(p.toString()), new URIImpl(obj), FIXEDCONTEXT, label);
@@ -251,7 +252,7 @@ public class ConceptWiki extends Plugin
 									//System.out.println("pred2: " + pred2);
 									//obj = obj.replaceAll("\"", "");
 									if(! obj.startsWith("http")) {
-										obj = "http://www.conceptwiki.org/wiki/concept/" + obj;
+										obj = CW_PREFIX + obj;
 									}
 									//System.out.println(id + " " + p.toString() + " " + obj);
 									myStore.addStatement(new URIImpl(id), new URIImpl(p.toString()), new URIImpl(obj), FIXEDCONTEXT, label);
@@ -262,7 +263,7 @@ public class ConceptWiki extends Plugin
 									myStore.addStatement(new URIImpl(id), new URIImpl(p.toString()), new LiteralImpl(obj), FIXEDCONTEXT, label);
 									var2 = var2.replaceAll("\"", "");
 									if(! var2.startsWith("http")) {
-										var2 = "http://www.conceptwiki.org/wiki/concept/" + var2;
+										var2 = CW_PREFIX + var2;
 									}
 									//System.out.println(id + " " + CW_QUERY + CW_TAG_SPEC + " " + var2);
 									myStore.addStatement(new URIImpl(id), new URIImpl(CW_QUERY+CW_TAG_SPEC), new URIImpl(var2), FIXEDCONTEXT, label);
