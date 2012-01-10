@@ -224,6 +224,7 @@ public class ConceptWiki extends Plugin
 					}
 						//System.out.println("uuidCache contains: " + uuidCache.size());
 						String obj = o.toString();
+						obj = obj.replaceAll("\"", "");
 
 						//System.out.println(id + " " + p.toString() + " " + obj);
 
@@ -235,7 +236,6 @@ public class ConceptWiki extends Plugin
                 			
 							if( var2 == null ) {
 								if(p.toString().endsWith(CW_GET_CONCEPT)) {
-									obj = obj.replaceAll("\"", "");
 									if(! obj.startsWith("http")) {
 										obj = "http://www.conceptwiki.org/wiki/concept/" + obj;
 									}
@@ -249,7 +249,7 @@ public class ConceptWiki extends Plugin
 							} else {
 								if(pred2.endsWith(CW_TAG_SPEC)) {
 									//System.out.println("pred2: " + pred2);
-									obj = obj.replaceAll("\"", "");
+									//obj = obj.replaceAll("\"", "");
 									if(! obj.startsWith("http")) {
 										obj = "http://www.conceptwiki.org/wiki/concept/" + obj;
 									}
