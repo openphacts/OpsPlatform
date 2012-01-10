@@ -46,7 +46,11 @@ public class QueryExpandAndWriteVisitor extends QueryWriterModelVisitor{
         if (value == null) return null;
         if (value instanceof URI){
             URI uri = (URI) value;
-            List<URI> uriList = getMappedList(uri);
+            List<URI> uriList = uriMappings.get(uri);;
+            if (uriList == null){
+                //unmapped.
+                return null;
+            }
             //Only care it is a URI if there is more than one mapping
             if (uriList.size() > 1){
                return uri;

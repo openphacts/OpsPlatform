@@ -2040,7 +2040,62 @@ public class W3Sparql1Test {
                 + "          foaf:mbox  ?mbox ."
                 + "}";
 
-        String expectedQuery = inputQuery;
+        //ISURI and ISIRI result in the same TupleExpr
+        String expectedQuery = "PREFIX foaf: <http://xmlns.com/foaf/0.1/>"
+                + "SELECT ?name ?mbox "
+                + "WHERE { "
+                + "       FILTER isURI(?mbox) "
+                + "       ?x foaf:name  ?name ;"
+                + "          foaf:mbox  ?mbox ."
+                + "}";
+              
+        final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
+        
+        IRSSPARQLExpand expander = 
+                new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+            @Override
+            IRSMapper instantiateIRSMapper() {
+                return dummyIRSMapper;
+            }
+        };
+        expander.initialiseInternal(null);
+        SetOfStatements eQuery = expander.invokeInternalWithExceptions(
+                new SPARQLQueryImpl(inputQuery).toRDF());
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        //Test with IsIri
+        assertTrue(QueryUtils.sameTupleExpr(inputQuery, query.toString()));
+        //Test with IsUri
+        assertTrue(QueryUtils.sameTupleExpr(expectedQuery, query.toString()));
+    }
+
+     /**
+     * Test the query found in Section 11.4.3
+     */ 
+    @Test
+    public void test11_4_3() throws MalformedQueryException, QueryExpansionException {
+        String inputQuery ="PREFIX a:      <http://www.w3.org/2000/10/annotation-ns#>"
+                + "PREFIX dc:     <http://purl.org/dc/elements/1.1/>"
+                + "PREFIX foaf:   <http://xmlns.com/foaf/0.1/>"
+                + "SELECT ?given ?family "
+                + "WHERE { "
+                + "         ?annot  a:annotates  <http://www.w3.org/TR/rdf-sparql-query/> ."
+                + "         ?annot  dc:creator   ?c ."
+                + "         OPTIONAL { ?c  foaf:given   ?given ; foaf:family  ?family } ."
+                + "         FILTER isBlank(?c)"
+                + "       }";
+
+        //Filter has moved up.
+        String expectedQuery = "PREFIX a:      <http://www.w3.org/2000/10/annotation-ns#>"
+                + "PREFIX dc:     <http://purl.org/dc/elements/1.1/>"
+                + "PREFIX foaf:   <http://xmlns.com/foaf/0.1/>"
+                + "SELECT ?given ?family "
+                + "WHERE { "
+                + "         FILTER isBlank(?c)"
+                + "         ?annot  a:annotates  <http://www.w3.org/TR/rdf-sparql-query/> ."
+                + "         ?annot  dc:creator   ?c ."
+                + "         OPTIONAL { ?c  foaf:given   ?given ; foaf:family  ?family } ."
+                + "       }";
+
               
         final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
         
@@ -2059,6 +2114,423 @@ public class W3Sparql1Test {
     }
 
      /**
+     * Test the query found in Section 11.4.4 
+     */ 
+    @Test
+    public void test11_4_4() throws MalformedQueryException, QueryExpansionException {
+        String inputQuery ="PREFIX foaf: <http://xmlns.com/foaf/0.1/>"
+                + "SELECT ?name ?mbox"
+                + "WHERE { ?x foaf:name  ?name ;"
+                + "           foaf:mbox  ?mbox ."
+                + "         FILTER isLiteral(?mbox) }";
+
+        String expectedQuery = inputQuery;
+              
+        final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
+        
+        IRSSPARQLExpand expander = 
+                new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+            @Override
+            IRSMapper instantiateIRSMapper() {
+                return dummyIRSMapper;
+            }
+        };
+        expander.initialiseInternal(null);
+        SetOfStatements eQuery = expander.invokeInternalWithExceptions(
+                new SPARQLQueryImpl(inputQuery).toRDF());
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        assertTrue(QueryUtils.sameTupleExpr(expectedQuery, query.toString()));
+    }
+
+    /**
+     * Test the query found in Section 11.4.5
+     */ 
+    @Test
+    public void test11_4_5() throws MalformedQueryException, QueryExpansionException {
+        String inputQuery ="PREFIX foaf: <http://xmlns.com/foaf/0.1/>"
+                + "SELECT ?name ?mbox "
+                + "WHERE { ?x foaf:name  ?name ;"
+                + "            foaf:mbox  ?mbox ."
+                + "         FILTER regex(str(?mbox), \"@work.example\") }";
+
+        String expectedQuery = inputQuery;
+              
+        final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
+        
+        IRSSPARQLExpand expander = 
+                new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+            @Override
+            IRSMapper instantiateIRSMapper() {
+                return dummyIRSMapper;
+            }
+        };
+        expander.initialiseInternal(null);
+        SetOfStatements eQuery = expander.invokeInternalWithExceptions(
+                new SPARQLQueryImpl(inputQuery).toRDF());
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        assertTrue(QueryUtils.sameTupleExpr(expectedQuery, query.toString()));
+    }
+
+    /**
+     * Test the query found in Section 11.4.6
+     */ 
+    @Test
+    public void test11_4_6() throws MalformedQueryException, QueryExpansionException {
+        String inputQuery ="PREFIX foaf: <http://xmlns.com/foaf/0.1/>"
+                + "SELECT ?name ?mbox "
+                + "WHERE { ?x foaf:name  ?name ;"
+                + "            foaf:mbox  ?mbox ."
+                + "         FILTER ( lang(?name) = \"ES\" ) }";
+
+        String expectedQuery = inputQuery;
+              
+        final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
+        
+        IRSSPARQLExpand expander = 
+                new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+            @Override
+            IRSMapper instantiateIRSMapper() {
+                return dummyIRSMapper;
+            }
+        };
+        expander.initialiseInternal(null);
+        SetOfStatements eQuery = expander.invokeInternalWithExceptions(
+                new SPARQLQueryImpl(inputQuery).toRDF());
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        assertTrue(QueryUtils.sameTupleExpr(expectedQuery, query.toString()));
+    }
+
+    /**
+     * Test the query found in Section 11.4.7
+     */ 
+    @Test
+    public void test11_4_7() throws MalformedQueryException, QueryExpansionException {
+        String inputQuery ="PREFIX foaf: <http://xmlns.com/foaf/0.1/>"
+                + "PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>"
+                + "PREFIX eg:   <http://biometrics.example/ns#>"
+                + "SELECT ?name ?shoeSize "
+                + "WHERE { ?x foaf:name  ?name ; eg:shoeSize  ?shoeSize ."
+                + "         FILTER ( datatype(?shoeSize) = xsd:integer ) }";
+
+        String expectedQuery = inputQuery;
+              
+        final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
+        
+        IRSSPARQLExpand expander = 
+                new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+            @Override
+            IRSMapper instantiateIRSMapper() {
+                return dummyIRSMapper;
+            }
+        };
+        expander.initialiseInternal(null);
+        SetOfStatements eQuery = expander.invokeInternalWithExceptions(
+                new SPARQLQueryImpl(inputQuery).toRDF());
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        assertTrue(QueryUtils.sameTupleExpr(expectedQuery, query.toString()));
+    }
+
+    /**
+     * Test the first query found in Section 11.4.10
+     */ 
+    @Test
+    public void test11_4_10a() throws MalformedQueryException, QueryExpansionException {
+        String inputQuery ="PREFIX foaf: <http://xmlns.com/foaf/0.1/>"
+                + "SELECT ?name1 ?name2 "
+                + "WHERE { ?x foaf:name  ?name1 ;"
+                + "            foaf:mbox  ?mbox1 ."
+                + "         ?y foaf:name  ?name2 ;"
+                + "            foaf:mbox  ?mbox2 ."
+                + "         FILTER (?mbox1 = ?mbox2 && ?name1 != ?name2)"
+                + "       }";
+
+        String expectedQuery = inputQuery;
+              
+        final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
+        
+        IRSSPARQLExpand expander = 
+                new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+            @Override
+            IRSMapper instantiateIRSMapper() {
+                return dummyIRSMapper;
+            }
+        };
+        expander.initialiseInternal(null);
+        SetOfStatements eQuery = expander.invokeInternalWithExceptions(
+                new SPARQLQueryImpl(inputQuery).toRDF());
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        assertTrue(QueryUtils.sameTupleExpr(expectedQuery, query.toString()));
+    }
+
+    /**
+     * Test the second query found in Section 11.4.10
+     */ 
+    @Test
+    public void test11_4_10() throws MalformedQueryException, QueryExpansionException {
+        String inputQuery ="PREFIX a:      <http://www.w3.org/2000/10/annotation-ns#>"
+                + "PREFIX dc:     <http://purl.org/dc/elements/1.1/>"
+                + "PREFIX xsd:    <http://www.w3.org/2001/XMLSchema#>"
+                + "SELECT ?annotates "
+                + "WHERE { ?annot  a:annotates  ?annotates ."
+                + "        ?annot  dc:date      ?date ."
+                + "        FILTER ( ?date = xsd:dateTime(\"2005-01-01T00:00:00Z\") ) }";
+
+        String expectedQuery = inputQuery;
+              
+        final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
+        
+        IRSSPARQLExpand expander = 
+                new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+            @Override
+            IRSMapper instantiateIRSMapper() {
+                return dummyIRSMapper;
+            }
+        };
+        expander.initialiseInternal(null);
+        SetOfStatements eQuery = expander.invokeInternalWithExceptions(
+                new SPARQLQueryImpl(inputQuery).toRDF());
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        assertTrue(QueryUtils.sameTupleExpr(expectedQuery, query.toString()));
+    }
+
+    /**
+     * Test the first query found in Section 11.4.11
+     */ 
+    @Test
+    public void test11_4_11a() throws MalformedQueryException, QueryExpansionException {
+        String inputQuery ="PREFIX foaf: <http://xmlns.com/foaf/0.1/>"
+                + "SELECT ?name1 ?name2 "
+                + "WHERE { ?x foaf:name  ?name1 ;"
+                + "            foaf:mbox  ?mbox1 ."
+                + "         ?y foaf:name  ?name2 ;"
+                + "            foaf:mbox  ?mbox2 ."
+                + "         FILTER (sameTerm(?mbox1, ?mbox2) && !sameTerm(?name1, ?name2))"
+                + "       }";
+
+        String expectedQuery = inputQuery;
+              
+        final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
+        
+        IRSSPARQLExpand expander = 
+                new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+            @Override
+            IRSMapper instantiateIRSMapper() {
+                return dummyIRSMapper;
+            }
+        };
+        expander.initialiseInternal(null);
+        SetOfStatements eQuery = expander.invokeInternalWithExceptions(
+                new SPARQLQueryImpl(inputQuery).toRDF());
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        assertTrue(QueryUtils.sameTupleExpr(expectedQuery, query.toString()));
+    }
+
+    /**
+     * Test the second query found in Section 11.4.11
+     * With the missing closing bracket added!
+     */ 
+    @Test
+    public void test11_4_11() throws MalformedQueryException, QueryExpansionException {
+        String inputQuery ="PREFIX  :      <http://example.org/WMterms#>"
+                + "PREFIX  t:     <http://example.org/types#>"
+                + "SELECT ?aLabel1 ?bLabel "
+                + "WHERE { ?a  :label        ?aLabel ."
+                + "        ?a  :weight       ?aWeight ."
+                + "        ?a  :displacement ?aDisp ."
+                + "        ?b  :label        ?bLabel ."
+                + "        ?b  :weight       ?bWeight ."
+                + "        ?b  :displacement ?bDisp ."
+                + "        FILTER ( sameTerm(?aWeight, ?bWeight) && !sameTerm(?aDisp, ?bDisp) ) }";
+
+        String expectedQuery = inputQuery;
+              
+        final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
+        
+        IRSSPARQLExpand expander = 
+                new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+            @Override
+            IRSMapper instantiateIRSMapper() {
+                return dummyIRSMapper;
+            }
+        };
+        expander.initialiseInternal(null);
+        SetOfStatements eQuery = expander.invokeInternalWithExceptions(
+                new SPARQLQueryImpl(inputQuery).toRDF());
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        assertTrue(QueryUtils.sameTupleExpr(expectedQuery, query.toString()));
+    }
+
+    /**
+     * Test the query found in Section 11.4.12
+     */ 
+    @Test
+    public void test11_4_12() throws MalformedQueryException, QueryExpansionException {
+        String inputQuery ="PREFIX dc: <http://purl.org/dc/elements/1.1/>"
+                + "SELECT ?title "
+                + "WHERE { ?x dc:title  \"That Seventies Show\"@en ;"
+                + "            dc:title  ?title ."
+                + "         FILTER langMatches( lang(?title), \"FR\" ) }";
+
+        String expectedQuery = inputQuery;
+              
+        final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
+        
+        IRSSPARQLExpand expander = 
+                new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+            @Override
+            IRSMapper instantiateIRSMapper() {
+                return dummyIRSMapper;
+            }
+        };
+        expander.initialiseInternal(null);
+        SetOfStatements eQuery = expander.invokeInternalWithExceptions(
+                new SPARQLQueryImpl(inputQuery).toRDF());
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        assertTrue(QueryUtils.sameTupleExpr(expectedQuery, query.toString()));
+    }
+
+    /**
+     * Test the query found in Section 11.4.13
+     */ 
+    @Test
+    public void test11_4_13() throws MalformedQueryException, QueryExpansionException {
+        String inputQuery ="PREFIX foaf: <http://xmlns.com/foaf/0.1/> SELECT ?name "
+                + "WHERE { ?x foaf:name  ?name"
+                + "         FILTER regex(?name, \"^ali\", \"i\") }";
+
+        String expectedQuery = inputQuery;
+              
+        final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
+        
+        IRSSPARQLExpand expander = 
+                new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+            @Override
+            IRSMapper instantiateIRSMapper() {
+                return dummyIRSMapper;
+            }
+        };
+        expander.initialiseInternal(null);
+        SetOfStatements eQuery = expander.invokeInternalWithExceptions(
+                new SPARQLQueryImpl(inputQuery).toRDF());
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        assertTrue(QueryUtils.sameTupleExpr(expectedQuery, query.toString()));
+    }
+
+    /**
+     * Test the first query found in Section 11.6
+     */ 
+    @Test
+    public void test11_6a() throws MalformedQueryException, QueryExpansionException {
+        String inputQuery ="PREFIX foaf: <http://xmlns.com/foaf/0.1/>"
+                + "PREFIX func: <http://example.org/functions#>"
+                + "SELECT ?name ?id "
+                + "WHERE { ?x foaf:name  ?name ;"
+                + "           func:empId   ?id ."
+                + "        FILTER (func:even(?id)) }";
+
+        String expectedQuery = inputQuery;
+              
+        final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
+        
+        IRSSPARQLExpand expander = 
+                new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+            @Override
+            IRSMapper instantiateIRSMapper() {
+                return dummyIRSMapper;
+            }
+        };
+        expander.initialiseInternal(null);
+        SetOfStatements eQuery = expander.invokeInternalWithExceptions(
+                new SPARQLQueryImpl(inputQuery).toRDF());
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        assertTrue(QueryUtils.sameTupleExpr(expectedQuery, query.toString()));
+    }
+
+    /**
+     * Test the second query found in Section 11.6
+     */ 
+    @Test
+    public void test11_6b() throws MalformedQueryException, QueryExpansionException {
+        String inputQuery ="PREFIX aGeo: <http://example.org/geo#>"
+                + "SELECT ?neighbor "
+                + "WHERE { ?a aGeo:placeName \"Grenoble\" ."
+                + "        ?a aGeo:location ?axLoc ."
+                + "        ?a aGeo:location ?ayLoc ."
+                + "        ?b aGeo:placeName ?neighbor ."
+                + "        ?b aGeo:location ?bxLoc ."
+                + "        ?b aGeo:location ?byLoc ."
+                + "        FILTER ( aGeo:distance(?axLoc, ?ayLoc, ?bxLoc, ?byLoc) < 10 ) ."
+                + "      }";
+
+        String expectedQuery = inputQuery;
+              
+        final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
+        
+        IRSSPARQLExpand expander = 
+                new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+            @Override
+            IRSMapper instantiateIRSMapper() {
+                return dummyIRSMapper;
+            }
+        };
+        expander.initialiseInternal(null);
+        SetOfStatements eQuery = expander.invokeInternalWithExceptions(
+                new SPARQLQueryImpl(inputQuery).toRDF());
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        assertTrue(QueryUtils.sameTupleExpr(expectedQuery, query.toString()));
+    }
+
+    /**
+     * Test the query found in Section 
+     * / 
+    @Test
+    public void test() throws MalformedQueryException, QueryExpansionException {
+        String inputQuery ="";
+
+        String expectedQuery = inputQuery;
+              
+        final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
+        
+        IRSSPARQLExpand expander = 
+                new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+            @Override
+            IRSMapper instantiateIRSMapper() {
+                return dummyIRSMapper;
+            }
+        };
+        expander.initialiseInternal(null);
+        SetOfStatements eQuery = expander.invokeInternalWithExceptions(
+                new SPARQLQueryImpl(inputQuery).toRDF());
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        assertTrue(QueryUtils.sameTupleExpr(expectedQuery, query.toString()));
+    }
+
+    /**
+     * Test the query found in Section 
+     * / 
+    @Test
+    public void test() throws MalformedQueryException, QueryExpansionException {
+        String inputQuery ="";
+
+        String expectedQuery = inputQuery;
+              
+        final DummyIRSMapper dummyIRSMapper = new DummyIRSMapper();
+        
+        IRSSPARQLExpand expander = 
+                new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+            @Override
+            IRSMapper instantiateIRSMapper() {
+                return dummyIRSMapper;
+            }
+        };
+        expander.initialiseInternal(null);
+        SetOfStatements eQuery = expander.invokeInternalWithExceptions(
+                new SPARQLQueryImpl(inputQuery).toRDF());
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        assertTrue(QueryUtils.sameTupleExpr(expectedQuery, query.toString()));
+    }
+
+    /**
      * Test the query found in Section 
      * / 
     @Test
@@ -2083,7 +2555,8 @@ public class W3Sparql1Test {
         assertTrue(QueryUtils.sameTupleExpr(expectedQuery, query.toString()));
     }
     /*Lastone*/
-     /**
+
+    /**
      * Test the query found in Section 
      * / 
     @Test

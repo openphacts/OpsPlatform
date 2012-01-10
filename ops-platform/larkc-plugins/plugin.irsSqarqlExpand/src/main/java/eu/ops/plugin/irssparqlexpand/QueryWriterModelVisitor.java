@@ -150,7 +150,9 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
 
     @Override
     public void meet(Datatype dtp) throws QueryExpansionException {
-        throw new QueryExpansionException("Datatype not supported yet.");
+        queryString.append(" DATATYPE(");
+        dtp.getArg().visit(this);
+        queryString.append(")");
     }
 
     @Override
@@ -229,12 +231,16 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
 
     @Override
     public void meet(IsBNode ibn) throws QueryExpansionException {
-        throw new QueryExpansionException("IsBNode not supported yet.");
+        queryString.append(" ISBLANK(");
+        ibn.getArg().visit(this);
+        queryString.append(")");
     }
 
     @Override
     public void meet(IsLiteral il) throws QueryExpansionException {
-        throw new QueryExpansionException("IsLiteral not supported yet.");
+        queryString.append(" ISLITERAL(");
+        il.getArg().visit(this);
+        queryString.append(")");
     }
 
     @Override
@@ -244,7 +250,9 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
 
     @Override
     public void meet(IsURI isuri) throws QueryExpansionException {
-        throw new QueryExpansionException("IsURI not supported yet.");
+        queryString.append(" ISIRI(");
+        isuri.getArg().visit(this);
+        queryString.append(")");
     }
 
     @Override
@@ -263,12 +271,18 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
 
     @Override
     public void meet(Lang lang) throws QueryExpansionException {
-        throw new QueryExpansionException("Lang not supported yet.");
+        queryString.append(" LANG(");
+        lang.getArg().visit(this);
+        queryString.append(")");
     }
 
     @Override
     public void meet(LangMatches lm) throws QueryExpansionException {
-        throw new QueryExpansionException("LangMatches not supported yet.");
+        queryString.append(" LANGMATCHES(");
+        lm.getLeftArg().visit(this);
+        queryString.append(" ,");
+        lm.getRightArg().visit(this);
+        queryString.append(")");
     }
 
     @Override
@@ -308,7 +322,9 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
 
     @Override
     public void meet(Not not) throws QueryExpansionException {
-        throw new QueryExpansionException("\"Not\" not supported yet.");
+        queryString.append(" !(");
+        not.getArg().visit(this);
+        queryString.append(")");
     }
 
     @Override
@@ -595,7 +611,11 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
     
     @Override
     public void meet(SameTerm st) throws QueryExpansionException {
-        throw new QueryExpansionException("SameTerm not supported yet.");
+        queryString.append(" SAMETERM(");
+        st.getLeftArg().visit(this);
+        queryString.append(" ,");
+        st.getRightArg().visit(this);
+        queryString.append(")");
     }
 
     private void writeDescribe(Filter filter) throws QueryExpansionException {
@@ -728,7 +748,9 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
     
     @Override
     public void meet(Str str) throws QueryExpansionException {
-        throw new QueryExpansionException("Str not supported yet.");
+        queryString.append(" STR(");
+        str.getArg().visit(this);
+        queryString.append(")");
     }
 
     @Override

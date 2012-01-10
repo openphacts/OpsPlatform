@@ -361,13 +361,51 @@ public class openrdfToy {
                + "WHERE    { ?x foaf:mbox <mailto:alice@org> }";
        String queryStr36 = "PREFIX foaf:    <http://xmlns.com/foaf/0.1/>"
                + "ASK  { ?x foaf:name  \"Alice\" }";
-       String queryStr = "PREFIX foaf: <http://xmlns.com/foaf/0.1/>"
+       String queryStr37 = "PREFIX foaf: <http://xmlns.com/foaf/0.1/>"
                 + "PREFIX dc:   <http://purl.org/dc/elements/1.1/>"
                 + "PREFIX xsd:   <http://www.w3.org/2001/XMLSchema#>"
                 + "SELECT ?name"
                 + " WHERE { ?x foaf:givenName  ?givenName ."
                 + "         OPTIONAL { ?x dc:date ?date } ."
-                + "         FILTER ( bound(?date) ) }";;
+                + "         FILTER ( bound(?date) ) }";
+       String queryStr38 = "PREFIX foaf: <http://xmlns.com/foaf/0.1/>"
+                + "SELECT ?name ?mbox "
+                + "WHERE { "
+                + "       FILTER isIRI(?mbox) "
+                + "       ?x foaf:name  ?name ;"
+                + "          foaf:mbox  ?mbox ."
+                + "}";
+       String queryStr39 = "PREFIX foaf: <http://xmlns.com/foaf/0.1/>"
+                + "SELECT ?name ?mbox "
+                + "WHERE { "
+                + "         {"
+                + "            ?x foaf:name  <http://www.example.com/1> "
+                + "         }"
+                + "         UNION"
+                + "         {"
+                + "             ?x foaf:name  <http://www.example.com/2> ."
+                + "         }"
+                + "       ?x foaf:mbox  ?mbox ."
+                + "}";
+      String queryStr40 =  "SELECT  ?given ?family "
+              + "WHERE {"
+              + "FILTER  isBlank( ?c)"
+              + " ?annot <http://www.w3.org/2000/10/annotation-ns#annotates> <http://www.w3.org/TR/rdf-sparql-query/>. "
+              + " ?annot <http://purl.org/dc/elements/1.1/creator>  ?c. "
+              + "OPTIONAL {"
+              + " ?c <http://xmlns.com/foaf/0.1/given>  ?given. "
+              + " ?c <http://xmlns.com/foaf/0.1/family>  ?family. }}";
+      String queryStr = "PREFIX  :      <http://example.org/WMterms#>"
+                + "PREFIX  t:     <http://example.org/types#>"
+                + "SELECT ?aLabel1 ?bLabel "
+                + "WHERE { ?a  :label        ?aLabel ."
+                + "        ?a  :weight       ?aWeight ."
+                + "        ?a  :displacement ?aDisp ."
+                + "        ?b  :label        ?bLabel ."
+                + "        ?b  :weight       ?bWeight ."
+                + "        ?b  :displacement ?bDisp ."
+                + "        FILTER ( sameTerm(?aWeight, ?bWeight) && !sameTerm(?aDisp, ?bDisp) ) "
+                + "}";
                  //ParsedQuery parsedQuery23 = parser.parseQuery(queryStr23, null); 
          //TupleExpr tupleExpr23 = parsedQuery23.getTupleExpr();
          //System.out.println("23:"+ tupleExpr23);
