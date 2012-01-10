@@ -1,5 +1,6 @@
 package eu.ops.plugin.conceptwiki;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -82,10 +83,6 @@ public class ConceptWiki extends Plugin
 		outputGraphName=super.getNamedGraphFromParameters(workflowDescription, RDFConstants.DEFAULTOUTPUTNAME);
 	}
 
-	private boolean endMatch (String a, String b) { // the end of a consists of string b
-		return a.indexOf(b) > 0 && (a.indexOf(b) == a.length()-b.length());
-	}
-	
 	private InputStream cw_call_api(String query) {
 		String q = query.replaceAll("[\'\"]", "");
 		String request = "http://staging.conceptwiki.org/web-ws/concept/" + q;
@@ -96,12 +93,14 @@ public class ConceptWiki extends Plugin
 	    logger.info(method.toString());
 	    try {
 			int statusCode = client.executeMethod(method);
-		    logger.warn(method.getResponseBodyAsString());
-		} catch (HttpException e) {
-			// TODO Auto-generated catch block
+			if(statusCode != 200) {
+			    logger.info(method.getResponseBodyAsString());
+			}
+		} catch (HttpException e) { // any error fetching will be suppressed: log only
+			logger.error("HttpException, printing stacktrace");
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+	        logger.error("IOException, printing stacktrace");
 			e.printStackTrace();
 		}
 	    InputStream result = null;
@@ -109,7 +108,7 @@ public class ConceptWiki extends Plugin
 	    try {
 			result = method.getResponseBodyAsStream();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+	        logger.error("IOException, printing stacktrace");
 			e.printStackTrace();
 		}
 	    //logger.info(result);
@@ -155,27 +154,27 @@ public class ConceptWiki extends Plugin
 				Value o = (Value) sp.getObjectVar().getValue();
 				logger.info("sp: " + sp.toString());
 
-				if (p.toString().startsWith(CW_QUERY)) {
-					String varName = "";
+				if (p.toString().startsWith(CW_QUERY)) { // parse SPARQL query and build CW REST query string
+					String cw_query = "";
 					String var2 = null;
 					String pred2 = null;
-					if(endMatch(p.toString(), CW_SEARCH)) {
+					if(p.toString().endsWith(CW_SEARCH)) {
 						logger.info("Found a " + CW_SEARCH + " predicate");
-						varName += "search/?q=";
-					} else if(endMatch(p.toString(), CW_SEARCH_URL)) {
+						cw_query += "search/?q=";
+					} else if(p.toString().endsWith(CW_SEARCH_URL)) {
 						logger.info("Found a " + CW_SEARCH_URL + " predicate");
-						varName += "search/forUrl?q=";
-					} else if(endMatch(p.toString(), CW_GET_CONCEPT)) {
+						cw_query += "search/forUrl?q=";
+					} else if(p.toString().endsWith(CW_GET_CONCEPT)) {
 						logger.info("Found a " + CW_GET_CONCEPT + " predicate");
-						varName += "get/?uuid=";
-					} else if(endMatch(p.toString(), CW_SEARCH_BY_TAG) || endMatch(p.toString(), CW_TAG_SPEC)) {
-						varName += "search/byTag?";
-						if(endMatch(p.toString(), CW_SEARCH_BY_TAG)) {
+						cw_query += "get/?uuid=";
+					} else if(p.toString().endsWith(CW_SEARCH_BY_TAG) || p.toString().endsWith(CW_TAG_SPEC)) {
+						cw_query += "search/byTag?";
+						if(p.toString().endsWith(CW_SEARCH_BY_TAG)) {
 							logger.info("Found a " + CW_SEARCH_BY_TAG + " predicate");
-							varName += "q=" + o.toString() + "&uuid=";
+							cw_query += "q=" + o.toString() + "&uuid=";
 						} else {
 							logger.info("Found a " + CW_TAG_SPEC + " predicate");
-							varName += "uuid=" + o.toString() + "&q=";
+							cw_query += "uuid=" + o.toString() + "&q=";
  						}
 						if(sp_i.hasNext()) {
 							sp = sp_i.next();
@@ -204,45 +203,29 @@ public class ConceptWiki extends Plugin
                     		// collect UUIDs 
                     		if(s.getPredicate().toString().endsWith("www.w3.org/1999/02/22-rdf-syntax-ns#type")) {
                     			uuidCache.add(s.getSubject().toString());
-                    			System.out.println("found id: " + s.getObject().toString());
                     		}
-                    		//System.out.println("pred: " + s.getPredicate().toString());
                     		if (s.getContext()!=null)
                     			myStore.addStatement(s.getSubject(), s.getPredicate(), s.getObject(), (URI)s.getContext(), label);
                     		else
                     			myStore.addStatement(s.getSubject(), s.getPredicate(), s.getObject(), FIXEDCONTEXT, label);
                            }
                     });
-//                  // Parse input from test file:  
-//                    InputStream test = null;
-//                    try {
-//						test = new FileInputStream(new File("turtle.txt"));
-//						//System.out.println();
-//					} catch (FileNotFoundException e1) {
-//						// TODO Auto-generated catch block
-//						e1.printStackTrace();
-//					}
-//                    Writer out = new BufferedWriter(new OutputStreamWriter(System.out));
-//                    try {
-//                    	int c = 0;
-//                    	while((c = test.read()) != -1) {
-//                    		out.write(c);
-//                    	}
-//						out.flush();
-//	                    out.close();
-//					} catch (IOException e1) {
-//						// TODO Auto-generated catch block
-//						e1.printStackTrace();
-//					}
                     try {
 						//parser.parse(test, outputGraphName.toString());
                     	
                     	// if the cw_call_api() succeeds, then add 1 or 2 (for getByTag) triples that link query to result
                     	// parse call will put UUIDs in uuidCache
                     	uuidCache.clear();
-						parser.parse(cw_call_api(varName + o.toString()), outputGraphName.toString());
-						System.out.println("uuidCache contains: " + uuidCache.size());
+                    	InputStream cw_result = cw_call_api(cw_query + o.toString());
+						parser.parse(cw_result, outputGraphName.toString());
+					} catch (Exception e) {
+						logger.error("Could not parse result of call to ConceptWiki");
+						e.printStackTrace();
+					}
+						//System.out.println("uuidCache contains: " + uuidCache.size());
 						String obj = o.toString();
+
+						//System.out.println(id + " " + p.toString() + " " + obj);
 
 						for(String id: uuidCache) {
 							if(! id.startsWith("http")) {
@@ -251,52 +234,41 @@ public class ConceptWiki extends Plugin
 
                 			
 							if( var2 == null ) {
-								//System.out.println(id + " " + p.toString() + " " + obj);
 								if(p.toString().endsWith(CW_GET_CONCEPT)) {
 									obj = obj.replaceAll("\"", "");
 									if(! obj.startsWith("http")) {
 										obj = "http://www.conceptwiki.org/wiki/concept/" + obj;
 									}
-									System.out.println(id + " " + p.toString() + " " + obj);
+									//System.out.println(id + " " + p.toString() + " " + obj);
 									myStore.addStatement(new URIImpl(id), new URIImpl(p.toString()), new URIImpl(obj), FIXEDCONTEXT, label);
 								} else {
-									System.out.println(id + " " + p.toString() + " " + obj);
+									//System.out.println(id + " " + p.toString() + " " + obj);
 									myStore.addStatement(new URIImpl(id), new URIImpl(p.toString()), new LiteralImpl(obj), FIXEDCONTEXT, label);
 								}
 								
 							} else {
 								if(pred2.endsWith(CW_TAG_SPEC)) {
-									System.out.println("pred2: " + pred2);
+									//System.out.println("pred2: " + pred2);
 									obj = obj.replaceAll("\"", "");
 									if(! obj.startsWith("http")) {
 										obj = "http://www.conceptwiki.org/wiki/concept/" + obj;
 									}
-									System.out.println(id + " " + p.toString() + " " + obj);
+									//System.out.println(id + " " + p.toString() + " " + obj);
 									myStore.addStatement(new URIImpl(id), new URIImpl(p.toString()), new URIImpl(obj), FIXEDCONTEXT, label);
-									System.out.println(id + " " + CW_QUERY + CW_SEARCH_BY_TAG + " " + var2);
+									//System.out.println(id + " " + CW_QUERY + CW_SEARCH_BY_TAG + " " + var2);
 									myStore.addStatement(new URIImpl(id), new URIImpl(CW_QUERY+CW_SEARCH_BY_TAG), new LiteralImpl(var2), FIXEDCONTEXT, label);
 								} else {
-									System.out.println(id + " " + p.toString() + " " + obj);
+									//System.out.println(id + " " + p.toString() + " " + obj);
 									myStore.addStatement(new URIImpl(id), new URIImpl(p.toString()), new LiteralImpl(obj), FIXEDCONTEXT, label);
 									var2 = var2.replaceAll("\"", "");
 									if(! var2.startsWith("http")) {
 										var2 = "http://www.conceptwiki.org/wiki/concept/" + var2;
 									}
-									System.out.println(id + " " + CW_QUERY + CW_TAG_SPEC + " " + var2);
+									//System.out.println(id + " " + CW_QUERY + CW_TAG_SPEC + " " + var2);
 									myStore.addStatement(new URIImpl(id), new URIImpl(CW_QUERY+CW_TAG_SPEC), new URIImpl(var2), FIXEDCONTEXT, label);
 								}
 							}
 						}
-					} catch (RDFParseException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (RDFHandlerException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
 				} else {
 					logger.info("No ConceptWiki predicates found");
 				}
