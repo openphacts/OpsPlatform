@@ -38,6 +38,9 @@ import eu.larkc.core.query.SPARQLQueryImpl;
 import eu.larkc.core.util.RDFConstants;
 import eu.larkc.plugin.Plugin;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Input: SPARQL query, containing at least one pattern {?x [HAS_SIMILAR|HAS_SUBSTRUCTURE_MATCH|HAS_SUBSTRUCTURE_MATCH_OR_TAUTOMER|HAS_EXACT_STRUCTURE_MATCH] ?y}, where ?y is a bound literal representing a molecule
  * Output: Reference to graph with triples in the form: {?x [HAS_SIMILAR|HAS_SUBSTRUCTURE_MATCH|HAS_SUBSTRUCTURE_MATCH_OR_TAUTOMER|HAS_EXACT_STRUCTURE_MATCH] ?y}, where ?y is a bound URI in the form (http://inchi.chemspider.com/Chemical-Structure."+csid+".html), where csid is retrieved from chemspider
@@ -57,6 +60,8 @@ public class ConceptWiki extends Plugin
 	
 	private Set<String> uuidCache = new HashSet<String>();
 	private URI outputGraphName;
+	
+	private static Logger logger = LoggerFactory.getLogger(Plugin.class);
 
 	/**
 	 * Constructor.
@@ -81,6 +86,7 @@ public class ConceptWiki extends Plugin
 	@Override
 	protected void initialiseInternal(SetOfStatements workflowDescription) {
 		// Get the label of the graph
+		logger.info("ConceptWiki plugin initialized");
 		outputGraphName=super.getNamedGraphFromParameters(workflowDescription, RDFConstants.DEFAULTOUTPUTNAME);
 	}
 

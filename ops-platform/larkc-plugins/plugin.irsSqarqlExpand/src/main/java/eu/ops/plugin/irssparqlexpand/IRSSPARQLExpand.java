@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
  */
 public class IRSSPARQLExpand extends Plugin {
 
-    protected final Logger logger = LoggerFactory.getLogger(IRSSPARQLExpand.class);
+    protected static Logger logger = LoggerFactory.getLogger(Plugin.class);
     private IRSMapper irsMapper = null;
     private boolean showExpandedVariables = false;
     
@@ -71,6 +71,7 @@ public class IRSSPARQLExpand extends Plugin {
         tupleExpr.visit(writerVisitor);
         String expandedQueryString = writerVisitor.getQuery();
         //ystem.out.println(expandedQueryString);
+        logger.info("Expanded SPARQL: "+ expandedQueryString);
         SPARQLQuery expandedQuery = new SPARQLQueryImpl(expandedQueryString);
         return expandedQuery.toRDF();      
     }
@@ -94,6 +95,7 @@ public class IRSSPARQLExpand extends Plugin {
         //ystem.out.println("Input: " + input.getStatements().toString());
         // Does not care about the input name since it has a single argument, use any named graph
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(input);
+        logger.info("IRSSPARQLExpand: Query is a: "+query.getClass());
         if (query instanceof SPARQLQueryImpl){
             SPARQLQueryImpl impl = (SPARQLQueryImpl)query;
             ParsedQuery parsedQuery = impl.getParsedQuery();
@@ -126,13 +128,16 @@ public class IRSSPARQLExpand extends Plugin {
     @Override
     protected SetOfStatements invokeInternal(SetOfStatements input) {
         try {
-            return invokeInternalWithExceptions(input);
+        	SetOfStatements result=invokeInternalWithExceptions(input);
+        	logger.info("Query expansion successful: "+result.toString());
+            return result;
         } catch (MalformedQueryException ex) {
             logger.warn("Problem converting query String to TupleExpr.", ex);
         } catch (QueryExpansionException ex) {
             logger.warn("Problem writing expanded query.", ex);
         }
         //Failed so return input
+        logger.info("IRSSPARQLExpand: ERROR: Returning input");
         return input;
     }
 
