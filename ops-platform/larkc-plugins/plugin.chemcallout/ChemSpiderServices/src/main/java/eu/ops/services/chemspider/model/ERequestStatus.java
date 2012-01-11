@@ -20,7 +20,7 @@ public enum ERequestStatus {
     @XmlEnumValue("Suspended")
     SUSPENDED("Suspended"),
     @XmlEnumValue("PartialResultReady")
-    PARTIAL_RESUT_READY("PartialResultReady"),
+    PARTIAL_RESULT_READY("PartialResultReady"),
     @XmlEnumValue("ResultReady")
     RESULT_READY("ResultReady"),
     @XmlEnumValue("Failed")

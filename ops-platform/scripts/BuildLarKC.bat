@@ -32,9 +32,12 @@ call:moveFile target\*SNAPSHOT.jar   ..\..\platform\plugins
 call:changeDirectory "%LARKC_PATH%\platform\endpoints\endpointsSourceCode\endpoint.sparql\
 call mvn install
 
-call:changeDirectory "%OPS_PATH%\ops-platform\larkc-plugins\plugin.querymapper"
-call mvn assembly:assembly
-call:moveFile target\*SNAPSHOT.jar "%LARKC_PATH%\platform\plugins"
+rem Removed December 8th 2011 By Christian
+rem Integeration tests where broken.
+rem Not used by current workflow according to Antonis
+rem call:changeDirectory "%OPS_PATH%\ops-platform\larkc-plugins\plugin.querymapper"
+rem call mvn assembly:assembly
+rem call:moveFile target\*SNAPSHOT.jar "%LARKC_PATH%\platform\plugins"
 
 call:changeDirectory "%OPS_PATH%\ops-platform\larkc-plugins\plugin.edffilter"
 call mvn assembly:assembly

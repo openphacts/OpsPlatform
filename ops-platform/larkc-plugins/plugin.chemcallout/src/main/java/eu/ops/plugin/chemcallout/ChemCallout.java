@@ -145,12 +145,13 @@ public class ChemCallout extends Plugin
 						}
 						pause(1);
 						ERequestStatus status = chemSpiderClient.getAsyncSearchStatus(rid);
-						logger.info("Status="+status.name());
+						logger.info("Status = "+status.name());
 						if (status==ERequestStatus.FAILED){
 							logger.error("Chemspider web service call failed.");
 							break;
 						}
 						if (status == ERequestStatus.RESULT_READY) {
+							logger.info("Results Ready");
 							List<Integer> results = chemSpiderClient.getAsyncSearchResult(rid);
 							if (results!=null){
 								for (Integer csid : results) {
@@ -161,11 +162,11 @@ public class ChemCallout extends Plugin
 									Value html = new URIImpl("http://inchi.chemspider.com/Chemical-Structure."+csid+".html");
 									URI html_pred=new URIImpl(HTML);
 									myStore.addStatement(subj, html_pred, html, FIXEDCONTEXT, label);
-									logger.info("Created triple: "+subj.stringValue()+" has_similar "+o.stringValue());
-									logger.info("Created triple: "+subj.stringValue()+" html "+html.stringValue());
+									//logger.info("Created triple: "+subj.stringValue()+" has_similar "+o.stringValue());
+									//logger.info("Created triple: "+subj.stringValue()+" html "+html.stringValue());
 								}
-								gotResult = true;
 							}
+							gotResult = true;
 						}
 					}
 				}
@@ -199,11 +200,11 @@ public class ChemCallout extends Plugin
 									Value html = new URIImpl("http://inchi.chemspider.com/Chemical-Structure."+csid+".html");
 									URI html_pred=new URIImpl(HTML);
 									myStore.addStatement(subj, html_pred, html, FIXEDCONTEXT, label);;
-									logger.info("Created triple: "+subj.stringValue()+" has_substructure_match "+o.stringValue());
-									logger.info("Created triple: "+subj.stringValue()+" html "+html.stringValue());
-								}
-								gotResult = true;	
+									//logger.info("Created triple: "+subj.stringValue()+" has_substructure_match "+o.stringValue());
+									//logger.info("Created triple: "+subj.stringValue()+" html "+html.stringValue());
+								}	
 							}
+							gotResult = true;
 						}
 					}
 				}
@@ -237,11 +238,11 @@ public class ChemCallout extends Plugin
 									Value html = new URIImpl("http://inchi.chemspider.com/Chemical-Structure."+csid+".html");
 									URI html_pred=new URIImpl(HTML);
 									myStore.addStatement(subj, html_pred, html, FIXEDCONTEXT, label);
-									logger.info("Created triple: "+subj.stringValue()+" has_substructure_match_or_tautomer "+o.stringValue());
-									logger.info("Created triple: "+subj.stringValue()+" html "+html.stringValue());
-								}
-								gotResult = true;	
+									//logger.info("Created triple: "+subj.stringValue()+" has_substructure_match_or_tautomer "+o.stringValue());
+									//logger.info("Created triple: "+subj.stringValue()+" html "+html.stringValue());
+								}	
 							}
+							gotResult = true;
 						}
 					}
 				}
@@ -275,11 +276,11 @@ public class ChemCallout extends Plugin
 									Value html = new URIImpl("http://inchi.chemspider.com/Chemical-Structure."+csid+".html");
 									URI html_pred=new URIImpl(HTML);
 									myStore.addStatement(subj, html_pred, html, FIXEDCONTEXT, label);
-									logger.info("Created triple: "+subj.stringValue()+" has_exact_structure_match "+o.stringValue());
-									logger.info("Created triple: "+subj.stringValue()+" html "+html.stringValue());
+									//logger.info("Created triple: "+subj.stringValue()+" has_exact_structure_match "+o.stringValue());
+									//logger.info("Created triple: "+subj.stringValue()+" html "+html.stringValue());
 								}
-								gotResult = true;	
 							}
+							gotResult = true;	
 						}
 					}
 				}
