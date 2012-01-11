@@ -50,6 +50,14 @@ cd ../plugin.edfsearch/
 mvn install
 mv ./target/*SNAPSHOT.jar $LARKC_PATH/larkc/platform/plugins
 
+cd ../plugin.conceptwiki/
+mvn assembly:assembly 
+mv ./target/*SNAPSHOT.jar $LARKC_PATH/larkc/platform/plugins
+
+cd ../plugin.irsSparqlExpand/
+mvn assembly:assembly
+mv ./target/*SNAPSHOT.jar $LARKC_PATH/larkc/platform/plugins
+
 cd ../plugin.chemcallout/ChemSpiderServices
 mvn install -Dmaven.test.skip=true
 cd ..
