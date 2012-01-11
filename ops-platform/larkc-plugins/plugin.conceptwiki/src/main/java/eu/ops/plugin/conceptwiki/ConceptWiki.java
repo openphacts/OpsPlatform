@@ -203,9 +203,9 @@ public class ConceptWiki extends Plugin
                     parser.setDatatypeHandling(DatatypeHandling.IGNORE);
                     parser.setRDFHandler(new RDFHandlerBase() {
                     	public void handleStatement(Statement s) {
-                    		logger.info("statement sub: " + s.getSubject().toString().trim() + "\n");
-                    		logger.info("statement pre: " + s.getPredicate().toString().trim() + "\n");
-                    		logger.info("statement obj: " + s.getObject().toString().trim() + "\n");
+                    		//logger.info("statement sub: " + s.getSubject().toString().trim() + "\n");
+                    		//logger.info("statement pre: " + s.getPredicate().toString().trim() + "\n");
+                    		//logger.info("statement obj: " + s.getObject().toString().trim() + "\n");
 
                     		// collect UUIDs 
                     		if(s.getPredicate().toString().endsWith("www.w3.org/1999/02/22-rdf-syntax-ns#type")) {
