@@ -31,14 +31,7 @@
             <systemPath>${project.basedir}/lib/irs-api-0.1.0-SNAPSHOT.jar</systemPath>-->
         </dependency>
         
-        <dependency>
-            <groupId>org.easymock</groupId>
-            <artifactId>easymockclassextension</artifactId>
-            <version>3.0</version>
-            <scope>test</scope>
-        </dependency>
-
-		<!-- Declare any special libraries (which have to be put in /lib) here. -->
+    	<!-- Declare any special libraries (which have to be put in /lib) here. -->
 		<!-- 
 		<dependency>
 			<groupId>your.external.library</groupId>

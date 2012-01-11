@@ -16,8 +16,9 @@ ops-platform/larkc-plugins/platform/plugins/
 # ignore log files #
 *.log
 
-# ignore irdi-trree #
+# ignore ordi-trree #
 ops-platform/larkc-plugins/plugin.chemcallout/ordi-trree/
+ops-platform/larkc-plugins/plugin.irsSqarqlExpand/ordi-trree/
 
 #ignore datasets
 datasets/pdspki/kidb110121.txt

@@ -20,7 +20,7 @@ import uk.ac.manchester.cs.irs.beans.Match;
 /**
  * Client for interacting with the IRS service
  */
-public class IRSClient {
+public class IRSClient implements IRSMapper{
 
     String serviceAddress = 
 //            "http://localhost:8080/OPS-IRS-Prototype/";
@@ -76,7 +76,8 @@ System.out.println("***********Number of matches for " + uri + ": " + matches.si
      * @param uriSet set of URIs
      * @return Map containing the matching URIs for each given URI in the provided set.
      */
-    Map<URI, List<URI>> getMatchesForURIs(Set<URI> uriSet) {
+    @Override
+    public Map<URI, List<URI>> getMatchesForURIs(Set<URI> uriSet) {
         Map<URI, List<URI>> uriMappings = new HashMap<URI, List<URI>>();
         for (URI uri : uriSet) {
             List<URI> matchesForURI = getMatchesForURI(uri);

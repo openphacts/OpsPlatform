@@ -9,4 +9,7 @@ class QueryExpansionException extends Exception {
         super(string);
     }
     
+    public QueryExpansionException(String string, Exception ex) {
+        super(string, ex);
+    }
 }
