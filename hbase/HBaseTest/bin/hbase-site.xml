@@ -1,0 +1,10 @@
+<configuration>
+<property>
+<name>hbase.zookeeper.quorum</name>
+<value>ops.few.vu.nl:2181</value>
+<description>The host and port that the HBase master runs at.
+A value of 'local' runs the master and a regionserver in
+a single process.
+</description>
+</property>
+</configuration>
