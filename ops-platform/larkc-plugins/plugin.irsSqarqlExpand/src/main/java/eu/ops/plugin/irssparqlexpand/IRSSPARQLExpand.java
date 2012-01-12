@@ -1,24 +1,21 @@
 package eu.ops.plugin.irssparqlexpand;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import org.openrdf.model.URI;
-import org.openrdf.model.Value;
-import org.openrdf.model.impl.URIImpl;
-import org.openrdf.query.algebra.StatementPattern;
-import org.openrdf.query.algebra.Var;
-import org.openrdf.query.algebra.helpers.StatementPatternCollector;
-
 import eu.larkc.core.data.DataFactory;
 import eu.larkc.core.data.SetOfStatements;
 import eu.larkc.core.query.SPARQLQuery;
 import eu.larkc.core.query.SPARQLQueryImpl;
 import eu.larkc.plugin.Plugin;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import org.openrdf.model.URI;
+import org.openrdf.model.impl.URIImpl;
+import org.openrdf.query.Dataset;
+import org.openrdf.query.MalformedQueryException;
+import org.openrdf.query.algebra.TupleExpr;
+import org.openrdf.query.parser.ParsedQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.manchester.cs.irs.beans.Match;
 
 /**
  * The <code>eu.ops.plugin.irssparqlexpand.IRSSPARQLExpand</code> is a LarKC
@@ -28,9 +25,10 @@ import uk.ac.manchester.cs.irs.beans.Match;
  */
 public class IRSSPARQLExpand extends Plugin {
 
-    private static Logger logger = LoggerFactory.getLogger(IRSSPARQLExpand.class);
-    private IRSClient irsClient = null;
-
+    protected static Logger logger = LoggerFactory.getLogger(Plugin.class);
+    private IRSMapper irsMapper = null;
+    private boolean showExpandedVariables = false;
+    
     /**
      * Constructor.
      * 
@@ -52,17 +50,76 @@ public class IRSSPARQLExpand extends Plugin {
      */
     @Override
     protected void initialiseInternal(SetOfStatements params) {
-        irsClient = instantiateIRSClient();
+        irsMapper = instantiateIRSMapper();
         logger.info("IRSSPARQLExpand initialized.");
+        //ystem.out.println("*********************Initialised!!!");
     }
     
-    protected IRSClient instantiateIRSClient() {
+    IRSMapper instantiateIRSMapper() {
+    	//ystem.out.println("*********************");
             return new IRSClient();
+    }
+    
+   private SetOfStatements expandQuery(TupleExpr tupleExpr, Dataset dataset) 
+            throws QueryExpansionException {
+        URIFinderVisitor uriFindervisitor = new URIFinderVisitor();
+        tupleExpr.visit(uriFindervisitor);
+        Set<URI> uriSet = uriFindervisitor.getURIS();
+        Map<URI, List<URI>> uriMappings = irsMapper.getMatchesForURIs(uriSet);   
+        QueryExpandAndWriteVisitor writerVisitor = 
+                new QueryExpandAndWriteVisitor(uriMappings, dataset, showExpandedVariables);
+        tupleExpr.visit(writerVisitor);
+        String expandedQueryString = writerVisitor.getQuery();
+        //ystem.out.println(expandedQueryString);
+        logger.info("Expanded SPARQL: "+ expandedQueryString);
+        SPARQLQuery expandedQuery = new SPARQLQueryImpl(expandedQueryString);
+        return expandedQuery.toRDF();      
     }
     
     /**
      * Called on plug-in invokation. The actual "work" should be done in this method.
+     * <p>
+     * For testing and none Larkc use it is better to throw the exceptions.
+     * @param input 
+     * 		a set of statements containing the input for this plug-in
      * 
+     * @return a set of statements containing the output of this plug-in
+     */
+    public final SetOfStatements invokeInternalWithExceptions(SetOfStatements input) 
+            throws MalformedQueryException, QueryExpansionException {
+        logger.info("SPARQLExpand working.");
+        //ystem.out.println("*********************Invoked!!!");
+        if (logger.isDebugEnabled()) {
+            logger.debug("Input: " + input.getStatements().toString());
+        }
+        //ystem.out.println("Input: " + input.getStatements().toString());
+        // Does not care about the input name since it has a single argument, use any named graph
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(input);
+        logger.info("IRSSPARQLExpand: Query is a: "+query.getClass());
+        if (query instanceof SPARQLQueryImpl){
+            SPARQLQueryImpl impl = (SPARQLQueryImpl)query;
+            ParsedQuery parsedQuery = impl.getParsedQuery();
+            TupleExpr tupleExpr = parsedQuery.getTupleExpr();
+            Dataset dataset = parsedQuery.getDataset();
+            return expandQuery (tupleExpr, dataset);
+        } else {
+            String queryString = query.toString();
+            TupleExpr tupleExpr = QueryUtils.queryStringToTupleExpr(queryString);
+            Dataset dataset;
+            try {
+                dataset = QueryUtils.convertToOpenRdf(query.getDataSet());
+            } catch (NullPointerException e){
+                //crap implementation does not check if dataset is null.
+                dataset = null;
+            }       
+            return expandQuery (tupleExpr, dataset);
+        }
+    }
+
+    /**
+     * Called on plug-in invokation. The actual "work" should be done in this method.
+     * <p>
+     * Larkc can not handle exceptions so best to catch and log them and just return input.
      * @param input 
      * 		a set of statements containing the input for this plug-in
      * 
@@ -70,154 +127,18 @@ public class IRSSPARQLExpand extends Plugin {
      */
     @Override
     protected SetOfStatements invokeInternal(SetOfStatements input) {
-        logger.info("SPARQLExpand working.");
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("Input: " + input.getStatements().toString());
+        try {
+        	SetOfStatements result=invokeInternalWithExceptions(input);
+        	logger.info("Query expansion successful: "+result.toString());
+            return result;
+        } catch (MalformedQueryException ex) {
+            logger.warn("Problem converting query String to TupleExpr.", ex);
+        } catch (QueryExpansionException ex) {
+            logger.warn("Problem writing expanded query.", ex);
         }
-
-        // Does not care about the input name since it has a single argument, use any named graph
-        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(input);
-        //Only working with select queries of BGP
-        if (!query.isSelect()) {
-            return input;
-        }
-        
-        List<Match> matches;
-        List<StatementPattern> spList = new ArrayList<StatementPattern>();
-        boolean found;
-        String queryFirstBlock = "";
-
-        if (query instanceof SPARQLQuery) {
-            String queryString = query.toString();
-            String queryStart = queryString.substring(0, queryString.indexOf("{")+1);
-            String queryEnd = queryString.substring(queryString.lastIndexOf("}")-1, queryString.length());
-
-            StatementPatternCollector spc = new StatementPatternCollector();
-            ((SPARQLQueryImpl) query).getParsedQuery().getTupleExpr().visit(spc);
-            StringBuilder queryBuilder = new StringBuilder();            
-            found = false;
-            for (StatementPattern sp : spc.getStatementPatterns()) {
-                String subject = varAsString(sp.getSubjectVar());
-                String predicate = varAsString(sp.getPredicateVar());
-                
-                Value o = (Value) sp.getObjectVar().getValue();
-                if (o instanceof URI) {
-                    matches = irsClient.getMatchesForURI(o.stringValue());
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Number of matches for " + o.stringValue() + 
-                                " = " + matches.size());
-                    }
-                    spList = expandObjectURI(sp, matches);
-                    found = true;
-                }
-                if (found) {
-                    queryFirstBlock = queryBuilder.toString();
-                    queryBuilder = new StringBuilder();
-                    found = false;
-                } else {
-                    queryBuilder.append(subject).append(" ");
-                    queryBuilder.append(predicate).append(" ");
-                    queryBuilder.append(varAsString(sp.getObjectVar())).append(" . ");
-                }
-            }
-            SPARQLQuery expandedQuery = expandQuery(queryStart, queryFirstBlock, 
-                    spList, queryBuilder.toString(), queryEnd);
-            return expandedQuery.toRDF();
-        }
-        if (logger.isInfoEnabled()) {
-            logger.info("Unable to expand query " + input);
-        }
+        //Failed so return input
+        logger.info("IRSSPARQLExpand: ERROR: Returning input");
         return input;
-    }
-
-    /**
-     * Generates a string representation of a Statement Pattern.
-     * 
-     * @param sp statement that should be converted to a string
-     * @return String representation of the statement
-     */
-    private String statementPatternAsString(StatementPattern sp) {
-        StringBuilder queryBuilder = new StringBuilder();
-        String subject = varAsString(sp.getSubjectVar());
-        String predicate = varAsString(sp.getPredicateVar());
-        String object = varAsString(sp.getObjectVar());
-        queryBuilder.append(subject).append(" ");
-        queryBuilder.append(predicate).append(" ");
-        queryBuilder.append(object).append(" . ");
-        return queryBuilder.toString();
-    }
-
-    /**
-     * Retrieves a string representation of part of a statement pattern that is 
-     * represented as a Var.
-     * @param var object to be converted to a valid string representation
-     * @return string representation.
-     */
-    private String varAsString(Var var) {
-        String varString;
-        if (var.hasValue()) {
-            final Value value = var.getValue();
-            varString = value.stringValue();
-            if (value instanceof URI) {
-                varString = "<" + varString + ">";
-            }
-        } else {
-            varString = "?" + var.getName();
-        }
-        return varString;
-    }
-    
-    /**
-     * Expand a statement pattern by interchanging matches on the object
-     * 
-     * @param sp statement pattern to expand
-     * @param matches matches found for the object URI
-     * @return list of equivalent statement patterns
-     */
-    private List<StatementPattern> expandObjectURI(StatementPattern sp, List<Match> matches) {
-        List<StatementPattern> spList = new ArrayList<StatementPattern>();
-        spList.add(sp);
-        Var subject = sp.getSubjectVar();
-        Var predicate = sp.getPredicateVar();
-        for (Match match : matches) {
-            URI uri = new URIImpl(match.getMatchUri());
-            Var object = new Var();
-            object.setValue(uri);
-            StatementPattern spClone = new StatementPattern(subject, predicate, object);
-            spList.add(spClone);
-        }
-        return spList;
-    }
-    
-    /**
-     * Expand the supplied query into a set of UNION queries
-     * 
-     * @param query original SPARQL query
-     * @param uriMappings map of equivalent URIs for each URI in the query
-     * @return expanded query
-     */
-    private SPARQLQuery expandQuery(String queryStart, String queryFirstBlock,
-            List<StatementPattern> spList, String queryLastBlock, String queryEnd) {
-        logger.debug("Expanding query:");
-        StringBuilder queryBuilder = new StringBuilder(queryStart);
-        Iterator<StatementPattern> it = spList.iterator();
-        while (it.hasNext()) {
-            StatementPattern sp = it.next();
-            queryBuilder.append(" { ");
-            queryBuilder.append(queryFirstBlock);
-            queryBuilder.append(statementPatternAsString(sp));
-            queryBuilder.append(queryLastBlock);
-            queryBuilder.append(" } ");
-            if (it.hasNext()) {
-                queryBuilder.append(" UNION ");
-            }
-        }
-        queryBuilder.append(queryEnd);
-        if (logger.isDebugEnabled()) {
-            logger.debug("Expanded query: " + queryBuilder.toString());
-        }
-        return new SPARQLQueryImpl(queryBuilder.toString());
     }
 
     /**
@@ -229,20 +150,28 @@ public class IRSSPARQLExpand extends Plugin {
         // TODO Auto-generated method stub
     }
 
-    public static void main(String[] args) {
+    public void setShowExpandedVariable(boolean show){
+        showExpandedVariables = show;
+    }
+    
+    public static void main(String[] args) throws MalformedQueryException, QueryExpansionException {
         IRSSPARQLExpand s = new IRSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand"));
         s.initialiseInternal(null);
         String qStr = " SELECT ?protein"
                 + " WHERE {"
-                + " ?protein <http://www.biopax.org/release/biopax-level2.owl#EC-NUMBER> "
-                + " <http://brenda-enzymes.info/1.1.1.1> . "
-//                + " ?protein <http://www.biopax.org/release.biopax-level2.owl#NAME> ?name . "
-                + " <http://rdf.chemspider.com/37> ?p ?o ."
+                + "?protein <http://www.biopax.org/release/biopax-level2.owl#EC-NUMBER> "
+                + "<http://brenda-enzymes.info/1.1.1.1> . "
+//                + "OPTIONAL {?protein <http://www.biopax.org/release.biopax-level2.owl#NAME> ?name . "
+//                + "<http://rdf.chemspider.com/37> ?p ?o ."
+//                + "FILTER (?protein = ?o) . "
+ //               + "FILTER (?protein = <http://something.org>) . "// || ?protein = <http://somewhere.com>) ."
+//                + "FILTER (?protein = ?name). }"
                 + "}";
 
         System.out.println("Original query:\n\t" + qStr + "\n");
-        SetOfStatements eQuery = s.invokeInternal(new SPARQLQueryImpl(qStr).toRDF());
-        System.out.println("Expanded query:\n\t" + eQuery);
+        SetOfStatements eQuery = s.invokeInternalWithExceptions(new SPARQLQueryImpl(qStr).toRDF());
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        System.out.println("Expanded query:\n\t" + query);
     }
 
 }

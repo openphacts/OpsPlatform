@@ -5,7 +5,7 @@
 
     <groupId>eu.larkc</groupId>
     <artifactId>plugin.irsSparqlExpand</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>IRSSPARQLExpand</name>
@@ -31,14 +31,7 @@
             <systemPath>${project.basedir}/lib/irs-api-0.1.0-SNAPSHOT.jar</systemPath>-->
         </dependency>
         
-        <dependency>
-            <groupId>org.easymock</groupId>
-            <artifactId>easymockclassextension</artifactId>
-            <version>3.0</version>
-            <scope>test</scope>
-        </dependency>
-
-		<!-- Declare any special libraries (which have to be put in /lib) here. -->
+    	<!-- Declare any special libraries (which have to be put in /lib) here. -->
 		<!-- 
 		<dependency>
 			<groupId>your.external.library</groupId>
@@ -53,6 +46,11 @@
             <artifactId>jersey-client</artifactId>
             <version>1.10</version>
             <type>jar</type>
+        </dependency>
+        <dependency>
+        	<groupId>com.sun.jersey</groupId>
+        	<artifactId>jersey-core</artifactId>
+        	<version>1.10</version>
         </dependency>
     </dependencies>
 
