@@ -2,7 +2,7 @@
 # Launch LarKC
 currentdir=`pwd`
 cd $LARKC_PATH/larkc/platform/
-rm -rf ordi-trree
+#rm -rf ordi-trree
 
 # Removed December 8th 2011 By Christian
 # Integeration tests where broken.
