@@ -1732,7 +1732,7 @@ public class OPSAPIEndpointResource extends ServerResource {
 		assert (ep != null);
 		assert (ex != null);
 		logger.debug("Found executor " + ex.toString());
-
+		logger.debug("Query being processed by endpoint: " + ep.getURI());
 		// handle the query
 		APIRequestQueryHandler handler = new APIRequestQueryHandler(ex, ep);
 		SparqlQueryResult queryResult = handler.handleQuery(queryRequest);
