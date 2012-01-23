@@ -15,7 +15,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import org.openrdf.model.URI;
 import org.openrdf.model.impl.URIImpl;
-import uk.ac.manchester.cs.irs.beans.Match;
+import uk.ac.manchester.cs.ims.beans.Match;
 
 /**
  * Client for interacting with the IRS service
