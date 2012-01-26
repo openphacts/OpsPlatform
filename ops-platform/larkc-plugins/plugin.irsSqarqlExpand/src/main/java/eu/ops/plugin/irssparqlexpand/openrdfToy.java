@@ -395,7 +395,7 @@ public class openrdfToy {
               + "OPTIONAL {"
               + " ?c <http://xmlns.com/foaf/0.1/given>  ?given. "
               + " ?c <http://xmlns.com/foaf/0.1/family>  ?family. }}";
-      String queryStr = "PREFIX  :      <http://example.org/WMterms#>"
+      String queryStr41 = "PREFIX  :      <http://example.org/WMterms#>"
                 + "PREFIX  t:     <http://example.org/types#>"
                 + "SELECT ?aLabel1 ?bLabel "
                 + "WHERE { ?a  :label        ?aLabel ."
@@ -406,6 +406,29 @@ public class openrdfToy {
                 + "        ?b  :displacement ?bDisp ."
                 + "        FILTER ( sameTerm(?aWeight, ?bWeight) && !sameTerm(?aDisp, ?bDisp) ) "
                 + "}";
+      String queryStr42 = "SELECT  ?p1 ?o1 ?p2 ?o2"
+              + " WHERE {"
+              + "      GRAPH ?g "
+              + "         {  <http://foo.com/45273>  ?p1  ?o1 . }"
+              + "      GRAPH ?g "
+              + "         {   <http://foo.com/45273> ?p2  ?o2.  }"
+              + "}";
+      String queryStr =  "PREFIX  fred:     <http://fred.org/types#> "
+              + "PREFIX joe:    <http://joe.com/stuff#> "
+              + "SELECT ?name "
+              + "WHERE {"
+              + "  { GRAPH <http://fred.com>"
+              + "     {"
+              + "       <http://foo.com/45273> fred:fullName ?name. "
+              + "     } "
+              + "  } UNION {"
+              + "    GRAPH <http://joe.com>"
+              + "     {"
+              + "        <http://bar.com/ABC> joe:readableName ?name ."
+              + "     }"
+              + "  }"
+              + "}";
+
                  //ParsedQuery parsedQuery23 = parser.parseQuery(queryStr23, null); 
          //TupleExpr tupleExpr23 = parsedQuery23.getTupleExpr();
          //System.out.println("23:"+ tupleExpr23);
