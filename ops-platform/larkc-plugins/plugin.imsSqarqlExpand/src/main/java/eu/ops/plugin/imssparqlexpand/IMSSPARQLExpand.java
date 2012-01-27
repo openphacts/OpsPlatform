@@ -67,7 +67,7 @@ public class IMSSPARQLExpand extends Plugin {
         Set<URI> uriSet = uriFindervisitor.getURIS();
         Map<URI, List<URI>> uriMappings = irsMapper.getMatchesForURIs(uriSet);   
         QueryExpandAndWriteVisitor writerVisitor = 
-                new QueryExpandAndWriteVisitor(uriMappings, dataset, showExpandedVariables);
+                new QueryExpandAndWriteVisitor(uriMappings, dataset, attributes, showExpandedVariables);
         tupleExpr.visit(writerVisitor);
         String expandedQueryString = writerVisitor.getQuery();
         //ystem.out.println(expandedQueryString);

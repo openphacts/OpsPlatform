@@ -38,7 +38,12 @@ public class QueryUtils {
     }
     
     public static String tupleExprToQueryString (TupleExpr tupleExpr) throws QueryExpansionException {
-        QueryWriterModelVisitor queryWriter = new QueryWriterModelVisitor(null);
+        return tupleExprToQueryString(tupleExpr, null);
+    }
+    
+    public static String tupleExprToQueryString (TupleExpr tupleExpr, Set<String> keptAttributes) 
+            throws QueryExpansionException {
+        QueryWriterModelVisitor queryWriter = new QueryWriterModelVisitor(null, keptAttributes);
         try {
             tupleExpr.visit(queryWriter);
             String newQuery = queryWriter.getQuery();

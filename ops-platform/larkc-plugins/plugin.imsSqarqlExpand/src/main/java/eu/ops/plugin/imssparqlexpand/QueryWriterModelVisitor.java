@@ -1,13 +1,14 @@
 package eu.ops.plugin.imssparqlexpand;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.openrdf.query.Dataset;
 import org.openrdf.query.algebra.And;
 import org.openrdf.query.algebra.BNodeGenerator;
-import org.openrdf.query.algebra.BinaryValueOperator;
 import org.openrdf.query.algebra.Bound;
 import org.openrdf.query.algebra.Compare;
 import org.openrdf.query.algebra.CompareAll;
@@ -74,9 +75,21 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
     StringBuilder queryString = new StringBuilder();
     Dataset originalDataSet;
     boolean inContext = false;
-    
-    QueryWriterModelVisitor(Dataset dataSet){
+    Set<String> keptAttributes;
+    Set<String> eliminatedAttributes;
+
+    QueryWriterModelVisitor(Dataset dataSet, Set<String> keptAttributes){
         originalDataSet = dataSet;
+        eliminatedAttributes = new HashSet<String>();
+        if (keptAttributes == null || keptAttributes.isEmpty()) {
+            this.keptAttributes = null;
+        } else {
+            this.keptAttributes = keptAttributes;
+        }
+    }
+
+    QueryWriterModelVisitor(Dataset dataSet){
+        this(dataSet, null);
     }
     
     @Override
@@ -473,8 +486,18 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
 
     @Override
     public void meet(ProjectionElem pe) throws QueryExpansionException {
+        String sourceName = pe.getSourceName();
+        if (keptAttributes != null){
+            if (!(keptAttributes.contains(sourceName))){
+                System.out.println(keptAttributes);
+                System.out.println(sourceName);
+                eliminatedAttributes.add(sourceName);
+                //Do not write the attribute so return.
+                return;
+            }
+        }
         queryString.append(" ?");
-        queryString.append(pe.getSourceName());
+        queryString.append(sourceName);
     }
 
     /**
@@ -725,6 +748,7 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
     @Override
     public void meet(StatementPattern sp) throws QueryExpansionException {
         if (isDescribePattern(sp)) return;
+        if (canEliminate(sp)) return;
         newLine();
         boolean newContext = startContext(sp); 
         sp.getSubjectVar().visit(this);
@@ -734,6 +758,83 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
         sp.getObjectVar().visit(this);
         closeContext(newContext);
         queryString.append(". ");
+    }
+
+    boolean canEliminate(StatementPattern sp) throws QueryExpansionException{
+        System.out.println(sp);
+        if (sp.getSubjectVar().isAnonymous()){
+            //We don't think subject variables can be literals but just in case.
+            if (sp.getObjectVar().isAnonymous()) {
+                //literal predicate literal
+                System.out.println("literal predicate literal");
+                return false;
+            } else {
+                if (canEliminate(sp.getObjectVar().getName())){
+                     //literal predicate remove
+                    System.out.println("literal predicate remove");
+                    return true;
+                } else {
+                    //literal predicate keep
+                    System.out.println("literal predicate keep");
+                    return false;
+                }
+            }
+        } else {
+            if (canEliminate(sp.getSubjectVar().getName())){
+                if (sp.getObjectVar().isAnonymous()) {
+                    //remove predicate literal
+                    System.out.println("remove predicate literal");
+                    return true;
+                } else {
+                    if (canEliminate(sp.getObjectVar().getName())){
+                         //remove predicate remove
+                        System.out.println("remove predicate remove");
+                        return true;
+                    } else {
+                        //remove predicate keep
+                        throw new QueryExpansionException ("Statement has an Eliminate variable ( " + 
+                                sp.getObjectVar().getName() +") and a Keep variable (" + 
+                                sp.getObjectVar().getName() + ")");
+                    }
+                }
+            } else {
+                if (sp.getObjectVar().isAnonymous()) {
+                    //keep predicate literal
+                    System.out.println("keep predicate literal");
+                    return false;
+                } else {
+                    if (canEliminate(sp.getObjectVar().getName())){
+                         //keep predicate remove
+                        throw new QueryExpansionException ("Statement has a Keep variable ( " + 
+                                sp.getObjectVar().getName() +") and an Eliminate variable (" + 
+                                sp.getObjectVar().getName() + ")");
+                    } else {
+                        //keep predicate keep
+                        System.out.println("keep predicate keep");
+                        return false;
+                    }
+                }
+            }
+        } 
+    }
+    
+    private boolean canEliminate(String name) {
+        if (keptAttributes == null) {
+            return false;
+        }
+        if (keptAttributes.contains(name)){
+            return false;
+        }
+        if (eliminatedAttributes.contains(name)){
+            return true;
+        }
+        String[] parts = name.split("_");
+        for (String part:parts){
+            if (!eliminatedAttributes.contains(part)){
+                return false;
+            }
+        }
+        return false;
     }
 
     boolean isDescribePattern(StatementPattern sp){
@@ -812,4 +913,5 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
     public String getQuery() throws QueryExpansionException {
         return queryString.toString();
     }
+
 }

@@ -4,8 +4,8 @@
  */
 package eu.ops.plugin.imssparqlexpand;
 
-import eu.ops.plugin.imssparqlexpand.QueryExpansionException;
-import eu.ops.plugin.imssparqlexpand.QueryUtils;
+import java.util.Set;
+import java.util.HashSet;
 import org.junit.Ignore;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.algebra.TupleExpr;
@@ -351,5 +351,47 @@ public class QueryWriterModelVisitorTest {
         convertAndTest(inputquery);
     } 
     
-    
+    @Test
+    public void test_Remove_Attribute_simple() throws MalformedQueryException, QueryExpansionException{
+        String inputQuery = "PREFIX foaf:   <http://xmlns.com/foaf/0.1/> "
+                + "SELECT ?foo ?bar "
+                + "{ "
+                + "<http://brenda-enzymes.info/1.1.1.1> foaf:name ?foo . "
+                + "<http://brenda-enzymes.info/1.1.1.1> foaf:age ?bar . "
+                + "}";
+        String expectedQuery = "PREFIX foaf:   <http://xmlns.com/foaf/0.1/> "
+                + "SELECT ?foo "
+                + "{ "
+                + "<http://brenda-enzymes.info/1.1.1.1> foaf:name ?foo . "
+                + "}";
+        TupleExpr tupleExpr = QueryUtils.queryStringToTupleExpr(inputQuery);
+        Set<String> keptAttributes = new HashSet<String>();
+        keptAttributes.add("foo");
+        String newQuery = QueryUtils.tupleExprToQueryString(tupleExpr, keptAttributes);
+        assertTrue(QueryUtils.sameTupleExpr(expectedQuery, newQuery));
+
+    }
+
+    /* @Test
+    public void test_Swap_orderf_Keep_all() throws MalformedQueryException, QueryExpansionException{
+        String inputQuery = "PREFIX foaf:   <http://xmlns.com/foaf/0.1/> "
+                + "SELECT ?foo ?bar "
+                + "{ "
+                + "<http://brenda-enzymes.info/1.1.1.1> foaf:name ?foo . "
+                + "<http://brenda-enzymes.info/1.1.1.1> foaf:age ?bar . "
+                + "}";
+        String expectedQuery = "PREFIX foaf:   <http://xmlns.com/foaf/0.1/> "
+                + "SELECT ?bar ?foo "
+                + "{ "
+                + "<http://brenda-enzymes.info/1.1.1.1> foaf:name ?foo . "
+                + "<http://brenda-enzymes.info/1.1.1.1> foaf:age ?bar . "
+                + "}";
+        TupleExpr tupleExpr = QueryUtils.queryStringToTupleExpr(inputQuery);
+        Set<String> keptAttributes = new HashSet<String>();
+        keptAttributes.add("foo");
+        keptAttributes.add("bar");
+        String newQuery = QueryUtils.tupleExprToQueryString(tupleExpr, keptAttributes);
+        assertTrue(QueryUtils.sameTupleExpr(expectedQuery, newQuery));
+
+    }*/
 }

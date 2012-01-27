@@ -413,9 +413,9 @@ public class openrdfToy {
               + "      GRAPH ?g "
               + "         {   <http://foo.com/45273> ?p2  ?o2.  }"
               + "}";
-      String queryStr =  "PREFIX  fred:     <http://fred.org/types#> "
+      String queryStr43 =  "PREFIX  fred:     <http://fred.org/types#> "
               + "PREFIX joe:    <http://joe.com/stuff#> "
-              + "SELECT ?name "
+              + "SELECT ?name ?Name "
               + "WHERE {"
               + "  { GRAPH <http://fred.com>"
               + "     {"
@@ -428,7 +428,12 @@ public class openrdfToy {
               + "     }"
               + "  }"
               + "}";
-
+    String queryStr = "PREFIX joe:    <http://joe.com/stuff#>"
+            + "Select * "
+            + "Where {"
+            + "        <http://bar.com/ABC> joe:readableName ?name . "
+            + "        \"Smith\" joe:readableName \"fred\" ."
+            + "}";
                  //ParsedQuery parsedQuery23 = parser.parseQuery(queryStr23, null); 
          //TupleExpr tupleExpr23 = parsedQuery23.getTupleExpr();
          //System.out.println("23:"+ tupleExpr23);

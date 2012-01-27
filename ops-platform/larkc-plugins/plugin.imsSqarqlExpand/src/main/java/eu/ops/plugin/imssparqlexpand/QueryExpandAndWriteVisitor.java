@@ -4,8 +4,10 @@
  */
 package eu.ops.plugin.imssparqlexpand;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.openrdf.query.Dataset;
@@ -23,11 +25,12 @@ import org.openrdf.query.algebra.Var;
 public class QueryExpandAndWriteVisitor extends QueryWriterModelVisitor{
 
     Map<URI, List<URI>> uriMappings;
-    boolean showExpandedVariables;
-    
+    boolean showExpandedVariables;            
     int statements = 0;
-    QueryExpandAndWriteVisitor (Map<URI, List<URI>> uriMappings, Dataset dataset, boolean showExpandedVariables){
-        super(dataset);
+    
+    QueryExpandAndWriteVisitor (Map<URI, List<URI>> uriMappings, Dataset dataset, Set<String> keptAttributes, 
+            boolean showExpandedVariables){
+        super(dataset, keptAttributes);
         this.uriMappings = uriMappings;
         this.showExpandedVariables = showExpandedVariables;
     }
@@ -140,6 +143,7 @@ public class QueryExpandAndWriteVisitor extends QueryWriterModelVisitor{
     //@Override
     public void meet(StatementPattern sp) throws QueryExpansionException  {
         if (isDescribePattern(sp)) return;
+        if (canEliminate(sp)) return;
         statements++;
         newLine();
         boolean newContext = startContext(sp); 
