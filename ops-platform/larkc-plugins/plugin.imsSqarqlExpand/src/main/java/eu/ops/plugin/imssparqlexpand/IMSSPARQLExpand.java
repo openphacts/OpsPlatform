@@ -1,13 +1,17 @@
 package eu.ops.plugin.imssparqlexpand;
 
+import eu.larkc.core.data.CloseableIterator;
 import eu.larkc.core.data.DataFactory;
 import eu.larkc.core.data.SetOfStatements;
+import eu.larkc.core.data.workflow.WorkflowDescriptionPredicates;
 import eu.larkc.core.query.SPARQLQuery;
 import eu.larkc.core.query.SPARQLQueryImpl;
 import eu.larkc.plugin.Plugin;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.Dataset;
@@ -28,8 +32,9 @@ public class IMSSPARQLExpand extends Plugin {
     protected static Logger logger = LoggerFactory.getLogger(Plugin.class);
     private IMSMapper imsMapper = null;
     private boolean showExpandedVariables = false;
-    Set requiredAttributes;
-    
+    List<String> requiredAttributes;
+    static final String ATTR_PARAM = "http://larkc.eu/schema#requiredAttributes";
+
     /**
      * Constructor.
      * 
@@ -52,31 +57,49 @@ public class IMSSPARQLExpand extends Plugin {
     @Override
     protected void initialiseInternal(SetOfStatements params) {
         imsMapper = instantiateIMSMapper();
+        if (params != null) {
+            CloseableIterator<Statement> parameters = params.getStatements();
+            while (parameters.hasNext()) {
+                Statement stmt = parameters.next();
+                if (stmt.getPredicate().equals(new URIImpl(ATTR_PARAM))) {
+                    requiredAttributes = new ArrayList<String>();
+                    String attributes = stmt.getObject().stringValue();
+                    String[] splitAttributes = attributes.split(",");
+                    for (int i = 0; i < splitAttributes.length; i++) {
+                        requiredAttributes.add(splitAttributes[i].trim());
+                    }
+                }
+            }
+        }
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("Required Attributes: " + requiredAttributes);
+        }
         logger.info("IMSSPARQLExpand initialized.");
         //ystem.out.println("*********************Initialised!!!");
     }
-    
+
     IMSMapper instantiateIMSMapper() {
-    	//ystem.out.println("*********************");
-            return new IMSClient();
+        //ystem.out.println("*********************");
+        return new IMSClient();
     }
-    
-   private SetOfStatements expandQuery(TupleExpr tupleExpr, Dataset dataset, Set<String> attributes) 
+
+    private SetOfStatements expandQuery(TupleExpr tupleExpr, Dataset dataset, Set<String> attributes)
             throws QueryExpansionException {
         URIFinderVisitor uriFindervisitor = new URIFinderVisitor();
         tupleExpr.visit(uriFindervisitor);
         Set<URI> uriSet = uriFindervisitor.getURIS();
-        Map<URI, List<URI>> uriMappings = imsMapper.getMatchesForURIs(uriSet);   
-        QueryExpandAndWriteVisitor writerVisitor = 
+        Map<URI, List<URI>> uriMappings = imsMapper.getMatchesForURIs(uriSet);
+        QueryExpandAndWriteVisitor writerVisitor =
                 new QueryExpandAndWriteVisitor(uriMappings, dataset, showExpandedVariables);
         tupleExpr.visit(writerVisitor);
         String expandedQueryString = writerVisitor.getQuery();
         //ystem.out.println(expandedQueryString);
-        logger.info("Expanded SPARQL: "+ expandedQueryString);
+        logger.info("Expanded SPARQL: " + expandedQueryString);
         SPARQLQuery expandedQuery = new SPARQLQueryImpl(expandedQueryString);
-        return expandedQuery.toRDF();      
+        return expandedQuery.toRDF();
     }
-    
+
     /**
      * Called on plug-in invokation. The actual "work" should be done in this method.
      * <p>
@@ -86,7 +109,7 @@ public class IMSSPARQLExpand extends Plugin {
      * 
      * @return a set of statements containing the output of this plug-in
      */
-    public final SetOfStatements invokeInternalWithExceptions(SetOfStatements input) 
+    public final SetOfStatements invokeInternalWithExceptions(SetOfStatements input)
             throws MalformedQueryException, QueryExpansionException {
         logger.info("SPARQLExpand working.");
         //ystem.out.println("*********************Invoked!!!");
@@ -96,26 +119,26 @@ public class IMSSPARQLExpand extends Plugin {
         //ystem.out.println("Input: " + input.getStatements().toString());
         // Does not care about the input name since it has a single argument, use any named graph
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(input);
-        logger.info("IMSSPARQLExpand: Query is a: "+query.getClass());
-        if (query instanceof SPARQLQueryImpl){
-            SPARQLQueryImpl impl = (SPARQLQueryImpl)query;
+        logger.info("IMSSPARQLExpand: Query is a: " + query.getClass());
+        if (query instanceof SPARQLQueryImpl) {
+            SPARQLQueryImpl impl = (SPARQLQueryImpl) query;
             ParsedQuery parsedQuery = impl.getParsedQuery();
             TupleExpr tupleExpr = parsedQuery.getTupleExpr();
             Dataset dataset = parsedQuery.getDataset();
             //TODO getAttributes
-            return expandQuery (tupleExpr, dataset, null);
+            return expandQuery(tupleExpr, dataset, null);
         } else {
             String queryString = query.toString();
             TupleExpr tupleExpr = QueryUtils.queryStringToTupleExpr(queryString);
             Dataset dataset;
             try {
                 dataset = QueryUtils.convertToOpenRdf(query.getDataSet());
-            } catch (NullPointerException e){
+            } catch (NullPointerException e) {
                 //crap implementation does not check if dataset is null.
                 dataset = null;
-            }       
+            }
             //TODO getAttributes
-            return expandQuery (tupleExpr, dataset, null);
+            return expandQuery(tupleExpr, dataset, null);
         }
     }
 
@@ -131,8 +154,8 @@ public class IMSSPARQLExpand extends Plugin {
     @Override
     protected SetOfStatements invokeInternal(SetOfStatements input) {
         try {
-        	SetOfStatements result=invokeInternalWithExceptions(input);
-        	logger.info("Query expansion successful: "+result.toString());
+            SetOfStatements result = invokeInternalWithExceptions(input);
+            logger.info("Query expansion successful: " + result.toString());
             return result;
         } catch (MalformedQueryException ex) {
             logger.warn("Problem converting query String to TupleExpr.", ex);
@@ -153,10 +176,10 @@ public class IMSSPARQLExpand extends Plugin {
         // TODO Auto-generated method stub
     }
 
-    public void setShowExpandedVariable(boolean show){
+    public void setShowExpandedVariable(boolean show) {
         showExpandedVariables = show;
     }
-    
+
     public static void main(String[] args) throws MalformedQueryException, QueryExpansionException {
         IMSSPARQLExpand s = new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand"));
         s.initialiseInternal(null);
@@ -164,11 +187,11 @@ public class IMSSPARQLExpand extends Plugin {
                 + " WHERE {"
                 + "?protein <http://www.biopax.org/release/biopax-level2.owl#EC-NUMBER> "
                 + "<http://brenda-enzymes.info/1.1.1.1> . "
-//                + "OPTIONAL {?protein <http://www.biopax.org/release.biopax-level2.owl#NAME> ?name . "
-//                + "<http://rdf.chemspider.com/37> ?p ?o ."
-//                + "FILTER (?protein = ?o) . "
- //               + "FILTER (?protein = <http://something.org>) . "// || ?protein = <http://somewhere.com>) ."
-//                + "FILTER (?protein = ?name). }"
+                //                + "OPTIONAL {?protein <http://www.biopax.org/release.biopax-level2.owl#NAME> ?name . "
+                //                + "<http://rdf.chemspider.com/37> ?p ?o ."
+                //                + "FILTER (?protein = ?o) . "
+                //               + "FILTER (?protein = <http://something.org>) . "// || ?protein = <http://somewhere.com>) ."
+                //                + "FILTER (?protein = ?name). }"
                 + "}";
 
         System.out.println("Original query:\n\t" + qStr + "\n");
@@ -176,5 +199,4 @@ public class IMSSPARQLExpand extends Plugin {
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
         System.out.println("Expanded query:\n\t" + query);
     }
-
 }

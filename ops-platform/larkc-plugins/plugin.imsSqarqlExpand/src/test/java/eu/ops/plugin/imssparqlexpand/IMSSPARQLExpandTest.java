@@ -9,14 +9,22 @@ import eu.larkc.core.data.DataFactory;
 import static org.junit.Assert.*;
 
 import eu.larkc.core.data.SetOfStatements;
+import eu.larkc.core.data.SetOfStatementsImpl;
 import eu.larkc.core.query.SPARQLQuery;
 import eu.larkc.core.query.SPARQLQueryImpl;
+import java.util.ArrayList;
+import java.util.Collection;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.openrdf.model.Literal;
+import org.openrdf.model.Statement;
+import org.openrdf.model.impl.BNodeImpl;
+import org.openrdf.model.impl.LiteralImpl;
+import org.openrdf.model.impl.StatementImpl;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.MalformedQueryException;
 import org.slf4j.Logger;
@@ -46,6 +54,96 @@ public class IMSSPARQLExpandTest {
 
     @After
     public void tearDown() {
+    }
+
+    /**
+     * Test that if no statements are passed in then the required attributes are null
+     */
+    @Test
+    public void testInitialiseInternal_null() {
+        IMSSPARQLExpand expander = 
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
+            @Override
+            IMSMapper instantiateIMSMapper() {
+                return new DummyIMSMapper();
+            }
+        };
+        expander.initialiseInternal(null);
+        assertNull(expander.requiredAttributes);
+    }
+
+    /**
+     * Test for a single required parameter
+     */
+    @Test
+    public void testInitialiseInternal_wellFormedSingleParam() {
+        Collection<Statement> parameters = new ArrayList<Statement>();
+        Literal object = new LiteralImpl("attr1");
+        Statement st = new StatementImpl(new BNodeImpl("_:id"), 
+                new URIImpl(IMSSPARQLExpand.ATTR_PARAM), object);
+        parameters.add(st);
+        SetOfStatements params = new SetOfStatementsImpl(parameters);
+        IMSSPARQLExpand expander = 
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
+            @Override
+            IMSMapper instantiateIMSMapper() {
+                return new DummyIMSMapper();
+            }
+        };
+        expander.initialiseInternal(params);
+        assertNotNull(expander.requiredAttributes);
+        assertEquals(1, expander.requiredAttributes.size());
+        assertEquals("attr1", expander.requiredAttributes.get(0));
+    }
+
+    /**
+     * Test for a two required parameters
+     */
+    @Test
+    public void testInitialiseInternal_wellFormedTwoParam() {
+        Collection<Statement> parameters = new ArrayList<Statement>();
+        Literal object = new LiteralImpl("attr1,attr2");
+        Statement st = new StatementImpl(new BNodeImpl("_:id"), 
+                new URIImpl(IMSSPARQLExpand.ATTR_PARAM), object);
+        parameters.add(st);
+        SetOfStatements params = new SetOfStatementsImpl(parameters);
+        IMSSPARQLExpand expander = 
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
+            @Override
+            IMSMapper instantiateIMSMapper() {
+                return new DummyIMSMapper();
+            }
+        };
+        expander.initialiseInternal(params);
+        assertNotNull(expander.requiredAttributes);
+        assertEquals(2, expander.requiredAttributes.size());
+        assertEquals("attr1", expander.requiredAttributes.get(0));
+        assertEquals("attr2", expander.requiredAttributes.get(1));
+    }
+
+    /**
+     * Test for a two required parameters with white space in declaration
+     */
+    @Test
+    public void testInitialiseInternal_wellFormedTwoParamSpace() {
+        Collection<Statement> parameters = new ArrayList<Statement>();
+        Literal object = new LiteralImpl("attr1 , attr2");
+        Statement st = new StatementImpl(new BNodeImpl("_:id"), 
+                new URIImpl(IMSSPARQLExpand.ATTR_PARAM), object);
+        parameters.add(st);
+        SetOfStatements params = new SetOfStatementsImpl(parameters);
+        IMSSPARQLExpand expander = 
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
+            @Override
+            IMSMapper instantiateIMSMapper() {
+                return new DummyIMSMapper();
+            }
+        };
+        expander.initialiseInternal(params);
+        assertNotNull(expander.requiredAttributes);
+        assertEquals(2, expander.requiredAttributes.size());
+        assertEquals("attr1", expander.requiredAttributes.get(0));
+        assertEquals("attr2", expander.requiredAttributes.get(1));
     }
     
     static String CONSTRUCT_QUERY = "CONSTRUCT { ?s ?p ?o } WHERE { ?o ?p ?s }";           
