@@ -75,16 +75,16 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
     StringBuilder queryString = new StringBuilder();
     Dataset originalDataSet;
     boolean inContext = false;
-    Set<String> keptAttributes;
+    List<String>  requiredAttributes;
     Set<String> eliminatedAttributes;
 
-    QueryWriterModelVisitor(Dataset dataSet, Set<String> keptAttributes){
+    QueryWriterModelVisitor(Dataset dataSet, List<String> requiredAttributes){
         originalDataSet = dataSet;
         eliminatedAttributes = new HashSet<String>();
-        if (keptAttributes == null || keptAttributes.isEmpty()) {
-            this.keptAttributes = null;
+        if (requiredAttributes == null || requiredAttributes.isEmpty()) {
+            this.requiredAttributes = null;
         } else {
-            this.keptAttributes = keptAttributes;
+            this.requiredAttributes = requiredAttributes;
         }
     }
 
@@ -487,9 +487,9 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
     @Override
     public void meet(ProjectionElem pe) throws QueryExpansionException {
         String sourceName = pe.getSourceName();
-        if (keptAttributes != null){
-            if (!(keptAttributes.contains(sourceName))){
-                System.out.println(keptAttributes);
+        if (requiredAttributes != null){
+            if (!(requiredAttributes.contains(sourceName))){
+                System.out.println(requiredAttributes);
                 System.out.println(sourceName);
                 eliminatedAttributes.add(sourceName);
                 //Do not write the attribute so return.
@@ -819,10 +819,10 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
     }
     
     private boolean canEliminate(String name) {
-        if (keptAttributes == null) {
+        if (requiredAttributes == null) {
             return false;
         }
-        if (keptAttributes.contains(name)){
+        if (requiredAttributes.contains(name)){
             return false;
         }
         if (eliminatedAttributes.contains(name)){

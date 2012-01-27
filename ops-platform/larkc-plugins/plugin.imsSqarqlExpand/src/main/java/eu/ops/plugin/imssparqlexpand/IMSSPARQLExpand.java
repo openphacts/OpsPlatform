@@ -84,14 +84,14 @@ public class IMSSPARQLExpand extends Plugin {
         return new IMSClient();
     }
 
-    private SetOfStatements expandQuery(TupleExpr tupleExpr, Dataset dataset, Set<String> attributes)
+    private SetOfStatements expandQuery(TupleExpr tupleExpr, Dataset dataset)
             throws QueryExpansionException {
         URIFinderVisitor uriFindervisitor = new URIFinderVisitor();
         tupleExpr.visit(uriFindervisitor);
         Set<URI> uriSet = uriFindervisitor.getURIS();
         Map<URI, List<URI>> uriMappings = imsMapper.getMatchesForURIs(uriSet);   
         QueryExpandAndWriteVisitor writerVisitor = 
-                new QueryExpandAndWriteVisitor(uriMappings, dataset, attributes, showExpandedVariables);
+                new QueryExpandAndWriteVisitor(uriMappings, dataset, requiredAttributes, showExpandedVariables);
         tupleExpr.visit(writerVisitor);
         String expandedQueryString = writerVisitor.getQuery();
         //ystem.out.println(expandedQueryString);
@@ -126,7 +126,7 @@ public class IMSSPARQLExpand extends Plugin {
             TupleExpr tupleExpr = parsedQuery.getTupleExpr();
             Dataset dataset = parsedQuery.getDataset();
             //TODO getAttributes
-            return expandQuery(tupleExpr, dataset, null);
+            return expandQuery(tupleExpr, dataset);
         } else {
             String queryString = query.toString();
             TupleExpr tupleExpr = QueryUtils.queryStringToTupleExpr(queryString);
@@ -138,7 +138,7 @@ public class IMSSPARQLExpand extends Plugin {
                 dataset = null;
             }
             //TODO getAttributes
-            return expandQuery(tupleExpr, dataset, null);
+            return expandQuery(tupleExpr, dataset);
         }
     }
 

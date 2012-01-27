@@ -4,6 +4,8 @@
  */
 package eu.ops.plugin.imssparqlexpand;
 
+import java.util.List;
+import java.util.ArrayList;
 import java.util.Set;
 import java.util.HashSet;
 import org.junit.Ignore;
@@ -365,9 +367,9 @@ public class QueryWriterModelVisitorTest {
                 + "<http://brenda-enzymes.info/1.1.1.1> foaf:name ?foo . "
                 + "}";
         TupleExpr tupleExpr = QueryUtils.queryStringToTupleExpr(inputQuery);
-        Set<String> keptAttributes = new HashSet<String>();
-        keptAttributes.add("foo");
-        String newQuery = QueryUtils.tupleExprToQueryString(tupleExpr, keptAttributes);
+        List<String> requiredAttributes = new ArrayList<String>();
+        requiredAttributes.add("foo");
+        String newQuery = QueryUtils.tupleExprToQueryString(tupleExpr, requiredAttributes);
         assertTrue(QueryUtils.sameTupleExpr(expectedQuery, newQuery));
 
     }
@@ -387,9 +389,9 @@ public class QueryWriterModelVisitorTest {
                 + "<http://brenda-enzymes.info/1.1.1.1> foaf:age ?bar . "
                 + "}";
         TupleExpr tupleExpr = QueryUtils.queryStringToTupleExpr(inputQuery);
-        Set<String> keptAttributes = new HashSet<String>();
-        keptAttributes.add("foo");
-        keptAttributes.add("bar");
+        List<String> requiredAttributes = new ArrayList<String>();
+        requiredAttributes.add("bar");
+        requiredAttributes.add("foo");
         String newQuery = QueryUtils.tupleExprToQueryString(tupleExpr, keptAttributes);
         assertTrue(QueryUtils.sameTupleExpr(expectedQuery, newQuery));
 

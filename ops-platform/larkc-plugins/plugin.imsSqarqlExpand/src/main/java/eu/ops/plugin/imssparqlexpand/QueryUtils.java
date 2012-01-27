@@ -2,13 +2,12 @@ package eu.ops.plugin.imssparqlexpand;
 
 import eu.larkc.core.data.DataSet;
 import eu.larkc.core.data.RdfGraph;
+import java.util.List;
 import java.util.Set;
 import org.openrdf.model.URI;
 import org.openrdf.query.Dataset;
 import org.openrdf.query.MalformedQueryException;
-import org.openrdf.query.algebra.StatementPattern;
 import org.openrdf.query.algebra.TupleExpr;
-import org.openrdf.query.algebra.Var;
 import org.openrdf.query.algebra.helpers.QueryModelTreePrinter;
 import org.openrdf.query.impl.DatasetImpl;
 import org.openrdf.query.parser.ParsedQuery;
@@ -41,9 +40,9 @@ public class QueryUtils {
         return tupleExprToQueryString(tupleExpr, null);
     }
     
-    public static String tupleExprToQueryString (TupleExpr tupleExpr, Set<String> keptAttributes) 
+    public static String tupleExprToQueryString (TupleExpr tupleExpr, List<String> requiredAttributes) 
             throws QueryExpansionException {
-        QueryWriterModelVisitor queryWriter = new QueryWriterModelVisitor(null, keptAttributes);
+        QueryWriterModelVisitor queryWriter = new QueryWriterModelVisitor(null, requiredAttributes);
         try {
             tupleExpr.visit(queryWriter);
             String newQuery = queryWriter.getQuery();

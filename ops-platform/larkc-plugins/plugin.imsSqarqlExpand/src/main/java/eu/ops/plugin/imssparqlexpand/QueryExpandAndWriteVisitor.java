@@ -28,9 +28,9 @@ public class QueryExpandAndWriteVisitor extends QueryWriterModelVisitor{
     boolean showExpandedVariables;            
     int statements = 0;
     
-    QueryExpandAndWriteVisitor (Map<URI, List<URI>> uriMappings, Dataset dataset, Set<String> keptAttributes, 
+    QueryExpandAndWriteVisitor (Map<URI, List<URI>> uriMappings, Dataset dataset, List<String> requiredAttributes, 
             boolean showExpandedVariables){
-        super(dataset, keptAttributes);
+        super(dataset, requiredAttributes);
         this.uriMappings = uriMappings;
         this.showExpandedVariables = showExpandedVariables;
     }
