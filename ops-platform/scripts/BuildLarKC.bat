@@ -1,3 +1,5 @@
+This is missing the IMS plugin.
+
 ECHO OFF
 rem THIS bat was built by Christain based on BuildLarKC,sh
 rem If there are difference between the bat and the sh assume the sh is the correct version.

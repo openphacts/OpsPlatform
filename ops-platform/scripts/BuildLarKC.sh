@@ -54,7 +54,7 @@ cd ../plugin.conceptwiki/
 mvn assembly:assembly 
 mv ./target/*SNAPSHOT.jar $LARKC_PATH/larkc/platform/plugins
 
-cd ../plugin.irsSparqlExpand/
+cd ../plugin.imsSparqlExpand/
 mvn assembly:assembly
 mv ./target/*SNAPSHOT.jar $LARKC_PATH/larkc/platform/plugins
 
