@@ -374,7 +374,7 @@ public class QueryWriterModelVisitorTest {
 
     }
 
-    /* @Test
+    @Test
     public void test_Swap_orderf_Keep_all() throws MalformedQueryException, QueryExpansionException{
         String inputQuery = "PREFIX foaf:   <http://xmlns.com/foaf/0.1/> "
                 + "SELECT ?foo ?bar "
@@ -392,8 +392,8 @@ public class QueryWriterModelVisitorTest {
         List<String> requiredAttributes = new ArrayList<String>();
         requiredAttributes.add("bar");
         requiredAttributes.add("foo");
-        String newQuery = QueryUtils.tupleExprToQueryString(tupleExpr, keptAttributes);
+        String newQuery = QueryUtils.tupleExprToQueryString(tupleExpr, requiredAttributes);
         assertTrue(QueryUtils.sameTupleExpr(expectedQuery, newQuery));
 
-    }*/
+    }
 }

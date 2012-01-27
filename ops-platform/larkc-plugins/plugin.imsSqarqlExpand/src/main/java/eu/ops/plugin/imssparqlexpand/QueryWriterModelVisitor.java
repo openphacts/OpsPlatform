@@ -403,6 +403,13 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
         queryString.append("SELECT ");
         queryString.append(modifier);
         addExpanded(prjctn);
+        if (this.requiredAttributes != null){
+            for (String requiredAttribute:requiredAttributes){
+                queryString.append(" ?");
+                queryString.append(requiredAttribute);
+            }
+        }
+        //Call the ProjectionElementList even if there are requiredAttributes as this sets eliminatedAttributes
         prjctn.getProjectionElemList().visit(this);
         newLine();
         printDataset();
@@ -489,15 +496,13 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
         String sourceName = pe.getSourceName();
         if (requiredAttributes != null){
             if (!(requiredAttributes.contains(sourceName))){
-                System.out.println(requiredAttributes);
-                System.out.println(sourceName);
-                eliminatedAttributes.add(sourceName);
-                //Do not write the attribute so return.
-                return;
+                 eliminatedAttributes.add(sourceName);
+                //requiredAttributes are written by so not written here..
             }
+        } else {
+            queryString.append(" ?");
+            queryString.append(sourceName);
         }
-        queryString.append(" ?");
-        queryString.append(sourceName);
     }
 
     /**
