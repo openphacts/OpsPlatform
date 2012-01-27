@@ -67,15 +67,15 @@ public class W3Sparql1Test {
                 + "?subjectUri1 <http://purl.org/dc/elements/1.1/title> ?title ."
                 + "FILTER (?subjectUri1 = <http://example.org/book/book1> || ?subjectUri1 = <http://example.org/book/other>)}";      
 
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
-        dummyIRSMapper.addMapping("http://example.org/book/book1","http://example.org/book/book1");
-        dummyIRSMapper.addMapping("http://example.org/book/book1","http://example.org/book/other");
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
+        dummyIMSMapper.addMapping("http://example.org/book/book1","http://example.org/book/book1");
+        dummyIMSMapper.addMapping("http://example.org/book/book1","http://example.org/book/other");
 
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -97,13 +97,13 @@ public class W3Sparql1Test {
             + "    ?x foaf:mbox ?mbox }";
         String expectedQuery = inputQuery;
 
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
 
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -122,13 +122,13 @@ public class W3Sparql1Test {
         String inputQuery = "SELECT ?v WHERE { ?v ?p \"cat\" }";
         String expectedQuery = inputQuery;
 
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
 
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -146,13 +146,13 @@ public class W3Sparql1Test {
         String inputQuery = "SELECT ?v WHERE { ?v ?p \"cat\"@en }";
         String expectedQuery = inputQuery;
 
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
 
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -170,13 +170,13 @@ public class W3Sparql1Test {
         String inputQuery = "SELECT ?v WHERE { ?v ?p 42 }";
         String expectedQuery = inputQuery;
 
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
 
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -194,13 +194,13 @@ public class W3Sparql1Test {
         String inputQuery = "SELECT ?v WHERE { ?v ?p \"abc\"^^<http://example.org/datatype#specialDatatype> }";
         String expectedQuery = inputQuery;
 
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
 
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -220,13 +220,13 @@ public class W3Sparql1Test {
                 + "WHERE  { ?x foaf:name ?name }";
         String expectedQuery = inputQuery;
 
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
 
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -247,13 +247,13 @@ public class W3Sparql1Test {
             + "WHERE  { ?x org:employeeName ?name }";
         String expectedQuery = inputQuery;
 
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
 
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -275,13 +275,13 @@ public class W3Sparql1Test {
             + "        }";
         String expectedQuery = inputQuery;
 
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
 
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -303,13 +303,13 @@ public class W3Sparql1Test {
             + "        }";
         String expectedQuery = inputQuery;
 
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
 
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -332,13 +332,13 @@ public class W3Sparql1Test {
             + "          ?x dc:title ?title . }";
         String expectedQuery = inputQuery;
 
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
 
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -364,15 +364,15 @@ public class W3Sparql1Test {
             + "SELECT  ?title"
             + "WHERE   { <http://example.org/book/book1> dc:title ?title } ";
         String expectedQuery = ExpectedQuery4_2;
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
-        dummyIRSMapper.addMapping("http://example.org/book/book1", "http://example.org/book/book1");
-        dummyIRSMapper.addMapping("http://example.org/book/book1", "http://other.com/livre/2345");
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
+        dummyIMSMapper.addMapping("http://example.org/book/book1", "http://example.org/book/book1");
+        dummyIMSMapper.addMapping("http://example.org/book/book1", "http://other.com/livre/2345");
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -394,15 +394,15 @@ public class W3Sparql1Test {
             + "SELECT  $title"
             + "WHERE   { :book1  dc:title  $title }";
         String expectedQuery = ExpectedQuery4_2;
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
-        dummyIRSMapper.addMapping("http://example.org/book/book1", "http://example.org/book/book1");
-        dummyIRSMapper.addMapping("http://example.org/book/book1", "http://other.com/livre/2345");
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
+        dummyIMSMapper.addMapping("http://example.org/book/book1", "http://example.org/book/book1");
+        dummyIMSMapper.addMapping("http://example.org/book/book1", "http://other.com/livre/2345");
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -425,15 +425,15 @@ public class W3Sparql1Test {
             + "WHERE   { <book1>  dc:title  ?title }";
         String expectedQuery = ExpectedQuery4_2;
         
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
-        dummyIRSMapper.addMapping("http://example.org/book/book1", "http://example.org/book/book1");
-        dummyIRSMapper.addMapping("http://example.org/book/book1", "http://other.com/livre/2345");
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
+        dummyIMSMapper.addMapping("http://example.org/book/book1", "http://example.org/book/book1");
+        dummyIMSMapper.addMapping("http://example.org/book/book1", "http://other.com/livre/2345");
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -460,13 +460,13 @@ public class W3Sparql1Test {
         String inputQuery = query5_2;
         String expectedQuery = query5_2;
         
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -490,13 +490,13 @@ public class W3Sparql1Test {
             + "       }";
         String expectedQuery = query5_2;
         
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -525,13 +525,13 @@ public class W3Sparql1Test {
         String inputQuery = query5_2_2;
         String expectedQuery = query5_2_2;
         
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -558,13 +558,13 @@ public class W3Sparql1Test {
             + "       }";
         String expectedQuery = query5_2_2;
         
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -591,13 +591,13 @@ public class W3Sparql1Test {
             + "       }";
         String expectedQuery = query5_2_2;
         
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -624,13 +624,13 @@ public class W3Sparql1Test {
             + "       }";
         String expectedQuery = query5_2_2;
         
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -652,13 +652,13 @@ public class W3Sparql1Test {
             + "       }";
         String expectedQuery = inputQuery;
         
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -681,13 +681,13 @@ public class W3Sparql1Test {
             + "        }";
         String expectedQuery = inputQuery;
         
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -710,13 +710,13 @@ public class W3Sparql1Test {
             + "       }";
         String expectedQuery = inputQuery;
         
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -737,13 +737,13 @@ public class W3Sparql1Test {
             + "WHERE  { { ?book dc10:title  ?title } UNION { ?book dc11:title  ?title } } ";
         String expectedQuery = inputQuery;
         
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -764,13 +764,13 @@ public class W3Sparql1Test {
             + "WHERE  { { ?x dc10:title  ?title } UNION { ?y dc11:title  ?title } } ";
         String expectedQuery = inputQuery;
         
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -791,13 +791,13 @@ public class W3Sparql1Test {
             + "WHERE   { ?x foaf:name ?name }";
         String expectedQuery = inputQuery;
         
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -824,13 +824,13 @@ public class W3Sparql1Test {
             + "}";
         String expectedQuery = inputQuery;
         
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -858,13 +858,13 @@ public class W3Sparql1Test {
             + "  }";
         String expectedQuery = inputQuery;
         
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
 
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -904,15 +904,15 @@ public class W3Sparql1Test {
             + "    }"
             + "  }";
         
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
-        dummyIRSMapper.addMapping("mailto:bob@work.example","mailto:bob@work.example");
-        dummyIRSMapper.addMapping("mailto:bob@work.example","mailto:bob.smith@work.example");
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
+        dummyIMSMapper.addMapping("mailto:bob@work.example","mailto:bob@work.example");
+        dummyIMSMapper.addMapping("mailto:bob@work.example","mailto:bob.smith@work.example");
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -940,15 +940,15 @@ public class W3Sparql1Test {
             + "  }";
         String expectedQuery = inputQuery;
               
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
-        dummyIRSMapper.addMapping("mailto:bob@work.example","mailto:bob@work.example");
-        dummyIRSMapper.addMapping("mailto:bob@work.example","mailto:bob.smith@work.example");
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
+        dummyIMSMapper.addMapping("mailto:bob@work.example","mailto:bob@work.example");
+        dummyIMSMapper.addMapping("mailto:bob@work.example","mailto:bob.smith@work.example");
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -986,15 +986,15 @@ public class W3Sparql1Test {
             + "    ?x foaf:nick ?nick }"
             + "}";
               
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
-        dummyIRSMapper.addMapping("mailto:bob@work.example","mailto:bob@work.example");
-        dummyIRSMapper.addMapping("mailto:bob@work.example","mailto:bob.smith@work.example");
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
+        dummyIMSMapper.addMapping("mailto:bob@work.example","mailto:bob@work.example");
+        dummyIMSMapper.addMapping("mailto:bob@work.example","mailto:bob.smith@work.example");
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -1058,15 +1058,15 @@ public class W3Sparql1Test {
             + "  }"
             + "}";
               
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
-        dummyIRSMapper.addMapping("mailto:alice@work.example","mailto:alice@work.example");
-        dummyIRSMapper.addMapping("mailto:alice@work.example","mailto:alice.jones@work.example");
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
+        dummyIMSMapper.addMapping("mailto:alice@work.example","mailto:alice@work.example");
+        dummyIMSMapper.addMapping("mailto:alice@work.example","mailto:alice.jones@work.example");
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -1093,15 +1093,15 @@ public class W3Sparql1Test {
             + "  }";
         String expectedQuery = inputQuery;
               
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
-        dummyIRSMapper.addMapping("mailto:bob@work.example","mailto:bob@work.example");
-        dummyIRSMapper.addMapping("mailto:bob@work.example","mailto:bob.smith@work.example");
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
+        dummyIMSMapper.addMapping("mailto:bob@work.example","mailto:bob@work.example");
+        dummyIMSMapper.addMapping("mailto:bob@work.example","mailto:bob.smith@work.example");
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -1124,13 +1124,13 @@ public class W3Sparql1Test {
 //
         String expectedQuery = inputQuery;
               
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -1155,13 +1155,13 @@ public class W3Sparql1Test {
 //            + "
         String expectedQuery = inputQuery;
               
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -1186,13 +1186,13 @@ public class W3Sparql1Test {
 //            + "
         String expectedQuery = inputQuery;
               
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -1216,13 +1216,13 @@ public class W3Sparql1Test {
 //
         String expectedQuery = inputQuery;
               
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -1244,13 +1244,13 @@ public class W3Sparql1Test {
 
         String expectedQuery = inputQuery;
               
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -1270,13 +1270,13 @@ public class W3Sparql1Test {
 
         String expectedQuery = inputQuery;
               
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -1296,13 +1296,13 @@ public class W3Sparql1Test {
 
         String expectedQuery = inputQuery;
               
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -1322,13 +1322,13 @@ public class W3Sparql1Test {
 
         String expectedQuery = inputQuery;
               
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -1352,13 +1352,13 @@ public class W3Sparql1Test {
 
         String expectedQuery = inputQuery;
               
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -1380,13 +1380,13 @@ public class W3Sparql1Test {
 
         String expectedQuery = inputQuery;
               
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -1411,13 +1411,13 @@ public class W3Sparql1Test {
                 + "  }";
         String expectedQuery = inputQuery;
               
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -1439,13 +1439,13 @@ public class W3Sparql1Test {
 
         String expectedQuery = inputQuery;
               
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -1472,13 +1472,13 @@ public class W3Sparql1Test {
                 + " }";
         String expectedQuery = inputQuery;
               
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -1507,13 +1507,13 @@ public class W3Sparql1Test {
 
         String expectedQuery = inputQuery;
               
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -1540,13 +1540,13 @@ public class W3Sparql1Test {
 
         String expectedQuery = inputQuery;
               
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -1566,13 +1566,13 @@ public class W3Sparql1Test {
 
         String expectedQuery = inputQuery;
               
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -1595,13 +1595,13 @@ public class W3Sparql1Test {
 
         String expectedQuery = inputQuery;
               
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -1624,13 +1624,13 @@ public class W3Sparql1Test {
 
         String expectedQuery = inputQuery;
               
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -1653,13 +1653,13 @@ public class W3Sparql1Test {
 
         String expectedQuery = inputQuery;
               
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -1682,13 +1682,13 @@ public class W3Sparql1Test {
                 + "ASK  { ?x foaf:name  \"Alice\" ;"
                 + "          foaf:mbox  <mailto:aliceJones@work.example> }";;
               
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
-        dummyIRSMapper.addMapping("mailto:alice@work.example", "mailto:aliceJones@work.example");
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
+        dummyIMSMapper.addMapping("mailto:alice@work.example", "mailto:aliceJones@work.example");
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -1707,13 +1707,13 @@ public class W3Sparql1Test {
 
         String expectedQuery = inputQuery;
               
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -1733,14 +1733,14 @@ public class W3Sparql1Test {
 
         String expectedQuery = "DESCRIBE <http://SomeotherURI/qwerty>";
               
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
-        dummyIRSMapper.addMapping("http://example.org/", "http://SomeotherURI/qwerty");
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
+        dummyIMSMapper.addMapping("http://example.org/", "http://SomeotherURI/qwerty");
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -1761,16 +1761,16 @@ public class W3Sparql1Test {
         String expectedQuery = "DESCRIBE <http://example.org/> <http://SomeotherURI/qwerty> "
                 + "                      <http://AnotherOtherURI/df7fj3d>";
                
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
-        dummyIRSMapper.addMapping("http://example.org/", "http://example.org/");
-        dummyIRSMapper.addMapping("http://example.org/", "http://SomeotherURI/qwerty");
-        dummyIRSMapper.addMapping("http://example.org/", "http://AnotherOtherURI/df7fj3d");
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
+        dummyIMSMapper.addMapping("http://example.org/", "http://example.org/");
+        dummyIMSMapper.addMapping("http://example.org/", "http://SomeotherURI/qwerty");
+        dummyIMSMapper.addMapping("http://example.org/", "http://AnotherOtherURI/df7fj3d");
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -1791,13 +1791,13 @@ public class W3Sparql1Test {
 
         String expectedQuery = inputQuery;
               
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -1821,21 +1821,21 @@ public class W3Sparql1Test {
                 + "<http://example.org/561> "
                 + "<http://SomeotherURI/fgdgdsfd> <http://example.org/455> <http://brenda.org/prtoien/sdfsffs>";
               
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
-        dummyIRSMapper.addMapping("http://example.org/1", "http://SomeotherURI/qwerty");
-        dummyIRSMapper.addMapping("http://example.org/1", "http://example.org/1");
-        dummyIRSMapper.addMapping("http://example.org/45", "http://SomeotherURI/dsssas");
-        dummyIRSMapper.addMapping("http://example.org/45", "http://example.org/45");
-        dummyIRSMapper.addMapping("http://example.org/561", "http://example.org/561");
-        dummyIRSMapper.addMapping("http://example.org/455", "http://SomeotherURI/fgdgdsfd");
-        dummyIRSMapper.addMapping("http://example.org/455", "http://example.org/455");
-        dummyIRSMapper.addMapping("http://example.org/455", "http://brenda.org/prtoien/sdfsffs");
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
+        dummyIMSMapper.addMapping("http://example.org/1", "http://SomeotherURI/qwerty");
+        dummyIMSMapper.addMapping("http://example.org/1", "http://example.org/1");
+        dummyIMSMapper.addMapping("http://example.org/45", "http://SomeotherURI/dsssas");
+        dummyIMSMapper.addMapping("http://example.org/45", "http://example.org/45");
+        dummyIMSMapper.addMapping("http://example.org/561", "http://example.org/561");
+        dummyIMSMapper.addMapping("http://example.org/455", "http://SomeotherURI/fgdgdsfd");
+        dummyIMSMapper.addMapping("http://example.org/455", "http://example.org/455");
+        dummyIMSMapper.addMapping("http://example.org/455", "http://brenda.org/prtoien/sdfsffs");
 
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -1862,15 +1862,15 @@ public class W3Sparql1Test {
                 + "             || ?objectUri1 = <mailto:alice@org>)"     
                 + "}";
               
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
-        dummyIRSMapper.addMapping("mailto:alice@org", "mailto:aliceJones@org");
-        dummyIRSMapper.addMapping("mailto:alice@org", "mailto:alice@org");
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
+        dummyIMSMapper.addMapping("mailto:alice@org", "mailto:aliceJones@org");
+        dummyIMSMapper.addMapping("mailto:alice@org", "mailto:alice@org");
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -1892,13 +1892,13 @@ public class W3Sparql1Test {
 
         String expectedQuery = inputQuery;
               
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -1919,13 +1919,13 @@ public class W3Sparql1Test {
 
         String expectedQuery = inputQuery;
               
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -1945,13 +1945,13 @@ public class W3Sparql1Test {
 
         String expectedQuery = inputQuery;
               
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -1976,13 +1976,13 @@ public class W3Sparql1Test {
 
         String expectedQuery = inputQuery;
               
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -2014,13 +2014,13 @@ public class W3Sparql1Test {
                 + "         OPTIONAL { ?x dc:date ?date } "
                 + "}";
               
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -2054,13 +2054,13 @@ public class W3Sparql1Test {
                 + "          foaf:mbox  ?mbox ."
                 + "}";
               
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -2102,13 +2102,13 @@ public class W3Sparql1Test {
                 + "       }";
 
               
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -2131,13 +2131,13 @@ public class W3Sparql1Test {
 
         String expectedQuery = inputQuery;
               
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -2160,13 +2160,13 @@ public class W3Sparql1Test {
 
         String expectedQuery = inputQuery;
               
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -2189,13 +2189,13 @@ public class W3Sparql1Test {
 
         String expectedQuery = inputQuery;
               
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -2219,13 +2219,13 @@ public class W3Sparql1Test {
 
         String expectedQuery = inputQuery;
               
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -2251,13 +2251,13 @@ public class W3Sparql1Test {
 
         String expectedQuery = inputQuery;
               
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -2282,13 +2282,13 @@ public class W3Sparql1Test {
 
         String expectedQuery = inputQuery;
               
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -2314,13 +2314,13 @@ public class W3Sparql1Test {
 
         String expectedQuery = inputQuery;
               
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -2349,13 +2349,13 @@ public class W3Sparql1Test {
 
         String expectedQuery = inputQuery;
               
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -2378,13 +2378,13 @@ public class W3Sparql1Test {
 
         String expectedQuery = inputQuery;
               
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -2405,13 +2405,13 @@ public class W3Sparql1Test {
 
         String expectedQuery = inputQuery;
               
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -2435,13 +2435,13 @@ public class W3Sparql1Test {
 
         String expectedQuery = inputQuery;
               
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -2469,13 +2469,13 @@ public class W3Sparql1Test {
 
         String expectedQuery = inputQuery;
               
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -2494,13 +2494,13 @@ public class W3Sparql1Test {
 
         String expectedQuery = inputQuery;
               
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -2519,13 +2519,13 @@ public class W3Sparql1Test {
 
         String expectedQuery = inputQuery;
               
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -2544,13 +2544,13 @@ public class W3Sparql1Test {
 
         String expectedQuery = inputQuery;
               
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);
@@ -2570,13 +2570,13 @@ public class W3Sparql1Test {
 
         String expectedQuery = inputQuery;
               
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
         
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         expander.initialiseInternal(null);

@@ -34,13 +34,13 @@ public class openrdfToy {
             Dataset larkcDataset = larkcParsedQuery.getDataset();
             System.out.println(larkcDataset);
          }
-         final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+         final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
         
          IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
          };
          expander.initialiseInternal(null);

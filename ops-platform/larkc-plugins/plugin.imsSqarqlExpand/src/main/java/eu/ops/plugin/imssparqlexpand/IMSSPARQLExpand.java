@@ -18,16 +18,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The <code>eu.ops.plugin.irssparqlexpand.IMSSPARQLExpand</code> is a LarKC
+ * The <code>eu.ops.plugin.imssparqlexpand.IMSSPARQLExpand</code> is a LarKC
  * plugin. It expands a given SPARQL query into a UNION query where each
  * sub-query uses different, but equivalent URIs. The equivalent URIs are
- * retrieved from the the prototype IRS service.
+ * retrieved from the the prototype IMS service.
  */
 public class IMSSPARQLExpand extends Plugin {
 
     protected static Logger logger = LoggerFactory.getLogger(Plugin.class);
-    private IMSMapper irsMapper = null;
+    private IMSMapper imsMapper = null;
     private boolean showExpandedVariables = false;
+    Set requiredAttributes;
     
     /**
      * Constructor.
@@ -50,12 +51,12 @@ public class IMSSPARQLExpand extends Plugin {
      */
     @Override
     protected void initialiseInternal(SetOfStatements params) {
-        irsMapper = instantiateIRSMapper();
-        logger.info("IRSSPARQLExpand initialized.");
+        imsMapper = instantiateIMSMapper();
+        logger.info("IMSSPARQLExpand initialized.");
         //ystem.out.println("*********************Initialised!!!");
     }
     
-    IMSMapper instantiateIRSMapper() {
+    IMSMapper instantiateIMSMapper() {
     	//ystem.out.println("*********************");
             return new IMSClient();
     }
@@ -65,7 +66,7 @@ public class IMSSPARQLExpand extends Plugin {
         URIFinderVisitor uriFindervisitor = new URIFinderVisitor();
         tupleExpr.visit(uriFindervisitor);
         Set<URI> uriSet = uriFindervisitor.getURIS();
-        Map<URI, List<URI>> uriMappings = irsMapper.getMatchesForURIs(uriSet);   
+        Map<URI, List<URI>> uriMappings = imsMapper.getMatchesForURIs(uriSet);   
         QueryExpandAndWriteVisitor writerVisitor = 
                 new QueryExpandAndWriteVisitor(uriMappings, dataset, showExpandedVariables);
         tupleExpr.visit(writerVisitor);
@@ -95,7 +96,7 @@ public class IMSSPARQLExpand extends Plugin {
         //ystem.out.println("Input: " + input.getStatements().toString());
         // Does not care about the input name since it has a single argument, use any named graph
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(input);
-        logger.info("IRSSPARQLExpand: Query is a: "+query.getClass());
+        logger.info("IMSSPARQLExpand: Query is a: "+query.getClass());
         if (query instanceof SPARQLQueryImpl){
             SPARQLQueryImpl impl = (SPARQLQueryImpl)query;
             ParsedQuery parsedQuery = impl.getParsedQuery();
@@ -139,7 +140,7 @@ public class IMSSPARQLExpand extends Plugin {
             logger.warn("Problem writing expanded query.", ex);
         }
         //Failed so return input
-        logger.info("IRSSPARQLExpand: ERROR: Returning input");
+        logger.info("IMSSPARQLExpand: ERROR: Returning input");
         return input;
     }
 
@@ -157,7 +158,7 @@ public class IMSSPARQLExpand extends Plugin {
     }
     
     public static void main(String[] args) throws MalformedQueryException, QueryExpansionException {
-        IMSSPARQLExpand s = new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand"));
+        IMSSPARQLExpand s = new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand"));
         s.initialiseInternal(null);
         String qStr = " SELECT ?protein"
                 + " WHERE {"

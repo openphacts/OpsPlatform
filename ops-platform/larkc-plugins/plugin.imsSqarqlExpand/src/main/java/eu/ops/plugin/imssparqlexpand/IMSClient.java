@@ -18,7 +18,7 @@ import org.openrdf.model.impl.URIImpl;
 import uk.ac.manchester.cs.ims.beans.Match;
 
 /**
- * Client for interacting with the IRS service
+ * Client for interacting with the IMS service
  */
 public class IMSClient implements IMSMapper{
 
@@ -88,8 +88,8 @@ System.out.println("***********Number of matches for " + uri + ": " + matches.si
     }
 
     public static void main(String[] args) {
-        IMSClient irsClient = new IMSClient();
-        List<Match> matches = irsClient.getMatchesForURI("http://brenda-enzymes.info/1.1.1.1");
+        IMSClient imsClient = new IMSClient();
+        List<Match> matches = imsClient.getMatchesForURI("http://brenda-enzymes.info/1.1.1.1");
         StringBuilder response = new StringBuilder("Response:\n");
         for (Match match : matches) {
             response.append("\t").append(match.getId())
