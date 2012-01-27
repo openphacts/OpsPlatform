@@ -9,14 +9,22 @@ import eu.larkc.core.data.DataFactory;
 import static org.junit.Assert.*;
 
 import eu.larkc.core.data.SetOfStatements;
+import eu.larkc.core.data.SetOfStatementsImpl;
 import eu.larkc.core.query.SPARQLQuery;
 import eu.larkc.core.query.SPARQLQueryImpl;
+import java.util.ArrayList;
+import java.util.Collection;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.openrdf.model.Literal;
+import org.openrdf.model.Statement;
+import org.openrdf.model.impl.BNodeImpl;
+import org.openrdf.model.impl.LiteralImpl;
+import org.openrdf.model.impl.StatementImpl;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.MalformedQueryException;
 import org.slf4j.Logger;
@@ -47,6 +55,96 @@ public class IMSSPARQLExpandTest {
     @After
     public void tearDown() {
     }
+
+    /**
+     * Test that if no statements are passed in then the required attributes are null
+     */
+    @Test
+    public void testInitialiseInternal_null() {
+        IMSSPARQLExpand expander = 
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
+            @Override
+            IMSMapper instantiateIMSMapper() {
+                return new DummyIMSMapper();
+            }
+        };
+        expander.initialiseInternal(null);
+        assertNull(expander.requiredAttributes);
+    }
+
+    /**
+     * Test for a single required parameter
+     */
+    @Test
+    public void testInitialiseInternal_wellFormedSingleParam() {
+        Collection<Statement> parameters = new ArrayList<Statement>();
+        Literal object = new LiteralImpl("attr1");
+        Statement st = new StatementImpl(new BNodeImpl("_:id"), 
+                new URIImpl(IMSSPARQLExpand.ATTR_PARAM), object);
+        parameters.add(st);
+        SetOfStatements params = new SetOfStatementsImpl(parameters);
+        IMSSPARQLExpand expander = 
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
+            @Override
+            IMSMapper instantiateIMSMapper() {
+                return new DummyIMSMapper();
+            }
+        };
+        expander.initialiseInternal(params);
+        assertNotNull(expander.requiredAttributes);
+        assertEquals(1, expander.requiredAttributes.size());
+        assertEquals("attr1", expander.requiredAttributes.get(0));
+    }
+
+    /**
+     * Test for a two required parameters
+     */
+    @Test
+    public void testInitialiseInternal_wellFormedTwoParam() {
+        Collection<Statement> parameters = new ArrayList<Statement>();
+        Literal object = new LiteralImpl("attr1,attr2");
+        Statement st = new StatementImpl(new BNodeImpl("_:id"), 
+                new URIImpl(IMSSPARQLExpand.ATTR_PARAM), object);
+        parameters.add(st);
+        SetOfStatements params = new SetOfStatementsImpl(parameters);
+        IMSSPARQLExpand expander = 
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
+            @Override
+            IMSMapper instantiateIMSMapper() {
+                return new DummyIMSMapper();
+            }
+        };
+        expander.initialiseInternal(params);
+        assertNotNull(expander.requiredAttributes);
+        assertEquals(2, expander.requiredAttributes.size());
+        assertEquals("attr1", expander.requiredAttributes.get(0));
+        assertEquals("attr2", expander.requiredAttributes.get(1));
+    }
+
+    /**
+     * Test for a two required parameters with white space in declaration
+     */
+    @Test
+    public void testInitialiseInternal_wellFormedTwoParamSpace() {
+        Collection<Statement> parameters = new ArrayList<Statement>();
+        Literal object = new LiteralImpl("attr1 , attr2");
+        Statement st = new StatementImpl(new BNodeImpl("_:id"), 
+                new URIImpl(IMSSPARQLExpand.ATTR_PARAM), object);
+        parameters.add(st);
+        SetOfStatements params = new SetOfStatementsImpl(parameters);
+        IMSSPARQLExpand expander = 
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
+            @Override
+            IMSMapper instantiateIMSMapper() {
+                return new DummyIMSMapper();
+            }
+        };
+        expander.initialiseInternal(params);
+        assertNotNull(expander.requiredAttributes);
+        assertEquals(2, expander.requiredAttributes.size());
+        assertEquals("attr1", expander.requiredAttributes.get(0));
+        assertEquals("attr2", expander.requiredAttributes.get(1));
+    }
     
     static String CONSTRUCT_QUERY = "CONSTRUCT { ?s ?p ?o } WHERE { ?o ?p ?s }";           
     /**
@@ -55,9 +153,9 @@ public class IMSSPARQLExpandTest {
     @Test
     public void testConstructQuery() throws MalformedQueryException, QueryExpansionException {
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
+            IMSMapper instantiateIMSMapper() {
                 return new DummyIMSMapper();
             }
         };
@@ -79,9 +177,9 @@ public class IMSSPARQLExpandTest {
     @Ignore
     public void testDescribeQuery() throws MalformedQueryException, QueryExpansionException {
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
+            IMSMapper instantiateIMSMapper() {
                 return new DummyIMSMapper();
             }
         };
@@ -103,9 +201,9 @@ public class IMSSPARQLExpandTest {
     @Ignore
     public void testAskQuery() throws MalformedQueryException, QueryExpansionException {
         IMSSPARQLExpand expander = 
-                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
+            IMSMapper instantiateIMSMapper() {
                 return new DummyIMSMapper();
             }
         };
@@ -126,9 +224,9 @@ public class IMSSPARQLExpandTest {
      */
     @Test
     public void testSpacing() throws MalformedQueryException, QueryExpansionException {
-        IMSSPARQLExpand s = new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+        IMSSPARQLExpand s = new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
+            IMSMapper instantiateIMSMapper() {
                 return new DummyIMSMapper();
             }
         };
@@ -151,8 +249,8 @@ public class IMSSPARQLExpandTest {
     @Test
     public void testPrefixes() throws MalformedQueryException, QueryExpansionException {
         IMSSPARQLExpand s = new IMSSPARQLExpand(
-                new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
-            IMSMapper instantiateIRSMapper() {
+                new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
+            IMSMapper instantiateIMSMapper() {
                 return new DummyIMSMapper();
             }
         };
@@ -176,9 +274,9 @@ public class IMSSPARQLExpandTest {
     @Test
     public void testQueryWithoutURIs() throws MalformedQueryException, QueryExpansionException {
         IMSSPARQLExpand s = new IMSSPARQLExpand(
-                new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
+            IMSMapper instantiateIMSMapper() {
                 return new DummyIMSMapper();
             }
         };
@@ -208,15 +306,15 @@ public class IMSSPARQLExpandTest {
      */
     @Test
     public void testOneBGPOneObjectURI() throws MalformedQueryException, QueryExpansionException {
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
-        dummyIRSMapper.addMapping("http://foo.info/1.1.1.1", "http://bar.com/8hd83");
-        dummyIRSMapper.addMapping("http://foo.info/1.1.1.1", "http://foo.info/1.1.1.1");
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
+        dummyIMSMapper.addMapping("http://foo.info/1.1.1.1", "http://bar.com/8hd83");
+        dummyIMSMapper.addMapping("http://foo.info/1.1.1.1", "http://foo.info/1.1.1.1");
 
         IMSSPARQLExpand s = new IMSSPARQLExpand(
-                new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         s.initialiseInternal(null);
@@ -236,14 +334,14 @@ public class IMSSPARQLExpandTest {
      */
     @Test
     public void testOneBGPOneObjectURIOneMap() throws MalformedQueryException, QueryExpansionException {
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
-        dummyIRSMapper.addMapping("http://foo.info/1.1.1.1", "http://bar.com/8hd83");
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
+        dummyIMSMapper.addMapping("http://foo.info/1.1.1.1", "http://bar.com/8hd83");
 
         IMSSPARQLExpand s = new IMSSPARQLExpand(
-                new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         s.initialiseInternal(null);
@@ -259,14 +357,14 @@ public class IMSSPARQLExpandTest {
      */
     @Test
     public void testOneBGPOneObjectURIMapsToSlefOnly() throws MalformedQueryException, QueryExpansionException {
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
-        dummyIRSMapper.addMapping("http://foo.info/1.1.1.1", "http://foo.info/1.1.1.1");
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
+        dummyIMSMapper.addMapping("http://foo.info/1.1.1.1", "http://foo.info/1.1.1.1");
 
         IMSSPARQLExpand s = new IMSSPARQLExpand(
-                new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         s.initialiseInternal(null);
@@ -282,13 +380,13 @@ public class IMSSPARQLExpandTest {
      */
     @Test
     public void testOneBGPOneObjectURIMapsToNothing() throws MalformedQueryException, QueryExpansionException {
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
 
         IMSSPARQLExpand s = new IMSSPARQLExpand(
-                new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         s.initialiseInternal(null);
@@ -318,16 +416,16 @@ public class IMSSPARQLExpandTest {
      */
     @Test
     public void testOneBGPOneSubjectURI() throws MalformedQueryException, QueryExpansionException {
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
-        dummyIRSMapper.addMapping("http://foo.com/45273","http://bar.co.uk/346579");
-        dummyIRSMapper.addMapping("http://foo.com/45273","http://bar.ac.uk/19278");
-        dummyIRSMapper.addMapping("http://foo.com/45273","http://foo.com/45273");
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
+        dummyIMSMapper.addMapping("http://foo.com/45273","http://bar.co.uk/346579");
+        dummyIMSMapper.addMapping("http://foo.com/45273","http://bar.ac.uk/19278");
+        dummyIMSMapper.addMapping("http://foo.com/45273","http://foo.com/45273");
 
         IMSSPARQLExpand s = new IMSSPARQLExpand(
-                new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         s.initialiseInternal(null);
@@ -358,17 +456,17 @@ public class IMSSPARQLExpandTest {
      */
     @Test
     public void testOneBGPOneSubjectOneObjectURIOneMatchEach() throws MalformedQueryException, QueryExpansionException {
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
-        dummyIRSMapper.addMapping("http://example.org/chem/8j392","http://result.com/90");
-        dummyIRSMapper.addMapping("http://example.org/chem/8j392","http://example.org/chem/8j392");
-        dummyIRSMapper.addMapping("http://foo.com/1.1.1.1","http://bar.info/u83hs");
-        dummyIRSMapper.addMapping("http://foo.com/1.1.1.1","http://foo.com/1.1.1.1");
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
+        dummyIMSMapper.addMapping("http://example.org/chem/8j392","http://result.com/90");
+        dummyIMSMapper.addMapping("http://example.org/chem/8j392","http://example.org/chem/8j392");
+        dummyIMSMapper.addMapping("http://foo.com/1.1.1.1","http://bar.info/u83hs");
+        dummyIMSMapper.addMapping("http://foo.com/1.1.1.1","http://foo.com/1.1.1.1");
         
         IMSSPARQLExpand s = new IMSSPARQLExpand(
-                new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         s.initialiseInternal(null);
@@ -391,16 +489,16 @@ public class IMSSPARQLExpandTest {
     @Test
     public void testOneBGPOneSubjectOneObjectURIOnlySubjectMatch() 
             throws MalformedQueryException, QueryExpansionException {
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
-        dummyIRSMapper.addMapping("http://example.org/chem/8j392","http://result.com/90");
-        dummyIRSMapper.addMapping("http://example.org/chem/8j392","http://example.org/chem/8j392");
-        dummyIRSMapper.addMapping("http://foo.com/1.1.1.1","http://foo.com/1.1.1.1");
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
+        dummyIMSMapper.addMapping("http://example.org/chem/8j392","http://result.com/90");
+        dummyIMSMapper.addMapping("http://example.org/chem/8j392","http://example.org/chem/8j392");
+        dummyIMSMapper.addMapping("http://foo.com/1.1.1.1","http://foo.com/1.1.1.1");
         
         IMSSPARQLExpand s = new IMSSPARQLExpand(
-                new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         s.initialiseInternal(null);
@@ -428,19 +526,19 @@ public class IMSSPARQLExpandTest {
     @Test
     public void testOneBGPOneSubjectOneObjectURIMultipleMatches() 
             throws MalformedQueryException, QueryExpansionException {
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
-        dummyIRSMapper.addMapping("http://example.org/chem/8j392","http://result.com/90");
-        dummyIRSMapper.addMapping("http://example.org/chem/8j392","http://somewhere.com/chebi/7s82");
-        dummyIRSMapper.addMapping("http://example.org/chem/8j392","http://another.com/maps/hsjnc");
-        dummyIRSMapper.addMapping("http://example.org/chem/8j392","http://example.org/chem/8j392");
-        dummyIRSMapper.addMapping("http://foo.com/1.1.1.1","http://bar.info/u83hs");
-        dummyIRSMapper.addMapping("http://foo.com/1.1.1.1","http://onemore.co.uk/892k3");
-        dummyIRSMapper.addMapping("http://foo.com/1.1.1.1","http://foo.com/1.1.1.1");
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
+        dummyIMSMapper.addMapping("http://example.org/chem/8j392","http://result.com/90");
+        dummyIMSMapper.addMapping("http://example.org/chem/8j392","http://somewhere.com/chebi/7s82");
+        dummyIMSMapper.addMapping("http://example.org/chem/8j392","http://another.com/maps/hsjnc");
+        dummyIMSMapper.addMapping("http://example.org/chem/8j392","http://example.org/chem/8j392");
+        dummyIMSMapper.addMapping("http://foo.com/1.1.1.1","http://bar.info/u83hs");
+        dummyIMSMapper.addMapping("http://foo.com/1.1.1.1","http://onemore.co.uk/892k3");
+        dummyIMSMapper.addMapping("http://foo.com/1.1.1.1","http://foo.com/1.1.1.1");
         
-        IMSSPARQLExpand s = new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+        IMSSPARQLExpand s = new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         s.initialiseInternal(null);
@@ -471,14 +569,14 @@ public class IMSSPARQLExpandTest {
      */
     @Test
     public void testTwoBGPOneObjectURI() throws MalformedQueryException, QueryExpansionException {
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
-        dummyIRSMapper.addMapping("http://foo.info/1.1.1.1","http://bar.com/9khd7");
-        dummyIRSMapper.addMapping("http://foo.info/1.1.1.1","http://foo.info/1.1.1.1");
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
+        dummyIMSMapper.addMapping("http://foo.info/1.1.1.1","http://bar.com/9khd7");
+        dummyIMSMapper.addMapping("http://foo.info/1.1.1.1","http://foo.info/1.1.1.1");
  
-        IMSSPARQLExpand s = new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+        IMSSPARQLExpand s = new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         s.initialiseInternal(null);
@@ -511,14 +609,14 @@ public class IMSSPARQLExpandTest {
      */
     @Test
     public void testTwoBGPShareSubjectURI() throws MalformedQueryException, QueryExpansionException {
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
-        dummyIRSMapper.addMapping("http://foo.info/1.1.1.1","http://bar.com/9khd7");
-        dummyIRSMapper.addMapping("http://foo.info/1.1.1.1","http://foo.info/1.1.1.1");
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
+        dummyIMSMapper.addMapping("http://foo.info/1.1.1.1","http://bar.com/9khd7");
+        dummyIMSMapper.addMapping("http://foo.info/1.1.1.1","http://foo.info/1.1.1.1");
         
-        IMSSPARQLExpand s = new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+        IMSSPARQLExpand s = new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         s.initialiseInternal(null);
@@ -558,15 +656,15 @@ public class IMSSPARQLExpandTest {
      */
     @Test
     public void testThreeBGPShareSubjectURI() throws MalformedQueryException, QueryExpansionException {
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
-        dummyIRSMapper.addMapping("http://foo.info/1.1.1.1","http://bar.com/9khd7");
-        dummyIRSMapper.addMapping("http://foo.info/1.1.1.1","http://example.ac.uk/89ke");
-        dummyIRSMapper.addMapping("http://foo.info/1.1.1.1","http://foo.info/1.1.1.1");
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
+        dummyIMSMapper.addMapping("http://foo.info/1.1.1.1","http://bar.com/9khd7");
+        dummyIMSMapper.addMapping("http://foo.info/1.1.1.1","http://example.ac.uk/89ke");
+        dummyIMSMapper.addMapping("http://foo.info/1.1.1.1","http://foo.info/1.1.1.1");
         
-        IMSSPARQLExpand s = new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+        IMSSPARQLExpand s = new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         s.initialiseInternal(null);
@@ -601,15 +699,15 @@ public class IMSSPARQLExpandTest {
      */
     @Test
     public void testBGPChainSimple() throws MalformedQueryException, QueryExpansionException {
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
-        dummyIRSMapper.addMapping("http://example.org/chem/2918","http://bar.com/9khd7");
-        dummyIRSMapper.addMapping("http://example.org/chem/2918","http://foo.info/1.1.1.1");
-        dummyIRSMapper.addMapping("http://example.org/chem/2918","http://example.org/chem/2918");
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
+        dummyIMSMapper.addMapping("http://example.org/chem/2918","http://bar.com/9khd7");
+        dummyIMSMapper.addMapping("http://example.org/chem/2918","http://foo.info/1.1.1.1");
+        dummyIMSMapper.addMapping("http://example.org/chem/2918","http://example.org/chem/2918");
         
-        IMSSPARQLExpand s = new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+        IMSSPARQLExpand s = new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         s.initialiseInternal(null);
@@ -666,21 +764,21 @@ public class IMSSPARQLExpandTest {
      */
     @Test
     public void testBGPChainComplex() throws MalformedQueryException, QueryExpansionException {
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
-        dummyIRSMapper.addMapping("http://bar.co.uk/998234","http://foo.info/1.1.1.1");
-        dummyIRSMapper.addMapping("http://bar.co.uk/998234","http://bar.co.uk/998234");
-        dummyIRSMapper.addMapping("http://example.org/chem/2918","http://bar.com/9khd7");
-        dummyIRSMapper.addMapping("http://example.org/chem/2918","http://hello.uk/87234");
-        dummyIRSMapper.addMapping("http://example.org/chem/2918","http://example.org/chem/2918");
-        dummyIRSMapper.addMapping("http://yetanother.com/-09824","http://yetmore.info/872342");
-        dummyIRSMapper.addMapping("http://yetanother.com/-09824","http://ohboy.com/27393");
-        dummyIRSMapper.addMapping("http://yetanother.com/-09824","http://imborednow.co/akuhe8");
-        dummyIRSMapper.addMapping("http://yetanother.com/-09824","http://yetanother.com/-09824");
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
+        dummyIMSMapper.addMapping("http://bar.co.uk/998234","http://foo.info/1.1.1.1");
+        dummyIMSMapper.addMapping("http://bar.co.uk/998234","http://bar.co.uk/998234");
+        dummyIMSMapper.addMapping("http://example.org/chem/2918","http://bar.com/9khd7");
+        dummyIMSMapper.addMapping("http://example.org/chem/2918","http://hello.uk/87234");
+        dummyIMSMapper.addMapping("http://example.org/chem/2918","http://example.org/chem/2918");
+        dummyIMSMapper.addMapping("http://yetanother.com/-09824","http://yetmore.info/872342");
+        dummyIMSMapper.addMapping("http://yetanother.com/-09824","http://ohboy.com/27393");
+        dummyIMSMapper.addMapping("http://yetanother.com/-09824","http://imborednow.co/akuhe8");
+        dummyIMSMapper.addMapping("http://yetanother.com/-09824","http://yetanother.com/-09824");
         
-        IMSSPARQLExpand s = new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+        IMSSPARQLExpand s = new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         s.initialiseInternal(null);
@@ -720,16 +818,16 @@ public class IMSSPARQLExpandTest {
      */
     @Test
     public void testRepeatedSubjectShorthandQuery() throws MalformedQueryException, QueryExpansionException{
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
-        dummyIRSMapper.addMapping("http://foo.info/1.1.1.1","http://bar.com/9khd7");
-        dummyIRSMapper.addMapping("http://foo.info/1.1.1.1","http://example.org/chem/2918");
-        dummyIRSMapper.addMapping("http://foo.info/1.1.1.1","http://foo.info/1.1.1.1");
-        dummyIRSMapper.addMapping("http://foo.info/1.1.1.1","http://foo.info/1.1.1.1");
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
+        dummyIMSMapper.addMapping("http://foo.info/1.1.1.1","http://bar.com/9khd7");
+        dummyIMSMapper.addMapping("http://foo.info/1.1.1.1","http://example.org/chem/2918");
+        dummyIMSMapper.addMapping("http://foo.info/1.1.1.1","http://foo.info/1.1.1.1");
+        dummyIMSMapper.addMapping("http://foo.info/1.1.1.1","http://foo.info/1.1.1.1");
         
-        IMSSPARQLExpand s = new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+        IMSSPARQLExpand s = new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         s.initialiseInternal(null);
@@ -762,15 +860,15 @@ public class IMSSPARQLExpandTest {
      */
     @Test
     public void testRepeatedSubjectPredicateShorthandQuery() throws MalformedQueryException, QueryExpansionException {
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
-        dummyIRSMapper.addMapping("http://foo.info/1.1.1.1","http://bar.com/9khd7");
-        dummyIRSMapper.addMapping("http://foo.info/1.1.1.1","http://example.org/chem/2918");
-        dummyIRSMapper.addMapping("http://foo.info/1.1.1.1","http://foo.info/1.1.1.1");
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
+        dummyIMSMapper.addMapping("http://foo.info/1.1.1.1","http://bar.com/9khd7");
+        dummyIMSMapper.addMapping("http://foo.info/1.1.1.1","http://example.org/chem/2918");
+        dummyIMSMapper.addMapping("http://foo.info/1.1.1.1","http://foo.info/1.1.1.1");
         
-        IMSSPARQLExpand s = new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+        IMSSPARQLExpand s = new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         s.initialiseInternal(null);
@@ -807,16 +905,16 @@ public class IMSSPARQLExpandTest {
      */
     @Test
     public void testOptionalQuery_Simple() throws MalformedQueryException, QueryExpansionException {
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
-        dummyIRSMapper.addMapping("http://foo.info/1.1.1.1","http://example.com/9khd7");
-        dummyIRSMapper.addMapping("http://foo.info/1.1.1.1","http://foo.info/1.1.1.1");
-        dummyIRSMapper.addMapping("http://bar.com/ijdu","http://another.org/82374");
-        dummyIRSMapper.addMapping("http://bar.com/ijdu","http://bar.com/ijdu");
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
+        dummyIMSMapper.addMapping("http://foo.info/1.1.1.1","http://example.com/9khd7");
+        dummyIMSMapper.addMapping("http://foo.info/1.1.1.1","http://foo.info/1.1.1.1");
+        dummyIMSMapper.addMapping("http://bar.com/ijdu","http://another.org/82374");
+        dummyIMSMapper.addMapping("http://bar.com/ijdu","http://bar.com/ijdu");
         
-        IMSSPARQLExpand s = new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+        IMSSPARQLExpand s = new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         s.initialiseInternal(null);
@@ -848,16 +946,16 @@ public class IMSSPARQLExpandTest {
      */
     @Test
     public void testOptionalQuery_BothOptional() throws MalformedQueryException, QueryExpansionException {
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
-        dummyIRSMapper.addMapping("http://bar.com/ijdu","http://bar.com/9khd7");
-        dummyIRSMapper.addMapping("http://bar.com/ijdu","http://foo.info/1.1.1.1");
-        dummyIRSMapper.addMapping("http://foo.info/1.1.1.1","http://bar.com/9khd7");
-        dummyIRSMapper.addMapping("http://foo.info/1.1.1.1","http://foo.info/1.1.1.1");
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
+        dummyIMSMapper.addMapping("http://bar.com/ijdu","http://bar.com/9khd7");
+        dummyIMSMapper.addMapping("http://bar.com/ijdu","http://foo.info/1.1.1.1");
+        dummyIMSMapper.addMapping("http://foo.info/1.1.1.1","http://bar.com/9khd7");
+        dummyIMSMapper.addMapping("http://foo.info/1.1.1.1","http://foo.info/1.1.1.1");
         
-        IMSSPARQLExpand s = new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+        IMSSPARQLExpand s = new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         s.initialiseInternal(null);
@@ -893,14 +991,14 @@ public class IMSSPARQLExpandTest {
      */
     @Test
     public void testOptionalQuery_repeatedSubjectUri() throws MalformedQueryException, QueryExpansionException {
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
-        dummyIRSMapper.addMapping("http://foo.info/1.1.1.1","http://bar.com/9khd7");
-        dummyIRSMapper.addMapping("http://foo.info/1.1.1.1","http://foo.info/1.1.1.1");
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
+        dummyIMSMapper.addMapping("http://foo.info/1.1.1.1","http://bar.com/9khd7");
+        dummyIMSMapper.addMapping("http://foo.info/1.1.1.1","http://foo.info/1.1.1.1");
     
-        IMSSPARQLExpand s = new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+        IMSSPARQLExpand s = new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         s.initialiseInternal(null);
@@ -934,18 +1032,18 @@ public class IMSSPARQLExpandTest {
      */
     @Test
     public void testOptionalWithFilterQuery() throws MalformedQueryException, QueryExpansionException {
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
-        dummyIRSMapper.addMapping("http://foo.info/1.1.1.1","http://bar.com/9khd7");
-        dummyIRSMapper.addMapping("http://foo.info/1.1.1.1","http://foo.info/1.1.1.1");
-        dummyIRSMapper.addMapping("htpp://bar.com/oneName","htpp://bar.com/oneName");
-        dummyIRSMapper.addMapping("htpp://bar.com/oneName","htpp://nano.com/JohnSmith");
-        dummyIRSMapper.addMapping("http://mike.org/anotherName","http://us.gov.org/MikeBrown");
-        dummyIRSMapper.addMapping("http://mike.org/anotherName","http://mike.org/anotherName");
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
+        dummyIMSMapper.addMapping("http://foo.info/1.1.1.1","http://bar.com/9khd7");
+        dummyIMSMapper.addMapping("http://foo.info/1.1.1.1","http://foo.info/1.1.1.1");
+        dummyIMSMapper.addMapping("htpp://bar.com/oneName","htpp://bar.com/oneName");
+        dummyIMSMapper.addMapping("htpp://bar.com/oneName","htpp://nano.com/JohnSmith");
+        dummyIMSMapper.addMapping("http://mike.org/anotherName","http://us.gov.org/MikeBrown");
+        dummyIMSMapper.addMapping("http://mike.org/anotherName","http://mike.org/anotherName");
     
-        IMSSPARQLExpand s = new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+        IMSSPARQLExpand s = new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         s.initialiseInternal(null);
@@ -975,14 +1073,14 @@ public class IMSSPARQLExpandTest {
      */
     @Test
     public void testMeet_oneBgpObjectUriMultipleMatches() throws QueryExpansionException, MalformedQueryException {
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
-        dummyIRSMapper.addMapping("http://brenda-enzymes.info/1.1.1.1","http://example.com/983juy");
-        dummyIRSMapper.addMapping("http://brenda-enzymes.info/1.1.1.1","http://brenda-enzymes.info/1.1.1.1");
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
+        dummyIMSMapper.addMapping("http://brenda-enzymes.info/1.1.1.1","http://example.com/983juy");
+        dummyIMSMapper.addMapping("http://brenda-enzymes.info/1.1.1.1","http://brenda-enzymes.info/1.1.1.1");
 
-        IMSSPARQLExpand s = new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+        IMSSPARQLExpand s = new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         s.initialiseInternal(null);
@@ -1016,14 +1114,14 @@ public class IMSSPARQLExpandTest {
      */
     @Test
     public void testMeet_oneBgpObjectUriWithFilter() throws QueryExpansionException, MalformedQueryException {
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
-        dummyIRSMapper.addMapping("http://brenda-enzymes.info/1.1.1.1","http://example.com/983juy");
-        dummyIRSMapper.addMapping("http://brenda-enzymes.info/1.1.1.1","http://brenda-enzymes.info/1.1.1.1");
-        dummyIRSMapper.addMapping("http://something.org","http://something.org");
-        IMSSPARQLExpand s = new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
+        dummyIMSMapper.addMapping("http://brenda-enzymes.info/1.1.1.1","http://example.com/983juy");
+        dummyIMSMapper.addMapping("http://brenda-enzymes.info/1.1.1.1","http://brenda-enzymes.info/1.1.1.1");
+        dummyIMSMapper.addMapping("http://something.org","http://something.org");
+        IMSSPARQLExpand s = new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         s.initialiseInternal(null);
@@ -1048,16 +1146,16 @@ public class IMSSPARQLExpandTest {
      */
     @Test
     public void testObjectAndFilter() throws QueryExpansionException, MalformedQueryException {
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
-        dummyIRSMapper.addMapping("http://brenda-enzymes.info/1.1.1.1","http://example.com/983juy");
-        dummyIRSMapper.addMapping("http://brenda-enzymes.info/1.1.1.1","http://brenda-enzymes.info/1.1.1.1");
-        dummyIRSMapper.addMapping("http://something.org","http://www.another.org");
-        dummyIRSMapper.addMapping("http://something.org","http://something.org");
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
+        dummyIMSMapper.addMapping("http://brenda-enzymes.info/1.1.1.1","http://example.com/983juy");
+        dummyIMSMapper.addMapping("http://brenda-enzymes.info/1.1.1.1","http://brenda-enzymes.info/1.1.1.1");
+        dummyIMSMapper.addMapping("http://something.org","http://www.another.org");
+        dummyIMSMapper.addMapping("http://something.org","http://something.org");
 
-        IMSSPARQLExpand s = new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+        IMSSPARQLExpand s = new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         s.initialiseInternal(null);
@@ -1086,15 +1184,15 @@ public class IMSSPARQLExpandTest {
      */
     @Test
     public void testMeet_oneBgpSubjectUriMultipleMatches() throws QueryExpansionException, MalformedQueryException {
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
-        dummyIRSMapper.addMapping("http://brenda-enzymes.info/1.1.1.1","http://example.com/983juy");
-        dummyIRSMapper.addMapping("http://brenda-enzymes.info/1.1.1.1","http://bar.co.uk/liuw");
-        dummyIRSMapper.addMapping("http://brenda-enzymes.info/1.1.1.1","http://brenda-enzymes.info/1.1.1.1");
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
+        dummyIMSMapper.addMapping("http://brenda-enzymes.info/1.1.1.1","http://example.com/983juy");
+        dummyIMSMapper.addMapping("http://brenda-enzymes.info/1.1.1.1","http://bar.co.uk/liuw");
+        dummyIMSMapper.addMapping("http://brenda-enzymes.info/1.1.1.1","http://brenda-enzymes.info/1.1.1.1");
 
-        IMSSPARQLExpand s = new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+        IMSSPARQLExpand s = new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         s.initialiseInternal(null);
@@ -1134,17 +1232,17 @@ public class IMSSPARQLExpandTest {
      */
     @Test
     public void testMeet_DoubleOr() throws QueryExpansionException, MalformedQueryException {
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
-        dummyIRSMapper.addMapping("http://brenda-enzymes.info/1.1.1.1","http://example.com/983juy");
-        dummyIRSMapper.addMapping("http://brenda-enzymes.info/1.1.1.1","http://manchester.com/983juy");
-        dummyIRSMapper.addMapping("http://brenda-enzymes.info/1.1.1.1","http://brenda-enzymes.info/1.1.1.1");
-        dummyIRSMapper.addMapping("http://Fishlink/123","http://Fishlink/456");
-        dummyIRSMapper.addMapping("http://Fishlink/123","http://Fishlink/123");
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
+        dummyIMSMapper.addMapping("http://brenda-enzymes.info/1.1.1.1","http://example.com/983juy");
+        dummyIMSMapper.addMapping("http://brenda-enzymes.info/1.1.1.1","http://manchester.com/983juy");
+        dummyIMSMapper.addMapping("http://brenda-enzymes.info/1.1.1.1","http://brenda-enzymes.info/1.1.1.1");
+        dummyIMSMapper.addMapping("http://Fishlink/123","http://Fishlink/456");
+        dummyIMSMapper.addMapping("http://Fishlink/123","http://Fishlink/123");
 
-        IMSSPARQLExpand s = new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+        IMSSPARQLExpand s = new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         s.initialiseInternal(null);
@@ -1176,15 +1274,15 @@ public class IMSSPARQLExpandTest {
      */
     @Test
     public void testMeet_oneBgpObjectUriWithNotFilter() throws QueryExpansionException, MalformedQueryException {
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
-        dummyIRSMapper.addMapping("http://brenda-enzymes.info/1.1.1.1","http://example.com/983juy");
-        dummyIRSMapper.addMapping("http://brenda-enzymes.info/1.1.1.1","http://brenda-enzymes.info/1.1.1.1");
-        dummyIRSMapper.addMapping("http://my.org","http://my.org");
-        dummyIRSMapper.addMapping("http://my.org","http://their.org");
-        IMSSPARQLExpand s = new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
+        dummyIMSMapper.addMapping("http://brenda-enzymes.info/1.1.1.1","http://example.com/983juy");
+        dummyIMSMapper.addMapping("http://brenda-enzymes.info/1.1.1.1","http://brenda-enzymes.info/1.1.1.1");
+        dummyIMSMapper.addMapping("http://my.org","http://my.org");
+        dummyIMSMapper.addMapping("http://my.org","http://their.org");
+        IMSSPARQLExpand s = new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         s.initialiseInternal(null);
@@ -1225,18 +1323,18 @@ public class IMSSPARQLExpandTest {
      */
     @Test
     public void testMeet_oneBgpObjectUriWithAnddedNotFilter() throws QueryExpansionException, MalformedQueryException {
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
-        dummyIRSMapper.addMapping("http://brenda-enzymes.info/1.1.1.1","http://example.com/983juy");
-        dummyIRSMapper.addMapping("http://brenda-enzymes.info/1.1.1.1","http://brenda-enzymes.info/1.1.1.1");
-        dummyIRSMapper.addMapping("http://my.org","http://my.org");
-        dummyIRSMapper.addMapping("http://my.org","http://their.org");
-        dummyIRSMapper.addMapping("http://mars.com","http://earth.com");
-        dummyIRSMapper.addMapping("http://mars.com","http://mars.com");
-        dummyIRSMapper.addMapping("http://mars.com","http://war.com");
-        IMSSPARQLExpand s = new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
+        dummyIMSMapper.addMapping("http://brenda-enzymes.info/1.1.1.1","http://example.com/983juy");
+        dummyIMSMapper.addMapping("http://brenda-enzymes.info/1.1.1.1","http://brenda-enzymes.info/1.1.1.1");
+        dummyIMSMapper.addMapping("http://my.org","http://my.org");
+        dummyIMSMapper.addMapping("http://my.org","http://their.org");
+        dummyIMSMapper.addMapping("http://mars.com","http://earth.com");
+        dummyIMSMapper.addMapping("http://mars.com","http://mars.com");
+        dummyIMSMapper.addMapping("http://mars.com","http://war.com");
+        IMSSPARQLExpand s = new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         s.initialiseInternal(null);
@@ -1281,15 +1379,15 @@ public class IMSSPARQLExpandTest {
      */
     @Test
     public void testMeet_SimpleUnion() throws QueryExpansionException, MalformedQueryException {
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
-        dummyIRSMapper.addMapping("http://www.amazon.com/3432455","http://barnes.com/983juy");
-        dummyIRSMapper.addMapping("http://www.amazon.com/3432455","http://www.amazon.com/3432455");
-        dummyIRSMapper.addMapping("http://www.amazon.com/3445355","http://barnes.com/ku78s2w");
-        dummyIRSMapper.addMapping("http://www.amazon.com/3445355","http://www.amazon.com/3445355");
-        IMSSPARQLExpand s = new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
+        dummyIMSMapper.addMapping("http://www.amazon.com/3432455","http://barnes.com/983juy");
+        dummyIMSMapper.addMapping("http://www.amazon.com/3432455","http://www.amazon.com/3432455");
+        dummyIMSMapper.addMapping("http://www.amazon.com/3445355","http://barnes.com/ku78s2w");
+        dummyIMSMapper.addMapping("http://www.amazon.com/3445355","http://www.amazon.com/3445355");
+        IMSSPARQLExpand s = new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         s.initialiseInternal(null);
@@ -1314,11 +1412,11 @@ public class IMSSPARQLExpandTest {
      */
     @Test
     public void testMeet_SimpleStar() throws QueryExpansionException, MalformedQueryException {
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
-        IMSSPARQLExpand s = new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
+        IMSSPARQLExpand s = new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         s.initialiseInternal(null);
@@ -1358,17 +1456,17 @@ public class IMSSPARQLExpandTest {
      */
     @Test
     public void testStarSubjectOneObjectURIOneMatchEach() throws MalformedQueryException, QueryExpansionException {
-        final DummyIMSMapper dummyIRSMapper = new DummyIMSMapper();
-        dummyIRSMapper.addMapping("http://example.org/chem/8j392","http://result.com/90");
-        dummyIRSMapper.addMapping("http://example.org/chem/8j392","http://example.org/chem/8j392");
-        dummyIRSMapper.addMapping("http://foo.com/1.1.1.1","http://bar.info/u83hs");
-        dummyIRSMapper.addMapping("http://foo.com/1.1.1.1","http://foo.com/1.1.1.1");
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
+        dummyIMSMapper.addMapping("http://example.org/chem/8j392","http://result.com/90");
+        dummyIMSMapper.addMapping("http://example.org/chem/8j392","http://example.org/chem/8j392");
+        dummyIMSMapper.addMapping("http://foo.com/1.1.1.1","http://bar.info/u83hs");
+        dummyIMSMapper.addMapping("http://foo.com/1.1.1.1","http://foo.com/1.1.1.1");
         
         IMSSPARQLExpand s = new IMSSPARQLExpand(
-                new URIImpl("http://larkc.eu/plugin#IRSSPARQLExpand1")) {
+                new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
-            IMSMapper instantiateIRSMapper() {
-                return dummyIRSMapper;
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
             }
         };
         s.initialiseInternal(null);
