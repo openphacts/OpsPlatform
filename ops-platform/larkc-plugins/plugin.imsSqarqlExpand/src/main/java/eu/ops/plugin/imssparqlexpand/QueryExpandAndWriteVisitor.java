@@ -25,7 +25,8 @@ import org.openrdf.query.algebra.Var;
  */
 public class QueryExpandAndWriteVisitor extends QueryWriterModelVisitor{
     
-    private Map<URI,String> contextUriVariables;
+    private static final boolean DO_FULL_EXPAND = false;
+    private Map<URI,String> contextUriVariables = new HashMap<URI,String>();
     private Map<String,List<URI>> mappings = new  HashMap<String,List<URI>>(); 
     private IMSMapper mapper;
     int variableCounter =  0;
@@ -159,7 +160,7 @@ public class QueryExpandAndWriteVisitor extends QueryWriterModelVisitor{
     }
 
     void closeContext (boolean startedHere){
-        if (context == null || startedHere){
+        if (DO_FULL_EXPAND || context == null || startedHere ){
             for (String variableName:mappings.keySet()){
                 List<URI> uriList = mappings.get(variableName);
                 newLine();
@@ -180,23 +181,33 @@ public class QueryExpandAndWriteVisitor extends QueryWriterModelVisitor{
             mappings = new  HashMap<String,List<URI>>(); 
         }
         if (startedHere){
+            contextUriVariables = new HashMap<URI,String>();
             super.closeContext(startedHere);
         }
     }
 
     private String getURIVariable(URI uri){
-        //ystem.out.println(uri);
+        System.out.println(uri);
+        if (contextUriVariables.containsKey(uri)){
+            return contextUriVariables.get(uri);
+        }
         List<URI> list = getMappings(uri);
-        //ystem.out.println("list");
-        //ystem.out.println(list);
+        System.out.println(list);
         if (list == null || list.isEmpty()){
             return "<" + uri.stringValue() + ">";
         }
         if (list.size()== 1){
-            return "<" + list.get(0).stringValue() + ">";
+            String variable = "<" + list.get(0).stringValue() + ">";
+            if (context != null){
+               contextUriVariables.put(uri,variable); 
+            }
+            return variable;
         }
         variableCounter++;
         String variableName = "?replacedURI" + variableCounter;
+        if (context != null){
+           contextUriVariables.put(uri,variableName); 
+        }
         mappings.put(variableName, list);
         return variableName;
     }
