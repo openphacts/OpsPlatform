@@ -91,11 +91,11 @@ public class IMSSPARQLExpand extends Plugin {
         Set<URI> uriSet = uriFindervisitor.getURIS();
         Map<URI, List<URI>> uriMappings = imsMapper.getMatchesForURIs(uriSet);   
         QueryExpandAndWriteVisitor writerVisitor = 
-                new QueryExpandAndWriteVisitor(uriMappings, dataset, requiredAttributes, showExpandedVariables);
+                new QueryExpandAndWriteVisitor(uriMappings, dataset, requiredAttributes, imsMapper);
         tupleExpr.visit(writerVisitor);
         String expandedQueryString = writerVisitor.getQuery();
         //ystem.out.println(expandedQueryString);
-        logger.info("Expanded SPARQL: " + expandedQueryString);
+        //logger.info("Expanded SPARQL: " + expandedQueryString);
         SPARQLQuery expandedQuery = new SPARQLQueryImpl(expandedQueryString);
         return expandedQuery.toRDF();
     }

@@ -4,7 +4,6 @@
  */
 package eu.ops.plugin.imssparqlexpand;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -23,29 +22,17 @@ import org.openrdf.query.algebra.Var;
  *
  * @author Christian
  */
-public class QueryExpandAndWriteVisitor extends QueryWriterModelVisitor{
+public class QueryExpandAndWriteVisitorOld extends QueryWriterModelVisitor{
+
+    Map<URI, List<URI>> uriMappings;
+    boolean showExpandedVariables;            
+    int statements = 0;
     
-    private Map<URI,String> contextUriVariables;
-    private Map<String,List<URI>> mappings = new  HashMap<String,List<URI>>(); 
-    private IMSMapper mapper;
-    int variableCounter =  0;
-    
-    QueryExpandAndWriteVisitor (Map<URI, List<URI>> uriMappings, Dataset dataset, List<String> requiredAttributes, 
-            IMSMapper mapper){
+    QueryExpandAndWriteVisitorOld (Map<URI, List<URI>> uriMappings, Dataset dataset, List<String> requiredAttributes, 
+            boolean showExpandedVariables){
         super(dataset, requiredAttributes);
-        this.mapper = mapper;
-    }
-    
-    private List<URI> getMappings(URI uri){
-        if (context == null){
-            return mapper.getMatchesForURI(uri);            
-        } else {
-            if (context.hasValue()){
-                return mapper.getSpecificMatchesForURI(uri, context.getValue().stringValue());
-            } else {
-                return mapper.getMatchesForURI(uri);   
-            }
-        }
+        this.uriMappings = uriMappings;
+        this.showExpandedVariables = showExpandedVariables;
     }
     
     private URI findMultipleMappedURI(ValueExpr valueExpr){
@@ -62,7 +49,7 @@ public class QueryExpandAndWriteVisitor extends QueryWriterModelVisitor{
         if (value == null) return null;
         if (value instanceof URI){
             URI uri = (URI) value;
-            List<URI> uriList = getMappings(uri);;
+            List<URI> uriList = uriMappings.get(uri);;
             if (uriList == null){
                 //unmapped.
                 return null;
@@ -75,8 +62,8 @@ public class QueryExpandAndWriteVisitor extends QueryWriterModelVisitor{
         return null;        
     }
     
-   private List<URI> getMappedList(URI uri){
-        List<URI> uriList = getMappings(uri);
+    private List<URI> getMappedList(URI uri){
+        List<URI> uriList = uriMappings.get(uri);
         if (uriList == null){       
             throw new Error("Query has URI " + uri + " but it has no mapped set.");
         }
@@ -86,7 +73,7 @@ public class QueryExpandAndWriteVisitor extends QueryWriterModelVisitor{
         }
         return uriList;
     }
-   
+    
     private void writeFilterIfNeeded(URI uri, String variableName) throws QueryExpansionException {
         if (uri == null) return;
         //ystem.out.println(uriMappings);
@@ -129,11 +116,11 @@ public class QueryExpandAndWriteVisitor extends QueryWriterModelVisitor{
             return null;
         }
     }
-   
+    
     private URI writeValueOrGetURI(Value value) throws QueryExpansionException{
         if (value instanceof URI){
             URI uri = (URI) value;
-            List<URI> uriList = getMappings(uri);
+            List<URI> uriList = uriMappings.get(uri);
             if (uriList == null || uriList.isEmpty()){
                 queryString.append("<");
                 queryString.append(uri.stringValue());
@@ -153,72 +140,33 @@ public class QueryExpandAndWriteVisitor extends QueryWriterModelVisitor{
         }
     }
 
-    void setupNewContext(){
-        contextUriVariables = new HashMap<URI,String>();
-        mappings = new  HashMap<String,List<URI>>(); 
+    //@Override
+    public void meet(StatementPattern sp) throws QueryExpansionException  {
+        if (isDescribePattern(sp)) return;
+        if (canEliminate(sp)) return;
+        statements++;
+        newLine();
+        boolean newContext = startContext(sp); 
+        URI subjectURI = writeVarOrGetURI(sp.getSubjectVar());
+        if (subjectURI != null) {
+            queryString.append("?subjectUri");
+            queryString.append(statements);
+        }
+        queryString.append(" ");
+        sp.getPredicateVar().visit(this);
+        queryString.append(" ");
+        URI objectURI = writeVarOrGetURI(sp.getObjectVar());
+        if (objectURI != null) {
+            queryString.append("?objectUri");
+            queryString.append(statements);
+        }
+        queryString.append(" .");
+        writeFilterIfNeeded(subjectURI, "?subjectUri" + statements);
+        writeFilterIfNeeded(objectURI, "?objectUri" + statements);
+        closeContext(newContext);
     }
 
-    void closeContext (boolean startedHere){
-        if (context == null || startedHere){
-            for (String variableName:mappings.keySet()){
-                List<URI> uriList = mappings.get(variableName);
-                newLine();
-                queryString.append("FILTER (");
-                queryString.append(variableName);
-                queryString.append(" = <");
-                queryString.append(uriList.get(0));
-                queryString.append(">");
-                for (int i = 1; i < uriList.size(); i++){
-                    queryString.append(" || ");
-                    queryString.append(variableName);
-                    queryString.append(" = <");
-                    queryString.append(uriList.get(i));
-                    queryString.append(">");            
-                }
-                queryString.append(")");
-            }
-            mappings = new  HashMap<String,List<URI>>(); 
-        }
-        if (startedHere){
-            super.closeContext(startedHere);
-        }
-    }
-
-    private String getURIVariable(URI uri){
-        //ystem.out.println(uri);
-        List<URI> list = getMappings(uri);
-        //ystem.out.println("list");
-        //ystem.out.println(list);
-        if (list == null || list.isEmpty()){
-            return "<" + uri.stringValue() + ">";
-        }
-        if (list.size()== 1){
-            return "<" + list.get(0).stringValue() + ">";
-        }
-        variableCounter++;
-        String variableName = "?replacedURI" + variableCounter;
-        mappings.put(variableName, list);
-        return variableName;
-    }
-    
     @Override
-    void writeStatementPart(Var var) throws QueryExpansionException{
-//        System.out.println(var);
-        if (var.isAnonymous()){
-            Value value = var.getValue();
-            if (value instanceof URI){
-                queryString.append(getURIVariable((URI)value));
-            } else {
-//                System.out.println(value.getClass());
-                meet(var);
-            }
-        } else {
-//            System.out.println("annon");
-            meet(var);         
-        }
-    }
-
-/*    @Override
     void addExpanded(Projection prjctn) throws QueryExpansionException {
         if (showExpandedVariables){
             ReplacementVariableFinderVisitor variableFinder = new ReplacementVariableFinderVisitor(statements, uriMappings);
@@ -230,7 +178,7 @@ public class QueryExpandAndWriteVisitor extends QueryWriterModelVisitor{
             }
         }
     }
-*/
+
    private void expandCompare(Compare cmpr, ValueExpr valueExpr,  List<URI> uriList) throws QueryExpansionException {
         valueExpr.visit(this);
         queryString.append(" ");
@@ -258,7 +206,6 @@ public class QueryExpandAndWriteVisitor extends QueryWriterModelVisitor{
         }
    }
 
-   //TODO there must be a better way
     @Override
     public void meet(Compare cmpr) throws QueryExpansionException {
         queryString.append("(");
@@ -279,7 +226,7 @@ public class QueryExpandAndWriteVisitor extends QueryWriterModelVisitor{
         queryString.append(")");
     }
 
- /*   @Override
+    @Override
     String getUriString(URI uri){
         List<URI> uriList = uriMappings.get(uri);
         if (uriList == null || uriList.isEmpty()) {
@@ -294,5 +241,5 @@ public class QueryExpandAndWriteVisitor extends QueryWriterModelVisitor{
             return builder.toString();
         }
     }
-*/
+
 }

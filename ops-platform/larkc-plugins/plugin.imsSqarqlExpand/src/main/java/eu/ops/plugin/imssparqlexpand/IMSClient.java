@@ -47,7 +47,8 @@ public class IMSClient implements IMSMapper{
         return matches;
     }
 
-    List<URI> getMatchesForURI(URI uri) {
+    @Override
+    public List<URI> getMatchesForURI(URI uri) {
         //Configure parameters
         MultivaluedMap<String, String> params = new MultivaluedMapImpl();
         params.add("uri", uri.stringValue());
@@ -59,6 +60,11 @@ public class IMSClient implements IMSMapper{
                 .get(new GenericType<List<Match>>() {});
 System.out.println("***********Number of matches for " + uri + ": " + matches.size());        
         return extractMatches(matches);
+    }
+
+    @Override
+    public List<URI> getSpecificMatchesForURI(URI uri, String graph) {
+        return getMatchesForURI(uri);
     }
 
     private List<URI> extractMatches(List<Match> matches) {
@@ -97,5 +103,6 @@ System.out.println("***********Number of matches for " + uri + ": " + matches.si
         }
         System.out.println(response.toString());
     }
+
     
 }

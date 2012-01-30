@@ -64,8 +64,8 @@ public class W3Sparql1_1Test {
         String inputQuery = "SELECT ?title WHERE {"
                 + "<http://example.org/book/book1> <http://purl.org/dc/elements/1.1/title> ?title .}";
         String expectedQuery = "SELECT ?title WHERE {"
-                + "?subjectUri1 <http://purl.org/dc/elements/1.1/title> ?title ."
-                + "FILTER (?subjectUri1 = <http://example.org/book/book1> || ?subjectUri1 = <http://example.org/book/other>)}";      
+                + "?replacedURI1 <http://purl.org/dc/elements/1.1/title> ?title ."
+                + "FILTER (?replacedURI1 = <http://example.org/book/book1> || ?replacedURI1 = <http://example.org/book/other>)}";      
 
         final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
         dummyIMSMapper.addMapping("http://example.org/book/book1","http://example.org/book/book1");
@@ -350,9 +350,9 @@ public class W3Sparql1_1Test {
     
     String ExpectedQuery4_2 = "PREFIX  dc: <http://purl.org/dc/elements/1.1/>"
             + "SELECT  ?title"
-            + "WHERE   {?subjectUri1 dc:title ?title"
-            + "         FILTER (?subjectUri1 = <http://example.org/book/book1> || "
-            + "                 ?subjectUri1 = <http://other.com/livre/2345>) } ";
+            + "WHERE   {?replacedURI1 dc:title ?title"
+            + "         FILTER (?replacedURI1 = <http://example.org/book/book1> || "
+            + "                 ?replacedURI1 = <http://other.com/livre/2345>) } ";
     /**
      * Test first query found in Section 4.2
      * <p>

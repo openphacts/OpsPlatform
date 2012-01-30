@@ -1,5 +1,8 @@
-package eu.ops.plugin.imssparqlexpand;
+package eu.ops.plugin.imssparqlexpand.stripper;
 
+import eu.ops.plugin.imssparqlexpand.ContextFinderVisitor;
+import eu.ops.plugin.imssparqlexpand.QueryExpansionException;
+import eu.ops.plugin.imssparqlexpand.QueryType;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -74,7 +77,7 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
     
     StringBuilder queryString = new StringBuilder();
     Dataset originalDataSet;
-    Var context = null;
+    boolean inContext = false;
     List<String>  requiredAttributes;
     Set<String> eliminatedAttributes;
 
@@ -727,23 +730,18 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
         ss.visitChildren(this);
     }
 
-    /**
-     * Holder method for Expander that needs to prepare a new Context
-     */
-    void setupNewContext(){
-    }
-    
     boolean startContext(TupleExpr expr) throws QueryExpansionException{
-        if (context != null) return false;
+        if (inContext) return false;
         ContextFinderVisitor contextFinder = new ContextFinderVisitor();
         expr.visit(contextFinder);
-        context = contextFinder.getContext();   
+        Var context = contextFinder.getContext();   
         if (context == null) {
             return false;
         } else {
             queryString.append(" GRAPH ");
             context.visit(this);
             queryString.append(" {");   
+            inContext = true;
             return true;
         }
     }
@@ -751,59 +749,54 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
     void closeContext (boolean startedHere){
         if (startedHere){
             queryString.append(" } ");
-            context = null;
+            inContext = false;
         }
     }
-    
-    /**
-     * Write the var.
-     * 
-     * Sub classes will do fancy things here.
-     * 
-     * @param var
-     * @throws QueryExpansionException 
-     */
-    void writeStatementPart(Var var) throws QueryExpansionException{
-        meet(var);
-    }
-
-    //@Override
-    public void meet(StatementPattern sp) throws QueryExpansionException  {
+    //Make sure to add changes to QueryExpandAndWriteVisititor too!
+    @Override
+    public void meet(StatementPattern sp) throws QueryExpansionException {
         if (isDescribePattern(sp)) return;
         if (canEliminate(sp)) return;
         newLine();
         boolean newContext = startContext(sp); 
-        writeStatementPart(sp.getSubjectVar());
+        sp.getSubjectVar().visit(this);
+        queryString.append(" ");
         sp.getPredicateVar().visit(this);
-        writeStatementPart(sp.getObjectVar());
+        queryString.append(" ");
+        sp.getObjectVar().visit(this);
         closeContext(newContext);
         queryString.append(". ");
     }
 
     boolean canEliminate(StatementPattern sp) throws QueryExpansionException{
-        //ystem.out.println(sp);
+        System.out.println(sp);
         if (sp.getSubjectVar().isAnonymous()){
             //We don't think subject variables can be literals but just in case.
             if (sp.getObjectVar().isAnonymous()) {
-                //ystem.out.println("literal predicate literal");
+                //literal predicate literal
+                System.out.println("literal predicate literal");
                 return false;
             } else {
                 if (canEliminate(sp.getObjectVar().getName())){
-                    //ystem.out.println("literal predicate remove");
+                     //literal predicate remove
+                    System.out.println("literal predicate remove");
                     return true;
                 } else {
-                    //ystem.out.println("literal predicate keep");
+                    //literal predicate keep
+                    System.out.println("literal predicate keep");
                     return false;
                 }
             }
         } else {
             if (canEliminate(sp.getSubjectVar().getName())){
                 if (sp.getObjectVar().isAnonymous()) {
-                    //ystem.out.println("remove predicate literal");
+                    //remove predicate literal
+                    System.out.println("remove predicate literal");
                     return true;
                 } else {
                     if (canEliminate(sp.getObjectVar().getName())){
-                        //ystem.out.println("remove predicate remove");
+                         //remove predicate remove
+                        System.out.println("remove predicate remove");
                         return true;
                     } else {
                         //remove predicate keep
@@ -814,7 +807,8 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
                 }
             } else {
                 if (sp.getObjectVar().isAnonymous()) {
-                    //ystem.out.println("keep predicate literal");
+                    //keep predicate literal
+                    System.out.println("keep predicate literal");
                     return false;
                 } else {
                     if (canEliminate(sp.getObjectVar().getName())){
@@ -823,7 +817,8 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
                                 sp.getObjectVar().getName() +") and an Eliminate variable (" + 
                                 sp.getObjectVar().getName() + ")");
                     } else {
-                        //stem.out.println("keep predicate keep");
+                        //keep predicate keep
+                        System.out.println("keep predicate keep");
                         return false;
                     }
                 }

@@ -11,4 +11,8 @@ import org.openrdf.model.URI;
  */
 public interface IMSMapper {
     Map<URI, List<URI>> getMatchesForURIs(Set<URI> uriSet);
+
+    List<URI> getMatchesForURI(URI uri);
+
+    List<URI> getSpecificMatchesForURI(URI uri, String graph);
 }
