@@ -1,4 +1,4 @@
-package eu.ops.plugin.imssparqlexpand;
+package eu.ops.plugin.imssparqlexpand.ims;
 
 import java.util.List;
 import java.util.Map;

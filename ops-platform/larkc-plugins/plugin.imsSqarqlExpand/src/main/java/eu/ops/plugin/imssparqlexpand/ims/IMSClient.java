@@ -1,4 +1,4 @@
-package eu.ops.plugin.imssparqlexpand;
+package eu.ops.plugin.imssparqlexpand.ims;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.GenericType;

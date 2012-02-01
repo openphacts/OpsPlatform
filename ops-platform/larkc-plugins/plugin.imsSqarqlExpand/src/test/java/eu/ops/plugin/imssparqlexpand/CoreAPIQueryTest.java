@@ -1,8 +1,6 @@
 package eu.ops.plugin.imssparqlexpand;
 
-import eu.ops.plugin.imssparqlexpand.DummyIMSMapper;
 import eu.ops.plugin.imssparqlexpand.IMSSPARQLExpand;
-import eu.ops.plugin.imssparqlexpand.IMSMapper;
 import eu.ops.plugin.imssparqlexpand.QueryExpansionException;
 import eu.ops.plugin.imssparqlexpand.QueryUtils;
 import static org.junit.Assert.*;
@@ -10,6 +8,8 @@ import eu.larkc.core.data.DataFactory;
 import eu.larkc.core.data.SetOfStatements;
 import eu.larkc.core.query.SPARQLQuery;
 import eu.larkc.core.query.SPARQLQueryImpl;
+import eu.ops.plugin.imssparqlexpand.ims.DummyIMSMapper;
+import eu.ops.plugin.imssparqlexpand.ims.IMSMapper;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;

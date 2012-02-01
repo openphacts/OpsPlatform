@@ -1,11 +1,18 @@
 package eu.ops.plugin.imssparqlexpand;
 
+import org.openrdf.query.algebra.SingletonSet;
 import org.openrdf.query.algebra.StatementPattern;
 import org.openrdf.query.algebra.Var;
 import org.openrdf.query.algebra.helpers.QueryModelVisitorBase;
 
 /**
- * This class preforms a look ahead to see if a single context is shared by the sub tree.
+ * The purpose of this visitor is to dettermine if the whole subtree has a single non null graph.
+ * <p>
+ * Dettermining if a whole subtree has a single non null graph is required for two reasons.
+ * <ol>
+ * <li>Placing a Single Graph statement around the whole block.</li>
+ * <li>Placing a single block of filters just inside the whole block.</li> 
+ * </ol
  * 
  * @author Christian
  */
@@ -17,6 +24,9 @@ public class ContextFinderVisitor extends QueryModelVisitorBase<QueryExpansionEx
         
     @Override
     public void meet(StatementPattern sp) throws QueryExpansionException {
+        if (multipleContexts) {
+            return;
+        }
         //ystem.out.println(sp);
         Var localContext = sp.getContextVar();
         if (localContext == null){
@@ -30,6 +40,21 @@ public class ContextFinderVisitor extends QueryModelVisitorBase<QueryExpansionEx
         }
     }
 
+    /**
+     * Avoids that a a SingletonSet is considered part of a graph.
+     * 
+     * The only time a Singletonset is used is an Optional which has no matching none Optional part.
+     * In this case the Filters need to be added inside the Optional.
+     * By setting multipleContexts to true this avoids that the Filters will be added outside of the optional.
+     * 
+     * @param set
+     * @throws QueryExpansionException 
+     */
+    public void meet(SingletonSet set) throws QueryExpansionException {
+        //ystem.out.println("SingletonSet");
+        multipleContexts = true;
+    }
+    
     /**
      * Obtrains the single context from a query or sub query.
      * <p>
@@ -48,6 +73,7 @@ public class ContextFinderVisitor extends QueryModelVisitorBase<QueryExpansionEx
             //ystem.out.println("null");
             return null;
         }
+        //ystem.out.println(context);
         return context;
     }
 }

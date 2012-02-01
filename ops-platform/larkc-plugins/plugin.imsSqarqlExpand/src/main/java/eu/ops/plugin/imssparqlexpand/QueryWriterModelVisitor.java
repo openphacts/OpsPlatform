@@ -270,8 +270,8 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
 
     @Override
     public void meet(Join join) throws QueryExpansionException {
-        //ystem.out.println("join");
         boolean newContext = startContext(join); 
+        System.out.println ("Join " + newContext + "   " + context);
         join.getLeftArg().visit(this);
         join.getRightArg().visit(this);
         closeContext(newContext);
@@ -342,7 +342,9 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
 
     @Override
     public void meet(LeftJoin lj) throws QueryExpansionException {
+        System.out.println ("leftJoin starting");
         boolean newContext = startContext(lj); 
+        System.out.println ("leftJoin " + newContext + "   " + context);
         lj.getLeftArg().visit(this);
         newLine();
         queryString.append("OPTIONAL {");
@@ -735,6 +737,7 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
     
     boolean startContext(TupleExpr expr) throws QueryExpansionException{
         if (context != null) return false;
+        //ystem.out.println(expr);
         ContextFinderVisitor contextFinder = new ContextFinderVisitor();
         expr.visit(contextFinder);
         context = contextFinder.getContext();   

@@ -7,6 +7,8 @@ import eu.larkc.core.data.workflow.WorkflowDescriptionPredicates;
 import eu.larkc.core.query.SPARQLQuery;
 import eu.larkc.core.query.SPARQLQueryImpl;
 import eu.larkc.plugin.Plugin;
+import eu.ops.plugin.imssparqlexpand.ims.IMSClient;
+import eu.ops.plugin.imssparqlexpand.ims.IMSMapper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

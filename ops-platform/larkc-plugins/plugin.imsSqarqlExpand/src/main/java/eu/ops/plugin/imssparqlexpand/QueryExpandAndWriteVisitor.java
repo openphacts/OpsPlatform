@@ -1,20 +1,13 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package eu.ops.plugin.imssparqlexpand;
 
+import eu.ops.plugin.imssparqlexpand.ims.IMSMapper;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.openrdf.query.Dataset;
 import org.openrdf.query.algebra.Compare;
-import org.openrdf.query.algebra.Projection;
-import org.openrdf.query.algebra.StatementPattern;
 import org.openrdf.query.algebra.ValueConstant;
 import org.openrdf.query.algebra.ValueExpr;
 import org.openrdf.query.algebra.Var;
