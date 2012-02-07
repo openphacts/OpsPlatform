@@ -1,0 +1,47 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix larkc: <http://larkc.eu/schema#> .
+
+# !!! Important: make sure to replace every occurrence of <OPSPWD> 
+# with the path on your system 
+#Define a plugin
+
+_:reasoner a <urn:eu.larkc.plugin.SparqlQueryEvaluationReasoner> .
+_:rdfreader a <urn:eu.larkc.plugin.RDFReader.RDFReader> .
+_:rdfreader larkc:connectsTo _:reasoner .
+_:rdfreader larkc:hasParameter _:defaultgraphparam .
+_:defaultgraphparam larkc:defaultoutputname larkc:defaultgraph .
+
+#Adding File - PDSP:
+
+_:fileidentifier a <urn:eu.larkc.plugin.newfileidentifier.NewFileIdentifier> .
+_:fileidentifier larkc:connectsTo _:rdfreader .
+_:fileidentifier larkc:hasParameter _:param .
+_:param larkc:filePath "/home/antonis/workspace/openphacts/datasets/pdspki/pdsp-v2.ttl" .
+
+#Define ConceptWiki plugin
+_:conceptwiki a <urn:eu.ops.plugin.conceptwiki.ConceptWiki> .
+_:path larkc:hasInput _:conceptwiki .
+_:conceptwiki larkc:connectsTo _:reasoner .
+_:conceptwiki larkc:hasParameter _:defaultgraphparam .
+
+#Define IMS plugin
+_:imsplugin a <urn:eu.ops.plugin.imssparqlexpand.IMSSPARQLExpand> .
+_:path larkc:hasInput _:imsplugin .
+_:imsplugin larkc:connectsTo _:reasoner .
+_:imsplugin larkc:hasParameter _:defaultgraphparam .
+
+#Define ChemCallout plugin
+_:chemcallout a <urn:eu.ops.plugin.chemcallout.ChemCallout> .
+_:path larkc:hasInput _:chemcallout .
+_:chemcallout larkc:connectsTo _:reasoner .
+_:chemcallout larkc:hasParameter _:defaultgraphparam .
+
+#Define the endpoint for this workflow.
+_:ep a <urn:eu.larkc.endpoint.opsapi.OPSAPIEndpoint> .
+#Endpoints are connected to paths in the workflow. Specify the path the above endpoint refers to.
+_:ep larkc:links _:path .
+_:path a larkc:Path .
+#Connect the input of the path to a plugin
+#_:path larkc:hasInput _:reasoner .
+#Connect the output of the path to a plugin
+_:path larkc:hasOutput _:reasoner .
