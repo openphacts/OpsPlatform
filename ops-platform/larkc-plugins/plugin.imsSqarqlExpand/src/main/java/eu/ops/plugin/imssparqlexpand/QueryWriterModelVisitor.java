@@ -1,8 +1,10 @@
 package eu.ops.plugin.imssparqlexpand;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
@@ -73,12 +75,17 @@ import org.openrdf.query.algebra.Var;
 public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansionException>{
     
     StringBuilder queryString = new StringBuilder();
-    Dataset originalDataSet;
+    private Dataset originalDataSet;
     Var context = null;
-    List<String>  requiredAttributes;
-    Set<String> eliminatedAttributes;
-
-    QueryWriterModelVisitor(Dataset dataSet, List<String> requiredAttributes){
+    private List<String>  requiredAttributes;
+    private Set<String> eliminatedAttributes;
+    boolean swapGraphAndOptional1 = false;
+//    boolean optionalToClose = false;
+    private Map<Var, Integer> contextCounts;
+    ArrayList<Var> contexts;
+    int optionInGraph = 0;
+    
+    QueryWriterModelVisitor(Dataset dataSet, List<String> requiredAttributes,  ArrayList<Var> contexts){
         originalDataSet = dataSet;
         eliminatedAttributes = new HashSet<String>();
         if (requiredAttributes == null || requiredAttributes.isEmpty()) {
@@ -86,10 +93,11 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
         } else {
             this.requiredAttributes = requiredAttributes;
         }
+        this.contexts = contexts;
     }
 
-    QueryWriterModelVisitor(Dataset dataSet){
-        this(dataSet, null);
+    QueryWriterModelVisitor(Dataset dataSet, ArrayList<Var> contexts){
+        this(dataSet, null, contexts);
     }
     
     @Override
@@ -270,11 +278,8 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
 
     @Override
     public void meet(Join join) throws QueryExpansionException {
-        boolean newContext = startContext(join); 
-        System.out.println ("Join " + newContext + "   " + context);
         join.getLeftArg().visit(this);
         join.getRightArg().visit(this);
-        closeContext(newContext);
     }
 
     @Override
@@ -342,22 +347,130 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
 
     @Override
     public void meet(LeftJoin lj) throws QueryExpansionException {
-        System.out.println ("leftJoin starting");
-        boolean newContext = startContext(lj); 
-        System.out.println ("leftJoin " + newContext + "   " + context);
         lj.getLeftArg().visit(this);
-        newLine();
-        queryString.append("OPTIONAL {");
+
+        if (context == null){
+            if (statementsInNextGraph() > statementsInExpression(lj.getRightArg())){
+                swapGraphAndOptional1 = true;
+            } else {
+                newLine();
+                queryString.append("OPTIONAL { #left join ");
+            }
+            lj.getRightArg().visit(this);
+            if (lj.hasCondition()){
+                newLine();
+                queryString.append("    FILTER ");
+                lj.getCondition().visit(this);
+            }
+            newLine();
+            //CLose the Optional
+            queryString.append("  } #OPTIONAL leftJoin");
+            newLine();
+        } else {
+            newLine();
+            queryString.append("OPTIONAL { #leftJoin");
+            //Record that we opened the optional in side the graph so graph closes it first
+            optionInGraph++;
+            lj.getRightArg().visit(this);        
+            if (lj.hasCondition()){
+                newLine();
+                queryString.append("    FILTER ");
+                lj.getCondition().visit(this);
+            }
+        }
+        if (optionInGraph > 0){
+            newLine();
+            queryString.append(" } #OPTIONAL by optionInGraph");   
+            optionInGraph--;
+            newLine();
+        }
+
+    }
+    
+    private int statementsInNextGraph(){
+        if (contexts.get(0) == null){
+            return 0;
+        }
+        int i;
+        for (i = 0; i < contexts.size(); i++){
+            if (!(contexts.get(0).equals(contexts.get(i)))){
+                return i;
+            }
+        }
+        return i;
+    }
+
+    private int statementsInExpression(TupleExpr tupleExpr) throws QueryExpansionException{
+        //Could be done with a lister that counts instead of lists but this reuses code.
+        ContextListerVisitor counter = new ContextListerVisitor();
+        tupleExpr.visit(counter);
+        ArrayList<Var> contexts = counter.getContexts();
+        return contexts.size();
+    }
+    
+    /* public void meet1(LeftJoin lj) throws QueryExpansionException {
+        System.out.println(lj);
+        lj.getLeftArg().visit(this);
+        ContextFinderVisitor contextFinder = new ContextFinderVisitor();
+        boolean optionalHere;
+        boolean internalContext;
+        lj.getRightArg().visit(contextFinder);
+        Var rightContext = contextFinder.getContext();
+        System.out.println("rightContext " + rightContext);
+        System.out.println("context" + context);
+        
+        ContextCounterVisitor counter = new ContextCounterVisitor();
+        lj.getRightArg().visit(counter);
+        Map<Var, Integer> localCounts = counter.getCounts();
+
+        if (context != null){
+            if (rightContext == null){
+                //Close a context if open
+                closeContextX();
+            }
+            //Graph already open
+            if (!(localCounts.containsKey(context))){
+                System.out.println("new context");
+                closeContextX();
+            } else {
+                System.out.println("repeat context");                    
+            }
+            optionalHere = true;
+            internalContext = false;
+        } else {
+            if (rightContext == null) {
+                //Close a context if open
+                closeContextX();
+                //no Graph to push below or multiple graphs to wrap
+                optionalHere = true;
+                internalContext = false;
+            } else {
+                optionalHere = localCounts.get(rightContext).equals(contextCounts.get(rightContext));
+                internalContext = optionalHere;
+            }
+        }
+        if (optionalHere){
+            newLine();
+            queryString.append("OPTIONAL {");
+            System.out.println ("Open optional");
+        } else {
+            swapGraphAndOptional = true;
+        }
         lj.getRightArg().visit(this);
         if (lj.hasCondition()){
             newLine();
             queryString.append("    FILTER ");
             lj.getCondition().visit(this);
         }
+        if (internalContext){
+            closeContextX();
+        } else {
+            System.out.println("No close graph");
+        }
+        //System.out.println ("close optional");
         queryString.append("}");
-        closeContext(newContext);
     }
-
+*/
     @Override
     public void meet(Or or) throws QueryExpansionException {
         queryString.append("(");
@@ -426,7 +539,9 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
             Extension extnsn = (Extension) expr;
             if (extnsn.getArg() instanceof Order) return;
         }
-        queryString.append("}");
+        newLine();
+        queryString.append(" } # WHERE");
+        newLine();
     }
     
     private void printDataset(){
@@ -673,7 +788,7 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
            if (" ?-descr-subj".equals(leftName)){
                queryString.append(extractName(term.getRightArg()));
            } else {
-               System.out.println(leftName);
+               //System.out.println(leftName);
            }
         } else {
             throw new QueryExpansionException ("Expected Or when extracting DescribeVariable");
@@ -732,10 +847,7 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
     /**
      * Holder method for Expander that needs to prepare a new Context
      */
-    void setupNewContext(){
-    }
-    
-    boolean startContext(TupleExpr expr) throws QueryExpansionException{
+    boolean XstartContext(TupleExpr expr) throws QueryExpansionException{
         if (context != null) return false;
         //ystem.out.println(expr);
         ContextFinderVisitor contextFinder = new ContextFinderVisitor();
@@ -751,8 +863,9 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
         }
     }
     
-    void closeContext (boolean startedHere){
-        if (startedHere){
+    void closeContextX (){
+        if (context != null){
+            System.out.println("closing " + context);
             queryString.append(" } ");
             context = null;
         }
@@ -772,15 +885,65 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
 
     //@Override
     public void meet(StatementPattern sp) throws QueryExpansionException  {
-        if (isDescribePattern(sp)) return;
-        if (canEliminate(sp)) return;
+        if (contexts.get(0) == null){
+            if (sp.getContextVar() != null) {
+                throw new QueryExpansionException ("Expected null context in statement: " + sp);
+            }
+        } else {
+            if (!(contexts.get(0).equals(sp.getContextVar()))) {
+               throw new QueryExpansionException ("Expected context  " + contexts.get(0) + " in statement: " + sp); 
+            }
+        }
+        if (isDescribePattern(sp) || canEliminate(sp)) {
+            contexts.remove(sp.getContextVar()); 
+            return;
+        }
+        //ystem.out.println(sp);
+        switchContextIfRequired(sp); 
+        if (swapGraphAndOptional1) {
+            newLine();
+            queryString.append("OPTIONAL { #meet(StatementPattern sp)");
+            swapGraphAndOptional1 = false;
+           // optionalToClose = true;
+        }
         newLine();
-        boolean newContext = startContext(sp); 
         writeStatementPart(sp.getSubjectVar());
         sp.getPredicateVar().visit(this);
         writeStatementPart(sp.getObjectVar());
-        closeContext(newContext);
         queryString.append(". ");
+        contexts.remove(sp.getContextVar());       
+        if (contexts.isEmpty()){
+            //Last Statement
+            closeContext();
+        } else if (context == null){
+            //Not in a context so flush replacement filters        
+           closeContext(); 
+        } else if (context.equals(contexts.get(0))){
+            //staying in context so keep it open
+        } else {
+            closeContext();
+        }
+    }
+
+   void closeContext(){
+       if (context != null){
+            while (optionInGraph > 0){
+                newLine();
+                queryString.append(" } #OPTIONAL from close context optionInGraph");   
+                optionInGraph--;
+                newLine();
+            }
+         //   if (optionalToClose){
+         //       newLine();
+         //       queryString.append(" } #OPTIONAL from close context optionalToClose"); 
+          //      optionalToClose = false;
+          //  }
+            System.out.println("closing " + context);
+            newLine();
+            queryString.append(" } # close Context");
+            newLine();
+            context = null;
+        }
     }
 
     boolean canEliminate(StatementPattern sp) throws QueryExpansionException{
@@ -863,6 +1026,20 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
         return true;        
     }
     
+    private void switchContextIfRequired(StatementPattern sp) throws QueryExpansionException {
+        if (sp.getContextVar() != null) {
+            if (!(sp.getContextVar().equals(context))){
+                closeContextX();
+                context = sp.getContextVar();
+                //ystem.out.println("New context "+ context);
+                newLine();
+                queryString.append(" GRAPH ");
+                context.visit(this);
+                queryString.append(" {");   
+            }
+        }
+    }
+
     @Override
     public void meet(Str str) throws QueryExpansionException {
         queryString.append(" STR(");

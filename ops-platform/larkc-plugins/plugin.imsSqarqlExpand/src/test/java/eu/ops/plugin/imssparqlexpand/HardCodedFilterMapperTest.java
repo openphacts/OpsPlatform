@@ -101,7 +101,7 @@ public class HardCodedFilterMapperTest {
      * Test of stripoutURIs method, of class HardCodedFilterMapper.
      */
     @Test
-    public void testStripoutURIsChemspider() {
+    public void testStripoutURIsChemspider() throws QueryExpansionException {
         System.out.println("stripoutURIs");
         List<URI> fullList = getFullURIList();
         String graph = "http://rdf.chemspider.com/data";
@@ -117,7 +117,7 @@ public class HardCodedFilterMapperTest {
      * Test of stripoutURIs method, of class HardCodedFilterMapper.
      */
     @Test
-    public void testStripoutURIsPDSP_DB() {
+    public void testStripoutURIsPDSP_DB() throws QueryExpansionException {
         System.out.println("stripoutURIs");
         List<URI> fullList = getFullURIList();
         String graph = "http://PDSP_DB/Data";
@@ -320,4 +320,578 @@ public class HardCodedFilterMapperTest {
         assertTrue(QueryUtils.sameTupleExpr(expectedQuery, query.toString()));
     }
 
+    /**
+     * Test query found in Section compoundLookup
+     */
+    @Test
+    public void testCompoundInfo() throws MalformedQueryException, QueryExpansionException {
+        String inputQuery = "PREFIX c2b2r_chembl: <http://chem2bio2rdf.org/chembl/resource/>"
+                + "PREFIX chemspider: <http://rdf.chemspider.com/#>"
+                + "PREFIX drugbank: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/>"
+                + "SELECT ?csid_uri ?smiles ?inchi ?inchiKey ?alogp ?hha ?hhd ?molformula ?molweight ?mw_freebase "
+                + "?num_ro5_violations ?psa ?rtb ?affectedOrganism ?biotransformation ?description ?indication "
+                + "?meltingPoint ?proteinBinding ?toxicity "
+                + "WHERE {"
+                + "   GRAPH <http://larkc.eu#Fixedcontext> {"
+                + "       <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> "
+                + "             <http://www.w3.org/2004/02/skos/core#prefLabel> ?prefLabel"
+                + "   }"
+                + "   GRAPH <file:///home/OPS/develop/openphacts/datasets/OPS-DS-TTL/ChEMBL_nonewlines.ttl> {"
+                + "       <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> "
+                + "                                          chemspider:smiles ?smiles ;"
+                + "                                          chemspider:inchi ?inchi ; "
+                + "                                          chemspider:inchikey ?inchiKey ."
+                + "       ?csid_uri chemspider:inchi ?inchi"
+                + "   }"
+                + "   GRAPH <file:///home/OPS/develop/openphacts/datasets/chem2bio2rdf/chembl.nt> {"
+                + "       OPTIONAL { <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> "
+                + "                      c2b2r_chembl:alogp ?alogp }"
+                + "       OPTIONAL { <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> "
+                + "                      c2b2r_chembl:hha ?hha }"
+                + "       OPTIONAL { <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> "
+                + "                      c2b2r_chembl:hhd ?hhd }"
+                + "       OPTIONAL { <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> "
+                + "                      c2b2r_chembl:molformula ?molformula }"
+                + "       OPTIONAL { <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> "
+                + "                      c2b2r_chembl:molweight ?molweight }"
+                + "       OPTIONAL { <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> "
+                + "                      c2b2r_chembl:mw_freebase ?mw_freebase }"
+                + "       OPTIONAL { <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> "
+                + "                      c2b2r_chembl:num_ro5_violations ?num_ro5_violations }"
+                + "       OPTIONAL { <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> "
+                + "                      c2b2r_chembl:psa ?psa }"
+                + "       OPTIONAL { <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> "
+                + "                      c2b2r_chembl:rtb ?rtb }"
+                + "   }"
+                + "   GRAPH <http://linkedlifedata.com/resource/drugbank> {"
+                + "       OPTIONAL { <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> "
+                + "                      drugbank:affectedOrganism ?affectedOrganism }"
+                + "       OPTIONAL { <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> "
+                + "                      drugbank:biotransformation ?biotransformation }"
+                + "       OPTIONAL { <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> "
+                + "                      drugbank:description ?description }"
+                + "       OPTIONAL { <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> "
+                + "                      drugbank:indication ?indication }"
+                + "       OPTIONAL { <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> "
+                + "                      drugbank:proteinBinding ?proteinBinding }"
+                + "       OPTIONAL { <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> "
+                + "                      drugbank:toxicity ?toxicity }"
+                + "       OPTIONAL { <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> "
+                + "                       drugbank:meltingPoint ?meltingPoint}"
+                + "   }"
+                + "}";     
+        String expectedQuery = "PREFIX c2b2r_chembl: <http://chem2bio2rdf.org/chembl/resource/>"
+                + "PREFIX chemspider: <http://rdf.chemspider.com/#>"
+                + "PREFIX drugbank: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/>"
+                + "SELECT ?csid_uri ?smiles ?inchi ?inchiKey ?alogp ?hha ?hhd ?molformula ?molweight ?mw_freebase "
+                + "?num_ro5_violations ?psa ?rtb ?affectedOrganism ?biotransformation ?description ?indication "
+                + "?meltingPoint ?proteinBinding ?toxicity "
+                + "WHERE {"
+                + "   GRAPH <http://larkc.eu#Fixedcontext> {"
+                + "       <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> "
+                + "             <http://www.w3.org/2004/02/skos/core#prefLabel> ?prefLabel"
+                + "   }"
+                + "   GRAPH <file:///home/OPS/develop/openphacts/datasets/OPS-DS-TTL/ChEMBL_nonewlines.ttl> {"
+                + "       <http://rdf.chemspider.com/187440> chemspider:smiles ?smiles ;"
+                + "                                          chemspider:inchi ?inchi ; "
+                + "                                          chemspider:inchikey ?inchiKey ."
+                + "       ?csid_uri chemspider:inchi ?inchi"
+                + "   }"
+                + "   GRAPH <file:///home/OPS/develop/openphacts/datasets/chem2bio2rdf/chembl.nt> {"
+                + "       OPTIONAL { <http://chem2bio2rdf.org/chembl/resource/chembl_compounds/276734> "
+                + "                      c2b2r_chembl:alogp ?alogp }"
+                + "       OPTIONAL { <http://chem2bio2rdf.org/chembl/resource/chembl_compounds/276734> "
+                + "                      c2b2r_chembl:hha ?hha }"
+                + "       OPTIONAL { <http://chem2bio2rdf.org/chembl/resource/chembl_compounds/276734> "
+                + "                      c2b2r_chembl:hhd ?hhd }"
+                + "       OPTIONAL { <http://chem2bio2rdf.org/chembl/resource/chembl_compounds/276734> "
+                + "                      c2b2r_chembl:molformula ?molformula }"
+                + "       OPTIONAL { <http://chem2bio2rdf.org/chembl/resource/chembl_compounds/276734> "
+                + "                      c2b2r_chembl:molweight ?molweight }"
+                + "       OPTIONAL { <http://chem2bio2rdf.org/chembl/resource/chembl_compounds/276734> "
+                + "                      c2b2r_chembl:mw_freebase ?mw_freebase }"
+                + "       OPTIONAL { <http://chem2bio2rdf.org/chembl/resource/chembl_compounds/276734> "
+                + "                      c2b2r_chembl:num_ro5_violations ?num_ro5_violations }"
+                + "       OPTIONAL { <http://chem2bio2rdf.org/chembl/resource/chembl_compounds/276734> "
+                + "                      c2b2r_chembl:psa ?psa }"
+                + "       OPTIONAL { <http://chem2bio2rdf.org/chembl/resource/chembl_compounds/276734> "
+                + "                      c2b2r_chembl:rtb ?rtb }"
+                + "   }"
+                + "   GRAPH <http://linkedlifedata.com/resource/drugbank> {"
+                + "       OPTIONAL {<http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugs/DB00398> "
+                + "                      drugbank:affectedOrganism ?affectedOrganism }"
+                + "       OPTIONAL {<http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugs/DB00398> "
+                + "                      drugbank:biotransformation ?biotransformation }"
+                + "       OPTIONAL {<http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugs/DB00398> "
+                + "                      drugbank:description ?description }"
+                + "       OPTIONAL {<http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugs/DB00398> "
+                + "                      drugbank:indication ?indication }"
+                + "       OPTIONAL {<http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugs/DB00398> "
+                + "                      drugbank:proteinBinding ?proteinBinding }"
+                + "       OPTIONAL {<http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugs/DB00398> "
+                + "                      drugbank:toxicity ?toxicity }"
+                + "       OPTIONAL { <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugs/DB00398> "
+                + "                       drugbank:meltingPoint ?meltingPoint}"
+                + "   }"
+                + "}";     
+
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
+        dummyIMSMapper.addMapping("http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973" ,
+                                  "http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973");
+        dummyIMSMapper.addMapping("http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973" ,
+                                  "http://rdf.chemspider.com/187440");
+        dummyIMSMapper.addMapping("http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973" ,
+                                  "http://chem2bio2rdf.org/chembl/resource/chembl_compounds/276734");
+        dummyIMSMapper.addMapping("http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973" ,
+                                  "http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugs/DB00398");
+
+        final HardCodedFilterMapper hardCoded = new HardCodedFilterMapper(dummyIMSMapper);
+        IMSSPARQLExpand expander = 
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
+            @Override
+            IMSMapper instantiateIMSMapper() {
+                return hardCoded;
+            }
+        };
+        expander.initialiseInternal(null);
+        SetOfStatements eQuery = expander.invokeInternalWithExceptions(
+                new SPARQLQueryImpl(inputQuery).toRDF());
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        assertTrue(QueryUtils.sameTupleExpr(expectedQuery, query.toString()));
+    }    
+
+    /**
+     * Test query found in Section compoundLookup
+     */
+    @Test
+    public void testGraphPatternsInDifferentJoins() throws MalformedQueryException, QueryExpansionException {
+        String inputQuery = "PREFIX c2b2r_chembl: <http://chem2bio2rdf.org/chembl/resource/>"
+                + "PREFIX chemspider: <http://rdf.chemspider.com/#>"
+                + "PREFIX drugbank: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/>"
+                + "SELECT ?prefLabel ?affectedOrganism ?biotransformation "
+                + "WHERE {"
+                + "   GRAPH <http://larkc.eu#Fixedcontext> {"
+                + "       <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> "
+                + "             <http://www.w3.org/2004/02/skos/core#prefLabel> ?prefLabel"
+                + "   }"
+                + "   GRAPH <http://linkedlifedata.com/resource/drugbank> {"
+                + "       OPTIONAL { <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> "
+                + "                      drugbank:affectedOrganism ?affectedOrganism }"
+                + "       OPTIONAL { <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> "
+                + "                      drugbank:biotransformation ?biotransformation }"
+                + "   }"
+                + "}";     
+        String expectedQuery = "PREFIX c2b2r_chembl: <http://chem2bio2rdf.org/chembl/resource/>"
+                + "PREFIX chemspider: <http://rdf.chemspider.com/#>"
+                + "PREFIX drugbank: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/>"
+                + "SELECT ?prefLabel ?affectedOrganism ?biotransformation "
+                + "WHERE {"
+                + "   GRAPH <http://larkc.eu#Fixedcontext> {"
+                + "       <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> "
+                + "             <http://www.w3.org/2004/02/skos/core#prefLabel> ?prefLabel"
+                + "   }"
+                + "   GRAPH <http://linkedlifedata.com/resource/drugbank> {"
+                + "       OPTIONAL {<http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugs/DB00398> "
+                + "                      drugbank:affectedOrganism ?affectedOrganism }"
+                + "       OPTIONAL {<http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugs/DB00398> "
+                + "                      drugbank:biotransformation ?biotransformation }"
+                + "   }"
+                + "}";     
+
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
+        dummyIMSMapper.addMapping("http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973" ,
+                                  "http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973");
+        dummyIMSMapper.addMapping("http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973" ,
+                                  "http://rdf.chemspider.com/187440");
+        dummyIMSMapper.addMapping("http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973" ,
+                                  "http://chem2bio2rdf.org/chembl/resource/chembl_compounds/276734");
+        dummyIMSMapper.addMapping("http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973" ,
+                                  "http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugs/DB00398");
+
+        final HardCodedFilterMapper hardCoded = new HardCodedFilterMapper(dummyIMSMapper);
+        IMSSPARQLExpand expander = 
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
+            @Override
+            IMSMapper instantiateIMSMapper() {
+                return hardCoded;
+            }
+        };
+        expander.initialiseInternal(null);
+        SetOfStatements eQuery = expander.invokeInternalWithExceptions(
+                new SPARQLQueryImpl(inputQuery).toRDF());
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        assertTrue(QueryUtils.sameTupleExpr(expectedQuery, query.toString()));
+    }    
+
+    /**
+     * Test query found in Section compoundLookup
+     */
+    @Test
+    public void testDoubleOptional() throws MalformedQueryException, QueryExpansionException {
+        System.out.println("testDoubleOptional");
+        String inputQuery = "PREFIX c2b2r_chembl: <http://chem2bio2rdf.org/chembl/resource/>"
+                + "PREFIX chemspider: <http://rdf.chemspider.com/#>"
+                + "PREFIX drugbank: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/> "
+                + "SELECT ?prefLabel ?affectedOrganism ?biotransformation "
+                + "WHERE {"
+                + "   GRAPH <http://larkc.eu#Fixedcontext> {"
+                + "       <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> "
+                + "             <http://www.w3.org/2004/02/skos/core#prefLabel> ?prefLabel"
+                + "   }"
+                + "   OPTIONAL {"
+                + "       GRAPH <http://linkedlifedata.com/resource/drugbank> {"
+                + "           OPTIONAL { <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> "
+                + "                      drugbank:affectedOrganism ?affectedOrganism }"
+                + "           OPTIONAL { <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> "
+                + "                      drugbank:biotransformation ?biotransformation }"
+                + "       }"
+                + "   }"
+                + "}";     
+        String expectedQuery = "PREFIX c2b2r_chembl: <http://chem2bio2rdf.org/chembl/resource/>"
+                + "PREFIX chemspider: <http://rdf.chemspider.com/#>"
+                + "PREFIX drugbank: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/> \n"
+                + "SELECT ?prefLabel ?affectedOrganism ?biotransformation \n"
+                + "WHERE { \n"
+                + "   GRAPH <http://larkc.eu#Fixedcontext> { \n"
+                + "       <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> "
+                + "             <http://www.w3.org/2004/02/skos/core#prefLabel> ?prefLabel \n"
+                + "   } \n"
+                + "   OPTIONAL { \n"
+                + "       GRAPH <http://linkedlifedata.com/resource/drugbank> { \n"
+                + "           OPTIONAL { \n"
+                + "               <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugs/DB00398> "
+                + "                      drugbank:affectedOrganism ?affectedOrganism \n"
+                + "           } \n"
+                + "           OPTIONAL {"
+                + "                <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugs/DB00398> "
+                + "                      drugbank:biotransformation ?biotransformation \n"
+                + "           } \n"
+                + "       } \n"
+                + "   } \n"
+                + "}";     
+
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
+        dummyIMSMapper.addMapping("http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973" ,
+                                  "http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973");
+        dummyIMSMapper.addMapping("http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973" ,
+                                  "http://rdf.chemspider.com/187440");
+        dummyIMSMapper.addMapping("http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973" ,
+                                  "http://chem2bio2rdf.org/chembl/resource/chembl_compounds/276734");
+        dummyIMSMapper.addMapping("http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973" ,
+                                  "http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugs/DB00398");
+
+        final HardCodedFilterMapper hardCoded = new HardCodedFilterMapper(dummyIMSMapper);
+        IMSSPARQLExpand expander = 
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
+            @Override
+            IMSMapper instantiateIMSMapper() {
+                return hardCoded;
+            }
+        };
+        expander.initialiseInternal(null);
+        SetOfStatements eQuery = expander.invokeInternalWithExceptions(
+                new SPARQLQueryImpl(inputQuery).toRDF());
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        assertTrue(QueryUtils.sameTupleExpr(expectedQuery, query.toString()));
+    }    
+
+    /**
+     * Test query found in Section compoundLookup
+     */
+    @Test   
+    public void testCompoundPharmacology() throws MalformedQueryException, QueryExpansionException {
+        System.out.println("testCompoundPharmacology");
+        String inputQuery = "PREFIX c2b2r_chembl: <http://chem2bio2rdf.org/chembl/resource/> "
+                + "PREFIX chemspider: <http://rdf.chemspider.com/#> "
+                + "PREFIX drugbank: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/>"
+                + "PREFIX farmbio: <http://rdf.farmbio.uu.se/chembl/onto/#>"
+                + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> "
+                + "SELECT ?csid_uri ?smiles ?inchi ?inchiKey ?molweight ?num_ro5_violations ?std_type ?relation "
+                + "       ?std_value ?std_unites ?assay_organism ?target_pref_name ?drugType "
+                + "WHERE {"
+                + "   GRAPH <http://larkc.eu#Fixedcontext> {"
+                + "       <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> "
+                + "             <http://www.w3.org/2004/02/skos/core#prefLabel> ?prefLabel"
+                + "   }"
+                + "   GRAPH <file:///home/OPS/develop/openphacts/datasets/OPS-DS-TTL/ChEMBL_nonewlines.ttl> {"
+                + "       <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973>"
+                + "                                          chemspider:smiles ?smiles ;"
+                + "                                          chemspider:inchi ?inchi ; "
+                + "                                          chemspider:inchikey ?inchiKey ."
+                + "       ?csid_uri chemspider:inchi ?inchi"
+                + "   }"
+                + "   GRAPH <file:///home/OPS/develop/openphacts/datasets/chem2bio2rdf/chembl.nt> {"
+                + "       OPTIONAL { "
+                + "           ?activity_uri c2b2r_chembl:c2b2r_chembl_02_activities_molregno "
+                + "                             <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> ;"
+                + "                         c2b2r_chembl:std_type ?std_type ; "
+                + "                         c2b2r_chembl:relation ?relation ; "
+                + "                         c2b2r_chembl:std_value ?std_value ;"
+                + "                         c2b2r_chembl:std_unites ?std_unites ; "
+                + "                         farmbio:onAssay ?assay_uri ."
+                + "           ?assay2target_uri c2b2r_chembl:assay_id ?assay_uri ; "
+                + "                             c2b2r_chembl:assay_organism ?assay_organism;"
+                + "                             c2b2r_chembl:tid ?tid . "
+                + "                             ?tid c2b2r_chembl:pref_name ?target_pref_name"
+                + "       } OPTIONAL { "
+                + "           <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> "
+                + "                    c2b2r_chembl:molweight ?molweight "
+                + "       } OPTIONAL { "
+                + "           <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> "
+                + "                    c2b2r_chembl:num_ro5_violations ?num_ro5_violations "
+                + "       }"
+                + "   }"
+                + "   GRAPH <http://linkedlifedata.com/resource/drugbank> {"
+                + "       OPTIONAL {"
+                + "           <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> "
+                + "                   drugbank:drugType ?drugType_uri "
+                + "       }"
+                + "   }"
+                + "   GRAPH <file:///home/OPS/develop/openphacts/datasets/lld/drug_type_labels.ttl> {"
+                + "       OPTIONAL {?drugType_uri rdfs:label ?drugType}"
+                + "   }"
+                + "}";     
+
+        String expectedQuery1 = "PREFIX c2b2r_chembl: <http://chem2bio2rdf.org/chembl/resource/> "
+                + "PREFIX chemspider: <http://rdf.chemspider.com/#> "
+                + "PREFIX drugbank: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/>"
+                + "PREFIX farmbio: <http://rdf.farmbio.uu.se/chembl/onto/#>"
+                + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n"
+                + "SELECT ?csid_uri ?smiles ?inchi ?inchiKey ?molweight ?num_ro5_violations ?std_type ?relation "
+                + "       ?std_value ?std_unites ?assay_organism ?target_pref_name ?drugType \n"
+                + "WHERE {\n"
+                + "   GRAPH <http://larkc.eu#Fixedcontext> {\n"
+                + "       <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> "
+                + "             <http://www.w3.org/2004/02/skos/core#prefLabel> ?prefLabel\n"
+                + "   }\n"
+                + "   GRAPH <file:///home/OPS/develop/openphacts/datasets/OPS-DS-TTL/ChEMBL_nonewlines.ttl> {\n"
+                + "       <http://rdf.chemspider.com/187440> chemspider:smiles ?smiles ;\n"
+                + "                                          chemspider:inchi ?inchi ; \n"
+                + "                                          chemspider:inchikey ?inchiKey .\n"
+                + "       ?csid_uri chemspider:inchi ?inchi\n"
+                + "   }\n"
+                + "   GRAPH <file:///home/OPS/develop/openphacts/datasets/chem2bio2rdf/chembl.nt> {\n"
+                + "       OPTIONAL { \n"
+                + "           ?activity_uri c2b2r_chembl:c2b2r_chembl_02_activities_molregno "
+                + "                             <http://chem2bio2rdf.org/chembl/resource/chembl_compounds/276734> ;\n"
+                + "                         c2b2r_chembl:std_type ?std_type ; \n"
+                + "                         c2b2r_chembl:relation ?relation ; \n"
+                + "                         c2b2r_chembl:std_value ?std_value ;\n"
+                + "                         c2b2r_chembl:std_unites ?std_unites ; \n"
+                + "                         farmbio:onAssay ?assay_uri .\n"
+                + "           ?assay2target_uri c2b2r_chembl:assay_id ?assay_uri ; \n"
+                + "                             c2b2r_chembl:assay_organism ?assay_organism;\n"
+                + "                             c2b2r_chembl:tid ?tid . \n"
+                + "                             ?tid c2b2r_chembl:pref_name ?target_pref_name\n"
+                + "       } OPTIONAL { \n"
+                + "           <http://chem2bio2rdf.org/chembl/resource/chembl_compounds/276734> "
+                + "                    c2b2r_chembl:molweight ?molweight \n"
+                + "       } OPTIONAL { \n"
+                + "           <http://chem2bio2rdf.org/chembl/resource/chembl_compounds/276734> "
+                + "                    c2b2r_chembl:num_ro5_violations ?num_ro5_violations \n"
+                + "       }\n"
+                + "   }\n"
+                + "   GRAPH <http://linkedlifedata.com/resource/drugbank> {\n"
+                + "       OPTIONAL {\n"
+                + "           <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugs/DB00398> "
+                + "                   drugbank:drugType ?drugType_uri \n"
+                + "       }\n"
+                + "   }\n"
+                + "   GRAPH <file:///home/OPS/develop/openphacts/datasets/lld/drug_type_labels.ttl> {\n"
+                + "       OPTIONAL {?drugType_uri rdfs:label ?drugType}\n"
+                + "   }\n"
+                + "}";     
+        String expectedQuery2 = "PREFIX c2b2r_chembl: <http://chem2bio2rdf.org/chembl/resource/> "
+                + "PREFIX chemspider: <http://rdf.chemspider.com/#> "
+                + "PREFIX drugbank: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/>"
+                + "PREFIX farmbio: <http://rdf.farmbio.uu.se/chembl/onto/#>"
+                + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n"
+                + "SELECT ?csid_uri ?smiles ?inchi ?inchiKey ?molweight ?num_ro5_violations ?std_type ?relation "
+                + "       ?std_value ?std_unites ?assay_organism ?target_pref_name ?drugType \n"
+                + "WHERE {\n"
+                + "   GRAPH <http://larkc.eu#Fixedcontext> {\n"
+                + "       <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> "
+                + "             <http://www.w3.org/2004/02/skos/core#prefLabel> ?prefLabel\n"
+                + "   }\n"
+                + "   GRAPH <file:///home/OPS/develop/openphacts/datasets/OPS-DS-TTL/ChEMBL_nonewlines.ttl> {\n"
+                + "       <http://rdf.chemspider.com/187440> chemspider:smiles ?smiles ;\n"
+                + "                                          chemspider:inchi ?inchi ; \n"
+                + "                                          chemspider:inchikey ?inchiKey .\n"
+                + "       ?csid_uri chemspider:inchi ?inchi\n"
+                + "   }\n"
+                + "   GRAPH <file:///home/OPS/develop/openphacts/datasets/chem2bio2rdf/chembl.nt> {\n"
+                + "       OPTIONAL { \n"
+                + "           ?activity_uri c2b2r_chembl:c2b2r_chembl_02_activities_molregno "
+                + "                             <http://chem2bio2rdf.org/chembl/resource/chembl_compounds/276734> ;\n"
+                + "                         c2b2r_chembl:std_type ?std_type ; \n"
+                + "                         c2b2r_chembl:relation ?relation ; \n"
+                + "                         c2b2r_chembl:std_value ?std_value ;\n"
+                + "                         c2b2r_chembl:std_unites ?std_unites ; \n"
+                + "                         farmbio:onAssay ?assay_uri .\n"
+                + "           ?assay2target_uri c2b2r_chembl:assay_id ?assay_uri ; \n"
+                + "                             c2b2r_chembl:assay_organism ?assay_organism;\n"
+                + "                             c2b2r_chembl:tid ?tid . \n"
+                + "                             ?tid c2b2r_chembl:pref_name ?target_pref_name\n"
+                + "       } OPTIONAL { \n"
+                + "           <http://chem2bio2rdf.org/chembl/resource/chembl_compounds/276734> "
+                + "                    c2b2r_chembl:molweight ?molweight \n"
+                + "       } OPTIONAL { \n"
+                + "           <http://chem2bio2rdf.org/chembl/resource/chembl_compounds/276734> "
+                + "                    c2b2r_chembl:num_ro5_violations ?num_ro5_violations \n"
+                + "       }\n"
+                + "   }\n"
+                + "   OPTIONAL {\n"
+                + "       GRAPH <http://linkedlifedata.com/resource/drugbank> {\n"
+                + "           <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugs/DB00398> "
+                + "                   drugbank:drugType ?drugType_uri \n"
+                + "       }\n"
+                + "   }\n"
+                + "   OPTIONAL {"
+                + "       GRAPH <file:///home/OPS/develop/openphacts/datasets/lld/drug_type_labels.ttl> {\n"
+                + "           ?drugType_uri rdfs:label ?drugType}\n"
+                + "   }\n"
+                + "}";     
+
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
+        dummyIMSMapper.addMapping("http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973" ,
+                                  "http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973");
+        dummyIMSMapper.addMapping("http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973" ,
+                                  "http://rdf.chemspider.com/187440");
+        dummyIMSMapper.addMapping("http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973" ,
+                                  "http://chem2bio2rdf.org/chembl/resource/chembl_compounds/276734");
+        dummyIMSMapper.addMapping("http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973" ,
+                                  "http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugs/DB00398");
+
+        final HardCodedFilterMapper hardCoded = new HardCodedFilterMapper(dummyIMSMapper);
+        IMSSPARQLExpand expander = 
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
+            @Override
+            IMSMapper instantiateIMSMapper() {
+                return hardCoded;
+            }
+        };
+        expander.initialiseInternal(null);
+        SetOfStatements eQuery = expander.invokeInternalWithExceptions(
+                new SPARQLQueryImpl(inputQuery).toRDF());
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        assertTrue(QueryUtils.sameTupleExpr(query.toString(), expectedQuery1, expectedQuery2, true));
+    }    
+    
+    /**
+     * Test query found in Section compoundLookup
+     */
+    @Test
+    public void testInnerOptionaly() throws MalformedQueryException, QueryExpansionException {
+        System.out.println("testInnerOptionaly");
+        String inputQuery = "PREFIX c2b2r_chembl: <http://chem2bio2rdf.org/chembl/resource/> "
+                + "PREFIX chemspider: <http://rdf.chemspider.com/#> "
+                + "PREFIX drugbank: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/>"
+                + "PREFIX farmbio: <http://rdf.farmbio.uu.se/chembl/onto/#>"
+                + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> "
+                + "SELECT ?csid_uri ?smiles ?inchi ?inchiKey ?molweight ?num_ro5_violations ?std_type ?relation "
+                + "       ?std_value ?std_unites ?assay_organism ?target_pref_name ?drugType "
+                + "WHERE {"
+                + "   GRAPH <http://larkc.eu#Fixedcontext> {"
+                + "       <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> "
+                + "             <http://www.w3.org/2004/02/skos/core#prefLabel> ?prefLabel"
+                + "   }"
+                + "   GRAPH <file:///home/OPS/develop/openphacts/datasets/chem2bio2rdf/chembl.nt> {"
+                + "       OPTIONAL { "
+                + "           ?activity_uri farmbio:onAssay ?assay_uri ."
+                + "           ?assay2target_uri c2b2r_chembl:tid ?tid . "
+                + "       } OPTIONAL { "
+                + "           <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> "
+                + "                    c2b2r_chembl:molweight ?molweight "
+                + "       } OPTIONAL { "
+                + "           <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> "
+                + "                    c2b2r_chembl:num_ro5_violations ?num_ro5_violations "
+                + "       }"
+                + "   }"
+                + "   GRAPH <file:///home/OPS/develop/openphacts/datasets/lld/drug_type_labels.ttl> {"
+                + "       OPTIONAL {?drugType_uri rdfs:label ?drugType}"
+                + "   }"
+                + "}";     
+
+        String expectedQuery1 = "PREFIX c2b2r_chembl: <http://chem2bio2rdf.org/chembl/resource/> "
+                + "PREFIX chemspider: <http://rdf.chemspider.com/#> "
+                + "PREFIX drugbank: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/>"
+                + "PREFIX farmbio: <http://rdf.farmbio.uu.se/chembl/onto/#>"
+                + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n"
+                + "SELECT ?csid_uri ?smiles ?inchi ?inchiKey ?molweight ?num_ro5_violations ?std_type ?relation "
+                + "       ?std_value ?std_unites ?assay_organism ?target_pref_name ?drugType \n"
+                + "WHERE { \n"
+                + "   GRAPH <http://larkc.eu#Fixedcontext> { \n"
+                + "       <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> "
+                + "             <http://www.w3.org/2004/02/skos/core#prefLabel> ?prefLabel"
+                + "   } \n"
+                + "   GRAPH <file:///home/OPS/develop/openphacts/datasets/chem2bio2rdf/chembl.nt> { \n"
+                + "       OPTIONAL { \n"
+                + "           ?activity_uri farmbio:onAssay ?assay_uri .\n"
+                + "           ?assay2target_uri c2b2r_chembl:tid ?tid . \n"
+                + "       } OPTIONAL { \n"
+                + "           <http://chem2bio2rdf.org/chembl/resource/chembl_compounds/276734> "
+                + "                    c2b2r_chembl:molweight ?molweight \n"
+                + "       } OPTIONAL { \n"
+                + "           <http://chem2bio2rdf.org/chembl/resource/chembl_compounds/276734> "
+                + "                    c2b2r_chembl:num_ro5_violations ?num_ro5_violations \n"
+                + "       }\n"
+                + "   }\n"
+                + "   GRAPH <file:///home/OPS/develop/openphacts/datasets/lld/drug_type_labels.ttl> {\n"
+                + "       OPTIONAL {?drugType_uri rdfs:label ?drugType}\n"
+                + "   }\n"
+                + "}";     
+        String expectedQuery2 = "PREFIX c2b2r_chembl: <http://chem2bio2rdf.org/chembl/resource/> "
+                + "PREFIX chemspider: <http://rdf.chemspider.com/#> "
+                + "PREFIX drugbank: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/>"
+                + "PREFIX farmbio: <http://rdf.farmbio.uu.se/chembl/onto/#>"
+                + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n"
+                + "SELECT ?csid_uri ?smiles ?inchi ?inchiKey ?molweight ?num_ro5_violations ?std_type ?relation "
+                + "       ?std_value ?std_unites ?assay_organism ?target_pref_name ?drugType \n"
+                + "WHERE { \n"
+                + "   GRAPH <http://larkc.eu#Fixedcontext> { \n"
+                + "       <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> "
+                + "             <http://www.w3.org/2004/02/skos/core#prefLabel> ?prefLabel"
+                + "   } \n"
+                + "   GRAPH <file:///home/OPS/develop/openphacts/datasets/chem2bio2rdf/chembl.nt> { \n"
+                + "       OPTIONAL { \n"
+                + "           ?activity_uri farmbio:onAssay ?assay_uri .\n"
+                + "           ?assay2target_uri c2b2r_chembl:tid ?tid . \n"
+                + "       } OPTIONAL { \n"
+                + "           <http://chem2bio2rdf.org/chembl/resource/chembl_compounds/276734> "
+                + "                    c2b2r_chembl:molweight ?molweight \n"
+                + "       } OPTIONAL { \n"
+                + "           <http://chem2bio2rdf.org/chembl/resource/chembl_compounds/276734> "
+                + "                    c2b2r_chembl:num_ro5_violations ?num_ro5_violations \n"
+                + "       }\n"
+                + "   }\n"
+                + "   OPTIONAL {"
+                + "       GRAPH <file:///home/OPS/develop/openphacts/datasets/lld/drug_type_labels.ttl> {\n"
+                + "           ?drugType_uri rdfs:label ?drugType}\n"
+                + "   }\n"
+                + "}";     
+
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
+        dummyIMSMapper.addMapping("http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973" ,
+                                  "http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973");
+        dummyIMSMapper.addMapping("http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973" ,
+                                  "http://rdf.chemspider.com/187440");
+        dummyIMSMapper.addMapping("http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973" ,
+                                  "http://chem2bio2rdf.org/chembl/resource/chembl_compounds/276734");
+        dummyIMSMapper.addMapping("http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973" ,
+                                  "http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugs/DB00398");
+
+        final HardCodedFilterMapper hardCoded = new HardCodedFilterMapper(dummyIMSMapper);
+        IMSSPARQLExpand expander = 
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
+            @Override
+            IMSMapper instantiateIMSMapper() {
+                return hardCoded;
+            }
+        };
+        expander.initialiseInternal(null);
+        SetOfStatements eQuery = expander.invokeInternalWithExceptions(
+                new SPARQLQueryImpl(inputQuery).toRDF());
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        assertTrue(QueryUtils.sameTupleExpr(query.toString(), expectedQuery1, expectedQuery2, true));
+    }    
 }

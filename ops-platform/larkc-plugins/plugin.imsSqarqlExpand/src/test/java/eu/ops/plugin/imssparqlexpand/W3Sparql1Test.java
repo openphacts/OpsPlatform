@@ -674,11 +674,15 @@ public class W3Sparql1Test {
     @Test
     public void test6_2() throws MalformedQueryException, QueryExpansionException {
         String inputQuery ="PREFIX  dc:  <http://purl.org/dc/elements/1.1/>"
-            + "PREFIX  ns:  <http://example.org/ns#>"
-            + "SELECT  ?title ?price "
-            + "WHERE   { ?x dc:title ?title ."
-            + "          OPTIONAL { ?x ns:price ?price . FILTER (?price < 30) }"
-            + "        }";
+                + "PREFIX  ns:  <http://example.org/ns#> \n"
+                + "SELECT  ?title ?price \n"
+                + "WHERE   { \n"
+                + "    ?x dc:title ?title . \n"
+                + "    OPTIONAL { \n"
+                + "       ?x ns:price ?price . \n"
+                + "       FILTER (?price < 30) \n"
+                + "    }"
+                + "}";
         String expectedQuery = inputQuery;
         
         final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();

@@ -14,7 +14,6 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.MalformedQueryException;
@@ -23,6 +22,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This class will test all the queries found in https://wiki.openphacts.org/index.php/Core_API
+ * Need to add https://wiki.openphacts.org/index.php/Research/Drug_Discovery_Questions
+ * D:\OpenPhacts\OPSPlatform_git\ops-platform\larkc-endpoints\endpoint.opsapi\src\main\java\eu\larkc\endpoint\opsapi\OPSAPIEndpointResource.java
  * 
  * @author Christian
  * @version Jan 4 2012

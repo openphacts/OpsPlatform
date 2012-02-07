@@ -19,6 +19,7 @@ import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.Dataset;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.algebra.TupleExpr;
+import org.openrdf.query.algebra.Var;
 import org.openrdf.query.parser.ParsedQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,18 +89,28 @@ public class IMSSPARQLExpand extends Plugin {
 
     private SetOfStatements expandQuery(TupleExpr tupleExpr, Dataset dataset)
             throws QueryExpansionException {
-        URIFinderVisitor uriFindervisitor = new URIFinderVisitor();
-        tupleExpr.visit(uriFindervisitor);
-        Set<URI> uriSet = uriFindervisitor.getURIS();
-        Map<URI, List<URI>> uriMappings = imsMapper.getMatchesForURIs(uriSet);   
+        //URIFinderVisitor uriFindervisitor = new URIFinderVisitor();
+        //tupleExpr.visit(uriFindervisitor);
+        //Set<URI> uriSet = uriFindervisitor.getURIS();
+        //Map<URI, List<URI>> uriMappings = imsMapper.getMatchesForURIs(uriSet);   
+         ContextListerVisitor counter = new ContextListerVisitor();
+         tupleExpr.visit(counter);
+         ArrayList<Var> contexts = counter.getContexts();
+
         QueryExpandAndWriteVisitor writerVisitor = 
-                new QueryExpandAndWriteVisitor(uriMappings, dataset, requiredAttributes, imsMapper);
+                new QueryExpandAndWriteVisitor(dataset, requiredAttributes, imsMapper, contexts);
         tupleExpr.visit(writerVisitor);
         String expandedQueryString = writerVisitor.getQuery();
-        //ystem.out.println(expandedQueryString);
         //logger.info("Expanded SPARQL: " + expandedQueryString);
-        SPARQLQuery expandedQuery = new SPARQLQueryImpl(expandedQueryString);
-        return expandedQuery.toRDF();
+        System.out.println(expandedQueryString);
+        try {
+            SPARQLQuery expandedQuery = new SPARQLQueryImpl(expandedQueryString);
+            return expandedQuery.toRDF();
+        } catch (IllegalArgumentException ex){
+            System.out.println(expandedQueryString);
+            ex.printStackTrace();
+            throw ex;
+        }    
     }
 
     /**

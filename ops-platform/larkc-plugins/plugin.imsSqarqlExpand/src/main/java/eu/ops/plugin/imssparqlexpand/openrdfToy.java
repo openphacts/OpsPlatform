@@ -10,10 +10,13 @@ import eu.larkc.core.query.SPARQLQuery;
 import eu.larkc.core.query.SPARQLQueryImpl;
 import eu.ops.plugin.imssparqlexpand.ims.DummyIMSMapper;
 import eu.ops.plugin.imssparqlexpand.ims.IMSMapper;
+import java.util.ArrayList;
+import java.util.Map;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.Dataset;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.algebra.TupleExpr;
+import org.openrdf.query.algebra.Var;
 import org.openrdf.query.parser.ParsedQuery;
 import org.openrdf.query.parser.sparql.SPARQLParser;
 
@@ -504,7 +507,7 @@ public class openrdfToy {
                 + "  }"
                 + "}"
                 + "LIMIT 10";
-    String queryStr = "SELECT  DISTINCT ?ligand_displaced ?cas ?ligand_name ?pdsp_source "
+    String queryStr46 = "SELECT  DISTINCT ?ligand_displaced ?cas ?ligand_name ?pdsp_source "
                 + "WHERE {"
                 + "  GRAPH <http://PDSP_DB/DataQ> {"
                 + "      <http://www.conceptwiki.org/concept/d510239a-6b55-4ca9-8f64-cfc9b8e7c64c> "
@@ -518,6 +521,125 @@ public class openrdfToy {
                 + "  }"
                 + "}"
                 + "LIMIT 10";
+        String queryStr47 = "PREFIX c2b2r_chembl: <http://chem2bio2rdf.org/chembl/resource/>"
+                + "PREFIX chemspider: <http://rdf.chemspider.com/#>"
+                + "PREFIX drugbank: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/>"
+                + "SELECT ?csid_uri ?smiles ?inchi ?inchiKey ?alogp ?hha ?hhd ?molformula ?molweight ?mw_freebase "
+                + "?num_ro5_violations ?psa ?rtb ?affectedOrganism ?biotransformation ?description ?indication "
+                + "?meltingPoint ?proteinBinding ?toxicity "
+                + "WHERE {"
+                + "   GRAPH <http://larkc.eu#Fixedcontext> {"
+                + "       <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> "
+                + "             <http://www.w3.org/2004/02/skos/core#prefLabel> ?prefLabel"
+                + "   }"
+    /*            + "   GRAPH <file:///home/OPS/develop/openphacts/datasets/OPS-DS-TTL/ChEMBL_nonewlines.ttl> {"
+                + "       <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> "
+                + "                                          chemspider:smiles ?smiles ;"
+                + "                                          chemspider:inchi ?inchi ; "
+                + "                                          chemspider:inchikey ?inchiKey ."
+                + "       ?csid_uri chemspider:inchi ?inchi"
+                + "   }"
+                + "   GRAPH <file:///home/OPS/develop/openphacts/datasets/chem2bio2rdf/chembl.nt> {"
+                + "       OPTIONAL { <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> "
+                + "                      c2b2r_chembl:alogp ?alogp }"
+                + "       OPTIONAL { <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> "
+                + "                      c2b2r_chembl:hha ?hha }"
+                + "       OPTIONAL { <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> "
+                + "                      c2b2r_chembl:hhd ?hhd }"
+                + "       OPTIONAL { <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> "
+                + "                      c2b2r_chembl:molformula ?molformula }"
+                + "       OPTIONAL { <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> "
+                + "                      c2b2r_chembl:molweight ?molweight }"
+                + "       OPTIONAL { <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> "
+                + "                      c2b2r_chembl:mw_freebase ?mw_freebase }"
+                + "       OPTIONAL { <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> "
+                + "                      c2b2r_chembl:num_ro5_violations ?num_ro5_violations }"
+                + "       OPTIONAL { <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> "
+                + "                      c2b2r_chembl:psa ?psa }"
+                + "       OPTIONAL { <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> "
+                + "                      c2b2r_chembl:rtb ?rtb }"
+                + "   }"
+      */          + "   OPTIONAL {GRAPH <http://linkedlifedata.com/resource/drugbank> {"
+                + "       OPTIONAL { <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> "
+                + "                      drugbank:affectedOrganism ?affectedOrganism }"
+                + "       OPTIONAL { <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> "
+                + "                      drugbank:biotransformation ?biotransformation }"
+             //   + "       OPTIONAL { <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> "
+             //   + "                      drugbank:description ?description }"
+             //   + "       OPTIONAL { <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> "
+             //   + "                      drugbank:indication ?indication }"
+             //   + "       OPTIONAL { <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> "
+             //   + "                      drugbank:proteinBinding ?proteinBinding }"
+             //   + "       OPTIONAL { <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> "
+             //   + "                      drugbank:toxicity ?toxicity }"
+             //   + "       OPTIONAL { <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> "
+             //   + "                       drugbank:meltingPoint ?meltingPoint}"
+                + "   }}"
+                + "}";     
+        
+         String queryStr48 = "PREFIX joe:    <http://joe.com/stuff#>"
+            + "Select * "
+            + "Where {"
+            + "   FILTER (?value > 10)"
+            + "   GRAPH <http://larkc.eu#Fixedcontext> {"
+            + "        <http://bar.com/ABC> joe:value ?value . "
+            + "        <http://bar.com/ABC> joe:score ?score . "
+            + "        FILTER (?score = 25)"
+            + "   }" 
+            + "}"; 
+         String queryStr49 = "PREFIX joe:    <http://joe.com/stuff#>"
+            + "Select * "
+            + "Where {"
+            + "   GRAPH <http://larkc.eu#Fixedcontext> {"
+            + "        <http://bar.com/ABC> joe:value ?value . "
+            + "        FILTER (?value > 10)"
+            + "        <http://bar.com/ABC> joe:score ?score . "
+            + "        FILTER (?score = 25)"
+            + "   }" 
+            + "}"; 
+        String queryStr50 = "PREFIX c2b2r_chembl: <http://chem2bio2rdf.org/chembl/resource/>"
+                + "PREFIX chemspider: <http://rdf.chemspider.com/#>"
+                + "PREFIX drugbank: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/>"
+                + "SELECT ?prefLabel ?affectedOrganism ?biotransformation"
+                + "WHERE {"
+                + "   GRAPH <http://larkc.eu#Fixedcontext> {"
+                + "       <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> "
+                + "             <http://www.w3.org/2004/02/skos/core#prefLabel> ?prefLabel"
+                + "   }"
+                + "   GRAPH <http://linkedlifedata.com/resource/drugbank> {"
+                + "       OPTIONAL { <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> "
+                + "                      drugbank:affectedOrganism ?affectedOrganism }"
+                + "       OPTIONAL { <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> "
+                + "                      drugbank:biotransformation ?biotransformation }"
+                + "   }"
+                + "}";     
+        String queryStr51 = "PREFIX c2b2r_chembl: <http://chem2bio2rdf.org/chembl/resource/>"
+                + "PREFIX chemspider: <http://rdf.chemspider.com/#>"
+                + "PREFIX drugbank: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/>"
+                + "SELECT ?prefLabel ?affectedOrganism ?biotransformation"
+                + "WHERE {"
+                + "   OPTIONAL {"
+                + "       GRAPH <http://larkc.eu#Fixedcontext> {"
+                + "           <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> "
+                + "                 <http://www.w3.org/2004/02/skos/core#prefLabel> ?prefLabel"
+                + "       }"
+                + "       GRAPH <http://linkedlifedata.com/resource/drugbank> {"
+                + "           <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> "
+                + "                 drugbank:affectedOrganism ?affectedOrganism ."
+                + "           <http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973> "
+                + "                 drugbank:biotransformation ?biotransformation }"
+                + "   }"
+                + "}";  
+        String queryStr = "PREFIX  dc:  <http://purl.org/dc/elements/1.1/> "
+                + "PREFIX  ns:  <http://example.org/ns#> \n"
+                + "SELECT  ?title ?price \n"
+                + "WHERE   { \n"
+                + "    ?x dc:title ?title . \n"
+                + "    OPTIONAL { \n "
+                + "       ?x ns:price ?price . \n"
+                + "       FILTER (?price < 30) \n"
+                + "    }"
+                + "}";
                  //ParsedQuery parsedQuery23 = parser.parseQuery(queryStr23, null); 
          //TupleExpr tupleExpr23 = parsedQuery23.getTupleExpr();
          //System.out.println("23:"+ tupleExpr23);
@@ -527,7 +649,12 @@ public class openrdfToy {
          Dataset dataset = parsedQuery.getDataset();
          System.out.println(tupleExpr);
          
-         QueryWriterModelVisitor myVisitor = new QueryWriterModelVisitor(dataset);
+         ContextListerVisitor counter = new ContextListerVisitor();
+         tupleExpr.visit(counter);
+         ArrayList<Var> contexts = counter.getContexts();
+
+
+         QueryWriterModelVisitor myVisitor = new QueryWriterModelVisitor(dataset, contexts);
          tupleExpr.visit(myVisitor);
          String newQuery = myVisitor.getQuery();
          System.out.println(newQuery);

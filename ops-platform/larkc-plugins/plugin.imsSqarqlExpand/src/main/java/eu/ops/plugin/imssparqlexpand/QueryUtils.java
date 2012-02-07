@@ -2,12 +2,15 @@ package eu.ops.plugin.imssparqlexpand;
 
 import eu.larkc.core.data.DataSet;
 import eu.larkc.core.data.RdfGraph;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.openrdf.model.URI;
 import org.openrdf.query.Dataset;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.algebra.TupleExpr;
+import org.openrdf.query.algebra.Var;
 import org.openrdf.query.algebra.helpers.QueryModelTreePrinter;
 import org.openrdf.query.impl.DatasetImpl;
 import org.openrdf.query.parser.ParsedQuery;
@@ -42,7 +45,12 @@ public class QueryUtils {
     
     public static String tupleExprToQueryString (TupleExpr tupleExpr, List<String> requiredAttributes) 
             throws QueryExpansionException {
-        QueryWriterModelVisitor queryWriter = new QueryWriterModelVisitor(null, requiredAttributes);
+        ContextListerVisitor counter = new ContextListerVisitor();
+        tupleExpr.visit(counter);
+        ArrayList<Var> contexts = counter.getContexts();
+
+        
+        QueryWriterModelVisitor queryWriter = new QueryWriterModelVisitor(null, requiredAttributes, contexts);
         try {
             tupleExpr.visit(queryWriter);
             String newQuery = queryWriter.getQuery();
@@ -166,15 +174,66 @@ public class QueryUtils {
             if (verbose){
                 System.out.println("*** Queries do not match ***");
                 System.out.println(query1);
-                System.out.println(QueryModelTreePrinter.printTree(tupleExpr1));
+                //ystem.out.println(QueryModelTreePrinter.printTree(tupleExpr1));
                 System.out.println("*");
                 System.out.println(query2);
-                System.out.println(QueryModelTreePrinter.printTree(tupleExpr2));
+                //ystem.out.println(QueryModelTreePrinter.printTree(tupleExpr2));
             }
             return false;
         }
     }
     
+    /**
+     * Compares two queryStrings to see if they generate the same TupleExpr.
+     * <p>
+     * This allows query Strings that differ only on whitespacing to be considered equal.
+     * <p>
+     * It may also allow some queries with statments in a slightly different order to be considered equal,
+     *    but only if the openrdf parse would switch the order in one of the queries.
+     * <p>
+     * However a false does not mean that the queries can not be semantically equivellant.
+     * <p>
+     * Based on the implementation of TupleExpr's and its Children's Equals methods, 
+     * so supports query not yet convertable from tupleExpr to string.
+     * 
+     * @param query1 A Sparql query as a String
+     * @param option2 A Sparql query as a String
+     * @param option2 Another Sparql query as a String
+     * @return True if and only if the query generate a TupleExpr equal to one of the two options. 
+     * @throws MalformedQueryException 
+     */
+    public static boolean sameTupleExpr(String query, String option1, String option2, boolean verbose) throws MalformedQueryException{
+        ParsedQuery parsedQuery = parser.parseQuery(query, null); 
+        TupleExpr tupleExpr =  parsedQuery.getTupleExpr();
+        ParsedQuery parsedQuery1 = parser.parseQuery(option1, null); 
+        TupleExpr tupleExpr1 =  parsedQuery1.getTupleExpr();
+        if (tupleExpr1.equals(tupleExpr)){
+            Dataset  dataset1 = parsedQuery.getDataset();
+            Dataset  dataset2 = parsedQuery1.getDataset();
+            return compare(dataset1, dataset2, verbose);
+        }
+        ParsedQuery parsedQuery2 = parser.parseQuery(option2, null); 
+        TupleExpr tupleExpr2 =  parsedQuery2.getTupleExpr();
+        //if (compare(tupleExpr1, tupleExpr2)){
+        if ((tupleExpr2.equals(tupleExpr))){
+            Dataset  dataset1 = parsedQuery1.getDataset();
+            Dataset  dataset2 = parsedQuery2.getDataset();
+            return compare(dataset1, dataset2, verbose);
+        } else {
+            if (verbose){
+                System.out.println("*** Queries do not match ***");
+                System.out.println(query);
+                //System.out.println(QueryModelTreePrinter.printTree(tupleExpr));
+                System.out.println("*");
+                System.out.println(option1);
+                System.out.println("nor");
+                System.out.println(option2);
+                //System.out.println(QueryModelTreePrinter.printTree(tupleExpr1));
+            }
+            return false;
+        }
+    }
+
     public static boolean sameTupleExpr(String query1, String query2) throws MalformedQueryException{
         return sameTupleExpr(query1, query2, true);
     }

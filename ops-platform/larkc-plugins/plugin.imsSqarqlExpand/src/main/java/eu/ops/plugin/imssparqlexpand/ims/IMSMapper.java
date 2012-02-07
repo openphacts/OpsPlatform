@@ -1,5 +1,6 @@
 package eu.ops.plugin.imssparqlexpand.ims;
 
+import eu.ops.plugin.imssparqlexpand.QueryExpansionException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -14,5 +15,5 @@ public interface IMSMapper {
 
     List<URI> getMatchesForURI(URI uri);
 
-    List<URI> getSpecificMatchesForURI(URI uri, String graph);
+    List<URI> getSpecificMatchesForURI(URI uri, String graph) throws QueryExpansionException;
 }

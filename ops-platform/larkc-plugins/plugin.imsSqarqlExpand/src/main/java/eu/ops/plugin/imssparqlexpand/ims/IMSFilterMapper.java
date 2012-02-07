@@ -1,5 +1,6 @@
 package eu.ops.plugin.imssparqlexpand.ims;
 
+import eu.ops.plugin.imssparqlexpand.QueryExpansionException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -28,11 +29,11 @@ public abstract class IMSFilterMapper implements IMSMapper{
     }
 
     @Override
-    public List<URI> getSpecificMatchesForURI(URI uri, String graph) {
+    public List<URI> getSpecificMatchesForURI(URI uri, String graph) throws QueryExpansionException{
         List<URI> fullList = fullMapper.getMatchesForURI(uri);
         return stripoutURIs(fullList, graph);
     }
 
-    abstract List<URI> stripoutURIs(List<URI> fullList, String graph);
+    abstract List<URI> stripoutURIs(List<URI> fullList, String graph) throws QueryExpansionException;
     
 }

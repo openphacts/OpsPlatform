@@ -1,6 +1,7 @@
 package eu.ops.plugin.imssparqlexpand;
 
 import eu.ops.plugin.imssparqlexpand.ims.IMSMapper;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,15 +23,15 @@ public class QueryExpandAndWriteVisitor extends QueryWriterModelVisitor{
     private Map<URI,String> contextUriVariables = new HashMap<URI,String>();
     private Map<String,List<URI>> mappings = new  HashMap<String,List<URI>>(); 
     private IMSMapper mapper;
-    int variableCounter =  0;
+    private int variableCounter =  0;
     
-    QueryExpandAndWriteVisitor (Map<URI, List<URI>> uriMappings, Dataset dataset, List<String> requiredAttributes, 
-            IMSMapper mapper){
-        super(dataset, requiredAttributes);
-        this.mapper = mapper;
+    QueryExpandAndWriteVisitor (Dataset dataset, List<String> requiredAttributes, IMSMapper mapper, 
+            ArrayList<Var> contexts){
+        super(dataset, requiredAttributes, contexts);
+        this.mapper = mapper;    
     }
     
-    private List<URI> getMappings(URI uri){
+    private List<URI> getMappings(URI uri) throws QueryExpansionException{
         if (context == null){
             return mapper.getMatchesForURI(uri);            
         } else {
@@ -42,7 +43,7 @@ public class QueryExpandAndWriteVisitor extends QueryWriterModelVisitor{
         }
     }
     
-    private URI findMultipleMappedURI(ValueExpr valueExpr){
+    private URI findMultipleMappedURI(ValueExpr valueExpr) throws QueryExpansionException{
         Value value = null;
         if (valueExpr instanceof Var) {
             Var var = (Var)valueExpr;
@@ -69,7 +70,7 @@ public class QueryExpandAndWriteVisitor extends QueryWriterModelVisitor{
         return null;        
     }
     
-   private List<URI> getMappedList(URI uri){
+   private List<URI> getMappedList(URI uri) throws QueryExpansionException{
         List<URI> uriList = getMappings(uri);
         if (uriList == null){       
             throw new Error("Query has URI " + uri + " but it has no mapped set.");
@@ -147,17 +148,18 @@ public class QueryExpandAndWriteVisitor extends QueryWriterModelVisitor{
         }
     }
 
-    void setupNewContext(){
-        contextUriVariables = new HashMap<URI,String>();
-        mappings = new  HashMap<String,List<URI>>(); 
-    }
-
-    void closeContext (boolean startedHere){
-        if (DO_FULL_EXPAND || context == null || startedHere ){
+   void closeContext (){
+        if (!(mappings.isEmpty())){
+            while (optionInGraph > 0){
+                newLine();
+                queryString.append(" } #OPTION from close context");   
+                optionInGraph--;
+            }
+            System.out.println("Expander Closing " + context);
             for (String variableName:mappings.keySet()){
                 List<URI> uriList = mappings.get(variableName);
                 newLine();
-                queryString.append("FILTER (");
+                queryString.append("FILTeR (");
                 queryString.append(variableName);
                 queryString.append(" = <");
                 queryString.append(uriList.get(0));
@@ -172,16 +174,15 @@ public class QueryExpandAndWriteVisitor extends QueryWriterModelVisitor{
                 queryString.append(")");
             }
             mappings = new  HashMap<String,List<URI>>(); 
-        }
-        if (startedHere){
             contextUriVariables = new HashMap<URI,String>();
-            super.closeContext(startedHere);
         }
+        super.closeContext();
     }
 
-    private String getURIVariable(URI uri){
+    private String getURIVariable(URI uri) throws QueryExpansionException{
         System.out.println(uri);
         if (contextUriVariables.containsKey(uri)){
+            System.out.println("key exists");
             return contextUriVariables.get(uri);
         }
         List<URI> list = getMappings(uri);
@@ -191,9 +192,10 @@ public class QueryExpandAndWriteVisitor extends QueryWriterModelVisitor{
         }
         if (list.size()== 1){
             String variable = "<" + list.get(0).stringValue() + ">";
-            if (context != null){
-               contextUriVariables.put(uri,variable); 
-            }
+            //if (context != null){
+            //    System.out.println("put "+ uri);
+            //   contextUriVariables.put(uri,variable); 
+            //}
             return variable;
         }
         variableCounter++;
@@ -207,7 +209,7 @@ public class QueryExpandAndWriteVisitor extends QueryWriterModelVisitor{
     
     @Override
     void writeStatementPart(Var var) throws QueryExpansionException{
-//        System.out.println(var);
+        //System.out.println(var);
         if (var.isAnonymous()){
             Value value = var.getValue();
             if (value instanceof URI){
