@@ -630,7 +630,7 @@ public class openrdfToy {
                 + "                 drugbank:biotransformation ?biotransformation }"
                 + "   }"
                 + "}";  
-        String queryStr = "PREFIX  dc:  <http://purl.org/dc/elements/1.1/> "
+        String queryStr52 = "PREFIX  dc:  <http://purl.org/dc/elements/1.1/> "
                 + "PREFIX  ns:  <http://example.org/ns#> \n"
                 + "SELECT  ?title ?price \n"
                 + "WHERE   { \n"
@@ -640,6 +640,15 @@ public class openrdfToy {
                 + "       FILTER (?price < 30) \n"
                 + "    }"
                 + "}";
+        String queryStr = "SELECT ?protein "
+            + "WHERE {"
+            + "    FILTER ("
+            + "        ?protein != <http://my.org> && "
+            + "        ?protein != <http://their.org> ) . "
+            + "    ?protein <http://www.biopax.org/release/biopax-level2.owl#EC-NUMBER> ?replacedURI1 . "
+            + "    FILTER (?replacedURI1 = <http://example.com/983juy> || "
+            + "            ?replacedURI1 = <http://brenda-enzymes.info/1.1.1.1>) . "
+            + "}";
                  //ParsedQuery parsedQuery23 = parser.parseQuery(queryStr23, null); 
          //TupleExpr tupleExpr23 = parsedQuery23.getTupleExpr();
          //System.out.println("23:"+ tupleExpr23);

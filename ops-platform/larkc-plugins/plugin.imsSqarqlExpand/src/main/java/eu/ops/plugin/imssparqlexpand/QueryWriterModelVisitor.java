@@ -74,17 +74,41 @@ import org.openrdf.query.algebra.Var;
  */
 public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansionException>{
     
+    //Builder to write the query to bit by bit
     StringBuilder queryString = new StringBuilder();
+   
+    //Used to add the FROM clause
     private Dataset originalDataSet;
+    
+    //The current context (GRAPH clause) the writer is in. (or null if not in a context.
     Var context = null;
+    
+    //List of attributes to be used or null to include all.
+    //     WARNING: this functionality is in an early stage of development 
+    //     so can only handle queries where each attribute comes from exactly one statement.
     private List<String>  requiredAttributes;
+    
+    //List of attributes to be removed. See requiredAttributes warning!
     private Set<String> eliminatedAttributes;
-    boolean swapGraphAndOptional1 = false;
-//    boolean optionalToClose = false;
-    private Map<Var, Integer> contextCounts;
+    
+    //Flag that the writing of an Optional has been delayed until a Graph clause is added
+    boolean swapGraphAndOptional = false;
+    
+    //List of the Contexts (including null) for all the Statements not yet met.
     ArrayList<Var> contexts;
+    
+    //List of the number of options clauses pushed under the graph clause.
     int optionInGraph = 0;
     
+    /**
+     * Sets up the visitor for writing the query.
+     * 
+     * @param dataSet dataSets listed in the original Queries FROM clause.
+     * @param requiredAttributes List of attributes to be used or null to include all.
+     *     WARNING: this functionality is in an early stage of development 
+     *     so can only handle queries where each attribute comes from exactly one statement.
+     * @param contexts List of Contexts retrieved using the ContextListerVisitor.
+     */
     QueryWriterModelVisitor(Dataset dataSet, List<String> requiredAttributes,  ArrayList<Var> contexts){
         originalDataSet = dataSet;
         eliminatedAttributes = new HashSet<String>();
@@ -96,6 +120,12 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
         this.contexts = contexts;
     }
 
+   /**
+     * Sets up the visitor for writing the query.
+     * 
+     * @param dataSet dataSets listed in the original Queries FROM clause.
+     * @param contexts List of Contexts retrieved using the ContextListerVisitor.
+     */
     QueryWriterModelVisitor(Dataset dataSet, ArrayList<Var> contexts){
         this(dataSet, null, contexts);
     }
@@ -114,6 +144,13 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
         queryString.append(")");
     }
 
+    /**
+     * Replaces an annonomous variable with a named variable.
+     * <p>
+     * The reason for this is that the semantic sugar ; method of writing statements 
+     *    allows the same annonous variable to be used more than once.
+     * @param name 
+     */
     void writeAnon(String name){
         //-anon-1
         String numberPart = name.substring(6);
@@ -345,61 +382,103 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
         queryString.append(")");
     }
 
-    @Override
+    //@Override
+    /**
+     * 
+     * @param lj
+     * @throws QueryExpansionException 
+     */
     public void meet(LeftJoin lj) throws QueryExpansionException {
+        
+        //The leftArg is the stuff outside of the optional.
+        //May be a SingletonSet in which case nothing is written
         lj.getLeftArg().visit(this);
 
+        //If context is null no GRAPH clause is open 
         if (context == null){
             if (statementsInNextGraph() > statementsInExpression(lj.getRightArg())){
-                swapGraphAndOptional1 = true;
+                //There are statements in the graph which will be written after the optional is closed
+                //For example this happens if there is mmore than one Optional clause in a single graph.
+                //So the wrting of the Optional is delayed until the GRAPH clause is added.
+                swapGraphAndOptional = true;
             } else {
+                //No need to delay so write the OPTIONAL clause
                 newLine();
                 queryString.append("OPTIONAL { #left join ");
             }
+            //Write the Optional part
             lj.getRightArg().visit(this);
+            //Write any filters in the OPTIONAL clause
+            //This is Filters in the original query not URI replacement filters.
             if (lj.hasCondition()){
                 newLine();
                 queryString.append("    FILTER ");
                 lj.getCondition().visit(this);
             }
+            //Close the Optional
             newLine();
-            //CLose the Optional
             queryString.append("  } #OPTIONAL leftJoin");
             newLine();
         } else {
+            //Already in a Context (GRAPH clause)
+            //For example because there are non optional statements, or more than one optional clause.
+            //So open the optional
             newLine();
             queryString.append("OPTIONAL { #leftJoin");
             //Record that we opened the optional in side the graph so graph closes it first
             optionInGraph++;
-            lj.getRightArg().visit(this);        
+            //Write the Optional part
+            lj.getRightArg().visit(this);
+            //Write any filters in the OPTIONAL clause
+            //This is Filters in the original query not URI replacement filters.
             if (lj.hasCondition()){
                 newLine();
                 queryString.append("    FILTER ");
                 lj.getCondition().visit(this);
             }
         }
+        //If there is an optional open close it.
         if (optionInGraph > 0){
             newLine();
-            queryString.append(" } #OPTIONAL by optionInGraph");   
+            queryString.append(" } #OPTIONAL by optionInGraph"); 
+            //This may be an optional inside another optional so only close one.
             optionInGraph--;
             newLine();
         }
 
     }
     
+    /**
+     * Preforms a look ahead to see how many statements will be in the next Graph clause.
+     * <p>
+     * In practice it uses the list of contexts passed in the constructor to do the look ahead.
+     * This was done as the next statements may be in a completely different branch of the tree.
+     * @return Number of statements in the Graph Clause
+     */
     private int statementsInNextGraph(){
+        //Starts at the 0 element of the contexts list as meet(Statement) removes context that have been met.
+        //If you are not in a grahp just return 0
         if (contexts.get(0) == null){
             return 0;
         }
+        //Use the list of count how many are the same.
         int i;
         for (i = 0; i < contexts.size(); i++){
             if (!(contexts.get(0).equals(contexts.get(i)))){
+                //Found one different so return the count
                 return i;
             }
         }
+        //End of the list so return the count.
         return i;
     }
 
+    /**
+     * Counts the number of statements in this query or sub query.
+     * @param tupleExpr query or sub query
+     * @return Number of statements met.
+     * @throws QueryExpansionException Unlikely but just in case.
+     */
     private int statementsInExpression(TupleExpr tupleExpr) throws QueryExpansionException{
         //Could be done with a lister that counts instead of lists but this reuses code.
         ContextListerVisitor counter = new ContextListerVisitor();
@@ -408,69 +487,6 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
         return contexts.size();
     }
     
-    /* public void meet1(LeftJoin lj) throws QueryExpansionException {
-        System.out.println(lj);
-        lj.getLeftArg().visit(this);
-        ContextFinderVisitor contextFinder = new ContextFinderVisitor();
-        boolean optionalHere;
-        boolean internalContext;
-        lj.getRightArg().visit(contextFinder);
-        Var rightContext = contextFinder.getContext();
-        System.out.println("rightContext " + rightContext);
-        System.out.println("context" + context);
-        
-        ContextCounterVisitor counter = new ContextCounterVisitor();
-        lj.getRightArg().visit(counter);
-        Map<Var, Integer> localCounts = counter.getCounts();
-
-        if (context != null){
-            if (rightContext == null){
-                //Close a context if open
-                closeContextX();
-            }
-            //Graph already open
-            if (!(localCounts.containsKey(context))){
-                System.out.println("new context");
-                closeContextX();
-            } else {
-                System.out.println("repeat context");                    
-            }
-            optionalHere = true;
-            internalContext = false;
-        } else {
-            if (rightContext == null) {
-                //Close a context if open
-                closeContextX();
-                //no Graph to push below or multiple graphs to wrap
-                optionalHere = true;
-                internalContext = false;
-            } else {
-                optionalHere = localCounts.get(rightContext).equals(contextCounts.get(rightContext));
-                internalContext = optionalHere;
-            }
-        }
-        if (optionalHere){
-            newLine();
-            queryString.append("OPTIONAL {");
-            System.out.println ("Open optional");
-        } else {
-            swapGraphAndOptional = true;
-        }
-        lj.getRightArg().visit(this);
-        if (lj.hasCondition()){
-            newLine();
-            queryString.append("    FILTER ");
-            lj.getCondition().visit(this);
-        }
-        if (internalContext){
-            closeContextX();
-        } else {
-            System.out.println("No close graph");
-        }
-        //System.out.println ("close optional");
-        queryString.append("}");
-    }
-*/
     @Override
     public void meet(Or or) throws QueryExpansionException {
         queryString.append("(");
@@ -510,6 +526,8 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
 
     /**
      * Used by sub classes to add expaned list if required.
+     * 
+     * Currently not used but left in if required again.
      */
     void addExpanded(Projection prjctn) throws QueryExpansionException{
     }
@@ -876,7 +894,7 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
      * 
      * Sub classes will do fancy things here.
      * 
-     * @param var
+     * @param var Var to be written.
      * @throws QueryExpansionException 
      */
     void writeStatementPart(Var var) throws QueryExpansionException{
@@ -900,10 +918,10 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
         }
         //ystem.out.println(sp);
         switchContextIfRequired(sp); 
-        if (swapGraphAndOptional1) {
+        if (swapGraphAndOptional) {
             newLine();
             queryString.append("OPTIONAL { #meet(StatementPattern sp)");
-            swapGraphAndOptional1 = false;
+            swapGraphAndOptional = false;
            // optionalToClose = true;
         }
         newLine();
@@ -925,23 +943,29 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
         }
     }
 
-   void closeContext(){
+    /**
+     * Close the context (GRAPH clause) and any optional clauses opened inside the graph.
+     * 
+     * If this method is called while not in a context no action is taken.
+     * <p>
+     * Subclasses with overwrite this method to add behavior such as adding URi replacement filters.
+     */
+    void closeContext(){
+       //Only do something is inside a context
        if (context != null){
+            //If any optional clauses where opened inside the graph these need to be closed first.
+            //Not strictly required here but keeps it similar to overwritten methods.
             while (optionInGraph > 0){
                 newLine();
                 queryString.append(" } #OPTIONAL from close context optionInGraph");   
+                //reduce the count so it is not closed again.
                 optionInGraph--;
                 newLine();
             }
-         //   if (optionalToClose){
-         //       newLine();
-         //       queryString.append(" } #OPTIONAL from close context optionalToClose"); 
-          //      optionalToClose = false;
-          //  }
-            System.out.println("closing " + context);
             newLine();
             queryString.append(" } # close Context");
             newLine();
+            //Set context to null so it is not closed again.
             context = null;
         }
     }

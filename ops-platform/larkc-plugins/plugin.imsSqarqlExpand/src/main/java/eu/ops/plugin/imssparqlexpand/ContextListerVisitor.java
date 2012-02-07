@@ -1,16 +1,17 @@
 package eu.ops.plugin.imssparqlexpand;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import org.openrdf.query.algebra.SingletonSet;
 import org.openrdf.query.algebra.StatementPattern;
 import org.openrdf.query.algebra.Var;
 import org.openrdf.query.algebra.helpers.QueryModelVisitorBase;
 
 /**
- * The purpose of this visitor is to dettermine if the whole subtree has a single non null graph.
+ * The purpose of this visitor is list the contexts (Graphs) that each statement comes from.
  * <p>
- * Dettermining if a whole subtree has a single non null graph is required for two reasons.
+ * The list of contexts is required so the system can look ahead to see if the next statement is in the same context.
+ * if the next statement is in a different context it can close the GRAPH clause.
+ * <p>
+ * This helps with
  * <ol>
  * <li>Placing a Single Graph statement around the whole block.</li>
  * <li>Placing a single block of filters just inside the whole block.</li> 
@@ -24,9 +25,15 @@ public class ContextListerVisitor extends QueryModelVisitorBase<QueryExpansionEx
         
     @Override
     public void meet(StatementPattern sp) throws QueryExpansionException {
+        //Record the context even if NULL.
         contexts.add(sp.getContextVar());
     }
 
+    /**
+     * Returns a list of the contexts found in this query or subquery.
+     * <p>
+     * @return An list of contexts. Warning this will probably include NULLs. 
+     */
     public ArrayList<Var> getContexts(){
         return contexts;
     }

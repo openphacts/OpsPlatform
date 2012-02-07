@@ -3,7 +3,6 @@ package eu.ops.plugin.imssparqlexpand;
 import eu.larkc.core.data.CloseableIterator;
 import eu.larkc.core.data.DataFactory;
 import eu.larkc.core.data.SetOfStatements;
-import eu.larkc.core.data.workflow.WorkflowDescriptionPredicates;
 import eu.larkc.core.query.SPARQLQuery;
 import eu.larkc.core.query.SPARQLQueryImpl;
 import eu.larkc.plugin.Plugin;
@@ -11,8 +10,6 @@ import eu.ops.plugin.imssparqlexpand.ims.IMSClient;
 import eu.ops.plugin.imssparqlexpand.ims.IMSMapper;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.model.impl.URIImpl;
@@ -102,7 +99,7 @@ public class IMSSPARQLExpand extends Plugin {
         tupleExpr.visit(writerVisitor);
         String expandedQueryString = writerVisitor.getQuery();
         //logger.info("Expanded SPARQL: " + expandedQueryString);
-        System.out.println(expandedQueryString);
+        //ystem.out.println(expandedQueryString);
         try {
             SPARQLQuery expandedQuery = new SPARQLQueryImpl(expandedQueryString);
             return expandedQuery.toRDF();

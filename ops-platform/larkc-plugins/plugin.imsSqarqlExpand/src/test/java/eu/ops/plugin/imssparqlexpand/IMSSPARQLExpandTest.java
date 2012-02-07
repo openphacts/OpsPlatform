@@ -1323,6 +1323,7 @@ public class IMSSPARQLExpandTest {
      */
     @Test
     public void testMeet_oneBgpObjectUriWithAnddedNotFilter() throws QueryExpansionException, MalformedQueryException {
+        
         final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
         dummyIMSMapper.addMapping("http://brenda-enzymes.info/1.1.1.1","http://example.com/983juy");
         dummyIMSMapper.addMapping("http://brenda-enzymes.info/1.1.1.1","http://brenda-enzymes.info/1.1.1.1");
