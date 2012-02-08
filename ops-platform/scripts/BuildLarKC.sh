@@ -5,6 +5,8 @@ export MAVEN_OPTS=-Xmx512m
 
 currentdir=`pwd`
 
+cp logback.xml $LARKC_PATH/larkc/platform/src/main/resources/
+
 cd $LARKC_PATH/larkc/platform/
 mvn assembly:assembly -DdescriptorId=jar-with-dependencies -Dmaven.test.skip=true
 mvn install -DdescriptorId=jar-with-dependencies -Dmaven.test.skip=true
