@@ -10,7 +10,12 @@ import org.openrdf.model.ValueFactory;
 import org.openrdf.model.impl.ValueFactoryImpl;
 
 /**
- *
+ * A simple implmentation of the IMSMapper that only returns URIs specifically loaded after construction.
+ * 
+ * Mainly used for testing.
+ * 
+ * Ignores the graph, and does the implements getMatchesForURIs by just returning all the Maps it has ignoring the Set.
+ * 
  * @author Christian
  */
 public class DummyIMSMapper implements IMSMapper{
@@ -18,6 +23,12 @@ public class DummyIMSMapper implements IMSMapper{
     Map<URI, List<URI>> uriMappings = new HashMap<URI, List<URI>>();
     ValueFactory valueFactory = ValueFactoryImpl.getInstance();
     
+    /**
+     * Allows test methods to load the Mappings they expect.
+     * 
+     * @param fromString
+     * @param toString 
+     */
     public void addMapping(String fromString, String toString){
        URI fromURI = valueFactory.createURI(fromString);
        URI toURI = valueFactory.createURI(toString);

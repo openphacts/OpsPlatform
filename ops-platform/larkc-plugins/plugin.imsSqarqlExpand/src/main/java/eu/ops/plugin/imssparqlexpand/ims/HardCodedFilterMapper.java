@@ -1,7 +1,3 @@
-/*
- * Must be kept up to date with
- * https://wiki.openphacts.org/index.php/Available_Information_-_Compounds
- */
 package eu.ops.plugin.imssparqlexpand.ims;
 
 import eu.ops.plugin.imssparqlexpand.QueryExpansionException;
@@ -10,7 +6,11 @@ import java.util.HashMap;
 import java.util.List;
 import org.openrdf.model.URI;
 
-/**
+/*
+ * Quick fix implmentation for the March Release.
+ * 
+ * Must be kept up to date with
+ * https://wiki.openphacts.org/index.php/Available_Information_-_Compounds
  *
  * @author Christian
  */

@@ -70,7 +70,12 @@ import org.openrdf.query.algebra.ValueExpr;
 import org.openrdf.query.algebra.Var;
 
 /**
- *
+ * First attempt at stripping out unrequired attributes.
+ * 
+ * Currently niavely strips out the Statements with unrequired attributes.
+ * 
+ * Old code so incorrectly handles graph and optional clauses.
+ * 
  * @author Christian
  */
 public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansionException>{

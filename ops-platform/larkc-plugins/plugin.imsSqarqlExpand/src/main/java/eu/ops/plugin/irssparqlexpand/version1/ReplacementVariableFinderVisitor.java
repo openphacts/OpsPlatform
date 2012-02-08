@@ -12,7 +12,7 @@ import org.openrdf.query.algebra.ValueExpr;
 import org.openrdf.query.algebra.Var;
 import org.openrdf.query.algebra.helpers.QueryModelVisitorBase;
 /**
- *
+ * Old code park for paper writing.
  * @author Christian
  */
 public class ReplacementVariableFinderVisitor extends QueryModelVisitorBase<QueryExpansionException>{

@@ -1,6 +1,5 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Early work in progress for trying to find which part of the query to keep.
  */
 package eu.ops.plugin.imssparqlexpand.idea;
 

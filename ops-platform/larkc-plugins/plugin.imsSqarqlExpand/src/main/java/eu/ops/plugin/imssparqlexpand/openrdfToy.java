@@ -1,6 +1,5 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Testing Method
  */
 package eu.ops.plugin.imssparqlexpand;
 
@@ -11,7 +10,6 @@ import eu.larkc.core.query.SPARQLQueryImpl;
 import eu.ops.plugin.imssparqlexpand.ims.DummyIMSMapper;
 import eu.ops.plugin.imssparqlexpand.ims.IMSMapper;
 import java.util.ArrayList;
-import java.util.Map;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.Dataset;
 import org.openrdf.query.MalformedQueryException;

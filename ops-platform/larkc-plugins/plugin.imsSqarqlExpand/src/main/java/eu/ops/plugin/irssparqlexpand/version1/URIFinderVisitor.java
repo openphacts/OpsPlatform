@@ -1,5 +1,6 @@
-package eu.ops.plugin.imssparqlexpand;
+package eu.ops.plugin.irssparqlexpand.version1;
 
+import eu.ops.plugin.imssparqlexpand.QueryExpansionException;
 import java.util.HashSet;
 import java.util.Set;
 import org.openrdf.model.URI;
@@ -9,7 +10,7 @@ import org.openrdf.query.algebra.ValueConstant;
 import org.openrdf.query.algebra.Var;
 import org.openrdf.query.algebra.helpers.QueryModelVisitorBase;
 /**
- *
+ * Old code park for paper writing.
  * @author Christian
  */
 public class URIFinderVisitor extends QueryModelVisitorBase<QueryExpansionException>{

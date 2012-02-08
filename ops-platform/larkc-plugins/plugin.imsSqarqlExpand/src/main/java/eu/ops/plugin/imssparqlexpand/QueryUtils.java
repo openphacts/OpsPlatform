@@ -1,17 +1,16 @@
 package eu.ops.plugin.imssparqlexpand;
 
+import eu.ops.plugin.irssparqlexpand.version1.URIFinderVisitor;
 import eu.larkc.core.data.DataSet;
 import eu.larkc.core.data.RdfGraph;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import org.openrdf.model.URI;
 import org.openrdf.query.Dataset;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.algebra.TupleExpr;
 import org.openrdf.query.algebra.Var;
-import org.openrdf.query.algebra.helpers.QueryModelTreePrinter;
 import org.openrdf.query.impl.DatasetImpl;
 import org.openrdf.query.parser.ParsedQuery;
 import org.openrdf.query.parser.sparql.SPARQLParser;
@@ -39,10 +38,25 @@ public class QueryUtils {
         return parsedQuery.getTupleExpr();
     }
     
+    /**
+     * Method for converting a TupleExpr Tree to a Query String.
+     * 
+     * @param tupleExpr Expression Tree
+     * @return Query as a String
+     * @throws QueryExpansionException Something went wrong. 
+     */
     public static String tupleExprToQueryString (TupleExpr tupleExpr) throws QueryExpansionException {
         return tupleExprToQueryString(tupleExpr, null);
     }
     
+    /**
+     * Method for converting a TupleExpr Tree to a Query String, keeping only the required attributes.
+     * 
+     * @param tupleExpr Expression Tree
+     * @param requiredAttributes List of the Attributes that should be kept in the query or null to keep all.
+     * @return Query as a String
+     * @throws QueryExpansionException Something went wrong. 
+     */
     public static String tupleExprToQueryString (TupleExpr tupleExpr, List<String> requiredAttributes) 
             throws QueryExpansionException {
         ContextListerVisitor counter = new ContextListerVisitor();
@@ -62,6 +76,16 @@ public class QueryUtils {
         }
     }
     
+    /**
+     * Compares two Datasets. Allows for both to be null otherwise uses Equals();
+     * <p>
+     * If used to confirm two datasets are not equal, the suggestion is to set verbose to false.
+     * 
+     * @param dataset1
+     * @param dataset2
+     * @param verbose If true outputs messages if the datasets are not equal.
+     * @return True if both Datasets are nulls or dataset1.equals(dataset2), otherwise false.
+     */
     public static boolean compare(Dataset  dataset1, Dataset  dataset2, boolean verbose) {
         if (dataset1 == null){
             if (dataset2 == null){
@@ -107,41 +131,6 @@ public class QueryUtils {
         return true;
     }
     
-    /*
-    public static boolean compare(TupleExpr expr1, TupleExpr expr2) {
-        if (expr1 == null){
-            if (expr2 == null){
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            if (expr2 == null){
-                return false;
-            }            
-        }
-        if (!(expr1.getClass().equals(expr2.getClass()))) return false;
-        if (expr1 instanceof Var){
-            return compareType((Var)expr1,(Var)expr2);
-        }
-        throw new UnsupportedOperationException("Unexpected type in compare. " + expr1.getClass());
-    }
-    
-    private static boolean compareType(Var expr1, Var expr2){
-        if (expr1.hasValue()){
-            if (expr2.hasValue()){
-                return expr1.getValue().equals(expr2.getValue());
-            } else {
-                return false;
-            }
-        } else {
-            if (expr2.hasValue()){
-                return false;
-            }
-        }
-        return expr1.getName().equals(expr2.getName());
-    }*/
-    
     /**
      * Compares two queryStrings to see if they generate the same TupleExpr.
      * <p>
@@ -157,6 +146,7 @@ public class QueryUtils {
      * 
      * @param query1 A Sparql query as a String
      * @param query2 Another Sparql query as a String
+     * @param verbose If true outputs messages if the datasets are not equal.
      * @return True if and only if the two queries generate equals TupleExpr. 
      * @throws MalformedQueryException 
      */
@@ -199,6 +189,7 @@ public class QueryUtils {
      * @param query1 A Sparql query as a String
      * @param option2 A Sparql query as a String
      * @param option2 Another Sparql query as a String
+     * @param verbose If true outputs messages if the datasets are not equal.
      * @return True if and only if the query generate a TupleExpr equal to one of the two options. 
      * @throws MalformedQueryException 
      */
@@ -234,10 +225,39 @@ public class QueryUtils {
         }
     }
 
+    /**
+     * Compares two queryStrings to see if they generate the same TupleExpr.
+     * <p>
+     * This allows query Strings that differ only on whitespacing to be considered equal.
+     * <p>
+     * It may also allow some queries with statments in a slightly different order to be considered equal,
+     *    but only if the openrdf parse would switch the order in one of the queries.
+     * <p>
+     * However a false does not mean that the queries can not be semantically equivellant.
+     * <p>
+     * Based on the implementation of TupleExpr's and its Children's Equals methods, 
+     * so supports query not yet convertable from tupleExpr to string.
+     * 
+     * @param query1 A Sparql query as a String
+     * @param query2 Another Sparql query as a String
+     * @param verbose (ALWAYS TRUE) If true outputs messages if the datasets are not equal.
+     * @return True if and only if the two queries generate equals TupleExpr. 
+     * @throws MalformedQueryException 
+     */
     public static boolean sameTupleExpr(String query1, String query2) throws MalformedQueryException{
         return sameTupleExpr(query1, query2, true);
     }
     
+    /**
+     * Gets the URIs in the Query
+     * 
+     * Currently not used but used by version 1
+     * 
+     * @param query
+     * @return
+     * @throws MalformedQueryException
+     * @throws QueryExpansionException 
+     */
     public static Set<URI> getURIS(String query) throws MalformedQueryException, QueryExpansionException{
         TupleExpr tupleExpr = queryStringToTupleExpr(query);
         URIFinderVisitor visitor = new URIFinderVisitor();
@@ -245,6 +265,14 @@ public class QueryUtils {
         return visitor.getURIS();
     }
 
+    /**
+     * Converts an eu.larkc.core.data.DataSet to an org.openrdf.query.Dataset
+     * 
+     * Copies both the default graphs and the named graphs.
+     * 
+     * @param larkcDataset openrdf format dataset org.openrdf.query.Dataset
+     * @return larkc fomrat dataset eu.larkc.core.data.DataSet
+     */
     public static Dataset convertToOpenRdf (DataSet larkcDataset){
         DatasetImpl openRdfDataSet = new DatasetImpl();
         Set<RdfGraph> rdfGraphs = larkcDataset.getDefaultGraphs();

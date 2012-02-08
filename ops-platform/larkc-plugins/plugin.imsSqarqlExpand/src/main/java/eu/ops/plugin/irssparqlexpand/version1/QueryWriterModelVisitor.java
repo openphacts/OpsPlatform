@@ -67,7 +67,7 @@ import org.openrdf.query.algebra.ValueExpr;
 import org.openrdf.query.algebra.Var;
 
 /**
- *
+ * Old code park for paper writing.
  * @author Christian
  */
 public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansionException>{

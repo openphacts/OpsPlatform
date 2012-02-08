@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
@@ -551,6 +550,13 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
         closeProjectionUnlessOrderHas(prjctn.getArg());
     }
 
+    /**
+     * Add the Where's } unless it has already been done.
+     * 
+     * As the Order statement is added after the Where's }, the meet(Order) method has to close it.
+     * In which case another } would cause an invalid query
+     * @param expr 
+     */
     private void closeProjectionUnlessOrderHas(TupleExpr expr){
         if (expr instanceof Order) return;
         if (expr instanceof Extension){
@@ -578,7 +584,7 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
     /**
      * Lookahead function to see what query type this ProjectionElemList.
      * <p>
-     * Note; This method is built from a few test cases and is probably far from complete.
+     * Note: This method is built from a few test cases and is probably far from complete.
      * It will err on the side of SELECT.
      * 
      * @param pel A ProjectionElemList
@@ -603,7 +609,8 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
      * @param mappedExstensionElements
      * @throws QueryExpansionException 
      */
-    private void meet(List<ProjectionElemList> pels, HashMap<String, ValueExpr> mappedExstensionElements) throws QueryExpansionException {
+    private void meet(List<ProjectionElemList> pels, HashMap<String, ValueExpr> mappedExstensionElements) 
+            throws QueryExpansionException {
         for (ProjectionElemList pel:pels){
             newLine();
             meet(pel, mappedExstensionElements);
@@ -618,7 +625,8 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
      * @param mappedExstensionElements
      * @throws QueryExpansionException 
      */
-    private void meet(ProjectionElemList pel, HashMap<String, ValueExpr> mappedExstensionElements) throws QueryExpansionException {
+    private void meet(ProjectionElemList pel, HashMap<String, ValueExpr> mappedExstensionElements) 
+            throws QueryExpansionException {
         List<ProjectionElem> elements = pel.getElements();
         for (ProjectionElem element:elements){
             meet(element, mappedExstensionElements);
@@ -647,7 +655,8 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
      * @param mappedExstensionElements
      * @throws QueryExpansionException 
      */
-    private void meet(ProjectionElem pe, HashMap<String, ValueExpr> mappedExstensionElements) throws QueryExpansionException {
+    private void meet(ProjectionElem pe, HashMap<String, ValueExpr> mappedExstensionElements) 
+            throws QueryExpansionException {
         String name = pe.getSourceName();
         ValueExpr mapped = mappedExstensionElements.get(name);
         if (mapped == null){
@@ -710,6 +719,7 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
     }
 
     //Look ahead function to match names ProjectionElem to ExtensionElem
+    //Used by reduce
     private HashMap<String, ValueExpr> mapExensionElements(TupleExpr tupleExpr) throws QueryExpansionException{
         HashMap<String, ValueExpr> mappedExstensionElements = new HashMap<String, ValueExpr>();
         if (tupleExpr instanceof Extension){
@@ -781,6 +791,7 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
         queryString.append(")");
     }
 
+    //currently unit test fails.
     private void writeDescribe(Filter filter) throws QueryExpansionException {
         queryString.append ("DESCRIBE ");
         ValueExpr condition = filter.getCondition();
@@ -795,6 +806,7 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
         }
     }
 
+    //currently unit test fails.
     private void writeDescribeVariable(ValueExpr condition) throws QueryExpansionException {
         if (condition instanceof Or){
            Or or = (Or)condition;
@@ -813,6 +825,7 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
         }
     }
     
+    //currently unit test fails.
     private String extractName(ValueExpr expr) throws QueryExpansionException{
         if (expr instanceof Var){
             Var var = (Var)expr;
@@ -843,7 +856,7 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
      * @param uri
      * @return 
      */
-    String getUriString(URI uri){
+    private String getUriString(URI uri){
          return (" <" + uri.stringValue() + ">"); 
     }
     
@@ -852,7 +865,7 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
         newLine();
         queryString.append("FILTER ");
         filter.getCondition().visit(this);
-        //queryString.append(")");
+        //Arguements add the brackets
         filter.getArg().visit(this);
     }
 
@@ -862,33 +875,6 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
         ss.visitChildren(this);
     }
 
-    /**
-     * Holder method for Expander that needs to prepare a new Context
-     */
-    boolean XstartContext(TupleExpr expr) throws QueryExpansionException{
-        if (context != null) return false;
-        //ystem.out.println(expr);
-        ContextFinderVisitor contextFinder = new ContextFinderVisitor();
-        expr.visit(contextFinder);
-        context = contextFinder.getContext();   
-        if (context == null) {
-            return false;
-        } else {
-            queryString.append(" GRAPH ");
-            context.visit(this);
-            queryString.append(" {");   
-            return true;
-        }
-    }
-    
-    void closeContextX (){
-        if (context != null){
-            System.out.println("closing " + context);
-            queryString.append(" } ");
-            context = null;
-        }
-    }
-    
     /**
      * Write the var.
      * 
@@ -903,6 +889,7 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
 
     //@Override
     public void meet(StatementPattern sp) throws QueryExpansionException  {
+        //Double check that then statement has the expected context 
         if (contexts.get(0) == null){
             if (sp.getContextVar() != null) {
                 throw new QueryExpansionException ("Expected null context in statement: " + sp);
@@ -912,26 +899,34 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
                throw new QueryExpansionException ("Expected context  " + contexts.get(0) + " in statement: " + sp); 
             }
         }
-        if (isDescribePattern(sp) || canEliminate(sp)) {
-            contexts.remove(sp.getContextVar()); 
-            return;
-        }
-        //ystem.out.println(sp);
-        switchContextIfRequired(sp); 
+        
+        //Remove the context from the list, so it only has future contexts in it.
+        contexts.remove(sp.getContextVar());       
+        
+        openNewContextIfRequired(sp); 
+        
+        //Add an optional pushed down if required.
         if (swapGraphAndOptional) {
             newLine();
             queryString.append("OPTIONAL { #meet(StatementPattern sp)");
             swapGraphAndOptional = false;
-           // optionalToClose = true;
         }
-        newLine();
-        writeStatementPart(sp.getSubjectVar());
-        sp.getPredicateVar().visit(this);
-        writeStatementPart(sp.getObjectVar());
-        queryString.append(". ");
-        contexts.remove(sp.getContextVar());       
+        
+        if (isDescribePattern(sp)) {
+            //No need to write the describe pattern the parser will do that
+        } else if (canEliminate(sp)) {
+            //No need to write a pattern for eliminated elements.
+        } else {
+            //write the actual statement.
+            newLine();
+            writeStatementPart(sp.getSubjectVar());
+            sp.getPredicateVar().visit(this);
+            writeStatementPart(sp.getObjectVar());
+            queryString.append(". ");
+        }
+        //Now use the look ahead provided by the context list. 
         if (contexts.isEmpty()){
-            //Last Statement
+            //Last Statement so close and flush filters
             closeContext();
         } else if (context == null){
             //Not in a context so flush replacement filters        
@@ -939,6 +934,7 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
         } else if (context.equals(contexts.get(0))){
             //staying in context so keep it open
         } else {
+            //New context coming so close the context
             closeContext();
         }
     }
@@ -970,7 +966,16 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
         }
     }
 
-    boolean canEliminate(StatementPattern sp) throws QueryExpansionException{
+    /**
+     * Checks to see if the statement can be removed from the query.
+     * 
+     * WARNING: Underdevelopment so uses the niave system of if the statement conatins a project element not in the 
+     *    attribute list remove the statement. Otherwise keep it
+     * @param sp Statement to check
+     * @return If the statement is predicted to be removed.
+     * @throws QueryExpansionException 
+     */
+    boolean canEliminate(StatementPattern sp) throws QueryExpansionException {
         //ystem.out.println(sp);
         if (sp.getSubjectVar().isAnonymous()){
             //We don't think subject variables can be literals but just in case.
@@ -1021,6 +1026,15 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
         } 
     }
     
+    /**
+     * Checks to see if the name can be removed from the query.
+     * 
+     * WARNING: Underdevelopment so uses the niave system of if the statement conatins a project element not in the 
+     *    attribute list remove the statement. Otherwise keep it
+     * 
+     * @param name Name of the Attribute
+     * @return 
+     */
     private boolean canEliminate(String name) {
         if (requiredAttributes == null) {
             return false;
@@ -1040,6 +1054,14 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
         return false;
     }
 
+    /**
+     * Identifies if this Statement is the one added by a design query. 
+     * <p>
+     * This method was built based on a few example queries so may be incomplete.
+     * 
+     * @param sp Statement to check for the design signature. 
+     * @return True if and only if the Statement appears to be one added by a Design query.
+     */
     boolean isDescribePattern(StatementPattern sp){
         if (!(sp.getSubjectVar().isAnonymous())) return false;
         if (!(sp.getPredicateVar().isAnonymous())) return false;
@@ -1050,12 +1072,18 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
         return true;        
     }
     
-    private void switchContextIfRequired(StatementPattern sp) throws QueryExpansionException {
-        if (sp.getContextVar() != null) {
-            if (!(sp.getContextVar().equals(context))){
-                closeContextX();
+    /**
+     * Checks if a new context GRAPH) needs to be opend and does so if required.
+     * 
+     * @param sp Statement about to be written.
+     * @throws QueryExpansionException Not expected but just in case.
+     */
+    private void openNewContextIfRequired(StatementPattern sp) throws QueryExpansionException {
+        //Check not already in a context
+        if (context == null) {
+           //Check statement is part of a context 
+           if (sp.getContextVar() != null) {
                 context = sp.getContextVar();
-                //ystem.out.println("New context "+ context);
                 newLine();
                 queryString.append(" GRAPH ");
                 context.visit(this);

@@ -1,6 +1,6 @@
 package eu.ops.plugin.imssparqlexpand;
 
-import eu.ops.plugin.imssparqlexpand.URIFinderVisitor;
+import eu.ops.plugin.irssparqlexpand.version1.URIFinderVisitor;
 import eu.ops.plugin.imssparqlexpand.QueryExpansionException;
 import eu.ops.plugin.imssparqlexpand.QueryUtils;
 import java.util.HashSet;

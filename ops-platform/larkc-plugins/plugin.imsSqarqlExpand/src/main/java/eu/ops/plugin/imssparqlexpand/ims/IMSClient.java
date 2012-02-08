@@ -19,6 +19,10 @@ import uk.ac.manchester.cs.ims.beans.Match;
 
 /**
  * Client for interacting with the IMS service
+ * <p>
+ * getMatchesForURIs(Set<URI>) is implementated by iterating over getMatchesForURI(URI uri)
+ * <p>
+ * getSpecificMatchesForURI(URI uri, String graph) ignores the graph and just calls getMatchesForURI(uri)
  */
 public class IMSClient implements IMSMapper{
 
