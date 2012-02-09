@@ -4,13 +4,13 @@
  */
 package eu.ops.plugin.imssparqlexpand.querywriter;
 
+import org.junit.Ignore;
 import eu.ops.plugin.imssparqlexpand.QueryUtilsTest;
 import eu.ops.plugin.imssparqlexpand.IMSSPARQLExpandTest;
 import eu.ops.plugin.imssparqlexpand.QueryExpansionException;
 import eu.ops.plugin.imssparqlexpand.QueryUtils;
 import java.util.List;
 import java.util.ArrayList;
-import org.junit.Ignore;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.algebra.TupleExpr;
 import org.junit.After;
@@ -64,7 +64,6 @@ public class QueryWriterModelVisitorTest {
     }
     
     @Test
-    @Ignore
     public void test_ASK_QUERY() throws MalformedQueryException, QueryExpansionException{
         convertAndTest(IMSSPARQLExpandTest.ASK_QUERY);
 
@@ -84,13 +83,11 @@ public class QueryWriterModelVisitorTest {
     }
     
     @Test
-    @Ignore
     public void test_CONSTRUCT_QUERY() throws MalformedQueryException, QueryExpansionException{
         convertAndTest(IMSSPARQLExpandTest.CONSTRUCT_QUERY);
 
     }
     @Test
-    @Ignore
     public void test_DESSCRIBE_QUERY() throws MalformedQueryException, QueryExpansionException{
         convertAndTest(IMSSPARQLExpandTest.DESSCRIBE_QUERY);
 
@@ -112,7 +109,6 @@ public class QueryWriterModelVisitorTest {
     }
     
     @Test
-    @Ignore
     public void test_ONLY_OPTIONAL_STATEMENTS_QUERY_EXPECTED() throws MalformedQueryException, QueryExpansionException{
         convertAndTest(IMSSPARQLExpandTest.ONLY_OPTIONAL_STATEMENTS_QUERY_EXPECTED);
     }
@@ -213,7 +209,6 @@ public class QueryWriterModelVisitorTest {
 
     }
     @Test
-    @Ignore
     public void test_SIMPLE_OPTIONAL_QUERY_EXPECTED() throws MalformedQueryException, QueryExpansionException{
         convertAndTest(IMSSPARQLExpandTest.SIMPLE_OPTIONAL_QUERY_EXPECTED);
 
