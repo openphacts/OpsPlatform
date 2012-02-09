@@ -703,9 +703,7 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
 
     boolean startContext(TupleExpr expr) throws QueryExpansionException{
         if (inContext) return false;
-        ContextFinderVisitor contextFinder = new ContextFinderVisitor();
-        expr.visit(contextFinder);
-        Var context = contextFinder.getContext();   
+        Var context = ContextFinderVisitor.getContext(expr);   
         if (context == null) {
             return false;
         } else {

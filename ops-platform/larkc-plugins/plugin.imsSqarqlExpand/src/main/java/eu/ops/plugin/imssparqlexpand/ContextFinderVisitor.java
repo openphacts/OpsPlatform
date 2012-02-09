@@ -2,6 +2,7 @@ package eu.ops.plugin.imssparqlexpand;
 
 import org.openrdf.query.algebra.SingletonSet;
 import org.openrdf.query.algebra.StatementPattern;
+import org.openrdf.query.algebra.TupleExpr;
 import org.openrdf.query.algebra.Var;
 import org.openrdf.query.algebra.helpers.QueryModelVisitorBase;
 
@@ -21,6 +22,12 @@ public class ContextFinderVisitor extends QueryModelVisitorBase<QueryExpansionEx
     private Var context = null;
     private boolean nullContext = false;
     private boolean multipleContexts = false;
+    
+    /**
+     * Blocks public access. Use static Var getContext(TupleExpr) method.
+     */
+    private ContextFinderVisitor(){
+    }
         
     @Override
     public void meet(StatementPattern sp) throws QueryExpansionException {
@@ -64,7 +71,7 @@ public class ContextFinderVisitor extends QueryModelVisitorBase<QueryExpansionEx
      * @return The context is all Statements in this query or subquery have the same none null Context. 
      *    Otherwise null.
      */
-    public Var getContext(){
+    private Var getContext(){
         if (multipleContexts) {
             //ystem.out.println("Multiple Contexts");
             return null;
@@ -75,5 +82,11 @@ public class ContextFinderVisitor extends QueryModelVisitorBase<QueryExpansionEx
         }
         //ystem.out.println(context);
         return context;
+    }
+    
+    public static Var getContext(TupleExpr tupleExpr) throws QueryExpansionException{
+        ContextFinderVisitor visitor = new ContextFinderVisitor();
+        tupleExpr.visit(visitor);
+        return visitor.getContext();
     }
 }

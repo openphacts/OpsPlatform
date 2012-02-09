@@ -53,12 +53,10 @@ public class ContextFinderVisitorTest {
             + "FROM    <http://example.org/foaf/aliceFoaf> "
             + "WHERE   { ?x foaf:name ?name }";
 
-        ContextFinderVisitor instance = new ContextFinderVisitor();
         ParsedQuery parsedQuery = parser.parseQuery(inputQuery, null); 
         TupleExpr tupleExpr = parsedQuery.getTupleExpr();
 
-        tupleExpr.visit(instance);
-        Var var = instance.getContext();
+        Var var = ContextFinderVisitor.getContext(tupleExpr);
         
         assertEquals(var, null);
     }
@@ -75,12 +73,10 @@ public class ContextFinderVisitorTest {
                 + "    graph ?g {?x foaf:name ?name }"
                 + "}";
 
-        ContextFinderVisitor instance = new ContextFinderVisitor();
         ParsedQuery parsedQuery = parser.parseQuery(inputQuery, null); 
         TupleExpr tupleExpr = parsedQuery.getTupleExpr();
 
-        tupleExpr.visit(instance);
-        Var var = instance.getContext();
+        Var var = ContextFinderVisitor.getContext(tupleExpr);
         
         assertEquals(var.getName(), "g");
     }
@@ -100,12 +96,10 @@ public class ContextFinderVisitorTest {
                 + "    }"
                 + "}";
 
-        ContextFinderVisitor instance = new ContextFinderVisitor();
         ParsedQuery parsedQuery = parser.parseQuery(inputQuery, null); 
         TupleExpr tupleExpr = parsedQuery.getTupleExpr();
 
-        tupleExpr.visit(instance);
-        Var var = instance.getContext();
+        Var var = ContextFinderVisitor.getContext(tupleExpr);
         
         assertEquals(var.getName(), "g");
     }
@@ -123,12 +117,10 @@ public class ContextFinderVisitorTest {
                 + "    graph ?g {?x foaf:title ?title }"
                 + "}";
 
-        ContextFinderVisitor instance = new ContextFinderVisitor();
         ParsedQuery parsedQuery = parser.parseQuery(inputQuery, null); 
         TupleExpr tupleExpr = parsedQuery.getTupleExpr();
 
-        tupleExpr.visit(instance);
-        Var var = instance.getContext();
+        Var var = ContextFinderVisitor.getContext(tupleExpr);
         
         assertEquals(var.getName(), "g");
     }
@@ -146,12 +138,10 @@ public class ContextFinderVisitorTest {
                 + "    graph <http://example.org/mygraph> {?x foaf:title ?title }"
                 + "}";
 
-        ContextFinderVisitor instance = new ContextFinderVisitor();
         ParsedQuery parsedQuery = parser.parseQuery(inputQuery, null); 
         TupleExpr tupleExpr = parsedQuery.getTupleExpr();
 
-        tupleExpr.visit(instance);
-        Var var = instance.getContext();
+        Var var = ContextFinderVisitor.getContext(tupleExpr);
         
         assertNull(var);
     }
@@ -168,12 +158,10 @@ public class ContextFinderVisitorTest {
                 + "    graph <http://example.org/mygraph> {?x foaf:name ?name }"
                 + "}";
 
-        ContextFinderVisitor instance = new ContextFinderVisitor();
         ParsedQuery parsedQuery = parser.parseQuery(inputQuery, null); 
         TupleExpr tupleExpr = parsedQuery.getTupleExpr();
 
-        tupleExpr.visit(instance);
-        Var var = instance.getContext();
+        Var var = ContextFinderVisitor.getContext(tupleExpr);
         
         assertEquals(var.getValue().stringValue(), "http://example.org/mygraph");
     }
@@ -193,12 +181,10 @@ public class ContextFinderVisitorTest {
                 + "    }"
                 + "}";
 
-        ContextFinderVisitor instance = new ContextFinderVisitor();
         ParsedQuery parsedQuery = parser.parseQuery(inputQuery, null); 
         TupleExpr tupleExpr = parsedQuery.getTupleExpr();
 
-        tupleExpr.visit(instance);
-        Var var = instance.getContext();
+        Var var = ContextFinderVisitor.getContext(tupleExpr);
         
         assertEquals(var.getValue().stringValue(), "http://example.org/mygraph");
     }
@@ -216,12 +202,10 @@ public class ContextFinderVisitorTest {
                 + "    graph <http://example.org/mygraph> {?x foaf:title ?title }"
                 + "}";
 
-        ContextFinderVisitor instance = new ContextFinderVisitor();
         ParsedQuery parsedQuery = parser.parseQuery(inputQuery, null); 
         TupleExpr tupleExpr = parsedQuery.getTupleExpr();
 
-        tupleExpr.visit(instance);
-        Var var = instance.getContext();
+        Var var = ContextFinderVisitor.getContext(tupleExpr);
         
         assertNull(var);
     }
@@ -239,12 +223,10 @@ public class ContextFinderVisitorTest {
                 + "    graph ?g {?x foaf:title ?title }"
                 + "}";
 
-        ContextFinderVisitor instance = new ContextFinderVisitor();
         ParsedQuery parsedQuery = parser.parseQuery(inputQuery, null); 
         TupleExpr tupleExpr = parsedQuery.getTupleExpr();
 
-        tupleExpr.visit(instance);
-        Var var = instance.getContext();
+        Var var = ContextFinderVisitor.getContext(tupleExpr);
         
         assertEquals(var, null);
     }
