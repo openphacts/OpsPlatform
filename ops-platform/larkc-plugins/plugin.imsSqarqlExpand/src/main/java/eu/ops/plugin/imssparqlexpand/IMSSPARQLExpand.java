@@ -87,18 +87,8 @@ public class IMSSPARQLExpand extends Plugin {
 
     private SetOfStatements expandQuery(TupleExpr tupleExpr, Dataset dataset)
             throws QueryExpansionException {
-        //URIFinderVisitor uriFindervisitor = new URIFinderVisitor();
-        //tupleExpr.visit(uriFindervisitor);
-        //Set<URI> uriSet = uriFindervisitor.getURIS();
-        //Map<URI, List<URI>> uriMappings = imsMapper.getMatchesForURIs(uriSet);   
-         ContextListerVisitor counter = new ContextListerVisitor();
-         tupleExpr.visit(counter);
-         ArrayList<Var> contexts = counter.getContexts();
-
         String expandedQueryString = 
                 QueryExpandAndWriteVisitor.convertToQueryString(tupleExpr, dataset, imsMapper, requiredAttributes);
-        //logger.info("Expanded SPARQL: " + expandedQueryString);
-        //ystem.out.println(expandedQueryString);
         try {
             SPARQLQuery expandedQuery = new SPARQLQueryImpl(expandedQueryString);
             return expandedQuery.toRDF();

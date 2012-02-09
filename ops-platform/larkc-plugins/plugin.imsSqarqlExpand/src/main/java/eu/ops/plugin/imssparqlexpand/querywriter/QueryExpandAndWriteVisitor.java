@@ -390,10 +390,8 @@ public class QueryExpandAndWriteVisitor extends QueryWriterModelVisitor{
     }
 
     public static String convertToQueryString(TupleExpr tupleExpr, Dataset dataSet, IMSMapper mapper, 
-        List<String> requiredAttributes) throws QueryExpansionException{
-        ContextListerVisitor counter = new ContextListerVisitor();
-        tupleExpr.visit(counter);
-        ArrayList<Var> contexts = counter.getContexts();
+            List<String> requiredAttributes) throws QueryExpansionException{
+        ArrayList<Var> contexts = ContextListerVisitor.getContexts(tupleExpr);
        
         QueryExpandAndWriteVisitor writer = new QueryExpandAndWriteVisitor(dataSet, requiredAttributes, mapper, contexts);
         tupleExpr.visit(writer);

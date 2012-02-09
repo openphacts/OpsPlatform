@@ -2,6 +2,7 @@ package eu.ops.plugin.imssparqlexpand;
 
 import java.util.ArrayList;
 import org.openrdf.query.algebra.StatementPattern;
+import org.openrdf.query.algebra.TupleExpr;
 import org.openrdf.query.algebra.Var;
 import org.openrdf.query.algebra.helpers.QueryModelVisitorBase;
 
@@ -22,7 +23,15 @@ import org.openrdf.query.algebra.helpers.QueryModelVisitorBase;
 public class ContextListerVisitor extends QueryModelVisitorBase<QueryExpansionException>{
 
     private ArrayList<Var> contexts = new ArrayList<Var>();
-        
+    
+    /**
+     * Block outside creation of this visitor.
+     * <p>
+     * Use static getContexts(TupleExpr) method.
+     */
+    private ContextListerVisitor(){
+    }
+    
     @Override
     public void meet(StatementPattern sp) throws QueryExpansionException {
         //Record the context even if NULL.
@@ -34,7 +43,13 @@ public class ContextListerVisitor extends QueryModelVisitorBase<QueryExpansionEx
      * <p>
      * @return An list of contexts. Warning this will probably include NULLs. 
      */
-    public ArrayList<Var> getContexts(){
+    private ArrayList<Var> getContexts(){
         return contexts;
+    }
+    
+    public static ArrayList<Var> getContexts(TupleExpr tupleExpr) throws QueryExpansionException{
+        ContextListerVisitor listener = new ContextListerVisitor();
+        tupleExpr.visit(listener);
+        return listener.getContexts();
     }
 }

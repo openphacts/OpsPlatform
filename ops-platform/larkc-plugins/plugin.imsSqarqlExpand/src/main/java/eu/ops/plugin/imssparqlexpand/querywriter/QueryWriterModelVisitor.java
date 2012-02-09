@@ -482,10 +482,8 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
      */
     private int statementsInExpression(TupleExpr tupleExpr) throws QueryExpansionException{
         //Could be done with a lister that counts instead of lists but this reuses code.
-        ContextListerVisitor counter = new ContextListerVisitor();
-        tupleExpr.visit(counter);
-        ArrayList<Var> contexts = counter.getContexts();
-        return contexts.size();
+        ArrayList<Var> localContexts = ContextListerVisitor.getContexts(tupleExpr);
+        return localContexts.size();
     }
     
     @Override
@@ -1201,9 +1199,7 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
     
     public static String convertToQueryString(TupleExpr tupleExpr, Dataset dataSet, List<String> requiredAttributes) 
             throws QueryExpansionException{
-        ContextListerVisitor counter = new ContextListerVisitor();
-        tupleExpr.visit(counter);
-        ArrayList<Var> contexts = counter.getContexts();
+        ArrayList<Var> contexts = ContextListerVisitor.getContexts(tupleExpr);
        
         QueryWriterModelVisitor writer = new QueryWriterModelVisitor(dataSet, requiredAttributes, contexts);
         tupleExpr.visit(writer);
