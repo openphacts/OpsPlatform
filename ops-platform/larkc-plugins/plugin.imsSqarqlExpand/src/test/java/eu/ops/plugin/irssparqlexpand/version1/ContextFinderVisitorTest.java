@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package eu.ops.plugin.imssparqlexpand;
+package eu.ops.plugin.irssparqlexpand.version1;
 
 import org.junit.After;
 import org.junit.AfterClass;

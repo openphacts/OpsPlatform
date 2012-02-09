@@ -1,5 +1,6 @@
-package eu.ops.plugin.imssparqlexpand;
+package eu.ops.plugin.irssparqlexpand.version1;
 
+import eu.ops.plugin.imssparqlexpand.QueryExpansionException;
 import org.openrdf.query.algebra.SingletonSet;
 import org.openrdf.query.algebra.StatementPattern;
 import org.openrdf.query.algebra.TupleExpr;
@@ -19,7 +20,9 @@ import org.openrdf.query.algebra.helpers.QueryModelVisitorBase;
  */
 public class ContextFinderVisitor extends QueryModelVisitorBase<QueryExpansionException>{
     
+    //A conext found so far.
     private Var context = null;
+    
     private boolean nullContext = false;
     private boolean multipleContexts = false;
     
@@ -84,6 +87,17 @@ public class ContextFinderVisitor extends QueryModelVisitorBase<QueryExpansionEx
         return context;
     }
     
+    /**
+     * Obtrains the single context from a query or sub query.
+     * <p>
+     * As the OpenRdf parse assigns two indices of equal literals different names, 
+     *     this class considers then as unequal.
+     * 
+     * @param tupleExpr Query or subQuery as a TupleExpr tree
+     * @return The context is all Statements in this query or subquery have the same none null Context. 
+     *    Otherwise null.
+     * @throws QueryExpansionException 
+     */
     public static Var getContext(TupleExpr tupleExpr) throws QueryExpansionException{
         ContextFinderVisitor visitor = new ContextFinderVisitor();
         tupleExpr.visit(visitor);
