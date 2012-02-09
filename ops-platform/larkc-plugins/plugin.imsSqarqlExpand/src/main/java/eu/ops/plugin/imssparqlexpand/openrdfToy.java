@@ -9,6 +9,7 @@ import eu.larkc.core.query.SPARQLQuery;
 import eu.larkc.core.query.SPARQLQueryImpl;
 import eu.ops.plugin.imssparqlexpand.ims.DummyIMSMapper;
 import eu.ops.plugin.imssparqlexpand.ims.IMSMapper;
+import eu.ops.plugin.imssparqlexpand.querywriter.QueryWriterModelVisitor;
 import java.util.ArrayList;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.Dataset;

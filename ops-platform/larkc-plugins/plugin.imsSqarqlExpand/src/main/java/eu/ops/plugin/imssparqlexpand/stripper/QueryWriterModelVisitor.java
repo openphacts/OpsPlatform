@@ -2,7 +2,7 @@ package eu.ops.plugin.imssparqlexpand.stripper;
 
 import eu.ops.plugin.imssparqlexpand.ContextFinderVisitor;
 import eu.ops.plugin.imssparqlexpand.QueryExpansionException;
-import eu.ops.plugin.imssparqlexpand.QueryType;
+import eu.ops.plugin.imssparqlexpand.querywriter.QueryType;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;

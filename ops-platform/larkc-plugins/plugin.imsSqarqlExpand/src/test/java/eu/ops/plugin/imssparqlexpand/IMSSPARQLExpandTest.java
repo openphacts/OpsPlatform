@@ -143,7 +143,7 @@ public class IMSSPARQLExpandTest {
         assertEquals("attr2", expander.requiredAttributes.get(1));
     }
     
-    static String CONSTRUCT_QUERY = "CONSTRUCT { ?s ?p ?o } WHERE { ?o ?p ?s }";           
+    public static String CONSTRUCT_QUERY = "CONSTRUCT { ?s ?p ?o } WHERE { ?o ?p ?s }";           
     /**
      * Test that we do not do anything with CONSTRUCT queries
      */
@@ -166,7 +166,7 @@ public class IMSSPARQLExpandTest {
     
         
     
-    static String DESSCRIBE_QUERY = "DESCRIBE <http://brenda-enzymes.info/1.1.1.1>";
+    public static String DESSCRIBE_QUERY = "DESCRIBE <http://brenda-enzymes.info/1.1.1.1>";
     /**
      * Test that we do not do anything with DESCRIBE queries
      */
@@ -189,7 +189,7 @@ public class IMSSPARQLExpandTest {
     
     
     
-    static String ASK_QUERY = "ASK { ?s ?p ?o }";
+    public static String ASK_QUERY = "ASK { ?s ?p ?o }";
     /**
      * Test that we do not do anything with ASK queries
      */
@@ -212,7 +212,7 @@ public class IMSSPARQLExpandTest {
     
     
     
-    static String MINIMAL_SPACING_QUERY = "SELECT ?book ?title "
+    public static String MINIMAL_SPACING_QUERY = "SELECT ?book ?title "
             + "WHERE{?book <http://dc/title> ?title.}";
     /**
      * Test that a query with minimal spacing in its text is processed correctly
@@ -235,7 +235,7 @@ public class IMSSPARQLExpandTest {
     
     
     
-    static String PREFIX_QUERY = "PREFIX books: <http://example.org/book/> "
+    public static String PREFIX_QUERY = "PREFIX books: <http://example.org/book/> "
                 + "PREFIX dc: <http://purl.org/dc/elements/1.1/>"
                 + "SELECT ?book ?title WHERE { ?book dc:title ?title . }";    
     /**
@@ -259,7 +259,7 @@ public class IMSSPARQLExpandTest {
     
 
     
-    static String NO_URI_QUERY = "SELECT ?book ?author "
+    public static String NO_URI_QUERY = "SELECT ?book ?author "
             + "WHERE { "
             + "    ?book <http://dc.org/author> ?author . "
             + "}";
@@ -285,11 +285,11 @@ public class IMSSPARQLExpandTest {
     
     
     
-    static String SINGLE_OBJECT_URI_QUERY = "SELECT ?protein "
+    public static String SINGLE_OBJECT_URI_QUERY = "SELECT ?protein "
                 + "WHERE { "
                 + "    ?protein <http://www.foo.org/somePredicate> <http://foo.info/1.1.1.1> . "
                 + "}";
-    static String SINGLE_OBJECT_URI_QUERY_EXPECTED = "SELECT ?protein "
+    public static String SINGLE_OBJECT_URI_QUERY_EXPECTED = "SELECT ?protein "
                 + "WHERE {"
                 + "    ?protein <http://www.foo.org/somePredicate> ?replacedURI1 . "
                 + "    FILTER (?replacedURI1 = <http://bar.com/8hd83> || "
@@ -394,11 +394,11 @@ public class IMSSPARQLExpandTest {
     
     
     
-    static String SINGLE_SUBJECT_URI_QUERY = "SELECT ?p ?o "
+    public static String SINGLE_SUBJECT_URI_QUERY = "SELECT ?p ?o "
                 + "WHERE {"
                 + "   <http://foo.com/45273> ?p ?o . "
                 + "}";
-    static String SINGLE_SUBJECT_URI_QUERY_EXPECTED =  "SELECT ?p ?o "
+    public static String SINGLE_SUBJECT_URI_QUERY_EXPECTED =  "SELECT ?p ?o "
                 + "WHERE {"
                 + "    ?replacedURI1 ?p ?o . "
                 + "    FILTER (?replacedURI1 = <http://bar.co.uk/346579> || "
@@ -433,11 +433,11 @@ public class IMSSPARQLExpandTest {
     
     
     
-    static String SINGLE_BOTH_URI_QUERY = "SELECT ?p "
+    public static String SINGLE_BOTH_URI_QUERY = "SELECT ?p "
                 + "WHERE { "
                 + "    <http://example.org/chem/8j392> ?p <http://foo.com/1.1.1.1> . "
                 + "}";
-    static String SINGLE_BOTH_URI_QUERY_EXPECTED_SINGLE_MATCH_EACH = "SELECT ?p "
+    public static String SINGLE_BOTH_URI_QUERY_EXPECTED_SINGLE_MATCH_EACH = "SELECT ?p "
                 + "WHERE {"
                 + "    ?replacedURI1 ?p ?replacedURI2 . "
                 + "    FILTER (?replacedURI1 = <http://result.com/90> || "
@@ -503,7 +503,7 @@ public class IMSSPARQLExpandTest {
         assertTrue(QueryUtils.sameTupleExpr(SINGLE_BOTH_URI_QUERY_EXPECTED_SINGLE_MATCH_ONLY_SUBJECT_EXPECTED, query.toString()));
     }
         
-    static String SINGLE_BOTH_URI_QUERY_EXPECTED_MULTIPLE_MATCHES = "SELECT ?p "
+    public static String SINGLE_BOTH_URI_QUERY_EXPECTED_MULTIPLE_MATCHES = "SELECT ?p "
                 + "WHERE {"
                 + "    ?replacedURI1 ?p ?replacedURI2 . "
                 + "    FILTER (?replacedURI1 = <http://result.com/90> || "
@@ -546,12 +546,12 @@ public class IMSSPARQLExpandTest {
     
     
     
-    static String TWO_STATEMENTS_ONE_OBJECT_URI_QUERY = "SELECT ?protein "
+    public static String TWO_STATEMENTS_ONE_OBJECT_URI_QUERY = "SELECT ?protein "
                 + "WHERE {"
                 + "    ?protein <http://foo.com/somePredicate> <http://foo.info/1.1.1.1> . "
                 + "    ?protein <http://foo.com/anotherPredicate> ?name . "
                 + "}";
-    static String TWO_STATEMENTS_ONE_OBJECT_URI_QUERY_EXPECTED =  "SELECT ?protein "
+    public static String TWO_STATEMENTS_ONE_OBJECT_URI_QUERY_EXPECTED =  "SELECT ?protein "
                 + "WHERE {"
                 + "    ?protein <http://foo.com/somePredicate> ?replacedURI1 . "
                 + "        FILTER (?replacedURI1 = <http://bar.com/9khd7> || "
@@ -584,12 +584,12 @@ public class IMSSPARQLExpandTest {
     
     
     
-    static String SHARED2_SUBJECT_URI_QUERY = "SELECT ?protein ?name "
+    public static String SHARED2_SUBJECT_URI_QUERY = "SELECT ?protein ?name "
                 + "WHERE { "
                 + "    <http://foo.info/1.1.1.1> <http://foo.com/somePredicate> ?protein . "
                 + "    <http://foo.info/1.1.1.1> <http://foo.com/anotherPredicate> ?name . "
                 + "}";    
-    static String SHARED2_SUBJECT_URI_QUERY_EXPECTED = "SELECT ?protein ?name "
+    public static String SHARED2_SUBJECT_URI_QUERY_EXPECTED = "SELECT ?protein ?name "
                 + "WHERE {"
                 + "   ?replacedURI1 <http://foo.com/somePredicate> ?protein . "
                 + "        FILTER (?replacedURI1 = <http://bar.com/9khd7> || "
@@ -624,13 +624,13 @@ public class IMSSPARQLExpandTest {
     
     
     
-    static String SHARED3_SUBJECT_URI_QUERY = "SELECT ?protein ?name ?enzyme "
+    public static String SHARED3_SUBJECT_URI_QUERY = "SELECT ?protein ?name ?enzyme "
                 + "WHERE { "
                 + "    <http://foo.info/1.1.1.1> <http://foo.com/somePredicate> ?protein . "
                 + "    <http://foo.info/1.1.1.1> <http://foo.com/anotherPredicate> ?name . "
                 + "    <http://foo.info/1.1.1.1> <http://bar.org/relation> ?enzyme . "
                 + "}";    
-    static String SHARED3_SUBJECT_URI_QUERY_EXPECTED = "SELECT ?protein ?name ?enzyme "
+    public static String SHARED3_SUBJECT_URI_QUERY_EXPECTED = "SELECT ?protein ?name ?enzyme "
                 + "WHERE {"
                 + "    ?replacedURI1 <http://foo.com/somePredicate> ?protein . "
                 + "        FILTER (?replacedURI1 = <http://bar.com/9khd7> || "
@@ -672,12 +672,12 @@ public class IMSSPARQLExpandTest {
     
     
     
-    static String SIMPLE_CHAIN_QUERY =  "SELECT ?protein ?name "
+    public static String SIMPLE_CHAIN_QUERY =  "SELECT ?protein ?name "
                 + "WHERE { "
                 + "    ?protein <http://foo.com/somePredicate> <http://example.org/chem/2918> . "
                 + "    <http://example.org/chem/2918> <http://foo.com/anotherPredicate> ?name . "
                 + "}";
-    static String SIMPLE_CHAIN_QUERY_EXPECTED = "SELECT ?protein ?name "
+    public static String SIMPLE_CHAIN_QUERY_EXPECTED = "SELECT ?protein ?name "
                 + "WHERE {"
                 + "    ?protein <http://foo.com/somePredicate> ?replacedURI1 . "
                 + "        FILTER (?replacedURI1 = <http://bar.com/9khd7> || "
@@ -715,7 +715,7 @@ public class IMSSPARQLExpandTest {
     
     
     
-    static String COMPLEX_CHAIN_QUERY = "SELECT ?name ?value1 ?value2 "
+    public static String COMPLEX_CHAIN_QUERY = "SELECT ?name ?value1 ?value2 "
                 + "WHERE { "
                 + "    <http://bar.co.uk/998234> <http://foo.com/somePredicate> <http://example.org/chem/2918> . "
                 + "    <http://bar.co.uk/998234> <http://foo.com/predicate> ?value1 . "
@@ -723,7 +723,7 @@ public class IMSSPARQLExpandTest {
                 + "    <http://example.org/chem/2918> <http://foo.com/aPredicate> <http://yetanother.com/-09824> ."
                 + "    <http://yetanother.com/-09824> <http://bar.org/predicate> ?value2 . "
                 + "}";
-    static String COMPLEX_CHAIN_QUERY_EXPECTED = "SELECT ?name ?value1 ?value2 "
+    public static String COMPLEX_CHAIN_QUERY_EXPECTED = "SELECT ?name ?value1 ?value2 "
                 + "WHERE {"
                 + "    ?replacedURI1 <http://foo.com/somePredicate> ?replacedURI2 . "
                 + "        FILTER (?replacedURI1 = <http://foo.info/1.1.1.1> || "
@@ -786,13 +786,13 @@ public class IMSSPARQLExpandTest {
     
     
     
-    static String REPEATED_SUBJECT_SHORTHAND_QUERY = "SELECT ?protein ?name ?enzyme "
+    public static String REPEATED_SUBJECT_SHORTHAND_QUERY = "SELECT ?protein ?name ?enzyme "
                 + "WHERE { "
                 + "    <http://foo.info/1.1.1.1> <http://foo.com/somePredicate> ?protein ; "
                 + "    <http://foo.com/anotherPredicate> ?name ; "
                 + "    <http://bar.org/relation> ?enzyme . "
                 + "}"; 
-    static String REPEATED_SUBJECT_SHORTHAND_QUERY_EXPECTED = "SELECT ?protein ?name ?enzyme "
+    public static String REPEATED_SUBJECT_SHORTHAND_QUERY_EXPECTED = "SELECT ?protein ?name ?enzyme "
                 + "WHERE {"
                 + "    ?replacedURI1 <http://foo.com/somePredicate> ?protein . "
                 + "        FILTER (?replacedURI1 = <http://bar.com/9khd7> || "
@@ -834,11 +834,11 @@ public class IMSSPARQLExpandTest {
     
     
     
-    static String REPEATED_SUBJECT_PREDICATE_QUERY =  "SELECT ?protein ?name "
+    public static String REPEATED_SUBJECT_PREDICATE_QUERY =  "SELECT ?protein ?name "
                 + "WHERE { "
                 + "    <http://foo.info/1.1.1.1> <http://foo.com/somePredicate> ?protein , ?name . "
                 + "}";   
-    static String REPEATED_SUBJECT_PREDICATE_QUERY_EXPECTED =  "SELECT ?protein ?name "
+    public static String REPEATED_SUBJECT_PREDICATE_QUERY_EXPECTED =  "SELECT ?protein ?name "
                 + "WHERE {"
                 + "    ?replacedURI1 <http://foo.com/somePredicate> ?protein . "
                 + "        FILTER (?replacedURI1 = <http://bar.com/9khd7> || "
@@ -878,12 +878,12 @@ public class IMSSPARQLExpandTest {
     
     
     
-    static String SIMPLE_OPTIONAL_QUERY = "SELECT ?protein ?name "
+    public static String SIMPLE_OPTIONAL_QUERY = "SELECT ?protein ?name "
                 + "WHERE { "
                 + "    <http://foo.info/1.1.1.1> <http://foo.com/somePredicate> ?protein . "
                 + "    OPTIONAL {<http://bar.com/ijdu> <http://foo.com/anotherPredicate> ?name . }"
                 + "}";
-    static String SIMPLE_OPTIONAL_QUERY_EXPECTED = "SELECT ?protein ?name "
+    public static String SIMPLE_OPTIONAL_QUERY_EXPECTED = "SELECT ?protein ?name "
                 + "WHERE {"
                 + "    ?replacedURI1 <http://foo.com/somePredicate> ?protein . "
                 + "        FILTER (?replacedURI1 = <http://example.com/9khd7> || "
@@ -922,12 +922,12 @@ public class IMSSPARQLExpandTest {
     
     
     
-    static String ONLY_OPTIONAL_STATEMENTS_QUERY = "SELECT ?protein ?name "
+    public static String ONLY_OPTIONAL_STATEMENTS_QUERY = "SELECT ?protein ?name "
             + "WHERE { "
             + "    OPTIONAL {<http://foo.info/1.1.1.1> <http://foo.com/somePredicate> ?protein . }"
             + "    OPTIONAL {<http://bar.com/ijdu> <http://foo.com/anotherPredicate> ?name . }"
             + "}";
-    static String ONLY_OPTIONAL_STATEMENTS_QUERY_EXPECTED = "SELECT ?protein ?name "
+    public static String ONLY_OPTIONAL_STATEMENTS_QUERY_EXPECTED = "SELECT ?protein ?name "
             + "WHERE {"
             + "    OPTIONAL {?replacedURI1 <http://foo.com/somePredicate> ?protein . "
             + "        FILTER (?replacedURI1 = <http://bar.com/9khd7> || "

@@ -1,4 +1,4 @@
-package eu.ops.plugin.imssparqlexpand;
+package eu.ops.plugin.imssparqlexpand.querywriter;
 
 /**
  * Represents the different types that a SPARQL query can have.

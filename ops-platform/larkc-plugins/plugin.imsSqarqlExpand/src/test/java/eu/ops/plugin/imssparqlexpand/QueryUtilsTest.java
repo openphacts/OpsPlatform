@@ -174,7 +174,7 @@ public class QueryUtilsTest {
         assertFalse(result);
     }*/
     
-    static String ONE_BGP_OBJECT_WITH_FILTER_QUERY = "SELECT ?protein "
+    public static String ONE_BGP_OBJECT_WITH_FILTER_QUERY = "SELECT ?protein "
                 + "WHERE {"
                 + "?protein <http://www.biopax.org/release/biopax-level2.owl#EC-NUMBER> "
                 + "<http://brenda-enzymes.info/1.1.1.1> . "

@@ -2,8 +2,12 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package eu.ops.plugin.imssparqlexpand;
+package eu.ops.plugin.imssparqlexpand.querywriter;
 
+import eu.ops.plugin.imssparqlexpand.QueryUtilsTest;
+import eu.ops.plugin.imssparqlexpand.IMSSPARQLExpandTest;
+import eu.ops.plugin.imssparqlexpand.QueryExpansionException;
+import eu.ops.plugin.imssparqlexpand.QueryUtils;
 import java.util.List;
 import java.util.ArrayList;
 import org.junit.Ignore;

@@ -1,4 +1,5 @@
 package eu.ops.plugin.irssparqlexpand.version1;
+import eu.ops.plugin.imssparqlexpand.querywriter.QueryType;
 import eu.ops.plugin.imssparqlexpand.*;
 
 import java.util.HashMap;

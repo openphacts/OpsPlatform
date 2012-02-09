@@ -1,5 +1,7 @@
-package eu.ops.plugin.imssparqlexpand;
+package eu.ops.plugin.imssparqlexpand.querywriter;
 
+import eu.ops.plugin.imssparqlexpand.ContextListerVisitor;
+import eu.ops.plugin.imssparqlexpand.QueryExpansionException;
 import eu.ops.plugin.imssparqlexpand.ims.IMSMapper;
 import java.util.ArrayList;
 import java.util.HashMap;
