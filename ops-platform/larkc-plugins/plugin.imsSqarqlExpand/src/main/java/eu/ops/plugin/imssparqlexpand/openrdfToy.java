@@ -355,6 +355,7 @@ public class openrdfToy {
        String queryStr32 = "PREFIX foaf:    <http://xmlns.com/foaf/0.1/>"
                + "ASK  { ?x foaf:name  \"Alice\" }";
        String queryStr33= "DESCRIBE <http://example.org/1> <http://example.org/2> <http://example.org/1> ";
+       String queryStr = "DESCRIBE <http://example.org/1> ";
        String queryStr34 = "PREFIX foaf:   <http://xmlns.com/foaf/0.1/>"
                + "DESCRIBE ?x ?y "
                + "WHERE    { "
@@ -638,7 +639,7 @@ public class openrdfToy {
                 + "       FILTER (?price < 30) \n"
                 + "    }"
                 + "}";
-        String queryStr = "SELECT ?protein "
+        String queryStr53 = "SELECT ?protein "
             + "WHERE {"
             + "    FILTER ("
             + "        ?protein != <http://my.org> && "

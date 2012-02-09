@@ -105,8 +105,7 @@ public class QueryExpandAndWriteVisitor extends QueryWriterModelVisitor{
         }
     }
 
-    @Override
-                     
+    @Override                 
      /**
      * Close the context (GRAPH clause) and any optional clauses opened inside the graph anding a filter if required.
      * <p>
@@ -348,6 +347,31 @@ public class QueryExpandAndWriteVisitor extends QueryWriterModelVisitor{
             } else {
                 writeCompareWithoutURI(cmpr.getOperator(), cmpr.getLeftArg(), cmpr.getRightArg());
             } 
+        }
+    }
+
+    @Override
+    /**
+     * Checks if the Variable is a URI and if so writes the mapped list otherwise just writes the variable
+     * @param decribeVariable Variable which may be a URI
+     * @throws QueryExpansionException 
+     */
+    void writeDescribeVariable(ValueExpr decribeVariable) throws QueryExpansionException{
+        if (isURI(decribeVariable)){
+            //See if there are any mapped URIs
+            List<URI> mappedURIs = getMappings(decribeVariable);
+            if (mappedURIs == null){
+                //OK no mapped URIs so just fall back to the normal behavior.
+                queryString.append(extractName(decribeVariable));
+            } else {
+                //Write the mapped URIs
+                for (URI uri:mappedURIs){
+                    queryString.append(getUriString(uri));
+                }
+            }
+        } else {
+            //OK not a URI so just fall back to the normal bahaviour
+            queryString.append(extractName(decribeVariable));
         }
     }
 

@@ -791,32 +791,61 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
         queryString.append(")");
     }
 
-    //currently unit test fails.
+    /**
+     * Writes a Describe query based on a Filter that has been dettermined to be a Describe.
+     * 
+     * @param filter Filter tree representing a describe query
+     * @throws QueryExpansionException 
+     */
     private void writeDescribe(Filter filter) throws QueryExpansionException {
         queryString.append ("DESCRIBE ");
         ValueExpr condition = filter.getCondition();
-        writeDescribeVariable(condition);
+        findandWriteDescribeVariable(condition);
+        //Write the where bit of the decribe query
         TupleExpr arg = filter.getArg();
         if (arg instanceof StatementPattern){
             //Do nothing as only statement patter is the automatically added -descr-subj -descr-pred -descr-obj
         } else {
-            queryString.append (" {");
+            newLine();
+            queryString.append (" WHERE {");
             filter.getArg().visit(this);
             queryString.append (" }");
         }
     }
 
-    //currently unit test fails.
-    private void writeDescribeVariable(ValueExpr condition) throws QueryExpansionException {
+    /**
+     * Writes the describe Variable.
+     * <p>
+     * Subclasses may replace a URI with mapped URIs
+     * @param decribeVariable
+     * @throws QueryExpansionException 
+     */
+    void writeDescribeVariable(ValueExpr decribeVariable) throws QueryExpansionException{
+        queryString.append(extractName(decribeVariable));
+    }
+    
+    /**
+     * Looks through the condition for the describe variable and calls writeDescribeVariable(ValueExpr).
+     * <p>
+     * In a Describe query there is the statement ?-descr-subj ?-descr-pred ?-descr-obj.
+     * Then there are filter conditions SameTerm(?-descr-subj, describeVariable) 
+     *     and sameTerm(?-descr-obj, describeVariable) 
+     * <p> 
+     * This method looks for the SameTerm(?-descr-subj, describeVariable) then extracts the describeVariable
+     * and calls writeDescribeVariable(ValueExpr) to do the actual writting. (So that sub classes can replace URIs)
+     * @param condition
+     * @throws QueryExpansionException 
+     */
+    private void findandWriteDescribeVariable(ValueExpr condition) throws QueryExpansionException {
         if (condition instanceof Or){
            Or or = (Or)condition;
-           writeDescribeVariable(or.getLeftArg());
-           writeDescribeVariable(or.getRightArg());
+           findandWriteDescribeVariable(or.getLeftArg());
+           findandWriteDescribeVariable(or.getRightArg());
         } else if (condition instanceof SameTerm) {
            SameTerm term = (SameTerm)condition;
            String leftName = extractName(term.getLeftArg());
            if (" ?-descr-subj".equals(leftName)){
-               queryString.append(extractName(term.getRightArg()));
+               writeDescribeVariable(term.getRightArg());
            } else {
                //System.out.println(leftName);
            }
@@ -826,7 +855,7 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
     }
     
     //currently unit test fails.
-    private String extractName(ValueExpr expr) throws QueryExpansionException{
+    String extractName(ValueExpr expr) throws QueryExpansionException{
         if (expr instanceof Var){
             Var var = (Var)expr;
             String name = var.getName();
@@ -856,8 +885,8 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
      * @param uri
      * @return 
      */
-    private String getUriString(URI uri){
-         return (" <" + uri.stringValue() + ">"); 
+    String getUriString(URI uri){
+         return (" <" + uri.stringValue() + "> "); 
     }
     
     @Override
