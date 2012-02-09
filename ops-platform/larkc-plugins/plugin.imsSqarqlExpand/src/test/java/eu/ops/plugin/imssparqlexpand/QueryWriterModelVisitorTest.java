@@ -6,8 +6,6 @@ package eu.ops.plugin.imssparqlexpand;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Set;
-import java.util.HashSet;
 import org.junit.Ignore;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.algebra.TupleExpr;

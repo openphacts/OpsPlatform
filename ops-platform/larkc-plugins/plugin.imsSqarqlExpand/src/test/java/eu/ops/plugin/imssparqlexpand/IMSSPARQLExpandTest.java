@@ -1,8 +1,6 @@
 package eu.ops.plugin.imssparqlexpand;
 
-import eu.ops.plugin.imssparqlexpand.IMSSPARQLExpand;
-import eu.ops.plugin.imssparqlexpand.QueryExpansionException;
-import eu.ops.plugin.imssparqlexpand.QueryUtils;
+
 import eu.larkc.core.data.DataFactory;
 import static org.junit.Assert.*;
 
@@ -18,7 +16,6 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openrdf.model.Literal;
 import org.openrdf.model.Statement;
@@ -174,7 +171,6 @@ public class IMSSPARQLExpandTest {
      * Test that we do not do anything with DESCRIBE queries
      */
     @Test
-    @Ignore
     public void testDescribeQuery() throws MalformedQueryException, QueryExpansionException {
         IMSSPARQLExpand expander = 
                 new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
@@ -187,8 +183,8 @@ public class IMSSPARQLExpandTest {
         SetOfStatements eQuery = expander.invokeInternalWithExceptions(
                 new SPARQLQueryImpl(DESSCRIBE_QUERY).toRDF());
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
-        assertEquals(DESSCRIBE_QUERY, query.toString());
-    }
+        assertTrue(QueryUtils.sameTupleExpr(DESSCRIBE_QUERY, query.toString()));
+     }
 
     
     
@@ -198,8 +194,7 @@ public class IMSSPARQLExpandTest {
      * Test that we do not do anything with ASK queries
      */
     @Test
-    @Ignore
-    public void testAskQuery() throws MalformedQueryException, QueryExpansionException {
+   public void testAskQuery() throws MalformedQueryException, QueryExpansionException {
         IMSSPARQLExpand expander = 
                 new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
@@ -211,7 +206,7 @@ public class IMSSPARQLExpandTest {
         SetOfStatements eQuery = expander.invokeInternalWithExceptions(
                 new SPARQLQueryImpl(ASK_QUERY).toRDF());
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
-        assertEquals(ASK_QUERY, query.toString());
+        assertTrue(QueryUtils.sameTupleExpr(ASK_QUERY, query.toString()));
     }
     
     

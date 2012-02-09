@@ -4,14 +4,12 @@
  */
 package eu.ops.plugin.imssparqlexpand;
 
-import eu.ops.plugin.imssparqlexpand.ContextFinderVisitor;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import org.openrdf.query.algebra.StatementPattern;
 import org.openrdf.query.algebra.TupleExpr;
 import org.openrdf.query.algebra.Var;
 import org.openrdf.query.parser.ParsedQuery;

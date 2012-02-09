@@ -1,8 +1,5 @@
 package eu.ops.plugin.imssparqlexpand;
 
-import eu.ops.plugin.imssparqlexpand.IMSSPARQLExpand;
-import eu.ops.plugin.imssparqlexpand.QueryExpansionException;
-import eu.ops.plugin.imssparqlexpand.QueryUtils;
 import static org.junit.Assert.*;
 import eu.larkc.core.data.DataFactory;
 import eu.larkc.core.data.SetOfStatements;
@@ -14,7 +11,6 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.MalformedQueryException;
@@ -1706,7 +1702,6 @@ public class W3Sparql1Test {
      * Test the query found in Section 10.4.1
      */ 
     @Test
-    @Ignore
     public void test10_4_1() throws MalformedQueryException, QueryExpansionException {
         String inputQuery ="DESCRIBE <http://example.org/>";
 
@@ -1733,7 +1728,6 @@ public class W3Sparql1Test {
      * With a one to one mapping
      */ 
     @Test
-    @Ignore
     public void test10_4_1a() throws MalformedQueryException, QueryExpansionException {
         String inputQuery ="DESCRIBE <http://example.org/>";
 
@@ -1761,7 +1755,6 @@ public class W3Sparql1Test {
      * With a one to many mapping
      */ 
     @Test
-    @Ignore
     public void test10_4_1b() throws MalformedQueryException, QueryExpansionException {
         String inputQuery ="DESCRIBE <http://example.org/>";
 
@@ -1792,7 +1785,6 @@ public class W3Sparql1Test {
      * With more than one uri no mappings
      */ 
     @Test
-    @Ignore
     public void test10_4_1c() throws MalformedQueryException, QueryExpansionException {
         String inputQuery ="DESCRIBE <http://example.org/> <http://SomeotherURI/qwerty> "
                 + "                      <http://SomeotherURI/qwerty>";
@@ -1820,7 +1812,6 @@ public class W3Sparql1Test {
      * With more than one uri some mappings
      */ 
     @Test
-    @Ignore
     public void test10_4_1d() throws MalformedQueryException, QueryExpansionException {
         String inputQuery ="DESCRIBE <http://example.org/1> <http://example.org/45> "
                 + "                  <http://example.org/561> <http://example.org/455>";
@@ -2044,7 +2035,6 @@ public class W3Sparql1Test {
      * Slighlty changed order.
      */
     @Test
-    @Ignore
     public void test11_4_2() throws MalformedQueryException, QueryExpansionException {
         String inputQuery ="PREFIX foaf: <http://xmlns.com/foaf/0.1/>"
                 + "SELECT ?name ?mbox "

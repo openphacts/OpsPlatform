@@ -4,8 +4,6 @@
  */
 package eu.ops.plugin.imssparqlexpand;
 
-import eu.ops.plugin.imssparqlexpand.QueryExpansionException;
-import eu.ops.plugin.imssparqlexpand.QueryUtils;
 import java.util.Set;
 import org.openrdf.model.impl.ValueFactoryImpl;
 import org.openrdf.model.ValueFactory;
@@ -17,7 +15,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import org.junit.Ignore;
 import org.openrdf.query.MalformedQueryException;
 
 /**

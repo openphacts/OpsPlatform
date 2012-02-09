@@ -1,8 +1,6 @@
 package eu.ops.plugin.imssparqlexpand;
 
 import eu.ops.plugin.irssparqlexpand.version1.URIFinderVisitor;
-import eu.ops.plugin.imssparqlexpand.QueryExpansionException;
-import eu.ops.plugin.imssparqlexpand.QueryUtils;
 import java.util.HashSet;
 import java.util.Set;
 import org.junit.After;
@@ -16,8 +14,6 @@ import org.openrdf.model.ValueFactory;
 import org.openrdf.model.impl.ValueFactoryImpl;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.algebra.TupleExpr;
-import org.openrdf.query.algebra.ValueConstant;
-import org.openrdf.query.algebra.Var;
 
 /**
  *

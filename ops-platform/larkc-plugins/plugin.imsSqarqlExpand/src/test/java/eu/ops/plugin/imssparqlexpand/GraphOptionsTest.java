@@ -1,8 +1,5 @@
 package eu.ops.plugin.imssparqlexpand;
 
-import eu.ops.plugin.imssparqlexpand.IMSSPARQLExpand;
-import eu.ops.plugin.imssparqlexpand.QueryExpansionException;
-import eu.ops.plugin.imssparqlexpand.QueryUtils;
 import static org.junit.Assert.*;
 import eu.larkc.core.data.DataFactory;
 import eu.larkc.core.data.SetOfStatements;
