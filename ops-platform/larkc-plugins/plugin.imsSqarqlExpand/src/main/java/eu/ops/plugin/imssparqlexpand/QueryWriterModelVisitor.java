@@ -1184,8 +1184,27 @@ public class QueryWriterModelVisitor implements QueryModelVisitor<QueryExpansion
      * @return query as a String
      * @throws QueryExpansionException Declared as thrown to allow calling methods to catch it specifically.
      */
-    public String getQuery() throws QueryExpansionException {
+    private String getQuery() throws QueryExpansionException {
         return queryString.toString();
     }
 
+    public static String convertToQueryString(TupleExpr tupleExpr) throws QueryExpansionException{
+        return convertToQueryString(tupleExpr, null, null);
+    } 
+    
+    public static String convertToQueryString(TupleExpr tupleExpr, List<String> requiredAttributes) 
+            throws QueryExpansionException{
+        return convertToQueryString(tupleExpr, null, requiredAttributes);
+    }
+    
+    public static String convertToQueryString(TupleExpr tupleExpr, Dataset dataSet, List<String> requiredAttributes) 
+            throws QueryExpansionException{
+        ContextListerVisitor counter = new ContextListerVisitor();
+        tupleExpr.visit(counter);
+        ArrayList<Var> contexts = counter.getContexts();
+       
+        QueryWriterModelVisitor writer = new QueryWriterModelVisitor(dataSet, requiredAttributes, contexts);
+        tupleExpr.visit(writer);
+        return writer.getQuery();
+    }
 }

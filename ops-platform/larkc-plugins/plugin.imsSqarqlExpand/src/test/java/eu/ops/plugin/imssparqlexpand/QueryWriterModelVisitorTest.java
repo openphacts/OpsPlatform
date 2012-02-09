@@ -43,7 +43,7 @@ public class QueryWriterModelVisitorTest {
     
     private void convertAndTest(String query) throws MalformedQueryException, QueryExpansionException{
         TupleExpr tupleExpr = QueryUtils.queryStringToTupleExpr(query);
-        String newQuery = QueryUtils.tupleExprToQueryString(tupleExpr);
+        String newQuery = QueryWriterModelVisitor.convertToQueryString(tupleExpr);
         assertTrue(QueryUtils.sameTupleExpr(query, newQuery));
     }
     
@@ -369,7 +369,7 @@ public class QueryWriterModelVisitorTest {
         TupleExpr tupleExpr = QueryUtils.queryStringToTupleExpr(inputQuery);
         List<String> requiredAttributes = new ArrayList<String>();
         requiredAttributes.add("foo");
-        String newQuery = QueryUtils.tupleExprToQueryString(tupleExpr, requiredAttributes);
+        String newQuery = QueryWriterModelVisitor.convertToQueryString(tupleExpr, requiredAttributes);
         assertTrue(QueryUtils.sameTupleExpr(expectedQuery, newQuery));
 
     }
@@ -392,7 +392,7 @@ public class QueryWriterModelVisitorTest {
         List<String> requiredAttributes = new ArrayList<String>();
         requiredAttributes.add("bar");
         requiredAttributes.add("foo");
-        String newQuery = QueryUtils.tupleExprToQueryString(tupleExpr, requiredAttributes);
+        String newQuery = QueryWriterModelVisitor.convertToQueryString(tupleExpr, requiredAttributes);
         assertTrue(QueryUtils.sameTupleExpr(expectedQuery, newQuery));
 
     }

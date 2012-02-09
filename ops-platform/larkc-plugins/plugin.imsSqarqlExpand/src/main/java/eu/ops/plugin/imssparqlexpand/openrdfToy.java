@@ -657,14 +657,7 @@ public class openrdfToy {
          Dataset dataset = parsedQuery.getDataset();
          System.out.println(tupleExpr);
          
-         ContextListerVisitor counter = new ContextListerVisitor();
-         tupleExpr.visit(counter);
-         ArrayList<Var> contexts = counter.getContexts();
-
-
-         QueryWriterModelVisitor myVisitor = new QueryWriterModelVisitor(dataset, contexts);
-         tupleExpr.visit(myVisitor);
-         String newQuery = myVisitor.getQuery();
+         String newQuery = QueryWriterModelVisitor.convertToQueryString(tupleExpr, dataset, null);
          System.out.println(newQuery);
          ParsedQuery newParsedQuery = parser.parseQuery(newQuery, null); 
          if (QueryUtils.sameTupleExpr(queryStr,  newQuery)) {

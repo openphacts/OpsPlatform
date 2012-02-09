@@ -94,10 +94,8 @@ public class IMSSPARQLExpand extends Plugin {
          tupleExpr.visit(counter);
          ArrayList<Var> contexts = counter.getContexts();
 
-        QueryExpandAndWriteVisitor writerVisitor = 
-                new QueryExpandAndWriteVisitor(dataset, requiredAttributes, imsMapper, contexts);
-        tupleExpr.visit(writerVisitor);
-        String expandedQueryString = writerVisitor.getQuery();
+        String expandedQueryString = 
+                QueryExpandAndWriteVisitor.convertToQueryString(tupleExpr, dataset, imsMapper, requiredAttributes);
         //logger.info("Expanded SPARQL: " + expandedQueryString);
         //ystem.out.println(expandedQueryString);
         try {

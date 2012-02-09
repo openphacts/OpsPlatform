@@ -39,44 +39,6 @@ public class QueryUtils {
     }
     
     /**
-     * Method for converting a TupleExpr Tree to a Query String.
-     * 
-     * @param tupleExpr Expression Tree
-     * @return Query as a String
-     * @throws QueryExpansionException Something went wrong. 
-     */
-    public static String tupleExprToQueryString (TupleExpr tupleExpr) throws QueryExpansionException {
-        return tupleExprToQueryString(tupleExpr, null);
-    }
-    
-    /**
-     * Method for converting a TupleExpr Tree to a Query String, keeping only the required attributes.
-     * 
-     * @param tupleExpr Expression Tree
-     * @param requiredAttributes List of the Attributes that should be kept in the query or null to keep all.
-     * @return Query as a String
-     * @throws QueryExpansionException Something went wrong. 
-     */
-    public static String tupleExprToQueryString (TupleExpr tupleExpr, List<String> requiredAttributes) 
-            throws QueryExpansionException {
-        ContextListerVisitor counter = new ContextListerVisitor();
-        tupleExpr.visit(counter);
-        ArrayList<Var> contexts = counter.getContexts();
-
-        
-        QueryWriterModelVisitor queryWriter = new QueryWriterModelVisitor(null, requiredAttributes, contexts);
-        try {
-            tupleExpr.visit(queryWriter);
-            String newQuery = queryWriter.getQuery();
-            return newQuery; 
-        } catch (QueryExpansionException ex){
-            throw ex;
-        } catch (Exception ex) {
-            throw new QueryExpansionException("Exception converting TupleExpr to String", ex);
-        }
-    }
-    
-    /**
      * Compares two Datasets. Allows for both to be null otherwise uses Equals();
      * <p>
      * If used to confirm two datasets are not equal, the suggestion is to set verbose to false.

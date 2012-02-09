@@ -10,6 +10,7 @@ import org.openrdf.model.Value;
 import org.openrdf.query.Dataset;
 import org.openrdf.query.algebra.Compare;
 import org.openrdf.query.algebra.Compare.CompareOp;
+import org.openrdf.query.algebra.TupleExpr;
 import org.openrdf.query.algebra.ValueConstant;
 import org.openrdf.query.algebra.ValueExpr;
 import org.openrdf.query.algebra.Var;
@@ -375,4 +376,25 @@ public class QueryExpandAndWriteVisitor extends QueryWriterModelVisitor{
         }
     }
 
+    /**
+     * Returns the query as a string.
+     * <p>
+     * Works if and only if the model was visited exactly once.
+     * @return query as a String
+     * @throws QueryExpansionException Declared as thrown to allow calling methods to catch it specifically.
+     */
+    private String getQuery() throws QueryExpansionException {
+        return queryString.toString();
+    }
+
+    public static String convertToQueryString(TupleExpr tupleExpr, Dataset dataSet, IMSMapper mapper, 
+        List<String> requiredAttributes) throws QueryExpansionException{
+        ContextListerVisitor counter = new ContextListerVisitor();
+        tupleExpr.visit(counter);
+        ArrayList<Var> contexts = counter.getContexts();
+       
+        QueryExpandAndWriteVisitor writer = new QueryExpandAndWriteVisitor(dataSet, requiredAttributes, mapper, contexts);
+        tupleExpr.visit(writer);
+        return writer.getQuery();
+    }
 }
