@@ -47,6 +47,16 @@ public class ContextListerVisitor extends QueryModelVisitorBase<QueryExpansionEx
         return contexts;
     }
     
+    /**
+     * Returns a list of the contexts found in this query or subquery.
+     * <p>
+     * Statements are checked in the normal visitor order. 
+     * For every statement checked its context is added to the list even if null.
+     * 
+     * @param tupleExpr Query or subquery.
+     * @return An list of contexts. Warning this will probably include NULLs. 
+     * @throws QueryExpansionException 
+     */
     public static ArrayList<Var> getContexts(TupleExpr tupleExpr) throws QueryExpansionException{
         ContextListerVisitor listener = new ContextListerVisitor();
         tupleExpr.visit(listener);
