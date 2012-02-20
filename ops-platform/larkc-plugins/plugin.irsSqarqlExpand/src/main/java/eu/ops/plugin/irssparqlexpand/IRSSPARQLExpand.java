@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
  */
 public class IRSSPARQLExpand extends Plugin {
 
-    protected static Logger logger = LoggerFactory.getLogger(Plugin.class);
+    private static Logger logger = LoggerFactory.getLogger(IRSSPARQLExpand.class);
     private IRSMapper irsMapper = null;
     private boolean showExpandedVariables = false;
     

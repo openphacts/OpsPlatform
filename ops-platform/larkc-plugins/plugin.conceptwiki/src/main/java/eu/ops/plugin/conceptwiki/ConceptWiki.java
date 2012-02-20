@@ -38,6 +38,8 @@ import eu.larkc.core.query.SPARQLQueryImpl;
 import eu.larkc.core.util.RDFConstants;
 import eu.larkc.plugin.Plugin;
 
+import eu.larkc.core.data.SAILRdfStoreConnectionImpl;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,7 +63,7 @@ public class ConceptWiki extends Plugin
 	private Set<String> uuidCache = new HashSet<String>();
 	private URI outputGraphName;
 	
-	private static Logger logger = LoggerFactory.getLogger(Plugin.class);
+	private static Logger logger = LoggerFactory.getLogger(ConceptWiki.class);
 
 	/**
 	 * Constructor.
