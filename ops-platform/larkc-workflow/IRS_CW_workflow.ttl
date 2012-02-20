@@ -13,10 +13,10 @@ _:defaultgraphparam larkc:defaultoutputname larkc:defaultgraph .
 
 #Adding File - PDSP:
 
-_:fileidentifier a <urn:eu.larkc.plugin.newfileidentifier.NewFileIdentifier> .
-_:fileidentifier larkc:connectsTo _:rdfreader .
-_:fileidentifier larkc:hasParameter _:param .
-_:param larkc:filePath "/home/antonis/workspace/openphacts/datasets/pdspki/pdsp-v2.ttl" .
+#_:fileidentifier a <urn:eu.larkc.plugin.newfileidentifier.NewFileIdentifier> .
+#_:fileidentifier larkc:connectsTo _:rdfreader .
+#_:fileidentifier larkc:hasParameter _:param .
+#_:param larkc:filePath "/home/antonis/workspace/openphacts/datasets/pdspki/pdsp-v2.ttl" .
 
 #Define ConceptWiki plugin
 _:conceptwiki a <urn:eu.ops.plugin.conceptwiki.ConceptWiki> .
@@ -25,10 +25,10 @@ _:conceptwiki larkc:connectsTo _:reasoner .
 _:conceptwiki larkc:hasParameter _:defaultgraphparam .
 
 #Define IRS plugin
-_:irsplugin a <urn:eu.ops.plugin.irssparqlexpand.IRSSPARQLExpand> .
-_:path larkc:hasInput _:irsplugin .
-_:irsplugin larkc:connectsTo _:reasoner .
-_:irsplugin larkc:hasParameter _:defaultgraphparam .
+_:imsplugin a <urn:eu.ops.plugin.imssparqlexpand.IMSSPARQLExpand> .
+_:path larkc:hasInput _:imsplugin .
+_:imsplugin larkc:connectsTo _:reasoner .
+_:imsplugin larkc:hasParameter _:defaultgraphparam .
 
 #Define ChemCallout plugin
 _:chemcallout a <urn:eu.ops.plugin.chemcallout.ChemCallout> .
