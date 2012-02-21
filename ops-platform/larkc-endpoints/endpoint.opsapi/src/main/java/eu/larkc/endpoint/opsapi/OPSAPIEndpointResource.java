@@ -151,7 +151,7 @@ public class OPSAPIEndpointResource extends ServerResource {
 		String sparql ="PREFIX c2b2r_chembl: <http://chem2bio2rdf.org/chembl/resource/>" +
 				"PREFIX chemspider: <http://rdf.chemspider.com/#>" +
 				"PREFIX drugbank: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/>" +
-				"SELECT ?compound_name ?csid_uri ?smiles ?inchi ?inchiKey " +
+				"SELECT DISTINCT ?compound_name ?csid_uri ?smiles ?inchi ?inchiKey " +
 					"?alogp ?hha ?hhd ?molformula ?molweight ?mw_freebase ?num_ro5_violations ?psa ?rtb " +
 					"?affectedOrganism ?biotransformation ?description ?indication ?meltingPoint ?proteinBinding ?toxicity " +
 				"WHERE { {";
@@ -569,11 +569,11 @@ public class OPSAPIEndpointResource extends ServerResource {
 						"PREFIX drugbank: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/>" +
 						"PREFIX farmbio: <http://rdf.farmbio.uu.se/chembl/onto/#>" +
 						"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>" +
-						"SELECT ?smiles ?inchi ?inchiKey " +
+						"SELECT DISTINCT ?smiles ?inchi ?inchiKey " +
 							"?molweight ?num_ro5_violations ?std_type ?relation ?std_value ?std_unites ?assay_organism " +
 							"?compound_name ?drugType " +
 						"WHERE {" +
-							"GRAPH <file:///home/OPS/develop/openphacts/datasets/chem2bio2rdf/chembl.nt> {" +
+							"GRAPH <http://www.chem2bio2rdf.org/ChEMBL> {" +
 								"?assay2target_uri c2b2r_chembl:tid "+value+" ;" +
 								"c2b2r_chembl:assay_id ?assay_uri ; c2b2r_chembl:assay_organism ?assay_organism ." +
 								"?activity_uri farmbio:onAssay ?assay_uri ;  c2b2r_chembl:c2b2r_chembl_02_activities_molregno ?compound_uri ;" +
@@ -651,7 +651,7 @@ public class OPSAPIEndpointResource extends ServerResource {
 						"PREFIX drugbank: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/>" +
 						"PREFIX farmbio: <http://rdf.farmbio.uu.se/chembl/onto/#>" +
 						"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>" +
-						"SELECT ?csid_uri ?smiles ?inchi ?inchiKey " +
+						"SELECT DISTINCT ?csid_uri ?smiles ?inchi ?inchiKey " +
 							"?molweight ?num_ro5_violations ?std_type ?relation ?std_value ?std_unites ?assay_organism ?target_pref_name " +
 							"?drugType " +
 						"WHERE {" +
@@ -729,7 +729,7 @@ public class OPSAPIEndpointResource extends ServerResource {
 			} else if (name.equals("uri")) {
 				sparql= "PREFIX c2b2r_chembl: <http://chem2bio2rdf.org/chembl/resource/>" +
 						"PREFIX drugbank: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/>" +
-						"SELECT ?keywords ?description ?target_type ?organism ?synonyms " +
+						"SELECT DISTINCT ?keywords ?description ?target_type ?organism ?synonyms " +
 						"?cellularLocation ?molecularWeight ?numberOfResidues ?pdbIdPage ?specificFunction ?theoreticalPi " +
 						"WHERE {" +
 							"GRAPH <http://www.chem2bio2rdf.org/ChEMBL> {" +
@@ -803,7 +803,7 @@ public class OPSAPIEndpointResource extends ServerResource {
 				sparql ="PREFIX c2b2r_chembl: <http://chem2bio2rdf.org/chembl/resource/>" +
 						"PREFIX chemspider: <http://rdf.chemspider.com/#>" +
 						"PREFIX drugbank: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/>" +
-						"SELECT ?csid_uri ?smiles ?inchi ?inchiKey " +
+						"SELECT DISTINCT ?csid_uri ?smiles ?inchi ?inchiKey " +
 							"?alogp ?hha ?hhd ?molformula ?molweight ?mw_freebase ?num_ro5_violations ?psa ?rtb " +
 							"?affectedOrganism ?biotransformation ?description ?indication ?meltingPoint ?proteinBinding ?toxicity " +
 						"WHERE {" +
