@@ -214,7 +214,7 @@ public class ConceptWiki extends Plugin
                     			uuidCache.add(s.getSubject().toString());
                     		}
                     		if (s.getContext()!=null)
-                    			myStore.addStatement(s.getSubject(), s.getPredicate(), s.getObject(), (URI)s.getContext(), label);
+                    			myStore.addStatement(s.getSubject(), s.getPredicate(), s.getObject(), FIXEDCONTEXT, label);
                     		else
                     			myStore.addStatement(s.getSubject(), s.getPredicate(), s.getObject(), FIXEDCONTEXT, label);
                            }
@@ -251,6 +251,7 @@ public class ConceptWiki extends Plugin
 									//System.out.println(id + " " + p.toString() + " " + obj);
 									myStore.addStatement(new URIImpl(id), new URIImpl(p.toString()), new URIImpl(obj), FIXEDCONTEXT, label);
 								} else {
+									obj = obj.replaceAll("\"", "");
 									//System.out.println(id + " " + p.toString() + " " + obj);
 									myStore.addStatement(new URIImpl(id), new URIImpl(p.toString()), new LiteralImpl(obj), FIXEDCONTEXT, label);
 								}
@@ -258,7 +259,7 @@ public class ConceptWiki extends Plugin
 							} else {
 								if(pred2.endsWith(CW_TAG_SPEC)) {
 									//System.out.println("pred2: " + pred2);
-									//obj = obj.replaceAll("\"", "");
+									obj = obj.replaceAll("\"", "");
 									if(! obj.startsWith("http")) {
 										obj = CW_PREFIX + obj;
 									}
