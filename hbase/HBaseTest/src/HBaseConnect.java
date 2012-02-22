@@ -1,7 +1,10 @@
 import java.io.IOException;
 
 import org.apache.hadoop.hbase.HBaseConfiguration;
+import org.apache.hadoop.hbase.HColumnDescriptor;
+import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.client.Get;
+import org.apache.hadoop.hbase.client.HBaseAdmin;
 import org.apache.hadoop.hbase.client.HTable;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
@@ -21,13 +24,24 @@ public class HBaseConnect {
     // When you create a HBaseConfiguration, it reads in whatever you've set
     // into your hbase-site.xml and in hbase-default.xml, as long as these can
     // be found on the CLASSPATH
-    Configuration config = HBaseConfiguration.create();
+    //Configuration config = HBaseConfiguration.create();
+    
+    HBaseConfiguration conf = new HBaseConfiguration();
+    conf.set("hbase.master","localhost:60000");
+
+    HBaseAdmin hbase = new HBaseAdmin(conf);
+    HTableDescriptor desc = new HTableDescriptor("TEST");
+    HColumnDescriptor meta = new HColumnDescriptor("personal".getBytes());
+    HColumnDescriptor prefix = new HColumnDescriptor("account".getBytes());
+    desc.addFamily(meta);
+    desc.addFamily(prefix);
+    hbase.createTable(desc);
 
     // This instantiates an HTable object that connects you to
     // the "myLittleHBaseTable" table.
-    HTable table = new HTable(config, "chebi");
+  /*  HTable table = new HTable(config, "chebi");
 
-/*    // To add to a row, use Put.  A Put constructor takes the name of the row
+    // To add to a row, use Put.  A Put constructor takes the name of the row
     // you want to insert into as a byte array.  In HBase, the Bytes class has
     // utility for converting all kinds of java types to byte arrays.  In the
     // below, we are converting the String "myLittleRow" into a byte array to
