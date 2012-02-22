@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<qualifiedTypeNameHistroy>
+<fullyQualifiedTypeName name="org.apache.hadoop.hbase.client.HBaseAdmin"/>
+<fullyQualifiedTypeName name="org.apache.hadoop.hbase.HTableDescriptor"/>
+<fullyQualifiedTypeName name="org.apache.hadoop.hbase.HColumnDescriptor"/>
+<fullyQualifiedTypeName name="java.io.FileInputStream"/>
+<fullyQualifiedTypeName name="org.semanticweb.yars.nx.parser.NxParser"/>
+<fullyQualifiedTypeName name="org.openrdf.rio.RDFParser"/>
+<fullyQualifiedTypeName name="org.openrdf.rio.turtle.TurtleParser"/>
+<fullyQualifiedTypeName name="org.openrdf.rio.helpers.StatementCollector"/>
+<fullyQualifiedTypeName name="java.io.IOException"/>
+<fullyQualifiedTypeName name="org.openrdf.rio.RDFParseException"/>
+<fullyQualifiedTypeName name="org.openrdf.rio.RDFHandlerException"/>
+<fullyQualifiedTypeName name="java.util.Iterator"/>
+<fullyQualifiedTypeName name="org.openrdf.model.Statement"/>
+<fullyQualifiedTypeName name="org.apache.commons.el.Literal"/>
+<fullyQualifiedTypeName name="org.openrdf.model.Resource"/>
+<fullyQualifiedTypeName name="org.openrdf.model.URI"/>
+<fullyQualifiedTypeName name="java.util.ArrayList"/>
+<fullyQualifiedTypeName name="HBaseTableCreate"/>
+</qualifiedTypeNameHistroy>

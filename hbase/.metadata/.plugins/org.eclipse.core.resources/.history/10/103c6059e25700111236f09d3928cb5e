@@ -1,0 +1,86 @@
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+
+import org.semanticweb.yars.nx.Node;
+import org.semanticweb.yars.nx.parser.NxParser;
+import org.openrdf.model.Resource;
+import org.openrdf.model.Literal;
+import org.openrdf.model.Statement;
+import org.openrdf.rio.RDFHandlerException;
+import org.openrdf.rio.RDFParseException;
+import org.openrdf.rio.RDFParser;
+import org.openrdf.rio.helpers.StatementCollector;
+import org.openrdf.rio.turtle.TurtleParser;
+
+public class NTripleParser {
+	
+	public static void parse_old(String file) {
+		try {
+			FileInputStream is = new FileInputStream(file);
+	
+			NxParser nxp = new NxParser(is);
+	
+			Node[] nxx;
+			while (nxp.hasNext()) {
+			     nxx = nxp.next();
+			     
+			     for (Node n: nxx) 
+			     {
+			       System.out.print(n.toN3());
+			       System.out.print(" ");
+			     }
+			     System.out.println(".");
+			}
+		}
+		catch (Exception e) {
+			// FileInputStream exception
+		}
+	}
+	
+	public static void parse(String file) {
+		try {
+			FileInputStream is = new FileInputStream(file);
+			RDFParser rdfParser = new TurtleParser();
+			
+			ArrayList myList = new ArrayList();
+			StatementCollector collector = new StatementCollector(myList);
+			rdfParser.setRDFHandler(collector);
+			
+			try {
+			   rdfParser.parse(is, "");
+			} 
+			catch (IOException e) {
+			  // handle IO problems (e.g. the file could not be read)
+			}
+			catch (RDFParseException e) {
+			  // handle unrecoverable parse error
+			}
+			catch (RDFHandlerException e) {
+			  // handle a problem encountered by the RDFHandler
+			}
+			
+			for (Iterator iter = myList.iterator(); iter.hasNext();) {
+				Statement s = (Statement)iter.next();
+				System.out.println(s.getSubject().stringValue() + " " + s.getPredicate().stringValue() + " " + s.getObject());
+				if (s.getObject() instanceof Resource) {
+					System.out.println("LITERAL");
+				}
+				else {
+					System.out.println("RESOURCE");
+				}
+			}
+			
+			System.out.println(myList.size());
+		}
+		catch (Exception e) {
+			// FileInputStream exception
+		}
+	}
+	
+	public static void main(String[] args) {
+		parse("/home/anca/Documents/OPS/trials/pdsp-v2.ttl");
+	}
+
+}

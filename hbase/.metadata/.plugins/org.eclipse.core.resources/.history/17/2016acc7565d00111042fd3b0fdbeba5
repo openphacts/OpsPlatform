@@ -1,0 +1,29 @@
+import java.util.ArrayList;
+
+import org.apache.hadoop.hbase.HBaseConfiguration;
+import org.apache.hadoop.hbase.HColumnDescriptor;
+import org.apache.hadoop.hbase.HTableDescriptor;
+import org.apache.hadoop.hbase.client.Get;
+import org.apache.hadoop.hbase.client.HBaseAdmin;
+import org.apache.hadoop.hbase.client.HTable;
+import org.apache.hadoop.hbase.client.Put;
+import org.apache.hadoop.hbase.client.Result;
+import org.apache.hadoop.hbase.client.ResultScanner;
+import org.apache.hadoop.hbase.client.Scan;
+import org.apache.hadoop.hbase.util.Bytes;
+import org.apache.hadoop.conf.Configuration;
+
+
+public class HBaseTableCreate {
+	public static void createTable(String name) throws IOException {
+		HBaseConfiguration conf = new HBaseConfiguration();
+	    conf.set("hbase.master","localhost:60000");
+
+	    HBaseAdmin hbase = new HBaseAdmin(conf);
+	    HTableDescriptor desc = new HTableDescriptor("pdsp-v2");
+	}
+	
+	public static void createColumnFamilies(String table, ArrayList<String> columns) {
+		
+	}
+}

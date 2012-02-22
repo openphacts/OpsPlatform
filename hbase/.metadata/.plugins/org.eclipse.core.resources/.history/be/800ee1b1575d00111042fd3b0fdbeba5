@@ -1,0 +1,32 @@
+import java.util.ArrayList;
+import java.io.IOException;
+
+import org.apache.hadoop.hbase.HBaseConfiguration;
+import org.apache.hadoop.hbase.HColumnDescriptor;
+import org.apache.hadoop.hbase.HTableDescriptor;
+import org.apache.hadoop.hbase.client.Get;
+import org.apache.hadoop.hbase.client.HBaseAdmin;
+import org.apache.hadoop.hbase.client.HTable;
+import org.apache.hadoop.hbase.client.Put;
+import org.apache.hadoop.hbase.client.Result;
+import org.apache.hadoop.hbase.client.ResultScanner;
+import org.apache.hadoop.hbase.client.Scan;
+import org.apache.hadoop.hbase.util.Bytes;
+import org.apache.hadoop.conf.Configuration;
+
+
+public class HBaseTableCreate {
+	public static void createTable(HBaseAdministrator hbase, String name) throws IOException {
+	    
+	    if (hbase.tableExists(name) == false) {
+	    	HTableDescriptor desc = new HTableDescriptor(name);
+	    	HColumnDescriptor literal = new HColumnDescriptor("literal".getBytes());
+	    	desc.addFamily(literal);
+	    	hbase.createTable(desc);
+	    }
+	}
+	
+	public static void createColumnFamilies(String table, ArrayList<String> columns) {
+		
+	}
+}
