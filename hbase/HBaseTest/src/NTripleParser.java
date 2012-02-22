@@ -15,9 +15,25 @@ import org.openrdf.rio.RDFParser;
 import org.openrdf.rio.helpers.StatementCollector;
 import org.openrdf.rio.turtle.TurtleParser;
 
+import java.io.IOException;
+
+import org.apache.hadoop.hbase.HBaseConfiguration;
+import org.apache.hadoop.hbase.HColumnDescriptor;
+import org.apache.hadoop.hbase.HTableDescriptor;
+import org.apache.hadoop.hbase.client.Get;
+import org.apache.hadoop.hbase.client.HBaseAdmin;
+import org.apache.hadoop.hbase.client.HTable;
+import org.apache.hadoop.hbase.client.Put;
+import org.apache.hadoop.hbase.client.Result;
+import org.apache.hadoop.hbase.client.ResultScanner;
+import org.apache.hadoop.hbase.client.Scan;
+import org.apache.hadoop.hbase.util.Bytes;
+import org.apache.hadoop.conf.Configuration;
+
+
 public class NTripleParser {
 	
-	public static void parse(String file) {
+	public static void parse(String file) throws IOException {
 		try {
 			FileInputStream is = new FileInputStream(file);
 			RDFParser rdfParser = new TurtleParser();
@@ -39,36 +55,34 @@ public class NTripleParser {
 			  // handle a problem encountered by the RDFHandler
 			}
 			
-//			for (Iterator iter = myList.iterator(); iter.hasNext();) {
-//				Statement s = (Statement)iter.next();
-//				
-//				System.out.println(s.getSubject().stringValue() + " " + s.getPredicate().stringValue() + " " + s.getObject());
-//				if (s.getObject() instanceof Literal) {
-//					System.out.println("LITERAL");
-//				}
-//				else if (s.getObject() instanceof Resource) {
-//					System.out.println("RESOURCE");
-//				}
-//				else {
-//					System.out.println("SOMETHING ELSE");
-//				}
-//			}
-//			System.out.println(myList.size());
-			
-			// create table
-			HBaseTableCreate.createTable(FilenameUtils.removeExtension(file));
+			String tableName = FilenameUtils.removeExtension(FilenameUtils.getName(file));
 			
 			// create table column families
 			ArrayList<String> predicates = new ArrayList();
 			for (Iterator iter = myList.iterator(); iter.hasNext();) {
 				Statement s = (Statement)iter.next();
-				predicates.add(s.getPredicate().stringValue());
+				if (s.getObject() instanceof Resource) {
+					predicates.add(s.getPredicate().stringValue());
+				}
+				else {
+					// predicates.add("literal:" + s.getPredicate().stringValue());
+				}
 			}
-			HBaseTableCreate.createColumnFamilies(FilenameUtils.removeExtension(file), predicates);
+			HBaseUtil.createTableStruct(tableName, predicates);
 			
 			// populate table
+			HBaseConfiguration conf = new HBaseConfiguration();
+		    conf.set("hbase.master","localhost:60000");
 			for (Iterator iter = myList.iterator(); iter.hasNext();) {
+				HTable table = new HTable(conf, tableName);
+				
 				Statement s = (Statement)iter.next();
+				if (s.getObject() instanceof Resource){
+					HBaseUtil.addRow(table, s.getSubject().toString(), s.getPredicate().toString(), "", s.getObject().toString());
+				}
+				else {
+					HBaseUtil.addRow(table, s.getSubject().toString(), "literal", s.getPredicate().toString(), s.getObject().toString());
+				}
 			}
 		}
 		catch (Exception e) {
@@ -77,7 +91,11 @@ public class NTripleParser {
 	}
 	
 	public static void main(String[] args) {
-		parse("/home/anca/Documents/OPS/trials/pdsp-v2.ttl");
+		try {
+			parse(args[0]);
+		}
+		catch (Exception e) {
+		}
 	}
 
 }
