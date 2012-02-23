@@ -183,7 +183,7 @@ public class ConceptWiki extends Plugin
 							cw_query += "q=" + o.toString() + "&uuid=";
 						} else {
 							logger.info("Found a " + CW_TAG_SPEC + " predicate");
-							cw_query += "uuid=" + o.toString() + "&q=";
+							cw_query += "uuid=" + o.toString().replaceAll("http://www.conceptwiki.org/wiki/concept/","") + "&q=";
  						}
 						if(sp_i.hasNext()) {
 							sp = sp_i.next();
@@ -208,7 +208,7 @@ public class ConceptWiki extends Plugin
                     		//logger.info("statement sub: " + s.getSubject().toString().trim() + "\n");
                     		//logger.info("statement pre: " + s.getPredicate().toString().trim() + "\n");
                     		//logger.info("statement obj: " + s.getObject().toString().trim() + "\n");
-
+                    		logger.info(s.getSubject().toString().trim() + "\t" + s.getPredicate().toString().trim() + "\t" + s.getObject().toString().trim());
                     		// collect UUIDs 
                     		if(s.getPredicate().toString().endsWith("www.w3.org/1999/02/22-rdf-syntax-ns#type")) {
                     			uuidCache.add(s.getSubject().toString());
@@ -225,7 +225,7 @@ public class ConceptWiki extends Plugin
                     	// if the cw_call_api() succeeds, then add 1 or 2 (for getByTag) triples that link query to result
                     	// parse call will put UUIDs in uuidCache
                     	uuidCache.clear();
-                    	InputStream cw_result = cw_call_api(cw_query + o.toString());
+                    	InputStream cw_result = cw_call_api(cw_query + o.toString().replaceAll("http://www.conceptwiki.org/wiki/concept/",""));
 						parser.parse(cw_result, outputGraphName.toString());
 					} catch (Exception e) {
 						logger.error("Could not parse result of call to ConceptWiki");
@@ -260,21 +260,22 @@ public class ConceptWiki extends Plugin
 								if(pred2.endsWith(CW_TAG_SPEC)) {
 									//System.out.println("pred2: " + pred2);
 									obj = obj.replaceAll("\"", "");
+									var2 = var2.replaceAll("\"", "");
 									if(! obj.startsWith("http")) {
 										obj = CW_PREFIX + obj;
 									}
-									//System.out.println(id + " " + p.toString() + " " + obj);
+									//logger.info("1. "+id + " " + p.toString() + " " + obj);
 									myStore.addStatement(new URIImpl(id), new URIImpl(p.toString()), new URIImpl(obj), FIXEDCONTEXT, label);
-									//System.out.println(id + " " + CW_QUERY + CW_SEARCH_BY_TAG + " " + var2);
+									//logger.info("2. "+id + " " + CW_QUERY + CW_SEARCH_BY_TAG + " " + var2);
 									myStore.addStatement(new URIImpl(id), new URIImpl(CW_QUERY+CW_SEARCH_BY_TAG), new LiteralImpl(var2), FIXEDCONTEXT, label);
 								} else {
-									//System.out.println(id + " " + p.toString() + " " + obj);
+									//logger.info("3. "+id + " " + p.toString() + " " + obj);
 									myStore.addStatement(new URIImpl(id), new URIImpl(p.toString()), new LiteralImpl(obj), FIXEDCONTEXT, label);
 									var2 = var2.replaceAll("\"", "");
 									if(! var2.startsWith("http")) {
 										var2 = CW_PREFIX + var2;
 									}
-									//System.out.println(id + " " + CW_QUERY + CW_TAG_SPEC + " " + var2);
+									//logger.info("4. "+id + " " + CW_QUERY + CW_TAG_SPEC + " " + var2);
 									myStore.addStatement(new URIImpl(id), new URIImpl(CW_QUERY+CW_TAG_SPEC), new URIImpl(var2), FIXEDCONTEXT, label);
 								}
 							}
