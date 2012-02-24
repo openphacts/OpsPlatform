@@ -3,6 +3,8 @@ package util;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.io.IOException;
+import java.util.*;
+import java.util.Map.Entry;
 
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.HColumnDescriptor;
@@ -16,6 +18,7 @@ import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.KeyValue;
 
 
 public class HBaseUtil {	
@@ -94,5 +97,35 @@ public class HBaseUtil {
 	    row = new Put(Bytes.toBytes(pred.replaceAll("[^A-Za-z0-9 ]", ""))); 
 	    row.add(Bytes.toBytes("URI"), Bytes.toBytes(""), Bytes.toBytes(pred));
 	    table.put(row);
+	}
+	
+	public static ArrayList<ArrayList<String>> getRow (String URI, String tableName)  throws IOException {
+		HBaseConfiguration conf = new HBaseConfiguration();
+	    conf.set("hbase.master","localhost:60000");
+	    HTable table = new HTable(conf, tableName);
+	    
+		Get g = new Get(Bytes.toBytes(URI));
+	    Result r = table.get(g);
+	    
+	    ArrayList<ArrayList<String>> list = new ArrayList<ArrayList<String>>();
+	    List<KeyValue> rawList = r.list();
+	    
+	    for (Iterator<KeyValue> it = rawList.iterator(); it.hasNext();) {
+	    	KeyValue k = (KeyValue)it.next();
+	    	ArrayList<String> triple = new ArrayList();
+	    	
+	    	String pred = k.getFamily().toString();
+	    	if (pred.compareTo("literal") == 0) {
+	    		pred = k.getQualifier().toString();
+	    	}
+	    	triple.add(pred);
+	    	
+	    	String val = k.getValue().toString();
+	    	triple.add(val);
+	    	
+	    	list.add(triple);
+	    }
+	    
+	    return list;
 	}
 }
