@@ -29,18 +29,18 @@ public abstract class IMSFilterMapper implements IMSMapper{
     }
     
     @Override
-    public Map<URI, List<URI>> getMatchesForURIs(Set<URI> uriSet) {
+    public Map<URI, Set<URI>> getMatchesForURIs(Set<URI> uriSet) {
         return fullMapper.getMatchesForURIs(uriSet);
     }
 
     @Override
-    public List<URI> getMatchesForURI(URI uri) {
+    public Set<URI> getMatchesForURI(URI uri) {
         return fullMapper.getMatchesForURI(uri);
     }
 
     @Override
-    public List<URI> getSpecificMatchesForURI(URI uri, String graph) throws QueryExpansionException{
-        List<URI> fullList = fullMapper.getMatchesForURI(uri);
+    public Set<URI> getSpecificMatchesForURI(URI uri, String graph) throws QueryExpansionException{
+        Set<URI> fullList = fullMapper.getMatchesForURI(uri);
         return stripoutURIs(fullList, graph);
     }
 
@@ -57,6 +57,6 @@ public abstract class IMSFilterMapper implements IMSMapper{
      * @return
      * @throws QueryExpansionException 
      */
-    abstract List<URI> stripoutURIs(List<URI> fullList, String graph) throws QueryExpansionException;
+    abstract Set<URI> stripoutURIs(Set<URI> fullList, String graph) throws QueryExpansionException;
     
 }

@@ -12,7 +12,9 @@ import eu.ops.plugin.imssparqlexpand.ims.DummyIMSMapper;
 import eu.ops.plugin.imssparqlexpand.ims.HardCodedFilterMapper;
 import eu.ops.plugin.imssparqlexpand.ims.IMSMapper;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -53,21 +55,21 @@ public class HardCodedFilterMapperTest {
     public void tearDown() {
     }
 
-    private List<URI> getFullURIList(){
-        ArrayList<URI> fullList = new ArrayList<URI>();
+    private Set<URI> getFullURISet(){
+        LinkedHashSet<URI> fullSet = new LinkedHashSet<URI>();
          
-        fullList.add(valueFactory.createURI("http://www.conceptwiki.org/concept/d510239a-6b55-4ca9-8f64-cfc9b8e7c64c"));
-        fullList.add(valueFactory.createURI("http://rdf.chemspider.com/3914"));
-        fullList.add(valueFactory.createURI("http://chem2bio2rdf.org/chembl/resource/chembl_compounds/52523"));
-        fullList.add(valueFactory.createURI("http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugs/DB01043"));
-        fullList.add(valueFactory.createURI("http://wiki.openphacts.org/index.php/PDSP_DB#23597"));
-        fullList.add(valueFactory.createURI("http://wiki.openphacts.org/index.php/PDSP_DB#36322"));
-        fullList.add(valueFactory.createURI("http://wiki.openphacts.org/index.php/PDSP_DB#36328"));
-        fullList.add(valueFactory.createURI("http://wiki.openphacts.org/index.php/PDSP_DB#36332"));
-        fullList.add(valueFactory.createURI("http://wiki.openphacts.org/index.php/PDSP_DB#36339"));
-        fullList.add(valueFactory.createURI("http://wiki.openphacts.org/index.php/PDSP_DB#36340"));
-        fullList.add(valueFactory.createURI("http://wiki.openphacts.org/index.php/PDSP_DB#36341"));
-        return fullList;
+        fullSet.add(valueFactory.createURI("http://www.conceptwiki.org/concept/d510239a-6b55-4ca9-8f64-cfc9b8e7c64c"));
+        fullSet.add(valueFactory.createURI("http://rdf.chemspider.com/3914"));
+        fullSet.add(valueFactory.createURI("http://chem2bio2rdf.org/chembl/resource/chembl_compounds/52523"));
+        fullSet.add(valueFactory.createURI("http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugs/DB01043"));
+        fullSet.add(valueFactory.createURI("http://wiki.openphacts.org/index.php/PDSP_DB#23597"));
+        fullSet.add(valueFactory.createURI("http://wiki.openphacts.org/index.php/PDSP_DB#36322"));
+        fullSet.add(valueFactory.createURI("http://wiki.openphacts.org/index.php/PDSP_DB#36328"));
+        fullSet.add(valueFactory.createURI("http://wiki.openphacts.org/index.php/PDSP_DB#36332"));
+        fullSet.add(valueFactory.createURI("http://wiki.openphacts.org/index.php/PDSP_DB#36339"));
+        fullSet.add(valueFactory.createURI("http://wiki.openphacts.org/index.php/PDSP_DB#36340"));
+        fullSet.add(valueFactory.createURI("http://wiki.openphacts.org/index.php/PDSP_DB#36341"));
+        return fullSet;
     }
     
     private HardCodedFilterMapper getHardCodedFilterMapper(){
@@ -103,13 +105,13 @@ public class HardCodedFilterMapperTest {
     @Test
     public void testStripoutURIsChemspider() throws QueryExpansionException {
         System.out.println("stripoutURIs");
-        List<URI> fullList = getFullURIList();
+        Set<URI> fullSet = getFullURISet();
         String graph = "http://rdf.chemspider.com/data";
         HardCodedFilterMapper instance = getHardCodedFilterMapper();
-        List expResult = new ArrayList<URI>();
+        Set expResult = new LinkedHashSet<URI>();
         expResult.add(valueFactory.createURI("http://rdf.chemspider.com/3914"));
         
-        List result = instance.stripoutURIs(fullList, graph);
+        Set result = instance.stripoutURIs(fullSet, graph);
         assertEquals(expResult, result);
     }
 
@@ -119,10 +121,10 @@ public class HardCodedFilterMapperTest {
     @Test
     public void testStripoutURIsPDSP_DB() throws QueryExpansionException {
         System.out.println("stripoutURIs");
-        List<URI> fullList = getFullURIList();
+        Set<URI> fullSet = getFullURISet();
         String graph = "http://PDSP_DB/Data";
         HardCodedFilterMapper instance = getHardCodedFilterMapper();
-        List expResult = new ArrayList<URI>();
+        Set expResult = new LinkedHashSet<URI>();
         expResult.add(valueFactory.createURI("http://wiki.openphacts.org/index.php/PDSP_DB#23597"));
         expResult.add(valueFactory.createURI("http://wiki.openphacts.org/index.php/PDSP_DB#36322"));
         expResult.add(valueFactory.createURI("http://wiki.openphacts.org/index.php/PDSP_DB#36328"));
@@ -131,7 +133,7 @@ public class HardCodedFilterMapperTest {
         expResult.add(valueFactory.createURI("http://wiki.openphacts.org/index.php/PDSP_DB#36340"));
         expResult.add(valueFactory.createURI("http://wiki.openphacts.org/index.php/PDSP_DB#36341"));
         
-        List result = instance.stripoutURIs(fullList, graph);
+        Set result = instance.stripoutURIs(fullSet, graph);
         assertEquals(expResult, result);
     }
 

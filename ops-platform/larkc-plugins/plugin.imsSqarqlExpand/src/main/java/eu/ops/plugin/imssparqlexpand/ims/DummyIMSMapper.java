@@ -2,6 +2,7 @@ package eu.ops.plugin.imssparqlexpand.ims;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -20,7 +21,7 @@ import org.openrdf.model.impl.ValueFactoryImpl;
  */
 public class DummyIMSMapper implements IMSMapper{
 
-    Map<URI, List<URI>> uriMappings = new HashMap<URI, List<URI>>();
+    Map<URI, Set<URI>> uriMappings = new HashMap<URI, Set<URI>>();
     ValueFactory valueFactory = ValueFactoryImpl.getInstance();
     
     /**
@@ -32,9 +33,10 @@ public class DummyIMSMapper implements IMSMapper{
     public void addMapping(String fromString, String toString){
        URI fromURI = valueFactory.createURI(fromString);
        URI toURI = valueFactory.createURI(toString);
-       List<URI> uriList = uriMappings.get(fromURI);
+       Set<URI> uriList = uriMappings.get(fromURI);
        if (uriList == null){
-           uriList = new ArrayList<URI>();
+           //Use a LinkedHashSet to keep the order to testing
+           uriList = new LinkedHashSet<URI>();
        }
        if (!uriList.contains(toURI)){
            uriList.add(toURI);
@@ -43,17 +45,17 @@ public class DummyIMSMapper implements IMSMapper{
     }
     
     @Override
-    public Map<URI, List<URI>> getMatchesForURIs(Set<URI> uriSet) {
+    public Map<URI, Set<URI>> getMatchesForURIs(Set<URI> uriSet) {
        return uriMappings;
     }
 
     @Override
-    public List<URI> getMatchesForURI(URI uri) {
+    public Set<URI> getMatchesForURI(URI uri) {
         return uriMappings.get(uri);
     }
 
     @Override
-    public List<URI> getSpecificMatchesForURI(URI uri, String graph) {
+    public Set<URI> getSpecificMatchesForURI(URI uri, String graph) {
         return uriMappings.get(uri);
     }
     

@@ -8,6 +8,7 @@ import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -52,7 +53,7 @@ public class IMSClient implements IMSMapper{
     }
 
     @Override
-    public List<URI> getMatchesForURI(URI uri) {
+    public Set<URI> getMatchesForURI(URI uri) {
         //Configure parameters
         MultivaluedMap<String, String> params = new MultivaluedMapImpl();
         params.add("uri", uri.stringValue());
@@ -67,19 +68,19 @@ System.out.println("***********Number of matches for " + uri + ": " + matches.si
     }
 
     @Override
-    public List<URI> getSpecificMatchesForURI(URI uri, String graph) {
+    public Set<URI> getSpecificMatchesForURI(URI uri, String graph) {
         return getMatchesForURI(uri);
     }
 
-    private List<URI> extractMatches(List<Match> matches) {
-        List<URI> uriList = new ArrayList<URI>();
+    private Set<URI> extractMatches(List<Match> matches) {
+        Set<URI> uriSet = new LinkedHashSet<URI>();
         for (Match match : matches) {
             URI uri = new URIImpl(match.getMatchUri());
-            if (!uriList.contains(uri)){
-                uriList.add(uri);
+            if (!uriSet.contains(uri)){
+                uriSet.add(uri);
             }
         }
-        return uriList;
+        return uriSet;
     }
 
     /**
@@ -89,10 +90,10 @@ System.out.println("***********Number of matches for " + uri + ": " + matches.si
      * @return Map containing the matching URIs for each given URI in the provided set.
      */
     @Override
-    public Map<URI, List<URI>> getMatchesForURIs(Set<URI> uriSet) {
-        Map<URI, List<URI>> uriMappings = new HashMap<URI, List<URI>>();
+    public Map<URI, Set<URI>> getMatchesForURIs(Set<URI> uriSet) {
+        Map<URI, Set<URI>> uriMappings = new HashMap<URI, Set<URI>>();
         for (URI uri : uriSet) {
-            List<URI> matchesForURI = getMatchesForURI(uri);
+            Set<URI> matchesForURI = getMatchesForURI(uri);
             uriMappings.put(uri, matchesForURI);
 //System.out.println(matchesForURI.size() + " matches exist for " + uri);
         }

@@ -30,7 +30,7 @@ public interface IMSMapper {
      * @param uriSet (Possibly empty) Set of URIs to Map.
      * @return (Possibly empty) Map of each URI to a (Possibly empty) List (none null) of URIs.
      */
-    Map<URI, List<URI>> getMatchesForURIs(Set<URI> uriSet);
+    Map<URI, Set<URI>> getMatchesForURIs(Set<URI> uriSet);
 
     /**
      * Maps an URI to a list of URI.
@@ -40,7 +40,7 @@ public interface IMSMapper {
      * @param uri A URI to Map.
      * @return (Possibly empty) List of URIs or even a null.
      */
-    List<URI> getMatchesForURI(URI uri);
+    Set<URI> getMatchesForURI(URI uri);
 
     /**
      * Maps an URI to a list of URI.
@@ -57,5 +57,5 @@ public interface IMSMapper {
      *    There is no guarantee that every URI in the List will be in the GRAPH, 
      *    only that it Maps and there is not enough available information to say it can not be in the GRAPH.
      */
-    List<URI> getSpecificMatchesForURI(URI uri, String graph) throws QueryExpansionException;
+    Set<URI> getSpecificMatchesForURI(URI uri, String graph) throws QueryExpansionException;
 }

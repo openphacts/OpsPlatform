@@ -5,8 +5,10 @@ import eu.ops.plugin.imssparqlexpand.QueryExpansionException;
 import eu.ops.plugin.imssparqlexpand.ims.IMSMapper;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.openrdf.query.Dataset;
@@ -30,8 +32,8 @@ public class QueryExpandAndWriteVisitor extends QueryWriterModelVisitor{
     //Maps the URIs found in the original query to the values used in the outputQuery 
     private Map<URI,String> contextUriVariables = new HashMap<URI,String>();
    
-    //Maps the Values used for a URI with the list of URIs that this value could represent.
-    private Map<String,List<URI>> mappings = new  HashMap<String,List<URI>>(); 
+    //Maps the Values used for a URI with the uriSet of URIs that this value could represent.
+    private Map<String,Set<URI>> mappings = new  HashMap<String,Set<URI>>(); 
     
     //Service that provides the URI mappings.
     private IMSMapper mapper;
@@ -66,7 +68,7 @@ public class QueryExpandAndWriteVisitor extends QueryWriterModelVisitor{
      * @return A List of replacement URIs or NULL is not replacement are returned by the mapper.
      * @throws QueryExpansionException Some expection thrown by the mapping service.
      */
-    private List<URI> getMappings(URI uri) throws QueryExpansionException{
+    private Set<URI> getMappings(URI uri) throws QueryExpansionException{
         if (context == null){
             return mapper.getMatchesForURI(uri);            
         } else {
@@ -86,7 +88,7 @@ public class QueryExpandAndWriteVisitor extends QueryWriterModelVisitor{
      * @throws QueryExpansionException Thrown if the ValueExpr does not contain a URI or 
      *   some expection thrown by the mapping service.
      */
-    private List<URI> getMappings(ValueExpr uriArg) throws QueryExpansionException {
+    private Set<URI> getMappings(ValueExpr uriArg) throws QueryExpansionException {
         Value value;
         if (uriArg instanceof ValueConstant){
             ValueConstant vc = (ValueConstant)uriArg;
@@ -136,24 +138,25 @@ public class QueryExpandAndWriteVisitor extends QueryWriterModelVisitor{
         //if there are non no filters need to be added.
         if (!(mappings.isEmpty())){
             for (String variableName:mappings.keySet()){
-                List<URI> uriList = mappings.get(variableName);
+                Set<URI> uriSet = mappings.get(variableName);
+                Iterator<URI> uris = uriSet.iterator();
                 newLine();
                 queryString.append("FILTER (");
                 queryString.append(variableName);
                 queryString.append(" = <");
-                queryString.append(uriList.get(0));
+                queryString.append(uris.next());
                 queryString.append(">");
-                for (int i = 1; i < uriList.size(); i++){
+                while (uris.hasNext()){
                     queryString.append(" || ");
                     queryString.append(variableName);
                     queryString.append(" = <");
-                    queryString.append(uriList.get(i));
+                    queryString.append(uris.next());
                     queryString.append(">");            
                 }
                 queryString.append(")");
             }
             //Clear the mappings so they are no closed again.
-            mappings = new  HashMap<String,List<URI>>(); 
+            mappings = new  HashMap<String,Set<URI>>(); 
             //Clear the URI Mappings so new variables are used if the same URI is sean again
             contextUriVariables = new HashMap<URI,String>();
         }
@@ -176,7 +179,7 @@ public class QueryExpandAndWriteVisitor extends QueryWriterModelVisitor{
      * <ol>
      * <li> Generates a new temporay variable </li>
      * <li> Maps the URI to this temporary variable </li>
-     * <li> Maps the list of URIs to this temporary variable </li>
+     * <li> Maps the uriSet of URIs to this temporary variable </li>
      * <li> Returns the temporary variable</li>
      * </ol>
      * @param uri URI to map from.
@@ -188,16 +191,16 @@ public class QueryExpandAndWriteVisitor extends QueryWriterModelVisitor{
         if (contextUriVariables.containsKey(uri)){
             return contextUriVariables.get(uri);
         }
-        List<URI> list = getMappings(uri);
+        Set<URI> uriSet = getMappings(uri);
         //If there are no mappings just use the original URI.
         //This keeps the URI that had no mappings in the query for logging and bug testing purposes.
-        if (list == null || list.isEmpty()){
+        if (uriSet == null || uriSet.isEmpty()){
             return "<" + uri.stringValue() + ">";
         }
         //Exactly one URI found so us it.
         //This could be the orignal URI but may be a graph specific one to one mapping replacement.
-        if (list.size()== 1){
-            String variable = "<" + list.get(0).stringValue() + ">";
+        if (uriSet.size()== 1){
+            String variable = "<" + uriSet.iterator().next().stringValue() + ">";
             return variable;
         }
         
@@ -208,8 +211,8 @@ public class QueryExpandAndWriteVisitor extends QueryWriterModelVisitor{
         String variableName = "?replacedURI" + variableCounter;
         //Store the variable for reuse
         contextUriVariables.put(uri,variableName); 
-        //Store the list for adding the filter.
-        mappings.put(variableName, list);
+        //Store the uriSet for adding the filter.
+        mappings.put(variableName, uriSet);
         return variableName;
     }
     
@@ -247,9 +250,9 @@ public class QueryExpandAndWriteVisitor extends QueryWriterModelVisitor{
      * <li> Writes the operator. </li>
      * <li> Gets the List of replacement URIs (if any) </li>
      * <ol>
-     * <li> If the List is null or empty: Just writes the list </li>
-     * <li> If the list has one URI: Just write that URI inclduing the &lt; and &gt; </li>
-     * <li> If the list has more than one URI: Expands the filter to include each of the mapped URIs
+     * <li> If the List is null or empty: Just writes the uriSet </li>
+     * <li> If the uriSet has one URI: Just write that URI inclduing the &lt; and &gt; </li>
+     * <li> If the uriSet has more than one URI: Expands the filter to include each of the mapped URIs
      *     Seperated by AND or OR as appropriate. </li>
      * </ol></ol>
      * @param compareOp The comparison operator. Note: Only Equals and  Not equals make sence.
@@ -262,14 +265,15 @@ public class QueryExpandAndWriteVisitor extends QueryWriterModelVisitor{
         normalArg.visit(this);
         queryString.append(" ");
         queryString.append(compareOp.getSymbol());
-        List<URI> uriList = this.getMappings(uriArg);
-        if (uriList == null || uriList.isEmpty()){
+        Set<URI> uriSet = this.getMappings(uriArg);
+        if (uriSet == null || uriSet.isEmpty()){
             uriArg.visit(this);
         } else {
+            Iterator<URI> uris = uriSet.iterator();
             queryString.append(" <");
-            queryString.append(uriList.get(0));
+            queryString.append(uris.next());
             queryString.append(">");
-            for (int i = 1; i< uriList.size(); i++){
+            while (uris.hasNext()){
                 switch (compareOp){
                     case EQ: 
                         queryString.append(" || ");        
@@ -284,7 +288,7 @@ public class QueryExpandAndWriteVisitor extends QueryWriterModelVisitor{
                 queryString.append(" ");
                 queryString.append(compareOp.getSymbol());
                 queryString.append(" <");
-                queryString.append(uriList.get(i));
+                queryString.append(uris.next());
                 queryString.append(">");
             }
         }
@@ -355,14 +359,14 @@ public class QueryExpandAndWriteVisitor extends QueryWriterModelVisitor{
 
     @Override
     /**
-     * Checks if the Variable is a URI and if so writes the mapped list otherwise just writes the variable
+     * Checks if the Variable is a URI and if so writes the mapped uriSet otherwise just writes the variable
      * @param decribeVariable Variable which may be a URI
      * @throws QueryExpansionException 
      */
     void writeDescribeVariable(ValueExpr decribeVariable) throws QueryExpansionException{
         if (isURI(decribeVariable)){
             //See if there are any mapped URIs
-            List<URI> mappedURIs = getMappings(decribeVariable);
+            Set<URI> mappedURIs = getMappings(decribeVariable);
             if (mappedURIs == null){
                 //OK no mapped URIs so just fall back to the normal behavior.
                 queryString.append(extractName(decribeVariable));
