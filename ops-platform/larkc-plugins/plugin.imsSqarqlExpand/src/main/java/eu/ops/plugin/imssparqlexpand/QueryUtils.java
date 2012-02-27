@@ -11,6 +11,7 @@ import org.openrdf.query.Dataset;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.algebra.TupleExpr;
 import org.openrdf.query.algebra.Var;
+import org.openrdf.query.algebra.helpers.QueryModelTreePrinter;
 import org.openrdf.query.impl.DatasetImpl;
 import org.openrdf.query.parser.ParsedQuery;
 import org.openrdf.query.parser.sparql.SPARQLParser;
@@ -126,10 +127,10 @@ public class QueryUtils {
             if (verbose){
                 System.out.println("*** Queries do not match ***");
                 System.out.println(query1);
-                //ystem.out.println(QueryModelTreePrinter.printTree(tupleExpr1));
+                System.out.println(QueryModelTreePrinter.printTree(tupleExpr1));
                 System.out.println("*");
                 System.out.println(query2);
-                //ystem.out.println(QueryModelTreePrinter.printTree(tupleExpr2));
+                System.out.println(QueryModelTreePrinter.printTree(tupleExpr2));
             }
             return false;
         }
