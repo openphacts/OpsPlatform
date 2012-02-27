@@ -578,7 +578,7 @@ public class OPSAPIEndpointResource extends ServerResource {
 								"c2b2r_chembl:assay_id ?assay_uri ; c2b2r_chembl:assay_organism ?assay_organism ." +
 								"?activity_uri farmbio:onAssay ?assay_uri ;  c2b2r_chembl:c2b2r_chembl_02_activities_molregno ?compound_uri ;" +
 								"c2b2r_chembl:std_type ?std_type ; c2b2r_chembl:relation ?relation ; c2b2r_chembl:std_value ?std_value ;" +
-								"c2b2r_chembl:std_unites ?std_unites" +
+								"c2b2r_chembl:std_unites ?std_unites . " +
 								"OPTIONAL { ?compound_uri c2b2r_chembl:molweight ?molweight }" +
 								"OPTIONAL { ?compound_uri c2b2r_chembl:num_ro5_violations ?num_ro5_violations }" +
 								"OPTIONAL { ?compound_uri c2b2r_chembl:canonical_smiles ?smiles }" +

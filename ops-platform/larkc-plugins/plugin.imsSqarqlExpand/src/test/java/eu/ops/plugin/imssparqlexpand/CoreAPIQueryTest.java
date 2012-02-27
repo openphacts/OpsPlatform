@@ -11,6 +11,7 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.MalformedQueryException;
@@ -49,10 +50,10 @@ public class CoreAPIQueryTest {
     }
      
     /**
-     * Test query found in Section compoundLookup
+     * Older Test query found in Section compoundLookup
      */
     @Test
-    public void testCompoundLookup() throws MalformedQueryException, QueryExpansionException {
+    public void testCompoundLookupV1() throws MalformedQueryException, QueryExpansionException {
         String inputQuery = "PREFIX cspr: <http://rdf.chemspider.com/#> "  
                 + " PREFIX skos: <http://www.w3.org/2004/02/skos/core#> "
                 + " PREFIX db: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/> "
@@ -85,10 +86,46 @@ public class CoreAPIQueryTest {
     }
 
     /**
-     * Test query found in Section proteinLookup 
+     * Test query found in Section compoundLookup
      */
     @Test
-    public void testProteinLookup () throws MalformedQueryException, QueryExpansionException {
+    public void testCompoundLookup() throws MalformedQueryException, QueryExpansionException {
+        String inputQuery = "PREFIX ext: <http://wiki.openphacts.org/index.php/ext_function#>"
+                + "PREFIX skos: <http://www.w3.org/2004/02/skos/core#> "
+                + "PREFIX cw: <http://www.conceptwiki.org/wiki/concept/>"
+                + "PREFIX dc: <http://purl.org/dc/elements/1.1/>"
+                + "SELECT DISTINCT ?concept_label ?concept_url ?concept_uuid ?concept_alt_label ?tag_uuid"
+                + "WHERE { "
+                + "  GRAPH <http://larkc.eu#Fixedcontext> {"
+                + "    ?concept_url ext:conceptwiki_search_by_tag \"substring_value\";"
+                + "    ext:semantic_type <http://www.conceptwiki.org/concept/87c08f16-3710-47fc-8ed7-33a1e426891d> ;"
+                + "    skos:prefLabel ?concept_label ; dc:identifier ?concept_uuid ; "
+                + "    skos:altLabel ?concept_alt_label ; cw:tag ?tag_uuid"
+                + "  }"
+                + "}";
+        String expectedQuery = inputQuery;      
+
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
+
+        IMSSPARQLExpand expander = 
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
+            @Override
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
+            }
+        };
+        expander.initialiseInternal(null);
+        SetOfStatements eQuery = expander.invokeInternalWithExceptions(
+                new SPARQLQueryImpl(inputQuery).toRDF());
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        assertTrue(QueryUtils.sameTupleExpr(expectedQuery, query.toString()));
+    }
+
+    /**
+     * Older Test query found in Section proteinLookup 
+     */
+    @Test
+    public void testProteinLookupV1 () throws MalformedQueryException, QueryExpansionException {
         String inputQuery = "PREFIX brenda: <http://brenda-enzymes.info/> "
                 + " PREFIX pdsp: <http://wiki.openphacts.org/index.php/PDSP_DB#> "
                 + " PREFIX cspr: <http://rdf.chemspider.com/#> "
@@ -114,7 +151,43 @@ public class CoreAPIQueryTest {
         assertTrue(QueryUtils.sameTupleExpr(expectedQuery, query.toString()));
     }
 
-    static String CompoundInfoQuery = " PREFIX cspr: <http://rdf.chemspider.com/#> "
+    /**
+     * Test query found in Section proteinLookup 
+     */
+    @Test
+    public void testProteinLookup () throws MalformedQueryException, QueryExpansionException {
+        String inputQuery = "PREFIX ext: <http://wiki.openphacts.org/index.php/ext_function#>"
+                + "PREFIX skos: <http://www.w3.org/2004/02/skos/core#> "
+                + "PREFIX cw: <http://www.conceptwiki.org/wiki/concept/>"
+                + "PREFIX dc: <http://purl.org/dc/elements/1.1/>"
+                + "SELECT DISTINCT ?concept_label ?concept_url ?concept_uuid ?concept_alt_label ?tag_uuid"
+                + "WHERE { "
+                + "  GRAPH <http://larkc.eu#Fixedcontext> {"
+                + "    ?concept_url ext:conceptwiki_search_by_tag \"substring_value\";"
+                + "    ext:semantic_type <http://www.conceptwiki.org/concept/eeaec894-d856-4106-9fa1-662b1dc6c6f1> ;"
+                + "    skos:prefLabel ?concept_label ; dc:identifier ?concept_uuid ; "
+                + "    skos:altLabel ?concept_alt_label ; cw:tag ?tag_uuid"
+                + "  }"
+                + "}";
+        String expectedQuery = inputQuery;      
+
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
+
+        IMSSPARQLExpand expander = 
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
+            @Override
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
+            }
+        };
+        expander.initialiseInternal(null);
+        SetOfStatements eQuery = expander.invokeInternalWithExceptions(
+                new SPARQLQueryImpl(inputQuery).toRDF());
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        assertTrue(QueryUtils.sameTupleExpr(expectedQuery, query.toString()));
+    }
+
+    static String CompoundInfoQueryV1 = " PREFIX cspr: <http://rdf.chemspider.com/#> "
                 + " PREFIX chembl: <http://chem2bio2rdf.org/chembl/resource/> "
                 + " PREFIX pdsp: <http://wiki.openphacts.org/index.php/PDSP_DB#> "
                 + " PREFIX skos: <http://www.w3.org/2004/02/skos/core#> "
@@ -157,8 +230,8 @@ public class CoreAPIQueryTest {
      * Test query found in Section compoundInfo  
      */
     @Test
-    public void testCompoundInfoUnMapped  () throws MalformedQueryException, QueryExpansionException {
-        String inputQuery = CompoundInfoQuery;
+    public void testCompoundInfoUnMappedV1  () throws MalformedQueryException, QueryExpansionException {
+        String inputQuery = CompoundInfoQueryV1;
         String expectedQuery = inputQuery;      
 
         final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
@@ -177,7 +250,7 @@ public class CoreAPIQueryTest {
         assertTrue(QueryUtils.sameTupleExpr(expectedQuery, query.toString()));
     }
 
-    static String CompoundInfoQueryMapped = " PREFIX cspr: <http://rdf.chemspider.com/#> "
+    static String CompoundInfoQueryMappedV1 = " PREFIX cspr: <http://rdf.chemspider.com/#> "
                 + " PREFIX chembl: <http://chem2bio2rdf.org/chembl/resource/> "
                 + " PREFIX pdsp: <http://wiki.openphacts.org/index.php/PDSP_DB#> "
                 + " PREFIX skos: <http://www.w3.org/2004/02/skos/core#> "
@@ -244,7 +317,146 @@ public class CoreAPIQueryTest {
      * Test query found in Section compoundInfo  
      */
     @Test
-    public void testCompoundInfoMapped  () throws MalformedQueryException, QueryExpansionException {
+    public void testCompoundInfoMappedV1  () throws MalformedQueryException, QueryExpansionException {
+        String inputQuery = CompoundInfoQueryV1;
+        String expectedQuery = CompoundInfoQueryMappedV1;      
+
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
+        dummyIMSMapper.addMapping("http://www.example.com/werf","http://www.example.com/werf");
+        dummyIMSMapper.addMapping("http://www.example.com/werf","http://bar.ac.uk/19278");
+        dummyIMSMapper.addMapping("http://www.example.com/werf","http://foo.com/45273");
+
+        IMSSPARQLExpand expander = 
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
+            @Override
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
+            }
+        };
+        expander.initialiseInternal(null);
+        SetOfStatements eQuery = expander.invokeInternalWithExceptions(
+                new SPARQLQueryImpl(inputQuery).toRDF());
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        assertTrue(QueryUtils.sameTupleExpr(expectedQuery, query.toString()));
+    }
+
+    static String CompoundInfoQuery = "PREFIX c2b2r_chembl: <http://chem2bio2rdf.org/chembl/resource/>"
+            + " PREFIX chemspider: <http://rdf.chemspider.com/#>"
+            + " PREFIX drugbank: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/>"
+            + " PREFIX skos: <http://www.w3.org/2004/02/skos/core#>"
+            + " SELECT ?prefLabel ?csid_uri ?smiles ?inchi ?inchiKey"
+            + " ?alogp ?hha ?hhd ?molformula ?molweight ?mw_freebase ?num_ro5_violations ?psa ?rtb"
+            + " ?affectedOrganism ?biotransformation ?description ?indication ?meltingPoint ?proteinBinding ?toxicity"
+            + " WHERE {"
+            + "    GRAPH <http://larkc.eu#Fixedcontext> {"
+            + "        <http://www.example.com/werf> skos:prefLabel ?prefLabel "
+            + "    }"
+            + "    GRAPH <http://www.chemspider.com> {"
+            + "        <http://www.example.com/werf> chemspider:smiles ?smiles ;"
+            + "        chemspider:inchi ?inchi ; chemspider:inchikey ?inchiKey ."
+            + "        ?csid_uri chemspider:inchi ?inchi"
+            + "    }"
+            + "    GRAPH <http://www.chem2bio2rdf.org/ChEMBL> {"
+            + "        OPTIONAL { <http://www.example.com/werf> c2b2r_chembl:alogp ?alogp }"
+            + "        OPTIONAL { <http://www.example.com/werf> c2b2r_chembl:hha ?hha }"
+            + "        OPTIONAL { <http://www.example.com/werf> c2b2r_chembl:hhd ?hhd }"
+            + "        OPTIONAL { <http://www.example.com/werf> c2b2r_chembl:molformula ?molformula }"
+            + "        OPTIONAL { <http://www.example.com/werf> c2b2r_chembl:molweight ?molweight }"
+            + "        OPTIONAL { <http://www.example.com/werf> c2b2r_chembl:mw_freebase ?mw_freebase }"
+            + "        OPTIONAL { <http://www.example.com/werf> c2b2r_chembl:num_ro5_violations ?num_ro5_violations }"
+            + "        OPTIONAL { <http://www.example.com/werf> c2b2r_chembl:psa ?psa }"
+            + "        OPTIONAL { <http://www.example.com/werf> c2b2r_chembl:rtb ?rtb }"
+            + "  }"
+            + "    GRAPH <http://linkedlifedata.com/resource/drugbank> {"
+            + "        OPTIONAL {<http://www.example.com/werf> drugbank:affectedOrganism ?affectedOrganism }"
+            + "        OPTIONAL {<http://www.example.com/werf> drugbank:biotransformation ?biotransformation }  "
+            + "        OPTIONAL {<http://www.example.com/werf> drugbank:description ?description }"
+            + "        OPTIONAL {<http://www.example.com/werf> drugbank:indication ?indication }"
+            + "        OPTIONAL {<http://www.example.com/werf> drugbank:proteinBinding ?proteinBinding }"
+            + "        OPTIONAL {<http://www.example.com/werf> drugbank:toxicity ?toxicity }"
+            + "        OPTIONAL {<http://www.example.com/werf> drugbank:meltingPoint ?meltingPoint}"
+            + "    }"
+            + " }";
+    
+    /**
+     * Test query found in Section compoundInfo  
+     */
+    @Test
+    public void testCompoundInfoUnMapped() throws MalformedQueryException, QueryExpansionException {
+        String inputQuery = CompoundInfoQuery;
+        String expectedQuery = inputQuery;      
+
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
+
+        IMSSPARQLExpand expander = 
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
+            @Override
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
+            }
+        };
+        expander.initialiseInternal(null);
+        SetOfStatements eQuery = expander.invokeInternalWithExceptions(
+                new SPARQLQueryImpl(inputQuery).toRDF());
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        assertTrue(QueryUtils.sameTupleExpr(expectedQuery, query.toString()));
+    }
+
+    static String CompoundInfoQueryMapped = "PREFIX c2b2r_chembl: <http://chem2bio2rdf.org/chembl/resource/> \n"
+            + " PREFIX chemspider: <http://rdf.chemspider.com/#>\n"
+            + " PREFIX drugbank: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/>\n"
+            + " PREFIX skos: <http://www.w3.org/2004/02/skos/core#>\n"
+            + " SELECT ?prefLabel ?csid_uri ?smiles ?inchi ?inchiKey\n"
+            + " ?alogp ?hha ?hhd ?molformula ?molweight ?mw_freebase ?num_ro5_violations ?psa ?rtb\n"
+            + " ?affectedOrganism ?biotransformation ?description ?indication ?meltingPoint ?proteinBinding ?toxicity\n"
+            + " WHERE {\n"
+            + "    GRAPH <http://larkc.eu#Fixedcontext> {\n"
+            + "        ?replacedURI1 skos:prefLabel ?prefLabel \n"
+            + "        FILTER (?replacedURI1 = <http://www.example.com/werf> || \n"
+            + "                ?replacedURI1 = <http://bar.ac.uk/19278> || \n"
+            + "                ?replacedURI1 = <http://foo.com/45273>) \n"
+            + "    }\n"
+            + "    GRAPH <http://www.chemspider.com> {\n"
+            + "        ?replacedURI2 chemspider:smiles ?smiles ;\n"
+            + "        chemspider:inchi ?inchi ; chemspider:inchikey ?inchiKey .\n"
+            + "        ?csid_uri chemspider:inchi ?inchi\n"
+            + "        FILTER (?replacedURI2 = <http://www.example.com/werf> || \n"
+            + "                ?replacedURI2 = <http://bar.ac.uk/19278> || \n"
+            + "                ?replacedURI2 = <http://foo.com/45273>) \n"
+            + "    }\n"
+            + "    GRAPH <http://www.chem2bio2rdf.org/ChEMBL> {\n"
+            + "        OPTIONAL { ?replacedURI3 c2b2r_chembl:alogp ?alogp }\n"
+            + "        OPTIONAL { ?replacedURI3 c2b2r_chembl:hha ?hha }\n"
+            + "        OPTIONAL { ?replacedURI3 c2b2r_chembl:hhd ?hhd }\n"
+            + "        OPTIONAL { ?replacedURI3 c2b2r_chembl:molformula ?molformula }\n"
+            + "        OPTIONAL { ?replacedURI3 c2b2r_chembl:molweight ?molweight }\n"
+            + "        OPTIONAL { ?replacedURI3 c2b2r_chembl:mw_freebase ?mw_freebase }\n"
+            + "        OPTIONAL { ?replacedURI3 c2b2r_chembl:num_ro5_violations ?num_ro5_violations }\n"
+            + "        OPTIONAL { ?replacedURI3 c2b2r_chembl:psa ?psa }\n"
+            + "        OPTIONAL { ?replacedURI3 c2b2r_chembl:rtb ?rtb }\n"
+            + "        FILTER (?replacedURI3 = <http://www.example.com/werf> || \n"
+            + "                ?replacedURI3 = <http://bar.ac.uk/19278> || \n"
+            + "                ?replacedURI3 = <http://foo.com/45273>) \n"
+            + "  }\n"
+            + "    GRAPH <http://linkedlifedata.com/resource/drugbank> {\n"
+            + "        OPTIONAL {?replacedURI4 drugbank:affectedOrganism ?affectedOrganism }\n"
+            + "        OPTIONAL {?replacedURI4 drugbank:biotransformation ?biotransformation } \n "
+            + "        OPTIONAL {?replacedURI4 drugbank:description ?description }\n"
+            + "        OPTIONAL {?replacedURI4 drugbank:indication ?indication }\n"
+            + "        OPTIONAL {?replacedURI4 drugbank:proteinBinding ?proteinBinding }\n"
+            + "        OPTIONAL {?replacedURI4 drugbank:toxicity ?toxicity }\n"
+            + "        OPTIONAL {?replacedURI4 drugbank:meltingPoint ?meltingPoint}\n"
+            + "        FILTER (?replacedURI4 = <http://www.example.com/werf> || \n"
+            + "                ?replacedURI4 = <http://bar.ac.uk/19278> || \n"
+            + "                ?replacedURI4 = <http://foo.com/45273>) \n"
+            + "    }\n"
+            + " }";
+    
+    /**
+     * Test query found in Section compoundInfo  
+     */
+    @Test
+    public void testCompoundInfoMapped() throws MalformedQueryException, QueryExpansionException {
         String inputQuery = CompoundInfoQuery;
         String expectedQuery = CompoundInfoQueryMapped;      
 
@@ -267,7 +479,7 @@ public class CoreAPIQueryTest {
         assertTrue(QueryUtils.sameTupleExpr(expectedQuery, query.toString()));
     }
 
-     /**
+    /**
      * Test query found in Section proteinInfo
      */
     @Test
@@ -339,10 +551,108 @@ public class CoreAPIQueryTest {
     }
 
     /**
-     * Test query found in Section compoundPharmacology
+     * Test query found in Section proteinInfo
      */
     @Test
-    public void testCompoundPharmacology () throws MalformedQueryException, QueryExpansionException {
+    public void testProteinInfo () throws MalformedQueryException, QueryExpansionException {
+        String inputQuery = "PREFIX c2b2r_chembl: <http://chem2bio2rdf.org/chembl/resource/>"
+                + " PREFIX chemspider: <http://rdf.chemspider.com/#>"
+                + " PREFIX drugbank: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/>"
+                + " PREFIX farmbio: <http://rdf.farmbio.uu.se/chembl/onto/#>"
+                + " PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
+                + " PREFIX skos: <http://www.w3.org/2004/02/skos/core#>"
+                + " SELECT DISTINCT ?prefLabel ?smiles ?inchi ?inchiKey "
+                + "   ?molweight ?num_ro5_violations ?std_type ?relation ?std_value ?std_unites ?assay_organism "
+                + "   ?compound_name ?drugType "
+                + " WHERE {"
+                + "   GRAPH <http://larkc.eu#Fixedcontext> {"
+                + "     <http://www.example.com/werf> skos:prefLabel ?prefLabel "
+                + "   }"
+                + "   GRAPH <http://www.chem2bio2rdf.org/ChEMBL> {"
+                + "     ?assay2target_uri c2b2r_chembl:tid <http://www.example.com/werf> ;"
+                + "     c2b2r_chembl:assay_id ?assay_uri ; c2b2r_chembl:assay_organism ?assay_organism ."
+                + "     ?activity_uri farmbio:onAssay ?assay_uri ;  c2b2r_chembl:c2b2r_chembl_02_activities_molregno ?compound_uri ;"
+                + "     c2b2r_chembl:std_type ?std_type ; c2b2r_chembl:relation ?relation ; c2b2r_chembl:std_value ?std_value ;"
+                + "     c2b2r_chembl:std_unites ?std_unites"
+                + "     OPTIONAL { ?compound_uri c2b2r_chembl:molweight ?molweight }"
+                + "     OPTIONAL { ?compound_uri c2b2r_chembl:num_ro5_violations ?num_ro5_violations }"
+                + "     OPTIONAL { ?compound_uri c2b2r_chembl:canonical_smiles ?smiles }"
+                + "     OPTIONAL { ?compound_uri c2b2r_chembl:inchi ?inchi}"
+                + "     OPTIONAL { ?compound_uri c2b2r_chembl:inchi_key ?inchiKey}"
+                + "   }"
+                + "   GRAPH <http://linkedlifedata.com/resource/drugbank> {"
+                + "     OPTIONAL {?drug_uri drugbank:target <http://www.example.com/werf> ; drugbank:genericName ?compound_name . ?drug_uri drugbank:drugType ?drugType_uri . "
+                + "       ?drugType_uri rdfs:label ?drugType}"
+                + "   }"
+                + " }   ";
+
+        String expectedQuery = "PREFIX c2b2r_chembl: <http://chem2bio2rdf.org/chembl/resource/>"
+                + " PREFIX chemspider: <http://rdf.chemspider.com/#>"
+                + " PREFIX drugbank: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/>"
+                + " PREFIX farmbio: <http://rdf.farmbio.uu.se/chembl/onto/#>"
+                + " PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
+                + " PREFIX skos: <http://www.w3.org/2004/02/skos/core#>"
+                + " SELECT DISTINCT ?prefLabel ?smiles ?inchi ?inchiKey "
+                + "   ?molweight ?num_ro5_violations ?std_type ?relation ?std_value ?std_unites ?assay_organism "
+                + "   ?compound_name ?drugType "
+                + " WHERE {"
+                + "   GRAPH <http://larkc.eu#Fixedcontext> {"
+                + "     ?replacedURI1 skos:prefLabel ?prefLabel "
+                + "        FILTER (?replacedURI1 = <http://www.example.com/werf> || "
+                + "                ?replacedURI1 = <http://bar.ac.uk/19278> || "
+                + "                ?replacedURI1 = <http://foo.com/45273>) "
+                + "   }"
+                + "   GRAPH <http://www.chem2bio2rdf.org/ChEMBL> {"
+                + "     ?assay2target_uri c2b2r_chembl:tid ?replacedURI2 ;"
+                + "     c2b2r_chembl:assay_id ?assay_uri ; c2b2r_chembl:assay_organism ?assay_organism ."
+                + "     ?activity_uri farmbio:onAssay ?assay_uri ;  c2b2r_chembl:c2b2r_chembl_02_activities_molregno ?compound_uri ;"
+                + "     c2b2r_chembl:std_type ?std_type ; c2b2r_chembl:relation ?relation ; c2b2r_chembl:std_value ?std_value ;"
+                + "     c2b2r_chembl:std_unites ?std_unites"
+                + "     OPTIONAL { ?compound_uri c2b2r_chembl:molweight ?molweight }"
+                + "     OPTIONAL { ?compound_uri c2b2r_chembl:num_ro5_violations ?num_ro5_violations }"
+                + "     OPTIONAL { ?compound_uri c2b2r_chembl:canonical_smiles ?smiles }"
+                + "     OPTIONAL { ?compound_uri c2b2r_chembl:inchi ?inchi}"
+                + "     OPTIONAL { ?compound_uri c2b2r_chembl:inchi_key ?inchiKey}"
+                + "        FILTER (?replacedURI2 = <http://www.example.com/werf> || "
+                + "                ?replacedURI2 = <http://bar.ac.uk/19278> || "
+                + "                ?replacedURI2 = <http://foo.com/45273>) "
+                + "   }"
+                //Moved the optional outside of the graph as that is what the query expander does.
+                + "   OPTIONAL {"
+                + "     GRAPH <http://linkedlifedata.com/resource/drugbank> {"
+                + "         ?drug_uri drugbank:target ?replacedURI3 ; drugbank:genericName ?compound_name . ?drug_uri drugbank:drugType ?drugType_uri . "
+                + "         ?drugType_uri rdfs:label ?drugType"
+                + "         FILTER (?replacedURI3 = <http://www.example.com/werf> || "
+                + "                ?replacedURI3 = <http://bar.ac.uk/19278> || "
+                + "                ?replacedURI3 = <http://foo.com/45273>) "
+                + "     }"
+                + "   }"
+                + " }   ";
+
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
+        dummyIMSMapper.addMapping("http://www.example.com/werf","http://www.example.com/werf");
+        dummyIMSMapper.addMapping("http://www.example.com/werf","http://bar.ac.uk/19278");
+        dummyIMSMapper.addMapping("http://www.example.com/werf","http://foo.com/45273");
+
+        IMSSPARQLExpand expander = 
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
+            @Override
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
+            }
+        };
+        expander.initialiseInternal(null);
+        SetOfStatements eQuery = expander.invokeInternalWithExceptions(
+                new SPARQLQueryImpl(inputQuery).toRDF());
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        assertTrue(QueryUtils.sameTupleExpr(expectedQuery, query.toString()));
+    }
+
+    /**
+     * Old Test query found in Section compoundPharmacology
+     */
+    @Test
+    public void testCompoundPharmacologyV1 () throws MalformedQueryException, QueryExpansionException {
         String inputQuery = "PREFIX brenda: <http://brenda-enzymes.info/> "
                 + " PREFIX pdsp: <http://wiki.openphacts.org/index.php/PDSP_DB#> "
                 + " PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> "
@@ -433,7 +743,237 @@ public class CoreAPIQueryTest {
         assertTrue(QueryUtils.sameTupleExpr(expectedQuery, query.toString()));
     }
 
-    static String PharmacologyQuery = "PREFIX brenda: <http://brenda-enzymes.info/> "
+    /**
+     * Test query found in Section compoundPharmacology
+     */
+    @Test
+    public void testCompoundPharmacology () throws MalformedQueryException, QueryExpansionException {
+        String inputQuery = "PREFIX c2b2r_chembl: <http://chem2bio2rdf.org/chembl/resource/>"
+                + " PREFIX chemspider: <http://rdf.chemspider.com/#>"
+                + " PREFIX drugbank: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/>"
+                + " PREFIX farmbio: <http://rdf.farmbio.uu.se/chembl/onto/#>"
+                + " PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
+                + " PREFIX skos: <http://www.w3.org/2004/02/skos/core#>"
+                + " SELECT DISTINCT ?prefLabel ?csid_uri ?smiles ?inchi ?inchiKey ?molweight ?num_ro5_violations "
+                + "      ?std_type ?relation ?std_value ?std_unites ?assay_organism ?target_pref_name ?drugType "
+                + " WHERE {"
+                + "   GRAPH <http://larkc.eu#Fixedcontext> {"
+                + "     <http://www.example.com/werf> skos:prefLabel ?prefLabel "
+                + "   }"
+                + "   GRAPH <http://www.chemspider.com> {"
+                + "     <http://www.example.com/werf> chemspider:smiles ?smiles ;"
+                + "         chemspider:inchi ?inchi ; "
+                + "         chemspider:inchikey ?inchiKey ."
+                + "     ?csid_uri chemspider:inchi ?inchi"
+                + "   }"
+                + "   GRAPH <http://www.chem2bio2rdf.org/ChEMBL> {"
+                + "     OPTIONAL { "
+                + "         ?activity_uri c2b2r_chembl:c2b2r_chembl_02_activities_molregno  <http://www.example.com/werf> ;"
+                + "             c2b2r_chembl:std_type ?std_type ; "
+                + "             c2b2r_chembl:relation ?relation ; "
+                + "             c2b2r_chembl:std_value ?std_value ;"
+                + "             c2b2r_chembl:std_unites ?std_unites ; "
+                + "             farmbio:onAssay ?assay_uri ."
+                + "         ?assay2target_uri c2b2r_chembl:assay_id ?assay_uri ; "
+                + "             c2b2r_chembl:assay_organism ?assay_organism;"
+                + "             c2b2r_chembl:tid ?tid . "
+                + "         ?tid c2b2r_chembl:pref_name ?target_pref_name "
+                + "     }"
+                + "     OPTIONAL { <http://www.example.com/werf> c2b2r_chembl:molweight ?molweight }"
+                + "     OPTIONAL { <http://www.example.com/werf> c2b2r_chembl:num_ro5_violations ?num_ro5_violations }"
+                + "   }"
+                + "   GRAPH <http://linkedlifedata.com/resource/drugbank> {"
+                + "     OPTIONAL { "
+                + "         <http://www.example.com/werf> drugbank:drugType ?drugType_uri . "
+                + "         ?drugType_uri rdfs:label ?drugType "
+                + "     }"
+                + "   }"
+                + " }"; 
+        String expectedQuery = "PREFIX c2b2r_chembl: <http://chem2bio2rdf.org/chembl/resource/>"
+                + " PREFIX chemspider: <http://rdf.chemspider.com/#>"
+                + " PREFIX drugbank: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/>"
+                + " PREFIX farmbio: <http://rdf.farmbio.uu.se/chembl/onto/#>"
+                + " PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
+                + " PREFIX skos: <http://www.w3.org/2004/02/skos/core#>"
+                + " SELECT DISTINCT ?prefLabel ?csid_uri ?smiles ?inchi ?inchiKey ?molweight ?num_ro5_violations "
+                + "      ?std_type ?relation ?std_value ?std_unites ?assay_organism ?target_pref_name ?drugType "
+                + " WHERE {"
+                + "   GRAPH <http://larkc.eu#Fixedcontext> {"
+                + "     ?replacedURI1 skos:prefLabel ?prefLabel "
+                + "     FILTER (?replacedURI1 = <http://www.example.com/werf> || "
+                + "             ?replacedURI1 = <http://bar.ac.uk/19278> || "
+                + "             ?replacedURI1 = <http://foo.com/45273>) "
+                + "   }"
+                + "   GRAPH <http://www.chemspider.com> {"
+                + "     ?replacedURI2 chemspider:smiles ?smiles ;"
+                + "         chemspider:inchi ?inchi ; "
+                + "         chemspider:inchikey ?inchiKey ."
+                + "     ?csid_uri chemspider:inchi ?inchi"
+                + "     FILTER (?replacedURI2 = <http://www.example.com/werf> || "
+                + "             ?replacedURI2 = <http://bar.ac.uk/19278> || "
+                + "             ?replacedURI2 = <http://foo.com/45273>) "
+                + "   }"
+                + "   GRAPH <http://www.chem2bio2rdf.org/ChEMBL> {"
+                + "     OPTIONAL { "
+                + "         ?activity_uri c2b2r_chembl:c2b2r_chembl_02_activities_molregno  ?replacedURI3 ;"
+                + "             c2b2r_chembl:std_type ?std_type ; "
+                + "             c2b2r_chembl:relation ?relation ; "
+                + "             c2b2r_chembl:std_value ?std_value ;"
+                + "             c2b2r_chembl:std_unites ?std_unites ; "
+                + "             farmbio:onAssay ?assay_uri ."
+                + "         ?assay2target_uri c2b2r_chembl:assay_id ?assay_uri ; "
+                + "             c2b2r_chembl:assay_organism ?assay_organism;"
+                + "             c2b2r_chembl:tid ?tid . "
+                + "         ?tid c2b2r_chembl:pref_name ?target_pref_name "
+                + "     }"
+                + "     OPTIONAL { ?replacedURI3 c2b2r_chembl:molweight ?molweight }"
+                + "     OPTIONAL { ?replacedURI3 c2b2r_chembl:num_ro5_violations ?num_ro5_violations }"
+                + "        FILTER (?replacedURI3 = <http://www.example.com/werf> || "
+                + "                ?replacedURI3 = <http://bar.ac.uk/19278> || "
+                + "                ?replacedURI3 = <http://foo.com/45273>) "
+                + "   }"
+                //Moved the optional outside of the graph as that is what the query expander does.
+                + "   OPTIONAL { "
+                + "      GRAPH <http://linkedlifedata.com/resource/drugbank> {"
+                + "         ?replacedURI4 drugbank:drugType ?drugType_uri . "
+                + "         ?drugType_uri rdfs:label ?drugType "
+                + "        FILTER (?replacedURI4 = <http://www.example.com/werf> || "
+                + "                ?replacedURI4 = <http://bar.ac.uk/19278> || "
+                + "                ?replacedURI4 = <http://foo.com/45273>) "
+                + "     }"
+                + "   }"
+                + " }"; ; 
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
+        dummyIMSMapper.addMapping("http://www.example.com/werf","http://www.example.com/werf");
+        dummyIMSMapper.addMapping("http://www.example.com/werf","http://bar.ac.uk/19278");
+        dummyIMSMapper.addMapping("http://www.example.com/werf","http://foo.com/45273");
+
+        IMSSPARQLExpand expander = 
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
+            @Override
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
+            }
+        };
+        expander.initialiseInternal(null);
+        SetOfStatements eQuery = expander.invokeInternalWithExceptions(
+                new SPARQLQueryImpl(inputQuery).toRDF());
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        assertTrue(QueryUtils.sameTupleExpr(expectedQuery, query.toString()));
+    }
+
+    static String PharmacologyQuery = "PREFIX c2b2r_chembl: <http://chem2bio2rdf.org/chembl/resource/>"
+            + " PREFIX chemspider: <http://rdf.chemspider.com/#>"
+            + " PREFIX drugbank: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/>"
+            + " PREFIX farmbio: <http://rdf.farmbio.uu.se/chembl/onto/#>"
+            + " PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
+            + " PREFIX skos: <http://www.w3.org/2004/02/skos/core#>"
+            + " SELECT DISTINCT ?prefLabel ?smiles ?inchi ?inchiKey ?molweight ?num_ro5_violations ?std_type "
+            + "                 ?relation ?std_value ?std_unites ?assay_organism ?compound_name ?drugType "
+            + " WHERE {"
+            + "   GRAPH <http://larkc.eu#Fixedcontext> {"
+            + "     <http://www.example.com/werf> skos:prefLabel ?prefLabel "
+            + "   }"
+            + "   GRAPH <http://www.chem2bio2rdf.org/ChEMBL> {"
+            + "     ?assay2target_uri c2b2r_chembl:tid   <http://www.example.com/werf> ;"
+            + "         c2b2r_chembl:assay_id ?assay_uri ; "
+            + "         c2b2r_chembl:assay_organism ?assay_organism ."
+            + "     ?activity_uri farmbio:onAssay ?assay_uri ;  "
+            + "         c2b2r_chembl:c2b2r_chembl_02_activities_molregno ?compound_uri ;"
+            + "         c2b2r_chembl:std_type ?std_type ; "
+            + "         c2b2r_chembl:relation ?relation ; "
+            + "         c2b2r_chembl:std_value ?std_value ;"
+            + "         c2b2r_chembl:std_unites ?std_unites"
+            + "     OPTIONAL { ?compound_uri c2b2r_chembl:molweight ?molweight }"
+            + "     OPTIONAL { ?compound_uri c2b2r_chembl:num_ro5_violations ?num_ro5_violations }"
+            + "     OPTIONAL { ?compound_uri c2b2r_chembl:canonical_smiles ?smiles }"
+            + "     OPTIONAL { ?compound_uri c2b2r_chembl:inchi ?inchi}"
+            + "     OPTIONAL { ?compound_uri c2b2r_chembl:inchi_key ?inchiKey}"
+            + "   }"
+            + "   GRAPH <http://linkedlifedata.com/resource/drugbank> {"
+            + "     OPTIONAL {"
+            + "         ?drug_uri drugbank:target   <http://www.example.com/werf> ; "
+            + "             drugbank:genericName ?compound_name . "
+            + "         ?drug_uri drugbank:drugType ?drugType_uri . "
+            + "         ?drugType_uri rdfs:label ?drugType"
+            + "     }"
+            + "   }"
+            + " }";
+
+    /**
+     * Test query found in Section proteinPharmacology
+     */
+    @Test
+    public void testProteinPharmacology () throws MalformedQueryException, QueryExpansionException {
+        String inputQuery = PharmacologyQuery;
+        String expectedQuery = "PREFIX c2b2r_chembl: <http://chem2bio2rdf.org/chembl/resource/>"
+            + " PREFIX chemspider: <http://rdf.chemspider.com/#>"
+            + " PREFIX drugbank: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/>"
+            + " PREFIX farmbio: <http://rdf.farmbio.uu.se/chembl/onto/#>"
+            + " PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
+            + " PREFIX skos: <http://www.w3.org/2004/02/skos/core#>"
+            + " SELECT DISTINCT ?prefLabel ?smiles ?inchi ?inchiKey ?molweight ?num_ro5_violations ?std_type "
+            + "                 ?relation ?std_value ?std_unites ?assay_organism ?compound_name ?drugType "
+            + " WHERE {"
+            + "   GRAPH <http://larkc.eu#Fixedcontext> {"
+            + "     ?replacedURI1 skos:prefLabel ?prefLabel "
+            + "     FILTER (?replacedURI1 = <http://www.example.com/werf> || "
+            + "             ?replacedURI1 = <http://bar.ac.uk/19278> || "
+            + "             ?replacedURI1 = <http://foo.com/45273>) "
+            + "   }"
+            + "   GRAPH <http://www.chem2bio2rdf.org/ChEMBL> {"
+            + "     ?assay2target_uri c2b2r_chembl:tid   ?replacedURI2 ;"
+            + "         c2b2r_chembl:assay_id ?assay_uri ; "
+            + "         c2b2r_chembl:assay_organism ?assay_organism ."
+            + "     ?activity_uri farmbio:onAssay ?assay_uri ;  "
+            + "         c2b2r_chembl:c2b2r_chembl_02_activities_molregno ?compound_uri ;"
+            + "         c2b2r_chembl:std_type ?std_type ; "
+            + "         c2b2r_chembl:relation ?relation ; "
+            + "         c2b2r_chembl:std_value ?std_value ;"
+            + "         c2b2r_chembl:std_unites ?std_unites"
+            + "     OPTIONAL { ?compound_uri c2b2r_chembl:molweight ?molweight }"
+            + "     OPTIONAL { ?compound_uri c2b2r_chembl:num_ro5_violations ?num_ro5_violations }"
+            + "     OPTIONAL { ?compound_uri c2b2r_chembl:canonical_smiles ?smiles }"
+            + "     OPTIONAL { ?compound_uri c2b2r_chembl:inchi ?inchi}"
+            + "     OPTIONAL { ?compound_uri c2b2r_chembl:inchi_key ?inchiKey}"
+            + "     FILTER (?replacedURI2 = <http://www.example.com/werf> || "
+            + "             ?replacedURI2 = <http://bar.ac.uk/19278> || "
+            + "             ?replacedURI2 = <http://foo.com/45273>) "
+            + "   }"
+            //Moved the optional outside of the graph as that is what the query expander does.
+            + "   OPTIONAL {"
+            + "     GRAPH <http://linkedlifedata.com/resource/drugbank> {"
+            + "         ?drug_uri drugbank:target   ?replacedURI3 ; "
+            + "             drugbank:genericName ?compound_name . "
+            + "         ?drug_uri drugbank:drugType ?drugType_uri . "
+            + "         ?drugType_uri rdfs:label ?drugType"
+            + "         FILTER (?replacedURI3 = <http://www.example.com/werf> || "
+            + "                 ?replacedURI3 = <http://bar.ac.uk/19278> || "
+            + "                 ?replacedURI3 = <http://foo.com/45273>) "
+            + "     }"
+            + "   }"
+            + " }";
+
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
+        dummyIMSMapper.addMapping("http://www.example.com/werf","http://www.example.com/werf");
+        dummyIMSMapper.addMapping("http://www.example.com/werf","http://bar.ac.uk/19278");
+        dummyIMSMapper.addMapping("http://www.example.com/werf","http://foo.com/45273");
+
+        IMSSPARQLExpand expander = 
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
+            @Override
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
+            }
+        };
+        expander.initialiseInternal(null);
+        SetOfStatements eQuery = expander.invokeInternalWithExceptions(
+                new SPARQLQueryImpl(inputQuery).toRDF());
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        assertTrue(QueryUtils.sameTupleExpr(expectedQuery, query.toString()));
+    }
+     
+    static String PharmacologyQueryV1 = "PREFIX brenda: <http://brenda-enzymes.info/> "
                 + " PREFIX pdsp: <http://wiki.openphacts.org/index.php/PDSP_DB#> "
                 + " PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
                 + " PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> "
@@ -454,12 +994,13 @@ public class CoreAPIQueryTest {
                 + " 		pdsp:unit ?ki_unit}"
                 + " 	}"
                 + " }";
+
     /**
      * Test query found in Section proteinPharmacology
      */
     @Test
-    public void testProteinPharmacology () throws MalformedQueryException, QueryExpansionException {
-        String inputQuery = PharmacologyQuery;
+    public void testProteinPharmacologyV1 () throws MalformedQueryException, QueryExpansionException {
+        String inputQuery = PharmacologyQueryV1;
         String expectedQuery = "PREFIX brenda: <http://brenda-enzymes.info/> "
                 + " PREFIX pdsp: <http://wiki.openphacts.org/index.php/PDSP_DB#> "
                 + " PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
@@ -532,8 +1073,8 @@ public class CoreAPIQueryTest {
      * Witrh Single replace
      */
     @Test
-    public void testProteinPharmacologySingleReplace () throws MalformedQueryException, QueryExpansionException {
-        String inputQuery = PharmacologyQuery;
+    public void testProteinPharmacologySingleReplaceV1 () throws MalformedQueryException, QueryExpansionException {
+        String inputQuery = PharmacologyQueryV1;
         String expectedQuery = "PREFIX brenda: <http://brenda-enzymes.info/> "
                 + " PREFIX pdsp: <http://wiki.openphacts.org/index.php/PDSP_DB#> "
                 + " PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
@@ -579,7 +1120,7 @@ public class CoreAPIQueryTest {
      * Test query found in Section chemicalSimilaritySearch 
      */
     @Test
-    public void testChemicalSimilaritySearch  () throws MalformedQueryException, QueryExpansionException {
+    public void testChemicalSimilaritySearchV1  () throws MalformedQueryException, QueryExpansionException {
         String inputQuery = "PREFIX cspr: <http://rdf.chemspider.com/#> "
                 + " PREFIX pdsp: <http://wiki.openphacts.org/index.php/PDSP_DB#> "
                 + " PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
@@ -609,6 +1150,116 @@ public class CoreAPIQueryTest {
         String expectedQuery = inputQuery;      
 
         final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
+
+        IMSSPARQLExpand expander = 
+                new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
+            @Override
+            IMSMapper instantiateIMSMapper() {
+                return dummyIMSMapper;
+            }
+        };
+        expander.initialiseInternal(null);
+        SetOfStatements eQuery = expander.invokeInternalWithExceptions(
+                new SPARQLQueryImpl(inputQuery).toRDF());
+        SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(eQuery);
+        assertTrue(QueryUtils.sameTupleExpr(expectedQuery, query.toString()));
+    }
+
+    /**
+     * Test query found in Section chemicalSimilaritySearch 
+     */
+    @Test
+    public void testChemicalSpiderInfo  () throws MalformedQueryException, QueryExpansionException {
+        String inputQuery = " PREFIX c2b2r_chembl: <http://chem2bio2rdf.org/chembl/resource/>"
+                + " PREFIX chemspider: <http://rdf.chemspider.com/#>"
+                + " PREFIX drugbank: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/>"
+                + " SELECT ?csid_uri ?smiles ?inchi ?inchiKey ?alogp ?hha ?hhd ?molformula ?molweight ?mw_freebase "
+                + "        ?num_ro5_violations ?psa ?rtb ?affectedOrganism ?biotransformation ?description ?indication "
+                + "        ?meltingPoint ?proteinBinding ?toxicity "
+                + " WHERE {"
+                + "    GRAPH <http://larkc.eu#Fixedcontext> {"
+                + "        <http://www.example.com/werf> <http://www.w3.org/2004/02/skos/core#prefLabel> ?prefLabel "
+                + "    }"
+                + "    GRAPH <http://www.chemspider.com> {"
+                + "        <http://www.example.com/werf> chemspider:smiles ?smiles ;"
+                + "        chemspider:inchi ?inchi ; chemspider:inchikey ?inchiKey ."
+                + "        ?csid_uri chemspider:inchi ?inchi"
+                + "    }"
+                + "    GRAPH <http://www.chem2bio2rdf.org/ChEMBL> {"
+                + "        OPTIONAL { <http://www.example.com/werf> c2b2r_chembl:alogp ?alogp }"
+                + "        OPTIONAL { <http://www.example.com/werf> c2b2r_chembl:hha ?hha }"
+                + "        OPTIONAL { <http://www.example.com/werf> c2b2r_chembl:hhd ?hhd }"
+                + "        OPTIONAL { <http://www.example.com/werf> c2b2r_chembl:molformula ?molformula }"
+                + "        OPTIONAL { <http://www.example.com/werf> c2b2r_chembl:molweight ?molweight }"
+                + "        OPTIONAL { <http://www.example.com/werf> c2b2r_chembl:mw_freebase ?mw_freebase }"
+                + "        OPTIONAL { <http://www.example.com/werf> c2b2r_chembl:num_ro5_violations ?num_ro5_violations }"
+                + "        OPTIONAL { <http://www.example.com/werf> c2b2r_chembl:psa ?psa }"
+                + "        OPTIONAL { <http://www.example.com/werf> c2b2r_chembl:rtb ?rtb }"
+                + " }"
+                + "    GRAPH <http://linkedlifedata.com/resource/drugbank> {"
+                + "        OPTIONAL {<http://www.example.com/werf> drugbank:affectedOrganism ?affectedOrganism }"
+                + "        OPTIONAL {<http://www.example.com/werf> drugbank:biotransformation ?biotransformation }  "
+                + "        OPTIONAL {<http://www.example.com/werf> drugbank:description ?description }"
+                + "        OPTIONAL {<http://www.example.com/werf> drugbank:indication ?indication }"
+                + "        OPTIONAL {<http://www.example.com/werf> drugbank:proteinBinding ?proteinBinding }"
+                + "        OPTIONAL {<http://www.example.com/werf> drugbank:toxicity ?toxicity }"
+                + "        OPTIONAL {<http://www.example.com/werf> drugbank:meltingPoint ?meltingPoint}"
+                + "    }"
+                + " }";
+
+        String expectedQuery = " PREFIX c2b2r_chembl: <http://chem2bio2rdf.org/chembl/resource/>"
+                + " PREFIX chemspider: <http://rdf.chemspider.com/#>"
+                + " PREFIX drugbank: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/>"
+                + " SELECT ?csid_uri ?smiles ?inchi ?inchiKey ?alogp ?hha ?hhd ?molformula ?molweight ?mw_freebase "
+                + "        ?num_ro5_violations ?psa ?rtb ?affectedOrganism ?biotransformation ?description ?indication "
+                + "        ?meltingPoint ?proteinBinding ?toxicity "
+                + " WHERE {"
+                + "    GRAPH <http://larkc.eu#Fixedcontext> {"
+                + "        ?replacedURI1 <http://www.w3.org/2004/02/skos/core#prefLabel> ?prefLabel "
+                + "        FILTER (?replacedURI1 = <http://www.example.com/werf> || "
+                + "                ?replacedURI1 = <http://bar.ac.uk/19278> || "
+                + "                ?replacedURI1 = <http://foo.com/45273>) "
+                + "    }"
+                + "    GRAPH <http://www.chemspider.com> {"
+                + "        ?replacedURI2 chemspider:smiles ?smiles ;"
+                + "        chemspider:inchi ?inchi ; chemspider:inchikey ?inchiKey ."
+                + "        ?csid_uri chemspider:inchi ?inchi"
+                + "        FILTER (?replacedURI2 = <http://www.example.com/werf> || "
+                + "                ?replacedURI2 = <http://bar.ac.uk/19278> || "
+                + "                ?replacedURI2 = <http://foo.com/45273>) "
+                + "    }"
+                + "    GRAPH <http://www.chem2bio2rdf.org/ChEMBL> {"
+                + "        OPTIONAL { ?replacedURI3 c2b2r_chembl:alogp ?alogp }"
+                + "        OPTIONAL { ?replacedURI3 c2b2r_chembl:hha ?hha }"
+                + "        OPTIONAL { ?replacedURI3 c2b2r_chembl:hhd ?hhd }"
+                + "        OPTIONAL { ?replacedURI3 c2b2r_chembl:molformula ?molformula }"
+                + "        OPTIONAL { ?replacedURI3 c2b2r_chembl:molweight ?molweight }"
+                + "        OPTIONAL { ?replacedURI3 c2b2r_chembl:mw_freebase ?mw_freebase }"
+                + "        OPTIONAL { ?replacedURI3 c2b2r_chembl:num_ro5_violations ?num_ro5_violations }"
+                + "        OPTIONAL { ?replacedURI3 c2b2r_chembl:psa ?psa }"
+                + "        OPTIONAL { ?replacedURI3 c2b2r_chembl:rtb ?rtb }"
+                + "        FILTER (?replacedURI3 = <http://www.example.com/werf> || "
+                + "                ?replacedURI3 = <http://bar.ac.uk/19278> || "
+                + "                ?replacedURI3 = <http://foo.com/45273>) "
+                + " }"
+                + "    GRAPH <http://linkedlifedata.com/resource/drugbank> {"
+                + "        OPTIONAL {?replacedURI4 drugbank:affectedOrganism ?affectedOrganism }"
+                + "        OPTIONAL {?replacedURI4 drugbank:biotransformation ?biotransformation }  "
+                + "        OPTIONAL {?replacedURI4 drugbank:description ?description }"
+                + "        OPTIONAL {?replacedURI4 drugbank:indication ?indication }"
+                + "        OPTIONAL {?replacedURI4 drugbank:proteinBinding ?proteinBinding }"
+                + "        OPTIONAL {?replacedURI4 drugbank:toxicity ?toxicity }"
+                + "        OPTIONAL {?replacedURI4 drugbank:meltingPoint ?meltingPoint}"
+                + "        FILTER (?replacedURI4 = <http://www.example.com/werf> || "
+                + "                ?replacedURI4 = <http://bar.ac.uk/19278> || "
+                + "                ?replacedURI4 = <http://foo.com/45273>) "
+                + "    }"
+                + " }";
+      
+        final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
+        dummyIMSMapper.addMapping("http://www.example.com/werf","http://www.example.com/werf");
+        dummyIMSMapper.addMapping("http://www.example.com/werf","http://bar.ac.uk/19278");
+        dummyIMSMapper.addMapping("http://www.example.com/werf","http://foo.com/45273");
 
         IMSSPARQLExpand expander = 
                 new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
