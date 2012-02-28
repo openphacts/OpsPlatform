@@ -9,7 +9,7 @@ import eu.larkc.core.data.SetOfStatements;
 import eu.larkc.core.query.SPARQLQuery;
 import eu.larkc.core.query.SPARQLQueryImpl;
 import eu.ops.plugin.imssparqlexpand.ims.DummyIMSMapper;
-import eu.ops.plugin.imssparqlexpand.ims.HardCodedFilterMapper;
+import eu.ops.plugin.imssparqlexpand.ims.TestHardCodedFilterMapper;
 import eu.ops.plugin.imssparqlexpand.ims.IMSMapper;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -72,7 +72,7 @@ public class HardCodedFilterMapperTest {
         return fullSet;
     }
     
-    private HardCodedFilterMapper getHardCodedFilterMapper(){
+    private TestHardCodedFilterMapper getHardCodedFilterMapper(){
         final DummyIMSMapper dummyIMSMapper = new DummyIMSMapper();
         dummyIMSMapper.addMapping("http://www.conceptwiki.org/concept/d510239a-6b55-4ca9-8f64-cfc9b8e7c64c" ,
                                   "http://www.conceptwiki.org/concept/d510239a-6b55-4ca9-8f64-cfc9b8e7c64c");
@@ -96,18 +96,18 @@ public class HardCodedFilterMapperTest {
                                   "http://wiki.openphacts.org/index.php/PDSP_DB#36340");
         dummyIMSMapper.addMapping("http://www.conceptwiki.org/concept/d510239a-6b55-4ca9-8f64-cfc9b8e7c64c" ,
                                   "http://wiki.openphacts.org/index.php/PDSP_DB#36341");
-        return new HardCodedFilterMapper(dummyIMSMapper);      
+        return new TestHardCodedFilterMapper(dummyIMSMapper);      
     }
     
     /**
-     * Test of stripoutURIs method, of class HardCodedFilterMapper.
+     * Test of stripoutURIs method, of class TestHardCodedFilterMapper.
      */
     @Test
     public void testStripoutURIsChemspider() throws QueryExpansionException {
         System.out.println("stripoutURIs");
         Set<URI> fullSet = getFullURISet();
         String graph = "http://rdf.chemspider.com/data";
-        HardCodedFilterMapper instance = getHardCodedFilterMapper();
+        TestHardCodedFilterMapper instance = getHardCodedFilterMapper();
         Set expResult = new LinkedHashSet<URI>();
         expResult.add(valueFactory.createURI("http://rdf.chemspider.com/3914"));
         
@@ -116,14 +116,14 @@ public class HardCodedFilterMapperTest {
     }
 
     /**
-     * Test of stripoutURIs method, of class HardCodedFilterMapper.
+     * Test of stripoutURIs method, of class TestHardCodedFilterMapper.
      */
     @Test
     public void testStripoutURIsPDSP_DB() throws QueryExpansionException {
         System.out.println("stripoutURIs");
         Set<URI> fullSet = getFullURISet();
         String graph = "http://PDSP_DB/Data";
-        HardCodedFilterMapper instance = getHardCodedFilterMapper();
+        TestHardCodedFilterMapper instance = getHardCodedFilterMapper();
         Set expResult = new LinkedHashSet<URI>();
         expResult.add(valueFactory.createURI("http://wiki.openphacts.org/index.php/PDSP_DB#23597"));
         expResult.add(valueFactory.createURI("http://wiki.openphacts.org/index.php/PDSP_DB#36322"));
@@ -447,7 +447,7 @@ public class HardCodedFilterMapperTest {
         dummyIMSMapper.addMapping("http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973" ,
                                   "http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugs/DB00398");
 
-        final HardCodedFilterMapper hardCoded = new HardCodedFilterMapper(dummyIMSMapper);
+        final TestHardCodedFilterMapper hardCoded = new TestHardCodedFilterMapper(dummyIMSMapper);
         IMSSPARQLExpand expander = 
                 new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
@@ -510,7 +510,7 @@ public class HardCodedFilterMapperTest {
         dummyIMSMapper.addMapping("http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973" ,
                                   "http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugs/DB00398");
 
-        final HardCodedFilterMapper hardCoded = new HardCodedFilterMapper(dummyIMSMapper);
+        final TestHardCodedFilterMapper hardCoded = new TestHardCodedFilterMapper(dummyIMSMapper);
         IMSSPARQLExpand expander = 
                 new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
@@ -582,7 +582,7 @@ public class HardCodedFilterMapperTest {
         dummyIMSMapper.addMapping("http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973" ,
                                   "http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugs/DB00398");
 
-        final HardCodedFilterMapper hardCoded = new HardCodedFilterMapper(dummyIMSMapper);
+        final TestHardCodedFilterMapper hardCoded = new TestHardCodedFilterMapper(dummyIMSMapper);
         IMSSPARQLExpand expander = 
                 new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
@@ -764,7 +764,7 @@ public class HardCodedFilterMapperTest {
         dummyIMSMapper.addMapping("http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973" ,
                                   "http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugs/DB00398");
 
-        final HardCodedFilterMapper hardCoded = new HardCodedFilterMapper(dummyIMSMapper);
+        final TestHardCodedFilterMapper hardCoded = new TestHardCodedFilterMapper(dummyIMSMapper);
         IMSSPARQLExpand expander = 
                 new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
@@ -882,7 +882,7 @@ public class HardCodedFilterMapperTest {
         dummyIMSMapper.addMapping("http://www.conceptwiki.org/wiki/concept/37ac0ee8-9ff7-454f-ac04-2438e4fac973" ,
                                   "http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugs/DB00398");
 
-        final HardCodedFilterMapper hardCoded = new HardCodedFilterMapper(dummyIMSMapper);
+        final TestHardCodedFilterMapper hardCoded = new TestHardCodedFilterMapper(dummyIMSMapper);
         IMSSPARQLExpand expander = 
                 new IMSSPARQLExpand(new URIImpl("http://larkc.eu/plugin#IMSSPARQLExpand1")) {
             @Override
