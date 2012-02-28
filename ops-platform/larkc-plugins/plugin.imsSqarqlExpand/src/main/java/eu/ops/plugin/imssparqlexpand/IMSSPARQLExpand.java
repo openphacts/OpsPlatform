@@ -8,6 +8,7 @@ import eu.larkc.core.query.SPARQLQueryImpl;
 import eu.larkc.plugin.Plugin;
 import eu.ops.plugin.imssparqlexpand.ims.IMSClient;
 import eu.ops.plugin.imssparqlexpand.ims.IMSMapper;
+import eu.ops.plugin.imssparqlexpand.ims.LarkcHardCodedFilterMapper;
 import eu.ops.plugin.imssparqlexpand.querywriter.QueryExpandAndWriteVisitor;
 import java.util.ArrayList;
 import java.util.List;
@@ -82,7 +83,7 @@ public class IMSSPARQLExpand extends Plugin {
 
     IMSMapper instantiateIMSMapper() {
         //ystem.out.println("*********************");
-        return new IMSClient();
+        return new LarkcHardCodedFilterMapper(new IMSClient());
     }
 
     private SetOfStatements expandQuery(TupleExpr tupleExpr, Dataset dataset)
