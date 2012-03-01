@@ -188,7 +188,7 @@ public class OPSAPIEndpointResource extends ServerResource {
 					if (count > 5) 
 						throw new APIException("Maximum 5 CSIDs");
 					String token = st.nextToken();
-					String uri="http://rdf.chemspider.com/"+token.trim();
+					String uri="<http://rdf.chemspider.com/"+token.trim()+">";
 					if (!sparql.endsWith("WHERE { {"))
 						sparql+= " UNION {";
 					sparql +=" GRAPH <http://larkc.eu#Fixedcontext> { " +
