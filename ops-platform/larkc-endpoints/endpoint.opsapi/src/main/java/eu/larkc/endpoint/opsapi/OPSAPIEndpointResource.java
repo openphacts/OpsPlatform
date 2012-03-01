@@ -192,33 +192,33 @@ public class OPSAPIEndpointResource extends ServerResource {
 					if (!sparql.endsWith("WHERE { {"))
 						sparql+= " UNION {";
 					sparql +=" GRAPH <http://larkc.eu#Fixedcontext> { " +
-								value+" skos:prefLabel ?compound_name " +
+								uri+" skos:prefLabel ?compound_name " +
 							"}" +
 							"GRAPH <http://www.chemspider.com> { " +
-								value+" chemspider:smiles ?smiles ;" +
+								uri+" chemspider:smiles ?smiles ;" +
 								"chemspider:inchi ?inchi ; chemspider:inchikey ?inchiKey . " +
 								"?csid_uri chemspider:inchi ?inchi " +
 							"} " +
 							"GRAPH <http://www.chem2bio2rdf.org/ChEMBL> { " +
-								value+" c2b2r_chembl:molformula ?molformula " +
-								"OPTIONAL { "+value+" c2b2r_chembl:alogp ?alogp } " +
-								"OPTIONAL { "+value+" c2b2r_chembl:hha ?hha } " +
-								"OPTIONAL { "+value+" c2b2r_chembl:hhd ?hhd } " +
-								"OPTIONAL { "+value+" c2b2r_chembl:molweight ?molweight } " +
-								"OPTIONAL { "+value+" c2b2r_chembl:mw_freebase ?mw_freebase } " +
-								"OPTIONAL { "+value+" c2b2r_chembl:num_ro5_violations ?num_ro5_violations } " +
-								"OPTIONAL { "+value+" c2b2r_chembl:psa ?psa } " +
-								"OPTIONAL { "+value+" c2b2r_chembl:rtb ?rtb } " +
+								uri+" c2b2r_chembl:molformula ?molformula " +
+								"OPTIONAL { "+uri+" c2b2r_chembl:alogp ?alogp } " +
+								"OPTIONAL { "+uri+" c2b2r_chembl:hha ?hha } " +
+								"OPTIONAL { "+uri+" c2b2r_chembl:hhd ?hhd } " +
+								"OPTIONAL { "+uri+" c2b2r_chembl:molweight ?molweight } " +
+								"OPTIONAL { "+uri+" c2b2r_chembl:mw_freebase ?mw_freebase } " +
+								"OPTIONAL { "+uri+" c2b2r_chembl:num_ro5_violations ?num_ro5_violations } " +
+								"OPTIONAL { "+uri+" c2b2r_chembl:psa ?psa } " +
+								"OPTIONAL { "+uri+" c2b2r_chembl:rtb ?rtb } " +
 							"} " +
 							"OPTIONAL {" +
 								"GRAPH <http://linkedlifedata.com/resource/drugbank> { " +
-									value+" drugbank:affectedOrganism ?affectedOrganism " +
-									"OPTIONAL {"+value+" drugbank:biotransformation ?biotransformation } " +
-									"OPTIONAL {"+value+" drugbank:description ?description } " +
-									"OPTIONAL {"+value+" drugbank:indication ?indication } " +
-									"OPTIONAL {"+value+" drugbank:proteinBinding ?proteinBinding } " +
-									"OPTIONAL {"+value+" drugbank:toxicity ?toxicity } " +
-									"OPTIONAL {"+value+" drugbank:meltingPoint ?meltingPoint} " +
+									uri+" drugbank:affectedOrganism ?affectedOrganism " +
+									"OPTIONAL {"+uri+" drugbank:biotransformation ?biotransformation } " +
+									"OPTIONAL {"+uri+" drugbank:description ?description } " +
+									"OPTIONAL {"+uri+" drugbank:indication ?indication } " +
+									"OPTIONAL {"+uri+" drugbank:proteinBinding ?proteinBinding } " +
+									"OPTIONAL {"+uri+" drugbank:toxicity ?toxicity } " +
+									"OPTIONAL {"+uri+" drugbank:meltingPoint ?meltingPoint} " +
 								"} " +
 							"} " +
 						"}";
