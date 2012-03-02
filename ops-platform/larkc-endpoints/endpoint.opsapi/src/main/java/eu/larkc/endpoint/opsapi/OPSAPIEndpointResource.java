@@ -542,6 +542,87 @@ public class OPSAPIEndpointResource extends ServerResource {
 		return qr;
 	}
 
+	private SparqlQueryRequest enzymeClassPharmacology(String[] parts) throws APIException {
+		SparqlQueryRequest qr=new SparqlQueryRequest();
+		boolean hasMethod = false;
+		String sparql="";
+		for (String part : parts) {
+			int eq = part.indexOf('=');
+			if (eq < 0) {
+				logger.warn("Warning: no \'=\' sign in \"" + part
+						+ "\" in the URL.");
+				continue;
+			}
+			String rawName = part.substring(0, eq);
+			String rawValue = part.substring(eq + 1);
+			String name, value;
+			try {
+				name = URLDecoder.decode(rawName, "UTF-8");
+				value = URLDecoder.decode(rawValue, "UTF-8");
+			} catch (UnsupportedEncodingException e) {
+				throw new APIException(e.toString());
+			}
+			if (name.equals("method")) {
+				if (hasMethod) {
+					throw new APIException("More than one value of the \""
+						+ name
+						+ "\" parameter is being provided (first \""
+						+ qr.getQuery() + "\", then \"" + value
+						+ "\").");
+				}
+				hasMethod = true;
+			} else if (name.equals("class")) {
+				sparql= "PREFIX c2b2r_chembl: <http://chem2bio2rdf.org/chembl/resource/> " +
+						"PREFIX chemspider: <http://rdf.chemspider.com/#> " +
+						"PREFIX drugbank: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/> " +
+						"PREFIX farmbio: <http://rdf.farmbio.uu.se/chembl/onto/#> " +
+						"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> " +
+						"PREFIX skos: <http://www.w3.org/2004/02/skos/core#> " +
+						"SELECT DISTINCT ?target_name ?target_class ?compound_name ?csid_uri ?smiles ?inchi ?inchiKey ?molweight ?num_ro5_violations " +
+							"?std_type ?relation ?std_value ?std_unites ?assay_organism ?drug_name ?drug_type " +
+						"WHERE { " +
+							"GRAPH <http://www.chem2bio2rdf.org/ChEMBL> { " +
+								"?class rdfs:subClassOf <class_uri> . " +
+								"?tid c2b2r_chembl:ec_number ?class . ?tid c2b2r_chembl:pref_name ?target_name . " +
+								"?assay2target_uri c2b2r_chembl:tid ?tid ; " +
+								"c2b2r_chembl:assay_id ?assay_uri ; c2b2r_chembl:assay_organism ?assay_organism . " +
+								"?activity_uri farmbio:onAssay ?assay_uri ;  c2b2r_chembl:c2b2r_chembl_02_activities_molregno ?compound_uri ; " +
+								"c2b2r_chembl:std_type ?std_type ; c2b2r_chembl:relation ?relation ; c2b2r_chembl:std_value ?std_value ; " +
+								"c2b2r_chembl:std_unites ?std_unites . ?csid_uri skos:exactMatch ?compound_uri " +
+								"OPTIONAL { ?compound_uri c2b2r_chembl:molweight ?molweight } " +
+								"OPTIONAL { ?compound_uri c2b2r_chembl:num_ro5_violations ?num_ro5_violations } " +
+								"OPTIONAL { ?compound_uri c2b2r_chembl:canonical_smiles ?smiles } " +
+								"OPTIONAL { ?compound_uri c2b2r_chembl:inchi ?inchi} " +
+								"OPTIONAL { ?compound_uri c2b2r_chembl:inchi_key ?inchiKey} " +
+							"} " +
+							"GRAPH <http://larkc.eu#Fixedcontext> { " +
+								"?compound_cw skos:exactMatch ?csid_uri ; skos:prefLabel ?compound_name " +
+							"} " +
+						"}" ;
+			}
+			else if (name.equals("default-graph-uri")) {
+				qr.addDefaultGraphUri(value);
+			} else if (name.equals("named-graph-uri")) {
+				qr.addNamedGraphUri(value);
+			} else if (name.equals("limit")) {
+				sparql+=" LIMIT "+value;
+			} else if (name.equals("offset")) {
+				sparql+=" OFFSET "+value;
+			} 				
+			else {
+				throw new APIException("Unknown parameter name: \""
+						+ name + "\" for method proteinPharmacology; "+
+						" should be \"uri\", \"limit\", \"offset\", \"default-graph-uri\" or \"named-graph-uri\"." +
+						"URIs should be contained in <>");
+				}
+		}
+		if(!sparql.toUpperCase().contains("LIMIT")){
+			sparql+=" LIMIT 100";
+		}
+		logger.debug("Setting query: "+sparql);
+		qr.setQuery(sparql);
+		return qr;
+	}
 
 	private SparqlQueryRequest proteinPharmacology(String[] parts) throws APIException {
 		SparqlQueryRequest qr=new SparqlQueryRequest();
@@ -600,6 +681,7 @@ public class OPSAPIEndpointResource extends ServerResource {
 							"} " +
 							"OPTIONAL {" +
 								"GRAPH <http://linkedlifedata.com/resource/drugbank> {" +
+									"?csid_uri skos:exactMatch ?drug_uri " +
 									"OPTIONAL {?drug_uri drugbank:target   "+value+" ; drugbank:genericName ?drug_name ; drugbank:drugType ?drugType_uri . " +
 										"?drugType_uri rdfs:label ?drug_type " +
 									"} " +
