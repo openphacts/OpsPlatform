@@ -99,7 +99,7 @@ public class HBaseUtil {
 	    table.put(row);
 	}
 	
-	public static ArrayList<ArrayList<String>> getRow (String URI, String tableName)  throws IOException {
+	public static ArrayList<ArrayList<String>> getRow(String URI, String tableName)  throws IOException {
 		HBaseConfiguration conf = new HBaseConfiguration();
 	    conf.set("hbase.master","localhost:60000");
 	    HTable table = new HTable(conf, tableName);
@@ -114,18 +114,38 @@ public class HBaseUtil {
 	    	KeyValue k = (KeyValue)it.next();
 	    	ArrayList<String> triple = new ArrayList();
 	    	
-	    	String pred = k.getFamily().toString();
+	    	String pred = Bytes.toString(k.getFamily());
 	    	if (pred.compareTo("literal") == 0) {
-	    		pred = k.getQualifier().toString();
+	    		pred = Bytes.toString(k.getQualifier());
 	    	}
 	    	triple.add(pred);
 	    	
-	    	String val = k.getValue().toString();
+	    	String val = Bytes.toString(k.getValue());
 	    	triple.add(val);
 	    	
 	    	list.add(triple);
 	    }
 	    
 	    return list;
+	}
+	
+	public static String getPredicate(String pred) throws IOException {
+		String URI = "";
+		
+		HBaseConfiguration conf = new HBaseConfiguration();
+	    conf.set("hbase.master","localhost:60000");
+	    HTable table = new HTable(conf, "predicates");
+	    
+		Get g = new Get(Bytes.toBytes(pred));
+	    Result r = table.get(g);
+	    
+	    List<KeyValue> rawList = r.list();
+	    
+	    for (Iterator<KeyValue> it = rawList.iterator(); it.hasNext();) {
+	    	KeyValue k = (KeyValue)it.next();
+	    	URI = Bytes.toString(k.getValue());
+	    }
+		
+		return URI;
 	}
 }
