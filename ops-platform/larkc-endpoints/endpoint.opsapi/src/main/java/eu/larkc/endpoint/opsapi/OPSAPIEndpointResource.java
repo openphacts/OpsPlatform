@@ -584,7 +584,7 @@ public class OPSAPIEndpointResource extends ServerResource {
 							"?std_type ?relation ?std_value ?std_unites ?assay_organism ?drug_name ?drug_type " +
 						"WHERE { " +
 							"GRAPH <http://www.chem2bio2rdf.org/ChEMBL> { " +
-								"?class rdfs:subClassOf <http://chem2bio2rdf.org/uniprot/resource/enzyme/"+value+"> . " +
+								"?class rdfs:subClassOf <http://chem2bio2rdf.org/uniprot/resource/enzyme/"+value+">  ; skos:prefLabel ?target_class . " +
 								"?tid c2b2r_chembl:ec_number ?class . ?tid c2b2r_chembl:pref_name ?target_name . " +
 								"?assay2target_uri c2b2r_chembl:tid ?tid ; " +
 								"c2b2r_chembl:assay_id ?assay_uri ; c2b2r_chembl:assay_organism ?assay_organism . " +
