@@ -122,6 +122,8 @@ public class OPSAPIEndpointResource extends ServerResource {
 			qr=compoundPharmacology(parts);
 		} else if (method.equals("proteinPharmacology")){
 			qr=proteinPharmacology(parts);		
+		} else if (method.equals("enzymeClassPharmacology")){
+			qr=enzymeClassPharmacology(parts);	
 		/*} else if (method.equals("chemicalExactStructureSearch")){
 			qr=chemicalExactStructureSearch(parts);
 		} else if (method.equals("chemicalSubstructureSearch")){
