@@ -110,11 +110,11 @@ public class OPSAPIEndpointResource extends ServerResource {
 			qr=superclasses(parts);	
 		} else if (method.equals("subclasses")){
 			qr=subclasses(parts);
-		} else if (method.equals("compoundLookup")){
+		} /*else if (method.equals("compoundLookup")){
 			qr=compoundLookup(parts);
 		} else if (method.equals("proteinLookup")){
 			qr=proteinLookup(parts);
-		} else if (method.equals("compoundInfo")){
+		}*/ else if (method.equals("compoundInfo")){
 			qr=compoundInfo(parts);				
 		} else if (method.equals("proteinInfo")){
 			qr=proteinInfo(parts);
@@ -754,7 +754,7 @@ public class OPSAPIEndpointResource extends ServerResource {
 						"PREFIX skos: <http://www.w3.org/2004/02/skos/core#> " +
 						"SELECT DISTINCT ?compound_name ?target_name ?csid_uri ?smiles ?inchi ?inchiKey ?molweight ?num_ro5_violations " +
 							"?std_type ?relation ?std_value ?std_unites ?assay_organism " +
-							"?drugName ?drugType " +
+							"?drug_name ?drug_type " +
 						"WHERE { " +
 							"GRAPH <http://larkc.eu#Fixedcontext> { " +
 								value+" skos:prefLabel ?compound_name " +
@@ -776,7 +776,7 @@ public class OPSAPIEndpointResource extends ServerResource {
 							"OPTIONAL { " +
 								"GRAPH <http://linkedlifedata.com/resource/drugbank> { " +
 									value+" drugbank:drugType ?drugType_uri ; drugbank:genericName ?drug_name . " +
-									"?drugType_uri rdfs:label ?drugType " +
+									"?drugType_uri rdfs:label ?drug_type " +
 								"} " +
 							"} " +
 						"}";
