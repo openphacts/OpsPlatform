@@ -75,7 +75,9 @@ System.out.println("***********Number of matches for " + uri + ": " + matches.si
         List<URI> uriList = new ArrayList<URI>();
         for (Match match : matches) {
             URI uri = new URIImpl(match.getMatchUri());
-            uriList.add(uri);
+            if (!uriList.contains(uri)){
+                uriList.add(uri);
+            }
         }
         return uriList;
     }

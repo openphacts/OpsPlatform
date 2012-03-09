@@ -48,7 +48,6 @@ public class HardCodedFilterMapper extends IMSFilterMapper{
         nameSpaces.add("http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugs/");
         allowedNamespaces.put("http://www4.wiwiss.fu-berlin.de/data", nameSpaces);
         
-        //Real ones 
         //http://larkc.eu#Fixedcontext
         nameSpaces = new ArrayList<String>();
         nameSpaces.add("http://www.conceptwiki.org/wiki/concept/");

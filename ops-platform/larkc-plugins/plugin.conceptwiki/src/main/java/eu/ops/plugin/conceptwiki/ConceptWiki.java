@@ -94,6 +94,7 @@ public class ConceptWiki extends Plugin
 
 	private InputStream cw_call_api(String query) {
 		String q = query.replaceAll("[\'\"]", "");
+		q=q.replaceAll("http://www.conceptwiki.org/concept/","");
 		String request = "http://staging.conceptwiki.org/web-ws/concept/" + q;
 		logger.info(request);
 		HttpClient client = new HttpClient();
@@ -183,7 +184,7 @@ public class ConceptWiki extends Plugin
 							cw_query += "q=" + o.toString() + "&uuid=";
 						} else {
 							logger.info("Found a " + CW_TAG_SPEC + " predicate");
-							cw_query += "uuid=" + o.toString().replaceAll("http://www.conceptwiki.org/wiki/concept/","") + "&q=";
+							cw_query += "uuid=" + o.toString() + "&q=";
  						}
 						if(sp_i.hasNext()) {
 							sp = sp_i.next();
@@ -208,7 +209,7 @@ public class ConceptWiki extends Plugin
                     		//logger.info("statement sub: " + s.getSubject().toString().trim() + "\n");
                     		//logger.info("statement pre: " + s.getPredicate().toString().trim() + "\n");
                     		//logger.info("statement obj: " + s.getObject().toString().trim() + "\n");
-                    		logger.info(s.getSubject().toString().trim() + "\t" + s.getPredicate().toString().trim() + "\t" + s.getObject().toString().trim());
+                    		//logger.info(s.getSubject().toString().trim() + "\t" + s.getPredicate().toString().trim() + "\t" + s.getObject().toString().trim());
                     		// collect UUIDs 
                     		if(s.getPredicate().toString().endsWith("www.w3.org/1999/02/22-rdf-syntax-ns#type")) {
                     			uuidCache.add(s.getSubject().toString());
@@ -225,7 +226,7 @@ public class ConceptWiki extends Plugin
                     	// if the cw_call_api() succeeds, then add 1 or 2 (for getByTag) triples that link query to result
                     	// parse call will put UUIDs in uuidCache
                     	uuidCache.clear();
-                    	InputStream cw_result = cw_call_api(cw_query + o.toString().replaceAll("http://www.conceptwiki.org/wiki/concept/",""));
+                    	InputStream cw_result = cw_call_api(cw_query + o.toString());
 						parser.parse(cw_result, outputGraphName.toString());
 					} catch (Exception e) {
 						logger.error("Could not parse result of call to ConceptWiki");
