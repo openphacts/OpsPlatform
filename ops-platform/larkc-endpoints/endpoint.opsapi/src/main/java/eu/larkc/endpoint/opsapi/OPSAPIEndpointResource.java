@@ -681,14 +681,14 @@ public class OPSAPIEndpointResource extends ServerResource {
 								""+value+" skos:prefLabel ?target_name . " +
 								"?compound_cw skos:exactMatch ?csid_uri ; skos:prefLabel ?compound_name " +
 							"} " +
-							"OPTIONAL {" +
+							/*"OPTIONAL {" +
 								"GRAPH <http://linkedlifedata.com/resource/drugbank> {" +
 									"?csid_uri skos:exactMatch ?drug_uri " +
 									"OPTIONAL {?drug_uri drugbank:target   "+value+" ; drugbank:genericName ?drug_name ; drugbank:drugType ?drugType_uri . " +
 										"?drugType_uri rdfs:label ?drug_type " +
 									"} " +
 								"}" +
-							"} " +
+							"} " +*/
 						"}" ;
 			}
 			else if (name.equals("default-graph-uri")) {
@@ -773,12 +773,12 @@ public class OPSAPIEndpointResource extends ServerResource {
 								"OPTIONAL { "+value+" c2b2r_chembl:molweight ?molweight } " +
 								"OPTIONAL { "+value+" c2b2r_chembl:num_ro5_violations ?num_ro5_violations } " +
 							"} " +
-							"OPTIONAL { " +
+							/*"OPTIONAL { " +
 								"GRAPH <http://linkedlifedata.com/resource/drugbank> { " +
 									value+" drugbank:drugType ?drugType_uri ; drugbank:genericName ?drug_name . " +
 									"?drugType_uri rdfs:label ?drug_type " +
 								"} " +
-							"} " +
+							"} " +*/
 						"}";
 			} else if (name.equals("default-graph-uri")) {
 				qr.addDefaultGraphUri(value);
