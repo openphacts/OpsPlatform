@@ -114,7 +114,7 @@ public class OPSAPIEndpointResource extends ServerResource {
 			qr=compoundLookup(parts);
 		} else if (method.equals("proteinLookup")){
 			qr=proteinLookup(parts);
-		} else */if (method.equals("compoundInfo")){
+		} else if (method.equals("compoundInfo")){
 			qr=compoundInfo(parts);				
 		} else if (method.equals("proteinInfo")){
 			qr=proteinInfo(parts);
