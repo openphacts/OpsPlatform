@@ -84,7 +84,7 @@ public class OPSAPIEndpointResource extends ServerResource {
 		String method="";
         method=query.substring(methodIndexStart+7,methodIndexEnd);
         logger.debug("Method:"+method);
-		if (method.equals("sparql")){
+		/*if (method.equals("sparql")){
 			qr=sparql(parts);
 		} else if (method.equals("triplesWithSubject")){
 			qr=triplesWithSubject(parts);		
@@ -110,11 +110,11 @@ public class OPSAPIEndpointResource extends ServerResource {
 			qr=superclasses(parts);	
 		} else if (method.equals("subclasses")){
 			qr=subclasses(parts);
-		} /*else if (method.equals("compoundLookup")){
+		} else if (method.equals("compoundLookup")){
 			qr=compoundLookup(parts);
 		} else if (method.equals("proteinLookup")){
 			qr=proteinLookup(parts);
-		}*/ else if (method.equals("compoundInfo")){
+		} else */if (method.equals("compoundInfo")){
 			qr=compoundInfo(parts);				
 		} else if (method.equals("proteinInfo")){
 			qr=proteinInfo(parts);
@@ -129,9 +129,9 @@ public class OPSAPIEndpointResource extends ServerResource {
 		} else if (method.equals("chemicalSubstructureSearch")){
 			qr=chemicalSubstructureSearch(parts);
 		} else if (method.equals("chemicalSimilaritySearch")){
-			qr=chemicalSimilaritySearch(parts);*/
+			qr=chemicalSimilaritySearch(parts);
 		} else if (method.equals("chemspiderInfo")){
-			qr=chemspiderInfo(parts);
+			qr=chemspiderInfo(parts);*/
 		} else {
 			throw new APIException("Unknown method name: "+method+". Use one of: " );
 		}
@@ -1010,12 +1010,19 @@ public class OPSAPIEndpointResource extends ServerResource {
 					throw new APIException("Substrings should be at least 4 characters long.");
 				}
 				else {
-					sparql= "PREFIX db: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/>" +
-							"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>" +
-						" SELECT DISTINCT ?protein_uri ?protein_name WHERE " +
-							"{ ?protein_uri a db:targets ." +
-								"{ ?protein_uri rdfs:label ?protein_name } " +
-				 				"FILTER regex(?protein_name, \""+value+"\", \"i\") }";
+					sparql= "PREFIX ext: <http://wiki.openphacts.org/index.php/ext_function#> " +
+							"PREFIX skos: <http://www.w3.org/2004/02/skos/core#> " +
+							"PREFIX cw: <http://www.conceptwiki.org/wiki/concept/> " +
+							"PREFIX dc: <http://purl.org/dc/elements/1.1/> " +
+							"SELECT DISTINCT ?concept_label ?concept_url ?concept_uuid ?concept_alt_label ?tag_uuid " +
+							"WHERE {" +
+								"GRAPH <http://larkc.eu#Fixedcontext> { " +
+									"?concept_url ext:conceptwiki_search_by_tag "+value+" ; " +
+									"ext:semantic_type <http://www.conceptwiki.org/concept/eeaec894-d856-4106-9fa1-662b1dc6c6f1> ; " +
+									"skos:prefLabel ?concept_label ; dc:identifier ?concept_uuid ; " +
+									"skos:altLabel ?concept_alt_label ; cw:tag ?tag_uuid " +
+								"}" +
+							"}";
 				}
 			} else if (name.equals("default-graph-uri")) {
 				qr.addDefaultGraphUri(value);
@@ -1076,18 +1083,19 @@ public class OPSAPIEndpointResource extends ServerResource {
 					throw new APIException("Substrings should be at least 4 characters long.");
 				}
 				else {
-					sparql= "PREFIX cspr: <http://rdf.chemspider.com/#> " +
+					sparql= "PREFIX ext: <http://wiki.openphacts.org/index.php/ext_function#> " +
 							"PREFIX skos: <http://www.w3.org/2004/02/skos/core#> " +
-							"PREFIX db: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/> " +
-							"PREFIX chembl: <http://chem2bio2rdf.org/chembl/resource/> " +
-							"SELECT DISTINCT ?compound_uri ?compound_name WHERE { " +
-							"{?compound_uri cspr:synonym ?compound_name} " +
-							"UNION {?compound_uri cspr:exturl ?mapping . " +
-							"?mapping skos:exactMatch ?chebi . " +
-							"?c2b2r_ChEMBL chembl:chebi ?chebi ; chembl:cid ?cid . " +
-							"?drugbank_uri db:pubchemCompoundURL ?cid ; " +
-							"db:brandName ?compound_name} " +
-			 				"FILTER regex(?compound_name, \""+value+"\", \"i\") } ";
+							"PREFIX cw: <http://www.conceptwiki.org/wiki/concept/> " +
+							"PREFIX dc: <http://purl.org/dc/elements/1.1/> " +
+							"SELECT DISTINCT ?concept_label ?concept_url ?concept_uuid ?concept_alt_label ?tag_uuid" +
+							"WHERE { " +
+								"GRAPH <http://larkc.eu#Fixedcontext> {" +
+									"?concept_url ext:conceptwiki_search_by_tag " + value + " ; " +
+									"ext:semantic_type <http://www.conceptwiki.org/concept/07a84994-e464-4bbf-812a-a4b96fa3d197> ; " +
+									"skos:prefLabel ?concept_label ; dc:identifier ?concept_uuid ; " +
+									"skos:altLabel ?concept_alt_label ; cw:tag ?tag_uuid " +
+								"} " +
+							"}";
 				}
 			} else if (name.equals("default-graph-uri")) {
 				qr.addDefaultGraphUri(value);
