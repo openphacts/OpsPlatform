@@ -84,7 +84,7 @@ public class OPSAPIEndpointResource extends ServerResource {
 		String method="";
         method=query.substring(methodIndexStart+7,methodIndexEnd);
         logger.debug("Method:"+method);
-		/*if (method.equals("sparql")){
+		if (method.equals("sparql")){
 			qr=sparql(parts);
 		} else if (method.equals("triplesWithSubject")){
 			qr=triplesWithSubject(parts);		
