@@ -68,6 +68,7 @@ public class OPSClient {
 	public String runQuery(String endpoint, String sparql) throws ParseException, IOException {
 		List<NameValuePair> formparams = new ArrayList<NameValuePair>();
 		formparams.add(new BasicNameValuePair("query", sparql));
+		formparams.add(new BasicNameValuePair("method", "sparql"));
 		UrlEncodedFormEntity entity = new UrlEncodedFormEntity(formparams, "UTF-8");
 		HttpPost httppost = new HttpPost(endpoint);
 		httppost.setEntity(entity);

@@ -31,6 +31,8 @@ call:moveFile target\*SNAPSHOT.jar   ..\..\platform\plugins
 
 call:changeDirectory "%LARKC_PATH%\platform\endpoints\endpointsSourceCode\endpoint.sparql\
 call mvn install
+call mvn assembly:assembly
+call:moveFile target\*SNAPSHOT.jar   ..\..
 
 rem Removed December 8th 2011 By Christian
 rem Integeration tests where broken.
@@ -51,6 +53,14 @@ call:changeDirectory "%OPS_PATH%\ops-platform\larkc-plugins\plugin.edfsearch"
 call mvn assembly:assembly
 call:moveFile target\*SNAPSHOT.jar "%LARKC_PATH%\platform\plugins"
 
+call:changeDirectory "%OPS_PATH%\ops-platform\larkc-plugins\plugin.conceptwiki"
+call mvn assembly:assembly
+call:moveFile target\*SNAPSHOT.jar "%LARKC_PATH%\platform\plugins"
+
+call:changeDirectory "%OPS_PATH%\ops-platform\larkc-plugins\plugin.imsSqarqlExpand"
+call mvn assembly:assembly -DdescriptorId=jar-with-dependencies -Dmaven.test.skip=true
+call:moveFile target\*SNAPSHOT-LarkcPluginAssembly.jar "%LARKC_PATH%\platform\plugins"
+
 call:changeDirectory "%OPS_PATH%\ops-platform\larkc-plugins\plugin.chemcallout\ChemSpiderServices"
 call mvn install -Dmaven.test.skip=true
 call:changeDirectory "%OPS_PATH%\ops-platform\larkc-plugins\plugin.chemcallout"
@@ -58,8 +68,8 @@ call mvn assembly:assembly -Dmaven.test.skip=true
 call:moveFile target\*SNAPSHOT-LarkcPluginAssembly.jar "%LARKC_PATH%\platform\plugins"
 
 call:changeDirectory "%OPS_PATH%\ops-platform\larkc-endpoints\endpoint.opsapi
-mvn assembly:assembly
-call:moveFile target\*SNAPSHOT-LarkcEndpointAssembly.jar "%LARKC_PATH%\platform\plugins"
+call mvn assembly:assembly
+call:moveFile target\*SNAPSHOT-LarkcEndpointAssembly.jar "%LARKC_PATH%\platform\endpoints"
 
 rem back to here to rerun
 call:changeDirectory "%OPS_PATH%\ops-platform\scripts"

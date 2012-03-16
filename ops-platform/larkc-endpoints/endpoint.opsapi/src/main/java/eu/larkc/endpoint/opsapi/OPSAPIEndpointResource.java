@@ -26,6 +26,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URLDecoder;
+import java.util.StringTokenizer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,7 +84,7 @@ public class OPSAPIEndpointResource extends ServerResource {
 		String method="";
         method=query.substring(methodIndexStart+7,methodIndexEnd);
         logger.debug("Method:"+method);
-		if (method.equals("sparql")){
+		/*if (method.equals("sparql")){
 			qr=sparql(parts);
 		} else if (method.equals("triplesWithSubject")){
 			qr=triplesWithSubject(parts);		
@@ -113,7 +114,7 @@ public class OPSAPIEndpointResource extends ServerResource {
 			qr=compoundLookup(parts);
 		} else if (method.equals("proteinLookup")){
 			qr=proteinLookup(parts);
-		} else if (method.equals("compoundInfo")){
+		} else */if (method.equals("compoundInfo")){
 			qr=compoundInfo(parts);				
 		} else if (method.equals("proteinInfo")){
 			qr=proteinInfo(parts);
@@ -121,12 +122,16 @@ public class OPSAPIEndpointResource extends ServerResource {
 			qr=compoundPharmacology(parts);
 		} else if (method.equals("proteinPharmacology")){
 			qr=proteinPharmacology(parts);		
-		} else if (method.equals("chemicalExactStructureSearch")){
+		} else if (method.equals("enzymeClassPharmacology")){
+			qr=enzymeClassPharmacology(parts);	
+		/*} else if (method.equals("chemicalExactStructureSearch")){
 			qr=chemicalExactStructureSearch(parts);
 		} else if (method.equals("chemicalSubstructureSearch")){
 			qr=chemicalSubstructureSearch(parts);
 		} else if (method.equals("chemicalSimilaritySearch")){
 			qr=chemicalSimilaritySearch(parts);
+		} else if (method.equals("chemspiderInfo")){
+			qr=chemspiderInfo(parts);*/
 		} else {
 			throw new APIException("Unknown method name: "+method+". Use one of: " );
 		}
@@ -139,6 +144,110 @@ public class OPSAPIEndpointResource extends ServerResource {
 			e.printStackTrace();
 			throw new APIException("Should never happen" );
 		}
+		return qr;
+	}
+	
+	private SparqlQueryRequest chemspiderInfo(String[] parts) throws APIException {
+		SparqlQueryRequest qr=new SparqlQueryRequest();
+		boolean hasMethod = false;
+		String sparql ="PREFIX c2b2r_chembl: <http://chem2bio2rdf.org/chembl/resource/>" +
+				"PREFIX chemspider: <http://rdf.chemspider.com/#>" +
+				"PREFIX drugbank: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/>" +
+				"PREFIX skos: <http://www.w3.org/2004/02/skos/core#>" +
+				"SELECT DISTINCT ?compound_name ?csid_uri ?molformula ?molweight ?inchi ?inchiKey ?smiles" +
+				"?alogp ?hha ?hhd ?mw_freebase ?num_ro5_violations ?psa ?rtb" +
+				"?meltingPoint ?affectedOrganism ?biotransformation ?description ?indication ?proteinBinding ?toxicity" +
+				"WHERE { {";
+		for (String part : parts) {
+			int eq = part.indexOf('=');
+			if (eq < 0) {
+				logger.warn("Warning: no \'=\' sign in \"" + part
+						+ "\" in the URL.");
+				continue;
+			}
+			String rawName = part.substring(0, eq);
+			String rawValue = part.substring(eq + 1);
+			String name, value;
+			try {
+				name = URLDecoder.decode(rawName, "UTF-8");
+				value = URLDecoder.decode(rawValue, "UTF-8");
+			} catch (UnsupportedEncodingException e) {
+				throw new APIException(e.toString());
+			}
+			if (name.equals("method")) {
+				if (hasMethod) {
+					throw new APIException("More than one value of the \""
+						+ name
+						+ "\" parameter is being provided (first \""
+						+ qr.getQuery() + "\", then \"" + value
+						+ "\").");
+				}
+				hasMethod = true;
+			} else if (name.equals("csids")) {
+				StringTokenizer st = new StringTokenizer(value, ",");
+				int count=0;
+				while (st.hasMoreTokens()){
+					if (count > 5) 
+						throw new APIException("Maximum 5 CSIDs");
+					String token = st.nextToken();
+					String uri="<http://rdf.chemspider.com/"+token.trim()+">";
+					if (!sparql.endsWith("WHERE { {"))
+						sparql+= " UNION {";
+					sparql +=" GRAPH <http://larkc.eu#Fixedcontext> { " +
+								uri+" skos:prefLabel ?compound_name " +
+							"}" +
+							"GRAPH <http://www.chemspider.com> { " +
+								uri+" chemspider:smiles ?smiles ;" +
+								"chemspider:inchi ?inchi ; chemspider:inchikey ?inchiKey . " +
+								"?csid_uri chemspider:inchi ?inchi " +
+							"} " +
+							"GRAPH <http://www.chem2bio2rdf.org/ChEMBL> { " +
+								uri+" c2b2r_chembl:molformula ?molformula " +
+								"OPTIONAL { "+uri+" c2b2r_chembl:alogp ?alogp } " +
+								"OPTIONAL { "+uri+" c2b2r_chembl:hha ?hha } " +
+								"OPTIONAL { "+uri+" c2b2r_chembl:hhd ?hhd } " +
+								"OPTIONAL { "+uri+" c2b2r_chembl:molweight ?molweight } " +
+								"OPTIONAL { "+uri+" c2b2r_chembl:mw_freebase ?mw_freebase } " +
+								"OPTIONAL { "+uri+" c2b2r_chembl:num_ro5_violations ?num_ro5_violations } " +
+								"OPTIONAL { "+uri+" c2b2r_chembl:psa ?psa } " +
+								"OPTIONAL { "+uri+" c2b2r_chembl:rtb ?rtb } " +
+							"} " +
+							"OPTIONAL {" +
+								"GRAPH <http://linkedlifedata.com/resource/drugbank> { " +
+									uri+" drugbank:affectedOrganism ?affectedOrganism " +
+									"OPTIONAL {"+uri+" drugbank:biotransformation ?biotransformation } " +
+									"OPTIONAL {"+uri+" drugbank:description ?description } " +
+									"OPTIONAL {"+uri+" drugbank:indication ?indication } " +
+									"OPTIONAL {"+uri+" drugbank:proteinBinding ?proteinBinding } " +
+									"OPTIONAL {"+uri+" drugbank:toxicity ?toxicity } " +
+									"OPTIONAL {"+uri+" drugbank:meltingPoint ?meltingPoint} " +
+								"} " +
+							"} " +
+						"}";
+					count++;
+				}
+				sparql += "}";
+			} else if (name.equals("default-graph-uri")) {
+				qr.addDefaultGraphUri(value);
+			} else if (name.equals("named-graph-uri")) {
+				qr.addNamedGraphUri(value);
+			} else if (name.equals("limit")) {
+				sparql+=" LIMIT "+value;
+			} else if (name.equals("offset")) {
+				sparql+=" OFFSET "+value;
+			} 				
+			else {
+				throw new APIException("Unknown parameter name: \""
+						+ name + "\" for method compoundInfo; "+
+						" should be \"uri\", \"limit\", \"offset\", \"default-graph-uri\" or \"named-graph-uri\"." +
+						"URIs should be contained in <>");
+			}
+		}
+		if(!sparql.toUpperCase().contains("LIMIT")){
+			sparql+=" LIMIT 100";
+		}
+		logger.debug("Setting query: "+sparql);
+		qr.setQuery(sparql);
 		return qr;
 	}
 
@@ -435,6 +544,87 @@ public class OPSAPIEndpointResource extends ServerResource {
 		return qr;
 	}
 
+	private SparqlQueryRequest enzymeClassPharmacology(String[] parts) throws APIException {
+		SparqlQueryRequest qr=new SparqlQueryRequest();
+		boolean hasMethod = false;
+		String sparql="";
+		for (String part : parts) {
+			int eq = part.indexOf('=');
+			if (eq < 0) {
+				logger.warn("Warning: no \'=\' sign in \"" + part
+						+ "\" in the URL.");
+				continue;
+			}
+			String rawName = part.substring(0, eq);
+			String rawValue = part.substring(eq + 1);
+			String name, value;
+			try {
+				name = URLDecoder.decode(rawName, "UTF-8");
+				value = URLDecoder.decode(rawValue, "UTF-8");
+			} catch (UnsupportedEncodingException e) {
+				throw new APIException(e.toString());
+			}
+			if (name.equals("method")) {
+				if (hasMethod) {
+					throw new APIException("More than one value of the \""
+						+ name
+						+ "\" parameter is being provided (first \""
+						+ qr.getQuery() + "\", then \"" + value
+						+ "\").");
+				}
+				hasMethod = true;
+			} else if (name.equals("class")) {
+				sparql= "PREFIX c2b2r_chembl: <http://chem2bio2rdf.org/chembl/resource/> " +
+						"PREFIX chemspider: <http://rdf.chemspider.com/#> " +
+						"PREFIX drugbank: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/> " +
+						"PREFIX farmbio: <http://rdf.farmbio.uu.se/chembl/onto/#> " +
+						"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> " +
+						"PREFIX skos: <http://www.w3.org/2004/02/skos/core#> " +
+						"SELECT DISTINCT ?target_name ?target_class ?compound_name ?csid_uri ?smiles ?inchi ?inchiKey ?molweight ?num_ro5_violations " +
+							"?std_type ?relation ?std_value ?std_unites ?assay_organism ?drug_name ?drug_type " +
+						"WHERE { " +
+							"GRAPH <http://www.chem2bio2rdf.org/ChEMBL> { " +
+								"?class rdfs:subClassOf <http://chem2bio2rdf.org/uniprot/resource/enzyme/"+value+">  ; skos:prefLabel ?target_class . " +
+								"?tid c2b2r_chembl:ec_number ?class . ?tid c2b2r_chembl:pref_name ?target_name . " +
+								"?assay2target_uri c2b2r_chembl:tid ?tid ; " +
+								"c2b2r_chembl:assay_id ?assay_uri ; c2b2r_chembl:assay_organism ?assay_organism . " +
+								"?activity_uri farmbio:onAssay ?assay_uri ;  c2b2r_chembl:c2b2r_chembl_02_activities_molregno ?compound_uri ; " +
+								"c2b2r_chembl:std_type ?std_type ; c2b2r_chembl:relation ?relation ; c2b2r_chembl:std_value ?std_value ; " +
+								"c2b2r_chembl:std_unites ?std_unites . ?csid_uri skos:exactMatch ?compound_uri " +
+								"OPTIONAL { ?compound_uri c2b2r_chembl:molweight ?molweight } " +
+								"OPTIONAL { ?compound_uri c2b2r_chembl:num_ro5_violations ?num_ro5_violations } " +
+								"OPTIONAL { ?compound_uri c2b2r_chembl:canonical_smiles ?smiles } " +
+								"OPTIONAL { ?compound_uri c2b2r_chembl:inchi ?inchi} " +
+								"OPTIONAL { ?compound_uri c2b2r_chembl:inchi_key ?inchiKey} " +
+							"} " +
+							"GRAPH <http://larkc.eu#Fixedcontext> { " +
+								"?compound_cw skos:exactMatch ?csid_uri ; skos:prefLabel ?compound_name " +
+							"} " +
+						"}" ;
+			}
+			else if (name.equals("default-graph-uri")) {
+				qr.addDefaultGraphUri(value);
+			} else if (name.equals("named-graph-uri")) {
+				qr.addNamedGraphUri(value);
+			} else if (name.equals("limit")) {
+				sparql+=" LIMIT "+value;
+			} else if (name.equals("offset")) {
+				sparql+=" OFFSET "+value;
+			} 				
+			else {
+				throw new APIException("Unknown parameter name: \""
+						+ name + "\" for method proteinPharmacology; "+
+						" should be \"uri\", \"limit\", \"offset\", \"default-graph-uri\" or \"named-graph-uri\"." +
+						"URIs should be contained in <>");
+				}
+		}
+		if(!sparql.toUpperCase().contains("LIMIT")){
+			sparql+=" LIMIT 100";
+		}
+		logger.debug("Setting query: "+sparql);
+		qr.setQuery(sparql);
+		return qr;
+	}
 
 	private SparqlQueryRequest proteinPharmacology(String[] parts) throws APIException {
 		SparqlQueryRequest qr=new SparqlQueryRequest();
@@ -466,16 +656,41 @@ public class OPSAPIEndpointResource extends ServerResource {
 				}
 				hasMethod = true;
 			} else if (name.equals("uri")) {
-				sparql="PREFIX drugbank: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/> " +
-						"SELECT DISTINCT ?name ?synonym ?gene_name ?locus ?no_residues ?mol_weight ?theoretical_pi " + 
-						"?reaction ?signal ?transmembrane_regions ?swissprot_url " +
-							"WHERE { "+value+" drugbank:name ?name ; " + 
-							"drugbank:synonym ?synonym ; drugbank:geneName ?gene_name ; drugbank:drugReference ?drug_reference ; " + 
-							"drugbank:locus ?locus ; drugbank:molecularWeight ?mol_weight ;  " +
-							"drugbank:numberOfResidues ?no_residues ; drugbank:reaction ?reaction ; drugbank:signal ?signal ; " +
-							"drugbank:theoreticalPi ?theoretical_pi; drugbank:transmembraneRegions ?transmembrane_regions ; " +
-							"drugbank:swissprotPage ?swissprot_url } " ;
-				}
+				sparql= "PREFIX c2b2r_chembl: <http://chem2bio2rdf.org/chembl/resource/> " +
+						"PREFIX chemspider: <http://rdf.chemspider.com/#> " +
+						"PREFIX drugbank: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/> " +
+						"PREFIX farmbio: <http://rdf.farmbio.uu.se/chembl/onto/#> " +
+						"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> " +
+						"PREFIX skos: <http://www.w3.org/2004/02/skos/core#> " +
+						"SELECT DISTINCT ?target_name ?compound_name ?csid_uri ?smiles ?inchi ?inchiKey ?molweight ?num_ro5_violations " +
+							"?std_type ?relation ?std_value ?std_unites ?assay_organism " +/*?drug_name ?drug_type " +*/
+						"WHERE { " +
+							"GRAPH <http://www.chem2bio2rdf.org/ChEMBL> { " +
+								"?assay2target_uri c2b2r_chembl:tid   "+value+" ; " +
+								"c2b2r_chembl:assay_id ?assay_uri ; c2b2r_chembl:assay_organism ?assay_organism . " +
+								"?activity_uri farmbio:onAssay ?assay_uri ;  c2b2r_chembl:c2b2r_chembl_02_activities_molregno ?compound_uri ; " +
+								"c2b2r_chembl:std_type ?std_type ; c2b2r_chembl:relation ?relation ; c2b2r_chembl:std_value ?std_value ; " +
+								"c2b2r_chembl:std_unites ?std_unites . ?csid_uri skos:exactMatch ?compound_uri " +
+								"OPTIONAL { ?compound_uri c2b2r_chembl:molweight ?molweight }" +
+								"OPTIONAL { ?compound_uri c2b2r_chembl:num_ro5_violations ?num_ro5_violations } " +
+								"OPTIONAL { ?compound_uri c2b2r_chembl:canonical_smiles ?smiles } " +
+								"OPTIONAL { ?compound_uri c2b2r_chembl:inchi ?inchi} " +
+								"OPTIONAL { ?compound_uri c2b2r_chembl:inchi_key ?inchiKey} " +
+							"} " +
+							"GRAPH <http://larkc.eu#Fixedcontext> {" +
+								""+value+" skos:prefLabel ?target_name . " +
+								"?compound_cw skos:exactMatch ?csid_uri ; skos:prefLabel ?compound_name " +
+							"} " +
+							/*"OPTIONAL {" +
+								"GRAPH <http://linkedlifedata.com/resource/drugbank> {" +
+									"?csid_uri skos:exactMatch ?drug_uri " +
+									"OPTIONAL {?drug_uri drugbank:target   "+value+" ; drugbank:genericName ?drug_name ; drugbank:drugType ?drugType_uri . " +
+										"?drugType_uri rdfs:label ?drug_type " +
+									"} " +
+								"}" +
+							"} " +*/
+						"}" ;
+			}
 			else if (name.equals("default-graph-uri")) {
 				qr.addDefaultGraphUri(value);
 			} else if (name.equals("named-graph-uri")) {
@@ -531,38 +746,40 @@ public class OPSAPIEndpointResource extends ServerResource {
 				}
 				hasMethod = true;
 			} else if (name.equals("uri")) {
-				sparql = "PREFIX cspr: <http://rdf.chemspider.com/#> " + 
-						"PREFIX chembl: <http://chem2bio2rdf.org/chembl/resource/> " +
-						"PREFIX pdsp: <http://wiki.openphacts.org/index.php/PDSP_DB#> " +
-						"PREFIX skos: <http://www.w3.org/2004/02/skos/core#>  " +
-						"PREFIX db: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/> " + 
-						"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>  " +
-						"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>  " +
-						"SELECT DISTINCT ?synonym ?csid_uri  " +
-						"?organism ?indication ?target ?fda_label_files ?protein_binding ?mechanism ?category ?description " + 
-						"?pharma ?biotrans ?dosage ?drug_type ?toxicity ?brand_name ?pos_dis_target ?absorption ?generic_name ?drug_name " +
-						"?species ?pubmed_id ?pdsp_target ?ki_value ?ki_unit ?pdsp_source " +
-						"?r1 ?r2 ?r3 ?r4 ?r5 ?r6 ?r7 ?r8 ?r9 ?r10 ?r11 ?r12 ?r13 ?r14 ?r15 ?r16 ?r17 ?r18 ?r19 " +  
-							"WHERE { "+value+" cspr:synonym ?synonym; cspr:exturl ?mapping . ?csid_uri cspr:exturl ?mapping . " +  
-								"{?mapping skos:exactMatch ?chebi . ?c2b2r_ChEMBL chembl:chebi ?chebi ; " +
-								"chembl:cid ?cid . ?drugbank_uri db:pubchemCompoundURL ?cid .  " +
-								"?drugbank_uri db:affectedOrganism ?organism ; db:indication ?indication ; db:target ?target_uri ; " +
-								"db:fdaLabelFiles ?fda_label_files; db:proteinBinding ?protein_binding ;  " +
-								"db:mechanismOfAction ?mechanism; db:drugCategory ?category_uri ; db:description ?description; " +
-								"db:pharmacology ?pharma ; db:biotransformation ?biotrans ; db:dosageForm ?dosage_uri ;  " +
-								"db:drugType ?drug_type_uri ; db:toxicity ?toxicity ; db:brandName ?brand_name ;  " +
-								"db:possibleDiseaseTarget ?pos_dis_target_uri ;  db:absorption ?absorption . ?target_uri rdfs:label ?target . " + 
-								"?category_uri rdfs:label ?category . ?pos_dis_target_uri rdfs:label ?pos_dis_target . " +
-								"?dosage_uri rdfs:label ?dosage . ?drug_type_uri rdfs:label ?drug_type . " +
-									"OPTIONAL {?drugbank_uri db:generic_name ?generic_name} " +
-									"OPTIONAL {?drugbank_uri db:drug_name ?drug_name} " +
+				sparql ="PREFIX c2b2r_chembl: <http://chem2bio2rdf.org/chembl/resource/> " +
+						"PREFIX chemspider: <http://rdf.chemspider.com/#> " +
+						"PREFIX drugbank: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/> " +
+						"PREFIX farmbio: <http://rdf.farmbio.uu.se/chembl/onto/#> " +
+						"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> " +
+						"PREFIX skos: <http://www.w3.org/2004/02/skos/core#> " +
+						"SELECT DISTINCT ?compound_name ?target_name ?csid_uri ?smiles ?inchi ?inchiKey ?molweight ?num_ro5_violations " +
+							"?std_type ?relation ?std_value ?std_unites ?assay_organism " +
+							/*"?drug_name ?drug_type " +*/
+						"WHERE { " +
+							"GRAPH <http://larkc.eu#Fixedcontext> { " +
+								value+" skos:prefLabel ?compound_name " +
+							"} " +
+							"GRAPH <http://www.chemspider.com> { " +
+								value+" chemspider:smiles ?smiles ; " +
+								"chemspider:inchi ?inchi ; chemspider:inchikey ?inchiKey . " +
+								"?csid_uri chemspider:inchi ?inchi " +
+							"} " +
+							"GRAPH <http://www.chem2bio2rdf.org/ChEMBL> { " +
+								"?activity_uri c2b2r_chembl:c2b2r_chembl_02_activities_molregno  "+value+" ; " +
+								"c2b2r_chembl:std_type ?std_type ; c2b2r_chembl:relation ?relation ; c2b2r_chembl:std_value ?std_value ; " +
+								"c2b2r_chembl:std_unites ?std_unites ; farmbio:onAssay ?assay_uri . " +
+								"?assay2target_uri c2b2r_chembl:assay_id ?assay_uri ; c2b2r_chembl:assay_organism ?assay_organism; " +
+								"c2b2r_chembl:tid ?tid . ?tid c2b2r_chembl:pref_name ?target_name " +
+								"OPTIONAL { "+value+" c2b2r_chembl:molweight ?molweight } " +
+								"OPTIONAL { "+value+" c2b2r_chembl:num_ro5_violations ?num_ro5_violations } " +
+							"} " +
+							/*"OPTIONAL { " +
+								"GRAPH <http://linkedlifedata.com/resource/drugbank> { " +
+									value+" drugbank:drugType ?drugType_uri ; drugbank:genericName ?drug_name . " +
+									"?drugType_uri rdfs:label ?drug_type " +
 								"} " +
-								"UNION{?mapping pdsp:has_ki_value ?ki_entry ; pdsp:species ?species ; pdsp:has_receptor_name ?pdsp_target ; pdsp:source ?pdsp_source . " + 
-								"?ki_entry rdf:value ?ki_value ;  " +
-								"pdsp:unit ?ki_unit  . " +
-									"OPTIONAL {?mapping pdsp:pubmed_id ?pubmed_id } " + 
-								"?mapping ?r1 ?r2 ; ?r3 ?r4 ; ?r5 ?r6 ; ?r7 ?r8; ?r9 ?r10; ?r11 ?r12; ?r13 ?r14; ?r15 ?r16; ?r17 ?r18; ?r19 ?r20; } " +
-							"}";
+							"} " +*/
+						"}";
 			} else if (name.equals("default-graph-uri")) {
 				qr.addDefaultGraphUri(value);
 			} else if (name.equals("named-graph-uri")) {
@@ -616,19 +833,30 @@ public class OPSAPIEndpointResource extends ServerResource {
 				}
 				hasMethod = true;
 			} else if (name.equals("uri")) {
-				sparql="PREFIX drugbank: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/> " +
-						"SELECT DISTINCT ?name ?synonym ?gene_name ?general_function ?specific_function ?go_function ?go_process ?go_component ?essentiality " + 
-						"?chromosome_location ?cellular_location ?mol_weight ?gene_sequence ?protein_sequence  " +
-						"?swissprot_url ?genbank_protein_url ?genbank_gene_url WHERE { " +
-							value+" drugbank:swissprotPage ?swissprot_url ; " +
-							"drugbank:proteinSequence ?protein_sequence ; drugbank:cellularLocation ?cellular_location ;  " +
-							"drugbank:genbankIdGenePage ?genbank_gene_url ; drugbank:genbankIdProteinPage ?genbank_protein_url ; " +
-							"drugbank:geneName ?gene_name ; drugbank:geneSequence ?gene_sequence ;  " +
-							"drugbank:generalFunction ?general_function ; drugbank:goClassificationProcess ?go_process ; " + 
-							"drugbank:specificFunction ?specific_function ; drugbank:synonym ?synonym ;  " +
-							"drugbank:essentiality ?essentiality ; drugbank:chromosomeLocation ?chromosome_location ; " +
-							"drugbank:goClassificationComponent ?go_component ; drugbank:goClassificationFunction ?go_function ; " + 
-							"drugbank:name ?name ; drugbank:molecularWeight ?mol_weight ; " +
+				sparql= "PREFIX c2b2r_chembl: <http://chem2bio2rdf.org/chembl/resource/> " +
+						"PREFIX drugbank: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/> " +
+						"PREFIX skos: <http://www.w3.org/2004/02/skos/core#> " +
+						"SELECT DISTINCT ?target_name ?target_type ?description ?organism ?keywords ?synonyms " +
+							"?cellularLocation ?molecularWeight ?numberOfResidues ?pdbIdPage ?specificFunction ?theoreticalPi " +
+						"WHERE { " +
+							"GRAPH <http://larkc.eu#Fixedcontext> { " +
+								value+" skos:prefLabel ?target_name " +
+							"} " +
+							"GRAPH <http://www.chem2bio2rdf.org/ChEMBL> { " +
+								value+" c2b2r_chembl:keywords ?keywords; c2b2r_chembl:description ?description ; " +
+								"c2b2r_chembl:target_type ?target_type ; c2b2r_chembl:organism ?organism ; " +
+								"c2b2r_chembl:synonyms ?synonyms " +
+							"} " +
+							"OPTIONAL {" +
+								"GRAPH <http://linkedlifedata.com/resource/drugbank> {" +
+									"OPTIONAL { "+value+" drugbank:cellularLocation ?cellularLocation } " +
+									"OPTIONAL { "+value+" drugbank:molecularWeight ?molecularWeight } " +
+									"OPTIONAL { "+value+" drugbank:numberOfResidues ?numberOfResidues } " +
+									"OPTIONAL { "+value+" drugbank:pdbIdPage ?pdbIdPage } " +
+									"OPTIONAL { "+value+" drugbank:specificFunction ?specificFunction } " +
+									"OPTIONAL { "+value+" drugbank:theoreticalPi ?theoreticalPi } " +
+								"} " +
+							"} " +
 						"}";
 			} else if (name.equals("default-graph-uri")) {
 				qr.addDefaultGraphUri(value);
@@ -684,46 +912,44 @@ public class OPSAPIEndpointResource extends ServerResource {
 				}
 				hasMethod = true;
 			} else if (name.equals("uri")) {
-				sparql = "PREFIX cspr: <http://rdf.chemspider.com/#> " +
-						"PREFIX chembl: <http://chem2bio2rdf.org/chembl/resource/> " +
-						"PREFIX pdsp: <http://wiki.openphacts.org/index.php/PDSP_DB#> " +
-						"PREFIX skos: <http://www.w3.org/2004/02/skos/core#>  " +
-						"PREFIX db: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/> " +
-						"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> " + 
-						"SELECT DISTINCT ?csid_uri ?inchi ?inchi_key ?smiles ?synonym " +
-						"?med_chem_friendly ?molweight ?chembl_synonyms ?hhd ?alogp ?mw_freebase ?psa " + 
-						"?molformula ?molregno ?ro5_violations ?ro3_pass ?hha ?rtb ?pred_water_sol ?exp_water_sol ?target " + 
-						"?weight_average ?category ?description ?generic_name ?half_life ?state ?pred_logs ?brand_name ?pred_hydrophob ?exp_hydrophob " +
-						"?pdsp_name ?pdsp_displaced ?cas ?pdsp_target ?pdsp_species ?pdsp_source " +
-						"?r1 ?r2 ?r3 ?r4 ?r5 ?r6 ?r7 ?r8 ?r9 ?r10 ?r11 ?r12 ?r13 ?r14 ?r15 ?r16 ?r17 ?r18 ?r19 ?r20 ?r21 ?r22 ?r23 ?r24 ?r25 ?r26 " +
-							"WHERE {"+value+" cspr:smiles ?smiles; " +
-							"cspr:synonym ?synonym ; cspr:inchi ?inchi ; cspr:inchikey ?inchi_key ; " +
-							"cspr:exturl ?mapping . ?csid_uri cspr:exturl ?mapping . " +
-								"{ ?mapping skos:exactMatch ?chebi . ?c2b2r_ChEMBL chembl:chebi ?chebi ; " +
-								"chembl:med_chem_friendly ?med_chem_friendly; " + 
-								"chembl:cid ?cid ; chembl:molweight ?molweight;  " +
-								"chembl:synonyms ?chembl_synonyms ; chembl:hhd ?hhd ; " +
-								"chembl:alogp ?alogp ; chembl:mw_freebase ?mw_freebase ;  " +
-								"chembl:psa ?psa ; chembl:molformula ?molformula ;  " +
-								"chembl:molregno ?molregno ; chembl:num_ro5_violations ?ro5_violations ; " + 
-								"chembl:ro3_pass ?ro3_pass ; chembl:hha ?hha ; chembl:rtb ?rtb ." + 
-									"OPTIONAL { ?drugbank_uri db:pubchemCompoundURL ?cid . " +
-									"?drugbank_uri db:predictedWaterSolubility ?pred_water_sol ; " + 
-									"db:experimentalWaterSolubility ?exp_water_sol ;  " +
-									"db:molecularWeightAverage ?weight_average ;  " +
-									"db:drugCategory ?category_uri ; db:description ?description ; " + 
-									"db:genericName ?generic_name ; db:halfLife ?half_life ;  " +
-									"db:state ?state ; db:predictedLogs ?pred_logs ; db:brandName ?brand_name ; " +
-									"db:target ?target_uri . ?target_uri rdfs:label ?target . ?category_uri rdfs:label ?category} . " + 
-									"OPTIONAL {?drugbank_uri db:predictedLogpHydrophobicity ?pred_hydrophob } .  " +
-									"OPTIONAL {?drugbank_uri db:experimentalLogpHydrophobicity ?exp_hydrophob } " +
+				sparql ="PREFIX c2b2r_chembl: <http://chem2bio2rdf.org/chembl/resource/> " +
+						"PREFIX chemspider: <http://rdf.chemspider.com/#> " +
+						"PREFIX drugbank: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/> " +
+						"PREFIX skos: <http://www.w3.org/2004/02/skos/core#> " +
+						"SELECT DISTINCT ?compound_name ?csid_uri ?molformula ?molweight ?inchi ?inchiKey ?smiles " +
+							"?alogp ?hha ?hhd ?mw_freebase ?num_ro5_violations ?psa ?rtb " +
+							"?meltingPoint ?affectedOrganism ?biotransformation ?description ?indication ?proteinBinding ?toxicity " +
+							"WHERE { " +
+								"GRAPH <http://larkc.eu#Fixedcontext> {" +
+									value+" skos:prefLabel ?compound_name " +
+								"} " +
+								"GRAPH <http://www.chemspider.com> { " +
+									value+" chemspider:smiles ?smiles ; " +
+									"chemspider:inchi ?inchi ; chemspider:inchikey ?inchiKey . " +
+									"?csid_uri chemspider:inchi ?inchi " +
+								"} " +
+								"GRAPH <http://www.chem2bio2rdf.org/ChEMBL> {" +
+									value+" c2b2r_chembl:molformula ?molformula " +
+									"OPTIONAL { "+value+" c2b2r_chembl:alogp ?alogp } " +
+									"OPTIONAL { "+value+" c2b2r_chembl:hha ?hha } " +
+									"OPTIONAL { "+value+" c2b2r_chembl:hhd ?hhd } " +
+									"OPTIONAL { "+value+" c2b2r_chembl:molweight ?molweight } " +
+									"OPTIONAL { "+value+" c2b2r_chembl:mw_freebase ?mw_freebase } " +
+									"OPTIONAL { "+value+" c2b2r_chembl:num_ro5_violations ?num_ro5_violations } " +
+									"OPTIONAL { "+value+" c2b2r_chembl:psa ?psa } " +
+									"OPTIONAL { "+value+" c2b2r_chembl:rtb ?rtb } " +
+								"} " +
+								"OPTIONAL { " +
+									"GRAPH <http://linkedlifedata.com/resource/drugbank> {" +
+										value+" drugbank:affectedOrganism ?affectedOrganism " +
+										"OPTIONAL {"+value+" drugbank:biotransformation ?biotransformation } " +
+										"OPTIONAL {"+value+" drugbank:description ?description } " +
+										"OPTIONAL {"+value+" drugbank:indication ?indication } " +
+										"OPTIONAL {"+value+" drugbank:proteinBinding ?proteinBinding } " +
+										"OPTIONAL {"+value+" drugbank:toxicity ?toxicity } " +
+										"OPTIONAL {"+value+" drugbank:meltingPoint ?meltingPoint} " +
 									"} " +
-								"UNION { ?mapping pdsp:has_test_ligand_id ?pdsp_name ; " +
-								"pdsp:ligand_displaced ?pdsp_displaced; " +
-								"pdsp:has_cas_num ?cas ; pdsp:has_receptor_name ?pdsp_target ; " +
-								"pdsp:species ?pdsp_species ; pdsp:source ?pdsp_source ; " +
-								"?r1 ?r2 ; ?r3 ?r4 ; ?r5 ?r6 ; ?r7 ?r8; ?r9 ?r10; ?r11 ?r12; ?r13 ?r14; ?r15 ?r16; ?r17 ?r18; " + 
-								"?r19 ?r20; ?r21 ?r22; ?r23 ?r24; ?r25 ?r26;} " +
+								"} " +
 							"}";
 			} else if (name.equals("default-graph-uri")) {
 				qr.addDefaultGraphUri(value);
@@ -784,12 +1010,19 @@ public class OPSAPIEndpointResource extends ServerResource {
 					throw new APIException("Substrings should be at least 4 characters long.");
 				}
 				else {
-					sparql= "PREFIX db: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/>" +
-							"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>" +
-						" SELECT DISTINCT ?protein_uri ?protein_name WHERE " +
-							"{ ?protein_uri a db:targets ." +
-								"{ ?protein_uri rdfs:label ?protein_name } " +
-				 				"FILTER regex(?protein_name, \""+value+"\", \"i\") }";
+					sparql= "PREFIX ext: <http://wiki.openphacts.org/index.php/ext_function#> " +
+							"PREFIX skos: <http://www.w3.org/2004/02/skos/core#> " +
+							"PREFIX cw: <http://www.conceptwiki.org/wiki/concept/> " +
+							"PREFIX dc: <http://purl.org/dc/elements/1.1/> " +
+							"SELECT DISTINCT ?concept_label ?concept_url ?concept_uuid ?concept_alt_label ?tag_uuid " +
+							"WHERE {" +
+								"GRAPH <http://larkc.eu#Fixedcontext> { " +
+									"?concept_url ext:conceptwiki_search_by_tag "+value+" ; " +
+									"ext:semantic_type <http://www.conceptwiki.org/concept/eeaec894-d856-4106-9fa1-662b1dc6c6f1> ; " +
+									"skos:prefLabel ?concept_label ; dc:identifier ?concept_uuid ; " +
+									"skos:altLabel ?concept_alt_label ; cw:tag ?tag_uuid " +
+								"}" +
+							"}";
 				}
 			} else if (name.equals("default-graph-uri")) {
 				qr.addDefaultGraphUri(value);
@@ -850,18 +1083,19 @@ public class OPSAPIEndpointResource extends ServerResource {
 					throw new APIException("Substrings should be at least 4 characters long.");
 				}
 				else {
-					sparql= "PREFIX cspr: <http://rdf.chemspider.com/#> " +
+					sparql= "PREFIX ext: <http://wiki.openphacts.org/index.php/ext_function#> " +
 							"PREFIX skos: <http://www.w3.org/2004/02/skos/core#> " +
-							"PREFIX db: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/> " +
-							"PREFIX chembl: <http://chem2bio2rdf.org/chembl/resource/> " +
-							"SELECT DISTINCT ?compound_uri ?compound_name WHERE { " +
-							"{?compound_uri cspr:synonym ?compound_name} " +
-							"UNION {?compound_uri cspr:exturl ?mapping . " +
-							"?mapping skos:exactMatch ?chebi . " +
-							"?c2b2r_ChEMBL chembl:chebi ?chebi ; chembl:cid ?cid . " +
-							"?drugbank_uri db:pubchemCompoundURL ?cid ; " +
-							"db:brandName ?compound_name} " +
-			 				"FILTER regex(?compound_name, \""+value+"\", \"i\") } ";
+							"PREFIX cw: <http://www.conceptwiki.org/wiki/concept/> " +
+							"PREFIX dc: <http://purl.org/dc/elements/1.1/> " +
+							"SELECT DISTINCT ?concept_label ?concept_url ?concept_uuid ?concept_alt_label ?tag_uuid" +
+							"WHERE { " +
+								"GRAPH <http://larkc.eu#Fixedcontext> {" +
+									"?concept_url ext:conceptwiki_search_by_tag " + value + " ; " +
+									"ext:semantic_type <http://www.conceptwiki.org/concept/07a84994-e464-4bbf-812a-a4b96fa3d197> ; " +
+									"skos:prefLabel ?concept_label ; dc:identifier ?concept_uuid ; " +
+									"skos:altLabel ?concept_alt_label ; cw:tag ?tag_uuid " +
+								"} " +
+							"}";
 				}
 			} else if (name.equals("default-graph-uri")) {
 				qr.addDefaultGraphUri(value);
@@ -1732,7 +1966,7 @@ public class OPSAPIEndpointResource extends ServerResource {
 		assert (ep != null);
 		assert (ex != null);
 		logger.debug("Found executor " + ex.toString());
-
+		logger.debug("Query being processed by endpoint: " + ep.getURI());
 		// handle the query
 		APIRequestQueryHandler handler = new APIRequestQueryHandler(ex, ep);
 		SparqlQueryResult queryResult = handler.handleQuery(queryRequest);

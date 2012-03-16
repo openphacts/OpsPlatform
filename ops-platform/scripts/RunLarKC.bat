@@ -18,13 +18,15 @@ rem Removed December 8th 2011 By Christian
 rem Integeration tests where broken.
 rem Not used by current workflow according to Antonis
 rem call:check plugins\plugin.QueryMapper-0.0.1-SNAPSHOT-LarkcPluginAssembly\lib\derby.jar
+rem call:check jersey-client-1.10.jar
+rem call:check jersey-core-1.10.jar
 
 rem Removed December 8th 2011 By Christian
 rem Integeration tests where broken.
 rem Not used by current workflow according to Antonis
 rem java -cp plugins\plugin.QueryMapper-0.0.1-SNAPSHOT-LarkcPluginAssembly\lib\derby.jar;target\platform-3.0-SNAPSHOT-jar-with-dependencies.jar -Xmx1G eu.larkc.core.Larkc
 rem replacement without QueryMapper
-java -cp target\platform-3.0-SNAPSHOT-jar-with-dependencies.jar -Xmx1G eu.larkc.core.Larkc
+java -cp target\platform-3.0-SNAPSHOT-jar-with-dependencies.jar;jersey-client-1.10.jar;jersey-core-1.10.jar -Xmx1G eu.larkc.core.Larkc
 goto:eof
 
 ::--------------------------------------------------------

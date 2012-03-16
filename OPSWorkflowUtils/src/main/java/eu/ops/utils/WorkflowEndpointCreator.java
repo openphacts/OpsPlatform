@@ -106,6 +106,7 @@ public class WorkflowEndpointCreator {
 		    
 		    String[] remaining = line.getArgs();
 		    if (remaining.length == 0) {
+                //return "D:\\OpenPhacts\\OPSPlatform_git\\ops-platform\\larkc-workflow\\IMS_CW_workflow.ttl";
 		    	usage();
 		    } else {
 		    	return remaining[0];

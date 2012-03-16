@@ -5,6 +5,8 @@ export MAVEN_OPTS=-Xmx512m
 
 currentdir=`pwd`
 
+cp logback.xml $LARKC_PATH/larkc/platform/src/main/resources/
+
 cd $LARKC_PATH/larkc/platform/
 mvn assembly:assembly -DdescriptorId=jar-with-dependencies -Dmaven.test.skip=true
 mvn install -DdescriptorId=jar-with-dependencies -Dmaven.test.skip=true
@@ -48,6 +50,14 @@ mv ./target/*SNAPSHOT.jar $LARKC_PATH/larkc/platform/plugins
 
 cd ../plugin.edfsearch/
 mvn install
+mv ./target/*SNAPSHOT.jar $LARKC_PATH/larkc/platform/plugins
+
+cd ../plugin.conceptwiki/
+mvn assembly:assembly 
+mv ./target/*SNAPSHOT.jar $LARKC_PATH/larkc/platform/plugins
+
+cd ../plugin.imsSqarqlExpand/
+mvn assembly:assembly
 mv ./target/*SNAPSHOT.jar $LARKC_PATH/larkc/platform/plugins
 
 cd ../plugin.chemcallout/ChemSpiderServices
