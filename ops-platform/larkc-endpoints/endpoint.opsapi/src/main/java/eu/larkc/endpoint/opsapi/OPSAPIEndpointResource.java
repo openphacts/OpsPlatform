@@ -663,7 +663,7 @@ public class OPSAPIEndpointResource extends ServerResource {
 						"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> " +
 						"PREFIX skos: <http://www.w3.org/2004/02/skos/core#> " +
 						"SELECT DISTINCT ?target_name ?compound_name ?csid_uri ?smiles ?inchi ?inchiKey ?molweight ?num_ro5_violations " +
-							"?std_type ?relation ?std_value ?std_unites ?assay_organism ?drug_name ?drug_type " +
+							"?std_type ?relation ?std_value ?std_unites ?assay_organism " +/*?drug_name ?drug_type " +*/
 						"WHERE { " +
 							"GRAPH <http://www.chem2bio2rdf.org/ChEMBL> { " +
 								"?assay2target_uri c2b2r_chembl:tid   "+value+" ; " +
@@ -754,7 +754,7 @@ public class OPSAPIEndpointResource extends ServerResource {
 						"PREFIX skos: <http://www.w3.org/2004/02/skos/core#> " +
 						"SELECT DISTINCT ?compound_name ?target_name ?csid_uri ?smiles ?inchi ?inchiKey ?molweight ?num_ro5_violations " +
 							"?std_type ?relation ?std_value ?std_unites ?assay_organism " +
-							"?drug_name ?drug_type " +
+							/*"?drug_name ?drug_type " +*/
 						"WHERE { " +
 							"GRAPH <http://larkc.eu#Fixedcontext> { " +
 								value+" skos:prefLabel ?compound_name " +
