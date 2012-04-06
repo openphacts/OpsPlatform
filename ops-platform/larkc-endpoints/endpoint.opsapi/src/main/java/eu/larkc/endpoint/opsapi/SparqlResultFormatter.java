@@ -364,8 +364,7 @@ class SparqlResultFormatter {
 				// (using setAttributeNS / createElementNS), there won't be any
 				// duplicate
 				// xmlns:... attributes scattered around the tree.
-				//setXmlnsAttribute(rootElt, nsPref, nsUri);
-				rootElt.setAttribute(javax.xml.XMLConstants.XMLNS_ATTRIBUTE + ":" + nsPref, nsUri);
+				setXmlnsAttribute(rootElt, nsPref, nsUri);
 			}
 			return new QName(nsUri, nsPref, localName);
 		}
@@ -401,10 +400,10 @@ class SparqlResultFormatter {
 	public void buildRdf(SetOfStatements stats) throws SparqlException {
 		Element rdfElt = doc.createElementNS(rdfNamespaceUri, rdfNamespacePref
 				+ ":RDF");
-		//setXmlnsAttribute(rdfElt, rdfNamespacePref, rdfNamespaceUri);
+		setXmlnsAttribute(rdfElt, rdfNamespacePref, rdfNamespaceUri);
 		root = rdfElt;
 		doc.appendChild(rdfElt);
-		rdfElt.setAttribute(xmlns + ":" + rdfNamespacePref, rdfNamespaceUri);
+		// rdfElt.setAttribute(xmlns + ":" + rdfNamespacePref, rdfNamespaceUri);
 		NamespaceManager nsMgr = new NamespaceManager(rdfElt);
 
 		HashMap<String, Element> iriSubjElts = new HashMap<String, Element>();
