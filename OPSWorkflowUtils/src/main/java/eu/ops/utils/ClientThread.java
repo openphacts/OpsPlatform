@@ -30,7 +30,7 @@ public class ClientThread implements Runnable {
                 + "{ ?s ?p ?o }"
                 + "Limit 10";
     //private static String endpoint = "http://localhost:8183/opsapi";
-    private String endpoint = "http://ops.few.vu.nl:9189/opsapi"; //production
+    private String endpoint = "http://ops.few.vu.nl:9183/opsapi"; //production
 
     private UrlEncodedFormEntity entity;
     
@@ -79,7 +79,7 @@ public class ClientThread implements Runnable {
 		HttpPost httppost = new HttpPost(endpoint);
 		httppost.setEntity(entity);
         Date start = new Date();
-        for (int i = 0; i < 10 ; i++){
+        for (int i = 0; i < 20 ; i++){
     		HttpClient httpclient = new DefaultHttpClient();
             try {
                 HttpResponse response = httpclient.execute(httppost);
