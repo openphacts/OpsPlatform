@@ -56,6 +56,7 @@ public class OPSAPIEndpoint extends Endpoint {
 		component.getServers().add(restletServer);
 		restletServer.getContext().getParameters().add("maxTotalConnections", "1024");
 		restletServer.getContext().getParameters().add("maxThreads", "1024");
+		restletServer.getContext().getParameters().add("socketTimeout", "600000"
 		component.getDefaultHost().attach(API_PATH,
 				new OPSAPIEndpointApp(this));
 
