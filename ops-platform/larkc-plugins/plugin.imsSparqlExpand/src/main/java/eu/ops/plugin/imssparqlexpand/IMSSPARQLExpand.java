@@ -58,7 +58,10 @@ public class IMSSPARQLExpand extends Plugin {
             while (parameters.hasNext()) {
                 Statement stmt = parameters.next();
                 if (stmt.getPredicate().equals(new URIImpl(EXPANDER_SERVICE_PARAM))) {
-                    expanderServiceAddress = stmt.getObject().stringValue();
+                    String proposedExpanderServiceAddress = stmt.getObject().stringValue();
+                    if (proposedExpanderServiceAddress != null){
+                        expanderServiceAddress = proposedExpanderServiceAddress;
+                    }
                 }
             }
         }
