@@ -11,9 +11,9 @@ import org.openrdf.model.URI;
 import org.openrdf.model.impl.URIImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.cs.man.openphacts.queryexpander.QueryExpander;
-import uk.ac.cs.man.openphacts.queryexpander.QueryExpanderWSClient;
-import uk.ac.cs.man.openphacts.queryexpander.QueryExpansionException;
+import uk.ac.man.cs.openphacts.queryexpander.QueryExpanderWSClient;
+import uk.ac.man.cs.openphacts.queryexpander.QueryExpander;
+import uk.ac.man.cs.openphacts.queryexpander.QueryExpansionException;
 
 /**
  * The <code>eu.ops.plugin.imssparqlexpand.IMSSPARQLExpand</code> is a LarKC
