@@ -13,6 +13,14 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <bridbgedb.version>2.0.0-SNAPSHOT</bridbgedb.version>
+        <cxf.version>2.4.3</cxf.version>
+        <hamcrest.version>1.2</hamcrest.version>
+        <junit.version>4.4</junit.version>
+        <jersey.version>1.10</jersey.version>
+        <mysql.version>5.1.12</mysql.version>
+        <sesame.version>2.6.4</sesame.version>
+        <netbeans.hint.deploy.server>Tomcat</netbeans.hint.deploy.server>
     </properties>
 
 	<!-- We are dependent on the LarKC platform -->
@@ -22,8 +30,19 @@
             <artifactId>platform</artifactId>
             <version>3.0-SNAPSHOT</version>
         </dependency>
-                
         <dependency>
+        	<groupId>com.sun.jersey</groupId>
+        	<artifactId>jersey-core</artifactId>
+        	<version>${jersey.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-client</artifactId>
+            <version>${jersey.version}</version>
+            <type>jar</type>
+        </dependency>
+          
+        <!--dependency>
             <groupId>uk.ac.man.cs.openphacts</groupId>
             <artifactId>query.expander.ws.client</artifactId>
             <version>0.3.0-SNAPSHOT</version>
@@ -32,7 +51,7 @@
             <groupId>uk.ac.man.cs.openphacts</groupId>
             <artifactId>query.expander.api</artifactId>
             <version>0.3.0-SNAPSHOT</version>
-        </dependency>
+        </dependency-->
         
     	<!-- Declare any special libraries (which have to be put in /lib) here. -->
 		<!-- 
