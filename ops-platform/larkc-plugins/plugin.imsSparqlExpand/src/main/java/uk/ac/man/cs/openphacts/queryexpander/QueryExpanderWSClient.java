@@ -41,7 +41,7 @@ public class QueryExpanderWSClient implements QueryExpander{
     
     @Override
     public String expand(String originalQuery) throws QueryExpansionException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return expand(originalQuery, false);
     }
 
     @Override
