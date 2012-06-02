@@ -1,5 +1,7 @@
 package eu.ops.plugin.imssparqlexpand;
 
+import java.util.ArrayList;
+
 import eu.larkc.core.data.CloseableIterator;
 import eu.larkc.core.data.DataFactory;
 import eu.larkc.core.data.SetOfStatements;
@@ -27,6 +29,8 @@ public class IMSSPARQLExpand extends Plugin {
     static final String EXPANDER_SERVICE_PARAM = "http://larkc.eu/schema#ExpanderService";
     //Default is used if no no EXPANDER_SERVICE_PARAM found;
     static final String DEFAULT_EXPANDER_SERVICE_ADDRESS = "http://rpc466.cs.man.ac.uk:8080/QueryExpander";
+    static final String EXPANDER_PARAMETER = "http://www.openphacts.org/api#variableForExpansion";
+	static final String EXPANDER_INPUT = "http://www.openphacts.org/api#inputForExpansion";
     private String expanderServiceAddress;
     private QueryExpander queryExpander;
     
@@ -51,7 +55,6 @@ public class IMSSPARQLExpand extends Plugin {
      */
     @Override
     protected void initialiseInternal(SetOfStatements params) {
-        queryExpander = instantiateQueryExpander();
         expanderServiceAddress = DEFAULT_EXPANDER_SERVICE_ADDRESS;
         if (params != null) {
             CloseableIterator<Statement> parameters = params.getStatements();
@@ -65,6 +68,7 @@ public class IMSSPARQLExpand extends Plugin {
                 }
             }
         }
+        queryExpander = instantiateQueryExpander();
         if (logger.isDebugEnabled()) {
             logger.debug("expanderServiceAddress=" + expanderServiceAddress);
         }
@@ -96,9 +100,25 @@ public class IMSSPARQLExpand extends Plugin {
         //ystem.out.println("Input: " + input.getStatements().toString());
         // Does not care about the input name since it has a single argument, use any named graph
         SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery(input);
-        String expandedQueryString = queryExpander.expand(query.toString());
-        SPARQLQuery expandedQuery = new SPARQLQueryImpl(expandedQueryString);
-        return expandedQuery.toRDF();
+        ArrayList<String> parameters = new ArrayList<String>();
+        String inputURI = null;
+        CloseableIterator<Statement> iter = input.getStatements();
+        while (iter.hasNext()){
+        	Statement statement=iter.next();
+        	if (statement.getPredicate().equals(new URIImpl(EXPANDER_PARAMETER))){
+        		parameters.add(statement.getObject().stringValue());
+        	}
+        	if (statement.getPredicate().equals(new URIImpl(EXPANDER_INPUT))) {
+        		inputURI = statement.getObject().stringValue();
+        	}
+        }
+        SetOfStatements output=input;
+        if (!parameters.isEmpty() && inputURI != null){
+        	String expandedQueryString = queryExpander.expand(query.toString(),parameters,inputURI);
+        	logger.debug("Expanded query: "+expandedQueryString);
+        	output = new SPARQLQueryImpl(expandedQueryString).toRDF();
+        }
+        return output;
     }
 
     /**
