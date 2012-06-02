@@ -18,22 +18,15 @@
  */
 package eu.larkc.endpoint.opsapi;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.util.StringTokenizer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.sun.net.httpserver.Headers;
-import com.sun.net.httpserver.HttpExchange;
-
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryLanguage;
 import org.openrdf.query.UnsupportedQueryLanguageException;
@@ -55,8 +48,6 @@ import eu.larkc.endpoint.opsapi.exceptions.APIException;
 import eu.larkc.endpoint.sparql.SparqlQueryRequest;
 import eu.larkc.endpoint.sparql.SparqlQueryResult;
 import eu.larkc.endpoint.sparql.exceptions.MalformedSparqlQueryException;
-import eu.larkc.endpoint.sparql.exceptions.SparqlException;
-import eu.larkc.endpoint.sparql.exceptions.SparqlQueryRefusedException;
 import eu.larkc.core.executor.Executor;
 
 
