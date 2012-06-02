@@ -75,7 +75,7 @@ public class OPSAPIEndpointResource extends ServerResource {
 		String method="";
         method=query.substring(methodIndexStart+7,methodIndexEnd);
         logger.debug("Method:"+method);
-		/*if (method.equals("sparql")){
+		if (method.equals("sparql")){
 			qr=sparql(parts);
 		} else if (method.equals("triplesWithSubject")){
 			qr=triplesWithSubject(parts);		
@@ -105,7 +105,7 @@ public class OPSAPIEndpointResource extends ServerResource {
 			qr=compoundLookup(parts);
 		} else if (method.equals("proteinLookup")){
 			qr=proteinLookup(parts);
-		} else */if (method.equals("compoundInfo")){
+		} else if (method.equals("compoundInfo")){
 			qr=compoundInfo(parts);				
 		} else if (method.equals("proteinInfo")){
 			qr=proteinInfo(parts);
