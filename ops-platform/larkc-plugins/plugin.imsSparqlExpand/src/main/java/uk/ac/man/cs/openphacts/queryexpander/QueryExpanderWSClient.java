@@ -42,7 +42,7 @@ public class QueryExpanderWSClient implements QueryExpander{
         for (String parameter:parameters){
             params.add("parameter", parameter);
         }
-        if (inputURI != null) params.add("inputURI", inputURI);
+        if (inputURI != null && !inputURI.isEmpty()) params.add("inputURI", inputURI);
         ExpanderBean bean = 
                 webResource.path("expand")
                 .queryParams(params)
