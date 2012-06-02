@@ -8,11 +8,19 @@
     <version>0.2.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>IMSSPARQLExpand March 2012</name>
+    <name>IMSSPARQLExpand May 2012</name>
     <url>http://maven.apache.org</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <bridbgedb.version>2.0.0-SNAPSHOT</bridbgedb.version>
+        <cxf.version>2.4.3</cxf.version>
+        <hamcrest.version>1.2</hamcrest.version>
+        <junit.version>4.4</junit.version>
+        <jersey.version>1.10</jersey.version>
+        <mysql.version>5.1.12</mysql.version>
+        <sesame.version>2.6.4</sesame.version>
+        <netbeans.hint.deploy.server>Tomcat</netbeans.hint.deploy.server>
     </properties>
 
 	<!-- We are dependent on the LarKC platform -->
@@ -22,14 +30,28 @@
             <artifactId>platform</artifactId>
             <version>3.0-SNAPSHOT</version>
         </dependency>
-                
         <dependency>
-            <groupId>uk.ac.manchester.cs</groupId>
-            <artifactId>ims-api</artifactId>
-            <version>0.3.0-SNAPSHOT</version>
-<!--            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/irs-api-0.1.0-SNAPSHOT.jar</systemPath>-->
+        	<groupId>com.sun.jersey</groupId>
+        	<artifactId>jersey-core</artifactId>
+        	<version>${jersey.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-client</artifactId>
+            <version>${jersey.version}</version>
+            <type>jar</type>
+        </dependency>
+          
+        <!--dependency>
+            <groupId>uk.ac.man.cs.openphacts</groupId>
+            <artifactId>query.expander.ws.client</artifactId>
+            <version>0.3.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>uk.ac.man.cs.openphacts</groupId>
+            <artifactId>query.expander.api</artifactId>
+            <version>0.3.0-SNAPSHOT</version>
+        </dependency-->
         
     	<!-- Declare any special libraries (which have to be put in /lib) here. -->
 		<!-- 
@@ -41,17 +63,6 @@
 			<systemPath>${project.basedir}/lib/your-library.jar</systemPath>
 		</dependency>
 		-->
-        <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-client</artifactId>
-            <version>1.10</version>
-            <type>jar</type>
-        </dependency>
-        <dependency>
-        	<groupId>com.sun.jersey</groupId>
-        	<artifactId>jersey-core</artifactId>
-        	<version>1.10</version>
-        </dependency>
     </dependencies>
 
 	<!-- Set the compiler version to 1.6 -->
