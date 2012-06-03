@@ -9,6 +9,7 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Scanner;
 import java.util.Set;
 
 import javax.xml.transform.OutputKeys;
@@ -48,11 +49,9 @@ import eu.larkc.core.data.SetOfStatements;
 import eu.larkc.core.data.SetOfStatementsImpl;
 import eu.larkc.core.data.VariableBinding;
 import eu.larkc.core.endpoint.Endpoint;
-import eu.larkc.endpoint.opsapi.APIRequestQueryHandler;
 import eu.larkc.endpoint.opsapi.exceptions.APIException;
 import eu.larkc.endpoint.sparql.exceptions.MalformedSparqlQueryException;
 import eu.larkc.endpoint.sparql.exceptions.SparqlException;
-import eu.larkc.endpoint.sparql.exceptions.SparqlQueryRefusedException;
 import eu.larkc.core.executor.Executor;
 import eu.larkc.core.util.RDFConstants;
 
@@ -267,16 +266,9 @@ public class OPSAPIEndpointResource extends ServerResource {
 			String xmlResult = stringWriter.toString();
 			return xmlResult;
 		} catch (TransformerException e) {
-			throw new SparqlQueryRefusedException(
-					"An error occurred while formatting the results of the query (\""
-							+ query + "\"): "
-							+ APIRequestQueryHandler.getExceptionString(e));
-		} catch (Exception e) {
-			throw new SparqlQueryRefusedException(
-					"An error occurred while formatting the results of the query (\""
-							+ query + "\"): "
-							+ APIRequestQueryHandler.getExceptionString(e));
-		}
+			e.printStackTrace();
+			return null;
+		} 
 	}
 
 	private ParsedRequest enzymeClassPharmacology(String[] parts) throws APIException {
@@ -358,39 +350,7 @@ public class OPSAPIEndpointResource extends ServerResource {
 	private ParsedRequest proteinPharmacology(String[] parts) throws APIException {
 		boolean hasMethod = false;
 		String uri="";
-		String sparql= "PREFIX c2b2r_chembl: <http://chem2bio2rdf.org/chembl/resource/> " +
-				"PREFIX chemspider: <http://rdf.chemspider.com/#> " +
-				"PREFIX drugbank: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/> " +
-				"PREFIX farmbio: <http://rdf.farmbio.uu.se/chembl/onto/#> " +
-				"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> " +
-				"PREFIX skos: <http://www.w3.org/2004/02/skos/core#> " +
-				"SELECT DISTINCT ?target_name ?compound_name ?csid_uri ?smiles ?inchi ?inchiKey ?molweight ?num_ro5_violations " +
-					"?std_type ?relation ?std_value ?std_unites ?assay_organism " +/*?drug_name ?drug_type " +*/
-				"WHERE { " +
-					"GRAPH <http://www.chem2bio2rdf.org/ChEMBL> { " +
-						"?assay2target_uri c2b2r_chembl:tid   ?chembl_uri ; " +
-						"c2b2r_chembl:assay_id ?assay_uri ; c2b2r_chembl:assay_organism ?assay_organism . " +
-						"?activity_uri farmbio:onAssay ?assay_uri ;  c2b2r_chembl:c2b2r_chembl_02_activities_molregno ?compound_uri ; " +
-						"c2b2r_chembl:std_type ?std_type ; c2b2r_chembl:relation ?relation ; c2b2r_chembl:std_value ?std_value ; " +
-						"c2b2r_chembl:std_unites ?std_unites . ?csid_uri skos:exactMatch ?compound_uri " +
-						"OPTIONAL { ?compound_uri c2b2r_chembl:molweight ?molweight }" +
-						"OPTIONAL { ?compound_uri c2b2r_chembl:num_ro5_violations ?num_ro5_violations } " +
-						"OPTIONAL { ?compound_uri c2b2r_chembl:canonical_smiles ?smiles } " +
-						"OPTIONAL { ?compound_uri c2b2r_chembl:inchi ?inchi} " +
-						"OPTIONAL { ?compound_uri c2b2r_chembl:inchi_key ?inchiKey} " +
-					"} " +
-					"GRAPH <http://larkc.eu#Fixedcontext> {" +
-						"?cw_uri skos:prefLabel ?target_name . " +
-					"} " +
-					/*"OPTIONAL {" +
-						"GRAPH <http://linkedlifedata.com/resource/drugbank> {" +
-							"?csid_uri skos:exactMatch ?drug_uri " +
-							"OPTIONAL {?drug_uri drugbank:target   "+value+" ; drugbank:genericName ?drug_name ; drugbank:drugType ?drugType_uri . " +
-								"?drugType_uri rdfs:label ?drug_type " +
-							"} " +
-						"}" +
-					"} " +*/
-				"}" ;
+		String sparql = new Scanner(this.getClass().getResourceAsStream("sparql/proteinPharmacology.sparql")).useDelimiter("\\Z").next();
 		for (String part : parts) {
 			int eq = part.indexOf('=');
 			if (eq < 0) {
@@ -442,39 +402,7 @@ public class OPSAPIEndpointResource extends ServerResource {
 	private ParsedRequest compoundPharmacology(String[] parts) throws APIException {
 		boolean hasMethod = false;
 		String uri="";
-		String sparql ="PREFIX c2b2r_chembl: <http://chem2bio2rdf.org/chembl/resource/> " +
-				"PREFIX chemspider: <http://rdf.chemspider.com/#> " +
-				"PREFIX drugbank: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/> " +
-				"PREFIX farmbio: <http://rdf.farmbio.uu.se/chembl/onto/#> " +
-				"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> " +
-				"PREFIX skos: <http://www.w3.org/2004/02/skos/core#> " +
-				"SELECT DISTINCT ?compound_name ?target_name ?csid_uri ?smiles ?inchi ?inchiKey ?molweight ?num_ro5_violations " +
-					"?std_type ?relation ?std_value ?std_unites ?assay_organism " +
-					/*"?drug_name ?drug_type " +*/
-				"WHERE { " +
-					"GRAPH <http://larkc.eu#Fixedcontext> { " +
-						"?cw_uri skos:prefLabel ?compound_name " +
-					"} " +
-					"GRAPH <http://www.chemspider.com> { " +
-						"?cs_uri chemspider:smiles ?smiles ; " +
-						"chemspider:inchi ?inchi ; chemspider:inchikey ?inchiKey . " +
-					"} " +
-					"GRAPH <http://www.chem2bio2rdf.org/ChEMBL> { " +
-						"?activity_uri c2b2r_chembl:c2b2r_chembl_02_activities_molregno  ?chembl_uri ; " +
-						"c2b2r_chembl:std_type ?std_type ; c2b2r_chembl:relation ?relation ; c2b2r_chembl:std_value ?std_value ; " +
-						"c2b2r_chembl:std_unites ?std_unites ; farmbio:onAssay ?assay_uri . " +
-						"?assay2target_uri c2b2r_chembl:assay_id ?assay_uri ; c2b2r_chembl:assay_organism ?assay_organism; " +
-						"c2b2r_chembl:tid ?tid . ?tid c2b2r_chembl:pref_name ?target_name " +
-						"OPTIONAL { ?chembl_uri c2b2r_chembl:molweight ?molweight } " +
-						"OPTIONAL { ?chembl_uri c2b2r_chembl:num_ro5_violations ?num_ro5_violations } " +
-					"} " +
-					/*"OPTIONAL { " +
-						"GRAPH <http://linkedlifedata.com/resource/drugbank> { " +
-							value+" drugbank:drugType ?drugType_uri ; drugbank:genericName ?drug_name . " +
-							"?drugType_uri rdfs:label ?drug_type " +
-						"} " +
-					"} " +*/
-				"}";
+		String sparql = new Scanner(this.getClass().getResourceAsStream("sparql/compoundPharmacology.sparql")).useDelimiter("\\Z").next();
 		for (String part : parts) {
 			int eq = part.indexOf('=');
 			if (eq < 0) {
@@ -516,7 +444,7 @@ public class OPSAPIEndpointResource extends ServerResource {
 		logger.debug("Setting query: "+sparql);
 		List<String> parameters=new ArrayList<String>();
 		parameters.add("?cw_uri");
-		parameters.add("?cs_uri");
+		parameters.add("?csid_uri");
 		parameters.add("?chembl_uri");
 		return new ParsedRequest(sparql, parameters, uri);
 	}
@@ -525,31 +453,7 @@ public class OPSAPIEndpointResource extends ServerResource {
 	private ParsedRequest proteinInfo(String[] parts) throws APIException {
 		boolean hasMethod = false;
 		String uri="";
-		String sparql= "PREFIX c2b2r_chembl: <http://chem2bio2rdf.org/chembl/resource/> " +
-				"PREFIX drugbank: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/> " +
-				"PREFIX skos: <http://www.w3.org/2004/02/skos/core#> " +
-				"SELECT DISTINCT ?target_name ?target_type ?description ?organism ?keywords ?synonyms " +
-					"?cellularLocation ?molecularWeight ?numberOfResidues ?pdbIdPage ?specificFunction ?theoreticalPi " +
-				"WHERE { " +
-					"GRAPH <http://larkc.eu#Fixedcontext> { " +
-						"?cw_uri skos:prefLabel ?target_name " +
-					"} " +
-					"GRAPH <http://www.chem2bio2rdf.org/ChEMBL> { " +
-						"?chembl_uri c2b2r_chembl:keywords ?keywords; c2b2r_chembl:description ?description ; " +
-						"c2b2r_chembl:target_type ?target_type ; c2b2r_chembl:organism ?organism ; " +
-						"c2b2r_chembl:synonyms ?synonyms " +
-					"} " +
-					"OPTIONAL {" +
-						"GRAPH <http://linkedlifedata.com/resource/drugbank> {" +
-							"OPTIONAL { ?db_uri drugbank:cellularLocation ?cellularLocation } " +
-							"OPTIONAL { ?db_uri drugbank:molecularWeight ?molecularWeight } " +
-							"OPTIONAL { ?db_uri drugbank:numberOfResidues ?numberOfResidues } " +
-							"OPTIONAL { ?db_uri drugbank:pdbIdPage ?pdbIdPage } " +
-							"OPTIONAL { ?db_uri drugbank:specificFunction ?specificFunction } " +
-							"OPTIONAL { ?db_uri drugbank:theoreticalPi ?theoreticalPi } " +
-						"} " +
-					"} " +
-				"}";
+		String sparql = new Scanner(this.getClass().getResourceAsStream("sparql/proteinInfo.sparql")).useDelimiter("\\Z").next();
 		for (String part : parts) {
 			int eq = part.indexOf('=');
 			if (eq < 0) {
@@ -592,7 +496,6 @@ public class OPSAPIEndpointResource extends ServerResource {
 		logger.debug("Setting query: "+sparql);
 		List<String> parameters=new ArrayList<String>();
 		parameters.add("?cw_uri");
-		parameters.add("?cs_uri");
 		parameters.add("?chembl_uri");
 		parameters.add("?db_uri");
 		return new ParsedRequest(sparql, parameters, uri);
@@ -602,44 +505,7 @@ public class OPSAPIEndpointResource extends ServerResource {
 	private ParsedRequest compoundInfo(String[] parts) throws APIException {
 		boolean hasMethod = false;
 		String uri="";
-		String sparql ="PREFIX c2b2r_chembl: <http://chem2bio2rdf.org/chembl/resource/> " +
-				"PREFIX chemspider: <http://rdf.chemspider.com/#> " +
-				"PREFIX drugbank: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/> " +
-				"PREFIX skos: <http://www.w3.org/2004/02/skos/core#> " +
-				"SELECT DISTINCT ?compound_name ?csid_uri ?molformula ?molweight ?inchi ?inchiKey ?smiles " +
-					"?alogp ?hha ?hhd ?mw_freebase ?num_ro5_violations ?psa ?rtb " +
-					"?meltingPoint ?affectedOrganism ?biotransformation ?description ?indication ?proteinBinding ?toxicity " +
-					"WHERE { " +
-						"GRAPH <http://larkc.eu#Fixedcontext> {" +
-							"?cw_uri skos:prefLabel ?compound_name " +
-						"} " +
-						"GRAPH <http://www.chemspider.com> { " +
-							"?cs_uri chemspider:smiles ?smiles ; " +
-							"chemspider:inchi ?inchi ; chemspider:inchikey ?inchiKey . " +
-						"} " +
-						"GRAPH <http://www.chem2bio2rdf.org/ChEMBL> {" +
-							"?chembl_uri c2b2r_chembl:molformula ?molformula " +
-							"OPTIONAL { ?chembl_uri c2b2r_chembl:alogp ?alogp } " +
-							"OPTIONAL { ?chembl_uri c2b2r_chembl:hha ?hha } " +
-							"OPTIONAL { ?chembl_uri c2b2r_chembl:hhd ?hhd } " +
-							"OPTIONAL { ?chembl_uri c2b2r_chembl:molweight ?molweight } " +
-							"OPTIONAL { ?chembl_uri c2b2r_chembl:mw_freebase ?mw_freebase } " +
-							"OPTIONAL { ?chembl_uri c2b2r_chembl:num_ro5_violations ?num_ro5_violations } " +
-							"OPTIONAL { ?chembl_uri c2b2r_chembl:psa ?psa } " +
-							"OPTIONAL { ?chembl_uri c2b2r_chembl:rtb ?rtb } " +
-						"} " +
-						"OPTIONAL { " +
-							"GRAPH <http://linkedlifedata.com/resource/drugbank> {" +
-								"?db_uri drugbank:affectedOrganism ?affectedOrganism " +
-								"OPTIONAL {?db_uri drugbank:biotransformation ?biotransformation } " +
-								"OPTIONAL {?db_uri drugbank:description ?description } " +
-								"OPTIONAL {?db_uri drugbank:indication ?indication } " +
-								"OPTIONAL {?db_uri drugbank:proteinBinding ?proteinBinding } " +
-								"OPTIONAL {?db_uri drugbank:toxicity ?toxicity } " +
-								"OPTIONAL {?db_uri drugbank:meltingPoint ?meltingPoint} " +
-							"} " +
-						"} " +
-					"}";
+		String sparql = new Scanner(this.getClass().getResourceAsStream("sparql/compoundInfo.sparql")).useDelimiter("\\Z").next();
 		for (String part : parts) {
 			int eq = part.indexOf('=');
 			if (eq < 0) {
@@ -683,7 +549,7 @@ public class OPSAPIEndpointResource extends ServerResource {
 		logger.debug("Setting query: "+sparql);
 		List<String> parameters=new ArrayList<String>();
 		parameters.add("?cw_uri");
-		parameters.add("?cs_uri");
+		parameters.add("?csid_uri");
 		parameters.add("?chembl_uri");
 		parameters.add("?db_uri");
 		return new ParsedRequest(sparql, parameters, uri);
