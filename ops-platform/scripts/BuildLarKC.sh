@@ -11,16 +11,8 @@ cd $LARKC_PATH/larkc/platform/
 mvn assembly:assembly -DdescriptorId=jar-with-dependencies -Dmaven.test.skip=true
 mvn install -DdescriptorId=jar-with-dependencies -Dmaven.test.skip=true
 
-cd ../plugins/NewFileIdentifier
-mvn assembly:assembly
-mv ./target/*SNAPSHOT.jar   ../../platform/plugins
-
-cd ../SparqlQueryEvaluationReasoner
-mvn assembly:assembly
-mv ./target/*SNAPSHOT.jar   ../../platform/plugins
-
-cd ../RDFReader
-mvn assembly:assembly
+cd ../plugins/SparqlQueryEvaluationReasoner
+mvn assembly:assembly -Dmaven.test.skip=true
 mv ./target/*SNAPSHOT.jar   ../../platform/plugins
 
 cd ../../platform/endpoints/endpointsSourceCode/endpoint.sparql/
@@ -29,34 +21,11 @@ mvn install
 cd $OPS_PATH
 cd openphacts/ops-platform/larkc-plugins/
 
-# Removed December 8th 2011 By Christian
-# Integeration tests where broken.
-# Not used by current workflow according to Antonis
-#cd plugin.querymapper/
-#mvn assembly:assembly
-#mv ./target/*SNAPSHOT.jar $LARKC_PATH/larkc/platform/plugins
-
-cd plugin.edffilter/
-mvn install
+cd plugin.conceptwiki/
+mvn assembly:assembly -Dmaven.test.skip=true 
 mv ./target/*SNAPSHOT.jar $LARKC_PATH/larkc/platform/plugins
 
-cd ../plugin.sparqlexpand/
-mvn install
-mv ./target/*SNAPSHOT.jar $LARKC_PATH/larkc/platform/plugins
-
-cd ../plugin.edfquerytransformer/
-mvn install
-mv ./target/*SNAPSHOT.jar $LARKC_PATH/larkc/platform/plugins
-
-cd ../plugin.edfsearch/
-mvn install
-mv ./target/*SNAPSHOT.jar $LARKC_PATH/larkc/platform/plugins
-
-cd ../plugin.conceptwiki/
-mvn assembly:assembly 
-mv ./target/*SNAPSHOT.jar $LARKC_PATH/larkc/platform/plugins
-
-cd ../plugin.imsSqarqlExpand/
+cd ../plugin.imsSparqlExpand/
 mvn assembly:assembly
 mv ./target/*SNAPSHOT.jar $LARKC_PATH/larkc/platform/plugins
 
@@ -66,7 +35,8 @@ cd ..
 mvn assembly:assembly -Dmaven.test.skip=true
 mv ./target/*SNAPSHOT-LarkcPluginAssembly.jar $LARKC_PATH/larkc/platform/plugins
 
-cd ../../larkc-endpoints/endpoint.opsapi
+cd ..
+cd ../larkc-endpoints/endpoint.opsapi
 mvn assembly:assembly
 mv ./target/*SNAPSHOT-LarkcEndpointAssembly.jar $LARKC_PATH/larkc/platform/endpoints
 
