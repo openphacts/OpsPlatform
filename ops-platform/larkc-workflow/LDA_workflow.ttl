@@ -1,0 +1,24 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix larkc: <http://larkc.eu/schema#> .
+
+#Define a plugin
+
+_:reasoner a <urn:eu.larkc.plugin.SparqlQueryEvaluationReasoner> .
+
+#Define IMS plugin
+_:imsplugin a <urn:eu.ops.plugin.imssparqlexpand.IMSSPARQLExpand> .
+_:path larkc:hasInput _:imsplugin .
+_:imsplugin larkc:connectsTo _:reasoner .
+_:imsplugin larkc:hasParameter _:defaultgraphparam .
+_:imsplugin larkc:hasParameter _:serviceparam .
+_:serviceparam larkc:ExpanderService "http://openphacts.cs.man.ac.uk:9090/QueryExpander" .
+
+#Define the endpoint for this workflow.
+_:ep a <urn:eu.ops.endpoint.lda.LdaEndpoint> .
+#Endpoints are connected to paths in the workflow. Specify the path the above endpoint refers to.
+_:ep larkc:links _:path .
+_:path a larkc:Path .
+#Connect the input of the path to a plugin
+#_:path larkc:hasInput _:reasoner .
+#Connect the output of the path to a plugin
+_:path larkc:hasOutput _:reasoner .
