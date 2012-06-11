@@ -29,6 +29,7 @@ import eu.larkc.core.data.SetOfStatementsImpl;
 import eu.larkc.core.data.workflow.WorkflowDescriptionPredicates;
 import eu.larkc.core.endpoint.Endpoint;
 import eu.larkc.core.executor.Executor;
+import eu.larkc.core.util.RDFConstants;
 import eu.larkc.shared.SerializationHelper;
 
 /**
@@ -86,9 +87,9 @@ public class LdaEndpointResource extends ServerResource {
 		// Prepare a triple which holds the query.
 		Set<Statement> statementSet = new HashSet<Statement>();
 		Resource subject = new BNodeImpl("query");
-		URI predicate = WorkflowDescriptionPredicates.PLUGIN_PARAMETER_QUERY;
-		Literal object = ValueFactoryImpl.getInstance().createLiteral(q);
-		statementSet.add(new StatementImpl(subject, predicate, object));
+		Literal sparql = ValueFactoryImpl.getInstance().createLiteral(q);
+		statementSet.add(new StatementImpl(subject, RDFConstants.RDF_TYPE, 	RDFConstants.LARKC_SPARQLQUERY));
+		statementSet.add(new StatementImpl(subject, RDFConstants.LARKC_HASSERIALIZEDFORM, sparql));
 
 		// Pass a set of statements containing the query to the executor.
 		SetOfStatements setOfStatementsImpl = new SetOfStatementsImpl(

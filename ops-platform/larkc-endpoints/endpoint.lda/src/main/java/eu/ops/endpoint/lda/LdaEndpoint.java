@@ -53,7 +53,7 @@ public class LdaEndpoint extends Endpoint {
 		// Add the new HTTP server
 		component.getServers().add(restletServer);
 
-		component.getDefaultHost().attach("/endpoint",
+		component.getDefaultHost().attach("/sparql/",
 				new LdaEndpointApp(this));
 
 		try {

@@ -9,7 +9,6 @@ _:reasoner a <urn:eu.larkc.plugin.SparqlQueryEvaluationReasoner> .
 _:imsplugin a <urn:eu.ops.plugin.imssparqlexpand.IMSSPARQLExpand> .
 _:path larkc:hasInput _:imsplugin .
 _:imsplugin larkc:connectsTo _:reasoner .
-_:imsplugin larkc:hasParameter _:defaultgraphparam .
 _:imsplugin larkc:hasParameter _:serviceparam .
 _:serviceparam larkc:ExpanderService "http://openphacts.cs.man.ac.uk:9090/QueryExpander" .
 
