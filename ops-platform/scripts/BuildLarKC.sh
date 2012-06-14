@@ -29,6 +29,10 @@ cd plugin.imsSparqlExpand/
 mvn assembly:assembly
 mv ./target/*SNAPSHOT.jar $LARKC_PATH/larkc/platform/plugins
 
+cd ../plugin.VirtuosoSparqlFormatter/
+mvn assembly:assembly 
+mv ./target/*SNAPSHOT.jar $LARKC_PATH/larkc/platform/plugins
+
 #cd ../plugin.chemcallout/ChemSpiderServices
 #mvn install -Dmaven.test.skip=true
 #cd ..
