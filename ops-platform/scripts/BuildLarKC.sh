@@ -36,12 +36,12 @@ mv ./target/*SNAPSHOT.jar $LARKC_PATH/larkc/platform/plugins
 #mv ./target/*SNAPSHOT-LarkcPluginAssembly.jar $LARKC_PATH/larkc/platform/plugins
 
 cd ..
-#cd ../larkc-endpoints/endpoint.opsapi
-#mvn assembly:assembly
-#mv ./target/*SNAPSHOT-LarkcEndpointAssembly.jar $LARKC_PATH/larkc/platform/endpoints
-
-cd ../larkc-endpoints/endpoint.lda
+cd ../larkc-endpoints/endpoint.opsapi
 mvn assembly:assembly
 mv ./target/*SNAPSHOT-LarkcEndpointAssembly.jar $LARKC_PATH/larkc/platform/endpoints
+
+#cd ../larkc-endpoints/endpoint.lda
+#mvn assembly:assembly
+#mv ./target/*SNAPSHOT-LarkcEndpointAssembly.jar $LARKC_PATH/larkc/platform/endpoints
 
 cd $currentdir
