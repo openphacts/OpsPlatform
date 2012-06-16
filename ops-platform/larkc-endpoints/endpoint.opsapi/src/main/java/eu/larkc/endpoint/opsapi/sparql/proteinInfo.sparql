@@ -4,7 +4,7 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX drugbank: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/>
 SELECT DISTINCT ?target_name ?target_type ?description ?organism (GROUP_CONCAT( DISTINCT ?keyword ; SEPARATOR=" , ") as ?keywords ) (GROUP_CONCAT( DISTINCT ?synonym ; SEPARATOR=" , " ) as ?synonyms) (GROUP_CONCAT( DISTINCT ?cellularLocation ; SEPARATOR=" , " ) as ?cellularLocations ) ?molecularWeight ?numberOfResidues ?pdbIdPage ?specificFunction ?theoreticalPi 
 WHERE {
-	GRAPH <http://larkc.eu#Fixedcontext> {
+	GRAPH <http://www.conceptwiki.org> {
 		?cw_uri skos:prefLabel ?target_name.
 	}
 	GRAPH <http://data.kasabi.com/dataset/chembl-rdf> {

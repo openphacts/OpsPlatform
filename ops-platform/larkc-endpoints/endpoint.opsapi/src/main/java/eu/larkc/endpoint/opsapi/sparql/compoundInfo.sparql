@@ -4,7 +4,7 @@ PREFIX sio: <http://semanticscience.org/resource/>
 PREFIX drugbank: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/>
 SELECT DISTINCT ?compound_name ?csid_uri ?molformula ?molweight ?inchi ?inchi_key ?smiles ?alogp ?hba ?hbd ?mw_freebase ?num_ro5_violations ?psa ?rtb ?meltingPoint ?affectedOrganism ?biotransformation ?description ?indication ?proteinBinding ?toxicity
 WHERE {
-	GRAPH <http://larkc.eu#Fixedcontext> {
+	GRAPH <http://www.conceptwiki.org> {
 		?cw_uri skos:prefLabel ?compound_name.
 	}
 	GRAPH <http://www.chemspider.com> {

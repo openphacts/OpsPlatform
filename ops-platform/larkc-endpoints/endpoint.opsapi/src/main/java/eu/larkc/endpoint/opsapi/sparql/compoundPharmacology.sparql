@@ -5,7 +5,7 @@ PREFIX chembl: <http://rdf.farmbio.uu.se/chembl/onto/#>
 PREFIX dc: <http://purl.org/dc/elements/1.1/>
 SELECT ?compound_name ?target_name ?target_organism ?csid_uri ?smiles ?inchi ?inchi_key ?std_type ?relation ?std_value ?std_unit ?molweight ?num_ro5_violations 
 WHERE {
-	GRAPH <http://larkc.eu#Fixedcontext> {
+	GRAPH <http://www.conceptwiki.org> {
 		?cw_uri skos:prefLabel ?compound_name.
 	}
 	GRAPH <http://www.chemspider.com> {

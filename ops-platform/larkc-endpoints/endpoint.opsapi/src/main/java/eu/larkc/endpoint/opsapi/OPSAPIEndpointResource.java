@@ -210,10 +210,12 @@ public class OPSAPIEndpointResource extends ServerResource {
 		BNode bnode = rdfval.createBNode();
 		statements.add(new StatementImpl(bnode, RDFConstants.RDF_TYPE, 	RDFConstants.LARKC_SPARQLQUERY));
 		statements.add(new StatementImpl(bnode, RDFConstants.LARKC_HASSERIALIZEDFORM, new LiteralImpl(sparql)));
-		for (String parameter : parameters) {
-			statements.add(new StatementImpl(bnode, rdfval.createURI(EXPANDER_PARAMETER), new LiteralImpl(parameter)));
+		if (inputURI!=null){
+			for (String parameter : parameters) {
+				statements.add(new StatementImpl(bnode, rdfval.createURI(EXPANDER_PARAMETER), new LiteralImpl(parameter)));
+			}
+			statements.add(new StatementImpl(bnode, rdfval.createURI(EXPANDER_INPUT), rdfval.createURI(inputURI) ));
 		}
-		statements.add(new StatementImpl(bnode, rdfval.createURI(EXPANDER_INPUT), rdfval.createURI(inputURI) ));
 		ex.execute(new SetOfStatementsImpl(statements), ep.getPathId());
 		SetOfStatements resultsSetOfStatements = ex.getNextResults(ep.getPathId());
 		/*CloseableIterator<Statement> stmtIter = resultsSetOfStatements.getStatements();
@@ -274,33 +276,7 @@ public class OPSAPIEndpointResource extends ServerResource {
 	private ParsedRequest enzymeClassPharmacology(String[] parts) throws APIException {
 		boolean hasMethod = false;
 		String uri="";
-		String sparql= "PREFIX c2b2r_chembl: <http://chem2bio2rdf.org/chembl/resource/> " +
-				"PREFIX chemspider: <http://rdf.chemspider.com/#> " +
-				"PREFIX drugbank: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/> " +
-				"PREFIX farmbio: <http://rdf.farmbio.uu.se/chembl/onto/#> " +
-				"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> " +
-				"PREFIX skos: <http://www.w3.org/2004/02/skos/core#> " +
-				"SELECT DISTINCT ?target_name ?target_class ?compound_name ?csid_uri ?smiles ?inchi ?inchiKey ?molweight ?num_ro5_violations " +
-					"?std_type ?relation ?std_value ?std_unites ?assay_organism ?drug_name ?drug_type " +
-				"WHERE { " +
-					"GRAPH <http://www.chem2bio2rdf.org/ChEMBL> { " +
-						"?class rdfs:subClassOf ?class_uri  ; skos:prefLabel ?target_class . " +
-						"?tid c2b2r_chembl:ec_number ?class . ?tid c2b2r_chembl:pref_name ?target_name . " +
-						"?assay2target_uri c2b2r_chembl:tid ?tid ; " +
-						"c2b2r_chembl:assay_id ?assay_uri ; c2b2r_chembl:assay_organism ?assay_organism . " +
-						"?activity_uri farmbio:onAssay ?assay_uri ;  c2b2r_chembl:c2b2r_chembl_02_activities_molregno ?compound_uri ; " +
-						"c2b2r_chembl:std_type ?std_type ; c2b2r_chembl:relation ?relation ; c2b2r_chembl:std_value ?std_value ; " +
-						"c2b2r_chembl:std_unites ?std_unites . ?csid_uri skos:exactMatch ?compound_uri " +
-						"OPTIONAL { ?compound_uri c2b2r_chembl:molweight ?molweight } " +
-						"OPTIONAL { ?compound_uri c2b2r_chembl:num_ro5_violations ?num_ro5_violations } " +
-						"OPTIONAL { ?compound_uri c2b2r_chembl:canonical_smiles ?smiles } " +
-						"OPTIONAL { ?compound_uri c2b2r_chembl:inchi ?inchi} " +
-						"OPTIONAL { ?compound_uri c2b2r_chembl:inchi_key ?inchiKey} " +
-					"} " +
-					"GRAPH <http://larkc.eu#Fixedcontext> { " +
-						"?compound_cw skos:exactMatch ?csid_uri ; skos:prefLabel ?compound_name " +
-					"} " +
-				"}" ;
+		String sparql= new Scanner(this.getClass().getResourceAsStream("/enzymePharmacology.sparql")).useDelimiter("\\Z").next();
 		for (String part : parts) {
 			int eq = part.indexOf('=');
 			if (eq < 0) {
@@ -325,7 +301,8 @@ public class OPSAPIEndpointResource extends ServerResource {
 				}
 				hasMethod = true;
 			} else if (name.equals("class")) {
-				uri = "http://chem2bio2rdf.org/uniprot/resource/enzyme/"+value;
+				uri = "http://purl.uniprot.org/enzyme/"+value;
+				sparql=sparql.replaceAll("INPUT_URI", uri);
 			} else if (name.equals("limit")) {
 				sparql+=" LIMIT "+value;
 			} else if (name.equals("offset")) {
@@ -343,8 +320,7 @@ public class OPSAPIEndpointResource extends ServerResource {
 		}
 		logger.debug("Setting query: "+sparql);
 		List<String> parameters=new ArrayList<String>();
-		parameters.add("?class_uri");
-		return new ParsedRequest(sparql, parameters, uri);
+		return new ParsedRequest(sparql, parameters, null);
 	}
 
 	private ParsedRequest proteinPharmacology(String[] parts) throws APIException {

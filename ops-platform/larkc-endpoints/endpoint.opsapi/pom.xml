@@ -40,6 +40,7 @@
 					<include>compoundPharmacology.sparql</include>
 					<include>proteinInfo.sparql</include>
 					<include>proteinPharmacology.sparql</include>
+					<include>enzymePharmacology.sparql</include>
 				</includes>
 			</resource>
 		</resources>

@@ -79,9 +79,10 @@ public class VirtuosoSparqlFormatter extends Plugin
 	}
 
 	private String formatQuery(String sparql) {
-		return sparql.replaceAll("(?i)\\([ ]*GROUP_CONCAT[ ]*\\([ ]*DISTINCT", "( GROUP_CONCAT (")
+		return sparql.replaceAll("(?i)\\([ ]*GROUP_CONCAT[ ]*\\([ ]*DISTINCT", "( sql:GROUP_DIGEST (")
 				.replaceAll("(?i)GROUP_CONCAT", "sql:GROUP_CONCAT")
-				.replaceAll("(?i);[ ]*SEPARATOR[ ]*=[ ]*", ", ");
+				.replaceAll("(?i);[ ]*SEPARATOR[ ]*=[ ]*", ", ")
+				.replaceAll("(?i) sql:GROUP_DIGEST \\([ a-z?]*, \" , \"", "$0 , 1000 , 1");
 	}
 
 	/**

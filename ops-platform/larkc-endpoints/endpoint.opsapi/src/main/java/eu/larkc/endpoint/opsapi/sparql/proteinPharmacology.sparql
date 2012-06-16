@@ -1,25 +1,27 @@
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX chembl: <http://rdf.farmbio.uu.se/chembl/onto/#>
 PREFIX sio: <http://semanticscience.org/resource/>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX chemspider: <http://rdf.chemspider.com/#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-SELECT DISTINCT ?target_name ?smiles ?inchi ?inchi_key ?molweight ?num_ro5_violations ?std_type ?relation ?std_value ?std_unit ?target_organism
+SELECT DISTINCT ?target_name ?compound_name ?csid_uri ?smiles ?inchi ?inchi_key ?molweight ?num_ro5_violations ?std_type ?relation ?std_value ?std_unit ?target_organism
 WHERE {
-	GRAPH <http://larkc.eu#Fixedcontext> {
+	GRAPH <http://www.conceptwiki.org> {
 		?cw_uri skos:prefLabel ?target_name .
-#		?compound_cw skos:exactMatch ?csid_uri ; 
-		<http://www.conceptwiki.org/concept/38932552-111f-4a4e-a46a-4ed1d7bdf9d5> skos:prefLabel ?compound_name .
+		?compound_cw skos:exactMatch ?csid_uri ;
+			 skos:prefLabel ?compound_name .
 	}
 	GRAPH <http://data.kasabi.com/dataset/chembl-rdf> {
 		?chembl_uri chembl:organism ?target_organism . 
-		?assay_uri chembl:hasTarget <http://data.kasabi.com/dataset/chembl-rdf/target/t197> .
+		?assay_uri chembl:hasTarget ?chembl_uri .
 		?activity_uri chembl:onAssay ?assay_uri ;
 			chembl:type ?std_type ;
 			chembl:relation ?relation ;
 			chembl:standardValue ?std_value ;
 			chembl:standardUnits ?std_unit ;
 			chembl:forMolecule ?compound_uri .
-#		?csid_uri skos:exactMatch ?compound_uri .
+		?compound_uri owl:equivalentClass ?equiv_uri . 
+		?equiv_uri skos:exactMatch ?csid_uri .
 		OPTIONAL { ?compound_uri sio:CHEMINF_000200 _:node1 . 
 			_:node1 a sio:CHEMINF_000314 ;
 				sio:SIO_000300 ?num_ro5_violations }
@@ -28,8 +30,7 @@ WHERE {
 				sio:SIO_000300 ?molweight }
 	}
 	GRAPH <http://www.chemspider.com> {
-#		?csid_uri chemspider:inchi ?inchi;
-		<http://rdf.chemspider.com/187440>  chemspider:inchi ?inchi;
+		?csid_uri chemspider:inchi ?inchi;
 			chemspider:inchikey ?inchi_key;
 			chemspider:smiles ?smiles . 
 	}
