@@ -31,6 +31,19 @@
 
 	<!-- Set the compiler version to 1.6 -->
 	<build>
+		<resources>
+			<resource>
+				<directory>${basedir}/src/main/java/eu/larkc/endpoint/opsapi/sparql</directory>
+				<filtering>false</filtering>
+				<includes>
+					<include>compoundInfo.sparql</include>
+					<include>compoundPharmacology.sparql</include>
+					<include>proteinInfo.sparql</include>
+					<include>proteinPharmacology.sparql</include>
+					<include>enzymePharmacology.sparql</include>
+				</includes>
+			</resource>
+		</resources>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

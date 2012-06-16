@@ -1,0 +1,29 @@
+<assembly>
+	<id>LarkcPluginAssembly</id>
+	<formats>
+		<format>jar</format>
+	</formats>
+	<includeBaseDirectory>false</includeBaseDirectory>
+	<dependencySets>
+		<dependencySet>
+			<unpack>true</unpack>
+			<scope>runtime</scope>
+			<useTransitiveDependencies>false</useTransitiveDependencies>
+			<excludes>
+				<exclude>eu.larkc:platform</exclude>
+			</excludes>
+		</dependencySet>
+	</dependencySets>
+
+	<fileSets>
+		<fileSet>
+			<directory>${basedir}</directory>
+			<includes>
+				<include>lib/*</include>
+			</includes>
+			<excludes>
+				<exclude>src/main/resources/LarkcPluginAssembly.xml</exclude>
+			</excludes>
+		</fileSet>
+	</fileSets>
+</assembly>

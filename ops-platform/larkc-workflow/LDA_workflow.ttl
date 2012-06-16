@@ -1,16 +1,9 @@
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix larkc: <http://larkc.eu/schema#> .
 
-# !!! Important: make sure to replace every occurrence of <OPSPWD> 
-# with the path on your system 
 #Define a plugin
 
 _:reasoner a <urn:eu.larkc.plugin.SparqlQueryEvaluationReasoner> .
-
-#Define ConceptWiki plugin
-#_:conceptwiki a <urn:eu.ops.plugin.conceptwiki.ConceptWiki> .
-#_:path larkc:hasInput _:conceptwiki .
-#_:conceptwiki larkc:connectsTo _:reasoner .
 
 #Define IMS plugin
 _:imsplugin a <urn:eu.ops.plugin.imssparqlexpand.IMSSPARQLExpand> .
@@ -19,13 +12,8 @@ _:imsplugin larkc:connectsTo _:reasoner .
 _:imsplugin larkc:hasParameter _:serviceparam .
 _:serviceparam larkc:ExpanderService "http://openphacts.cs.man.ac.uk:9090/QueryExpander" .
 
-#Define ChemCallout plugin
-#_:chemcallout a <urn:eu.ops.plugin.chemcallout.ChemCallout> .
-#_:path larkc:hasInput _:chemcallout .
-#_:chemcallout larkc:connectsTo _:reasoner .
-
 #Define the endpoint for this workflow.
-_:ep a <urn:eu.larkc.endpoint.opsapi.OPSAPIEndpoint> .
+_:ep a <urn:eu.ops.endpoint.lda.LdaEndpoint> .
 #Endpoints are connected to paths in the workflow. Specify the path the above endpoint refers to.
 _:ep larkc:links _:path .
 _:path a larkc:Path .

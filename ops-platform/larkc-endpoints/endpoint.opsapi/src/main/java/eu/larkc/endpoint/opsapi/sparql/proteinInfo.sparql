@@ -1,0 +1,26 @@
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX chembl: <http://rdf.farmbio.uu.se/chembl/onto/#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX drugbank: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/>
+SELECT DISTINCT ?target_name ?target_type ?description ?organism (GROUP_CONCAT( DISTINCT ?keyword ; SEPARATOR=" , ") as ?keywords ) (GROUP_CONCAT( DISTINCT ?synonym ; SEPARATOR=" , " ) as ?synonyms) (GROUP_CONCAT( DISTINCT ?cellularLocation ; SEPARATOR=" , " ) as ?cellularLocations ) ?molecularWeight ?numberOfResidues ?pdbIdPage ?specificFunction ?theoreticalPi 
+WHERE {
+	GRAPH <http://www.conceptwiki.org> {
+		?cw_uri skos:prefLabel ?target_name.
+	}
+	GRAPH <http://data.kasabi.com/dataset/chembl-rdf> {
+		?chembl_uri chembl:hasKeyword ?keyword ;
+			chembl:hasDescription ?description ;
+			rdfs:subClassOf ?target_type ;
+			chembl:organism ?organism ;
+			rdfs:label ?synonym
+	}
+	GRAPH <http://linkedlifedata.com/resource/drugbank> {
+		OPTIONAL { ?db_uri drugbank:cellularLocation ?cellularLocation }
+		OPTIONAL { ?db_uri drugbank:molecularWeight ?molecularWeight }
+		OPTIONAL { ?db_uri drugbank:numberOfResidues ?numberOfResidues }
+		OPTIONAL { ?db_uri drugbank:pdbIdPage ?pdbIdPage }
+		OPTIONAL { ?db_uri drugbank:specificFunction ?specificFunction }
+		OPTIONAL { ?db_uri drugbank:theoreticalPi ?theoreticalPi }
+	}
+}
+GROUP BY ?target_name ?target_type ?description ?organism ?molecularWeight ?numberOfResidues ?pdbIdPage ?specificFunction ?theoreticalPi

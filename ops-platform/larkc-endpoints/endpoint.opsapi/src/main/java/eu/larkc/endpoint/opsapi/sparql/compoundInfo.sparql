@@ -1,0 +1,54 @@
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX chemspider: <http://rdf.chemspider.com/#>
+PREFIX sio: <http://semanticscience.org/resource/>
+PREFIX drugbank: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/>
+SELECT DISTINCT ?compound_name ?csid_uri ?molformula ?molweight ?inchi ?inchi_key ?smiles ?alogp ?hba ?hbd ?mw_freebase ?num_ro5_violations ?psa ?rtb ?meltingPoint ?affectedOrganism ?biotransformation ?description ?indication ?proteinBinding ?toxicity
+WHERE {
+	GRAPH <http://www.conceptwiki.org> {
+		?cw_uri skos:prefLabel ?compound_name.
+	}
+	GRAPH <http://www.chemspider.com> {
+		?csid_uri chemspider:inchi ?inchi;
+			chemspider:inchikey ?inchi_key;
+			chemspider:smiles ?smiles . 
+	}
+	GRAPH <http://data.kasabi.com/dataset/chembl-rdf> {
+		?chembl_uri sio:CHEMINF_000200 _:node1 . 
+		_:node1 a sio:CHEMINF_000042 ;
+			sio:SIO_000300 ?molformula
+		OPTIONAL { ?chembl_uri sio:CHEMINF_000200 _:node2 . 
+			_:node2 a sio:CHEMINF_000305 ;
+				sio:SIO_000300 ?alogp }
+		OPTIONAL { ?chembl_uri sio:CHEMINF_000200 _:node3 . 
+			_:node3 a sio:CHEMINF_000309 ;
+				sio:SIO_000300 ?hba }
+		OPTIONAL { ?chembl_uri sio:CHEMINF_000200 _:node4 . 
+			_:node4 a sio:CHEMINF_000310 ;
+				sio:SIO_000300 ?hbd }
+		OPTIONAL { ?chembl_uri sio:CHEMINF_000200 _:node5 . 
+			_:node5 a sio:CHEMINF_000198 ;
+				sio:SIO_000300 ?molweight }
+		OPTIONAL { ?chembl_uri sio:CHEMINF_000200 _:node6 . 
+			_:node6 a sio:CHEMINF_000350 ;
+				sio:SIO_000300 ?mw_freebase }
+		OPTIONAL { ?chembl_uri sio:CHEMINF_000200 _:node7 . 
+			_:node7 a sio:CHEMINF_000314 ;
+				sio:SIO_000300 ?num_ro5_violations }
+		OPTIONAL { ?chembl_uri sio:CHEMINF_000200 _:node8 . 
+			_:node8 a sio:CHEMINF_000308 ;
+				sio:SIO_000300 ?psa }
+		OPTIONAL { ?chembl_uri sio:CHEMINF_000200 _:node9 . 
+			_:node9 a sio:CHEMINF_000311 ;
+				sio:SIO_000300 ?rtb }
+	}
+	GRAPH <http://linkedlifedata.com/resource/drugbank> {
+		OPTIONAL { ?db_uri drugbank:affectedOrganism ?affectedOrganism }
+		OPTIONAL { ?db_uri drugbank:biotransformation ?biotransformation }
+		OPTIONAL { ?db_uri drugbank:description ?description }
+		OPTIONAL { ?db_uri drugbank:indication ?indication }
+		OPTIONAL { ?db_uri drugbank:proteinBinding ?proteinBinding }
+		OPTIONAL { ?db_uri drugbank:toxicity ?toxicity }
+		OPTIONAL { ?db_uri drugbank:meltingPoint ?meltingPoint }
+	}
+}
+

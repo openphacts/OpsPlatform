@@ -5,69 +5,50 @@ export MAVEN_OPTS=-Xmx512m
 
 currentdir=`pwd`
 
-cp logback.xml $LARKC_PATH/larkc/platform/src/main/resources/
+cp ../../Larkc_fix/logback.xml $LARKC_PATH/larkc/platform/src/main/resources/
+cp ../../Larkc_fix/pom.xml $LARKC_PATH/larkc/platform/
+cp ../../Larkc_fix/DataFactoryImpl.java $LARKC_PATH/larkc/platform/src/main/java/eu/larkc/core/data/
+cp ../../Larkc_fix/SAILRdfStoreConnectionImpl.java $LARKC_PATH/larkc/platform/src/main/java/eu/larkc/core/data/
 
 cd $LARKC_PATH/larkc/platform/
 mvn assembly:assembly -DdescriptorId=jar-with-dependencies -Dmaven.test.skip=true
 mvn install -DdescriptorId=jar-with-dependencies -Dmaven.test.skip=true
 
-cd ../plugins/NewFileIdentifier
-mvn assembly:assembly
+cd ../plugins/SparqlQueryEvaluationReasoner
+mvn assembly:assembly -Dmaven.test.skip=true
 mv ./target/*SNAPSHOT.jar   ../../platform/plugins
 
-cd ../SparqlQueryEvaluationReasoner
-mvn assembly:assembly
-mv ./target/*SNAPSHOT.jar   ../../platform/plugins
-
-cd ../RDFReader
-mvn assembly:assembly
-mv ./target/*SNAPSHOT.jar   ../../platform/plugins
-
-cd ../../platform/endpoints/endpointsSourceCode/endpoint.sparql/
-mvn install
+#cd ../../platform/endpoints/endpointsSourceCode/endpoint.sparql/
+#mvn install
 
 cd $OPS_PATH
 cd openphacts/ops-platform/larkc-plugins/
 
-# Removed December 8th 2011 By Christian
-# Integeration tests where broken.
-# Not used by current workflow according to Antonis
-#cd plugin.querymapper/
-#mvn assembly:assembly
+#cd plugin.conceptwiki/
+#mvn assembly:assembly -Dmaven.test.skip=true 
 #mv ./target/*SNAPSHOT.jar $LARKC_PATH/larkc/platform/plugins
 
-cd plugin.edffilter/
-mvn install
+cd plugin.imsSparqlExpand/
+mvn assembly:assembly
 mv ./target/*SNAPSHOT.jar $LARKC_PATH/larkc/platform/plugins
 
-cd ../plugin.sparqlexpand/
-mvn install
-mv ./target/*SNAPSHOT.jar $LARKC_PATH/larkc/platform/plugins
-
-cd ../plugin.edfquerytransformer/
-mvn install
-mv ./target/*SNAPSHOT.jar $LARKC_PATH/larkc/platform/plugins
-
-cd ../plugin.edfsearch/
-mvn install
-mv ./target/*SNAPSHOT.jar $LARKC_PATH/larkc/platform/plugins
-
-cd ../plugin.conceptwiki/
+cd ../plugin.VirtuosoSparqlFormatter/
 mvn assembly:assembly 
 mv ./target/*SNAPSHOT.jar $LARKC_PATH/larkc/platform/plugins
 
-cd ../plugin.imsSqarqlExpand/
-mvn assembly:assembly
-mv ./target/*SNAPSHOT.jar $LARKC_PATH/larkc/platform/plugins
+#cd ../plugin.chemcallout/ChemSpiderServices
+#mvn install -Dmaven.test.skip=true
+#cd ..
+#mvn assembly:assembly -Dmaven.test.skip=true
+#mv ./target/*SNAPSHOT-LarkcPluginAssembly.jar $LARKC_PATH/larkc/platform/plugins
 
-cd ../plugin.chemcallout/ChemSpiderServices
-mvn install -Dmaven.test.skip=true
 cd ..
-mvn assembly:assembly -Dmaven.test.skip=true
-mv ./target/*SNAPSHOT-LarkcPluginAssembly.jar $LARKC_PATH/larkc/platform/plugins
-
-cd ../../larkc-endpoints/endpoint.opsapi
+cd ../larkc-endpoints/endpoint.opsapi
 mvn assembly:assembly
 mv ./target/*SNAPSHOT-LarkcEndpointAssembly.jar $LARKC_PATH/larkc/platform/endpoints
+
+#cd ../larkc-endpoints/endpoint.lda
+#mvn assembly:assembly
+#mv ./target/*SNAPSHOT-LarkcEndpointAssembly.jar $LARKC_PATH/larkc/platform/endpoints
 
 cd $currentdir

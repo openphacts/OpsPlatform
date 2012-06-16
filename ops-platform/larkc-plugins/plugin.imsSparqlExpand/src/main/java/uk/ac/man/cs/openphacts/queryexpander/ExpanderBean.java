@@ -3,7 +3,10 @@ package uk.ac.man.cs.openphacts.queryexpander;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- *
+ * This is the XML/ Jason object returned by the WebService.
+ * 
+ * Future plans include adding still to be determined provenance information here.
+ * 
  * @author Christian
  */
 @XmlRootElement(name="URL")
@@ -13,11 +16,14 @@ public class ExpanderBean {
     
     private String expandedQuery;
     
+    /**
+     * Default constructor for bean creator
+     */
     public ExpanderBean(){
     }
 
     /**
-     * @return the orginalQuery
+     * @return The orginal unexpanded Query.
      */
     public String getOrginalQuery() {
         return orginalQuery;

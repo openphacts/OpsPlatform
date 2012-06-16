@@ -4,27 +4,23 @@
  */
 package uk.ac.man.cs.openphacts.queryexpander;
 
-import uk.ac.man.cs.openphacts.queryexpander.QueryExpansionException;
-import uk.ac.man.cs.openphacts.queryexpander.ExpanderBean;
-import uk.ac.man.cs.openphacts.queryexpander.QueryExpander;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.GenericType;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
-import uk.ac.man.cs.openphacts.queryexpander.ExpanderBean;
-import uk.ac.man.cs.openphacts.queryexpander.ExpanderBean;
-import uk.ac.man.cs.openphacts.queryexpander.QueryExpander;
-import uk.ac.man.cs.openphacts.queryexpander.QueryExpander;
-import uk.ac.man.cs.openphacts.queryexpander.QueryExpansionException;
-import uk.ac.man.cs.openphacts.queryexpander.QueryExpansionException;
 
 /**
- *
+ * Implements QueryExpander where these methods are documented.
  * @author Christian
+ * @see QueryExpander
  */
 public class QueryExpanderWSClient implements QueryExpander{
 
@@ -40,12 +36,28 @@ public class QueryExpanderWSClient implements QueryExpander{
     }
     
     @Override
-    public String expand(String originalQuery) throws QueryExpansionException {
-        return expand(originalQuery, false);
+    public String expand(String originalQuery, List<String> parameters, String inputURI) throws QueryExpansionException {
+        MultivaluedMap<String, String> params = new MultivaluedMapImpl();
+        params.add("query", originalQuery);
+        for (String parameter:parameters){
+            params.add("parameter", parameter);
+        }
+        if (inputURI != null && !inputURI.isEmpty()) {
+            params.add("inputURI", inputURI);
+        }
+        ExpanderBean bean = 
+                webResource.path("expand")
+                .queryParams(params)
+                .accept(MediaType.APPLICATION_XML_TYPE)
+                .get(new GenericType<ExpanderBean>() {});
+        return bean.getExpandedQuery();
     }
 
+    /**
+     * @deprecated 
+     */
     @Override
-    public String expand(String originalQuery, boolean verbose) throws QueryExpansionException {
+    public String expand(String originalQuery) throws QueryExpansionException {
         MultivaluedMap<String, String> params = new MultivaluedMapImpl();
         params.add("query", originalQuery);
         ExpanderBean bean = 
@@ -54,6 +66,19 @@ public class QueryExpanderWSClient implements QueryExpander{
                 .accept(MediaType.APPLICATION_XML_TYPE)
                 .get(new GenericType<ExpanderBean>() {});
         return bean.getExpandedQuery();
+    }
+
+    @Override
+    public Map<String, Set<String>> getURISpacesPerGraph() throws QueryExpansionException {
+        List<URISpacesInGraphBean> beans = 
+                webResource.path("URISpacesPerGraph")
+                .accept(MediaType.APPLICATION_XML_TYPE)
+                .get(new GenericType<List<URISpacesInGraphBean>>() {});
+        HashMap<String, Set<String>> results = new HashMap<String, Set<String>>();
+        for (URISpacesInGraphBean bean:beans){
+            results.put(bean.getGraph(), bean.getURISpace());
+        }
+        return results;
     }
     
 }
