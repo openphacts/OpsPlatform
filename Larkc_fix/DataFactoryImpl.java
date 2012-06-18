@@ -144,9 +144,10 @@ public class DataFactoryImpl implements DataFactory {
 		/* Sesame HTTP */
 		 try {
 			return new SAILRdfStoreConnectionImpl(SAILRdfStoreConnectionImpl
-					.getSesameHttpRepository("http://localhost:8080/openrdf-sesame","test")
+					.getSesameHttpRepository("http://ops.few.vu.nl:9090/openrdf-sesame","OPS_Sep_Cand")
 					.getConnection());
 		} catch (RepositoryException e) {
+			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
 		

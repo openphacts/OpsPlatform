@@ -47,8 +47,8 @@ cd ../larkc-endpoints/endpoint.opsapi
 mvn assembly:assembly
 mv ./target/*SNAPSHOT-LarkcEndpointAssembly.jar $LARKC_PATH/larkc/platform/endpoints
 
-#cd ../larkc-endpoints/endpoint.lda
-#mvn assembly:assembly
-#mv ./target/*SNAPSHOT-LarkcEndpointAssembly.jar $LARKC_PATH/larkc/platform/endpoints
+cd ../endpoint.lda
+mvn assembly:assembly
+mv ./target/*SNAPSHOT-LarkcEndpointAssembly.jar $LARKC_PATH/larkc/platform/endpoints
 
 cd $currentdir
