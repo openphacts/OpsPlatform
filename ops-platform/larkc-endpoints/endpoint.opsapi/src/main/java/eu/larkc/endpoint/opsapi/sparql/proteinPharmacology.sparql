@@ -4,7 +4,7 @@ PREFIX sio: <http://semanticscience.org/resource/>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX chemspider: <http://rdf.chemspider.com/#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-SELECT DISTINCT ?target_name ?compound_name ?csid_uri ?smiles ?inchi ?inchi_key ?molweight ?num_ro5_violations ?std_type ?relation ?std_value ?std_unit ?target_organism
+SELECT DISTINCT ?target_name ?compound_cw ?compound_name ?csid_uri ?smiles ?inchi ?inchi_key ?molweight ?num_ro5_violations ?std_type ?relation ?std_value ?std_unit ?target_organism
 WHERE {
 	GRAPH <http://www.conceptwiki.org> {
 		?cw_uri skos:prefLabel ?target_name .
