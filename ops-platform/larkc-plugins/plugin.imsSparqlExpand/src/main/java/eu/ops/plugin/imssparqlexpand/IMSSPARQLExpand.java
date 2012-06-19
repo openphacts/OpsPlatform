@@ -116,6 +116,10 @@ public class IMSSPARQLExpand extends Plugin {
         if (!parameters.isEmpty() && inputURI != null){
         	String expandedQueryString = queryExpander.expand(query.toString(),parameters,inputURI);
         	logger.debug("Expanded query: "+expandedQueryString);
+        	if (expandedQueryString.trim().endsWith("}")) {
+        		expandedQueryString=expandedQueryString.replaceAll("} \n\nLIMIT", "\n\nLIMIT") + "}";
+        		logger.debug("Bad limit replaced");
+        	}
         	output = new SPARQLQueryImpl(expandedQueryString).toRDF();
         }
         return output;

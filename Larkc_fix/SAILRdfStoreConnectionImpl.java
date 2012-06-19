@@ -114,12 +114,13 @@ public class SAILRdfStoreConnectionImpl implements RdfStoreConnection {
 	
 	/* Sesame HTTP*/
 	public static Repository getSesameHttpRepository(String url, String repo) {
-	if (myRepository == null) {
+		if (myRepository == null) {
 	        myRepository = new HTTPRepository(url, repo);
 	        try {
 	            myRepository.initialize();
 	
 	        } catch (RepositoryException e) {
+	        	e.printStackTrace();
 				new RuntimeException(e);
 	        }
 		}
@@ -390,13 +391,6 @@ public class SAILRdfStoreConnectionImpl implements RdfStoreConnection {
 	@Override
 	public SetOfStatements executeConstruct(SPARQLQuery query) {
 		try {
-			RepositoryResult<Statement> test = con.getStatements(null, null,
-					null, true);
-			while (test.hasNext()) {
-				logger.debug(test.next().toString());
-
-			}
-
 			GraphQuery gQuery = con.prepareGraphQuery(QueryLanguage.SPARQL,
 					query.toString());
 			GraphQueryResult result = gQuery.evaluate();
