@@ -111,10 +111,6 @@ public class LdaEndpointResource extends ServerResource {
 
 		// Prepare a triple which holds the query.
 		Set<Statement> statementSet = new HashSet<Statement>();
-		Resource subject = new BNodeImpl("query");
-		Literal sparql = ValueFactoryImpl.getInstance().createLiteral(q);
-		statementSet.add(new StatementImpl(subject, RDFConstants.RDF_TYPE, 	RDFConstants.LARKC_SPARQLQUERY));
-		statementSet.add(new StatementImpl(subject, RDFConstants.LARKC_HASSERIALIZEDFORM, sparql));
 		ValueFactory rdfval = new ValueFactoryImpl();
 		BNode bnode = rdfval.createBNode();
 		//Find out which varibles to expand
@@ -135,15 +131,31 @@ public class LdaEndpointResource extends ServerResource {
 		}
 		else {
 			//Look for ops:input property
+			logger.debug(q);
 			if (q.indexOf("ops:input") > 0){
 				int uriStart = q.indexOf("<",q.indexOf("ops:input"))+1;
 				String uri = q.substring(uriStart , q.indexOf(">",uriStart));
 				statementSet.add(new StatementImpl(
 						bnode, rdfval.createURI("http://www.openphacts.org/api#inputForExpansion"), rdfval.createURI(uri) ));
 				logger.debug("Added input URI for expansion: " + uri);
+				BufferedReader br = new BufferedReader(new StringReader(q));
+				String line=br.readLine();
+				String replacement="";
+				while (line!=null){
+					if (!line.contains("ops:input"))
+						replacement+=line+"\n";
+					else 
+						logger.debug("Removed ops:input line");
+					line=br.readLine();
+				}
+				q=replacement;
 			}
 		}
-		// Pass the set of statements to the executor.
+		// Pass a set of statements containing the query to the executor.
+		Resource subject = new BNodeImpl("query");
+		Literal sparql = ValueFactoryImpl.getInstance().createLiteral(q);
+		statementSet.add(new StatementImpl(subject, RDFConstants.RDF_TYPE, 	RDFConstants.LARKC_SPARQLQUERY));
+		statementSet.add(new StatementImpl(subject, RDFConstants.LARKC_HASSERIALIZEDFORM, sparql));
 		SetOfStatements setOfStatementsImpl = new SetOfStatementsImpl(
 				statementSet);
 		ex.execute(setOfStatementsImpl, ep.getPathId());
@@ -219,7 +231,7 @@ public class LdaEndpointResource extends ServerResource {
 		else {
 			//Look for ops:input property
 			if (q.indexOf("ops:input") > 0){
-			int uriStart = q.indexOf("<",q.indexOf("ops:input"))+1;
+				int uriStart = q.indexOf("<",q.indexOf("ops:input"))+1;
 				String uri = q.substring(uriStart , q.indexOf(">",uriStart));
 				statementSet.add(new StatementImpl(
 						bnode, rdfval.createURI("http://www.openphacts.org/api#inputForExpansion"), rdfval.createURI(uri) ));

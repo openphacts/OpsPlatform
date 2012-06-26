@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import eu.larkc.core.data.CloseableIterator;
 import eu.larkc.core.data.DataFactory;
 import eu.larkc.core.data.SetOfStatements;
+import eu.larkc.core.data.SetOfStatementsImpl;
 import eu.larkc.core.query.SPARQLQuery;
 import eu.larkc.core.query.SPARQLQueryImpl;
 import eu.larkc.plugin.Plugin;
@@ -120,7 +121,18 @@ public class IMSSPARQLExpand extends Plugin {
         		expandedQueryString=expandedQueryString.replaceAll("} \n\nLIMIT", "\n\nLIMIT") + "}";
         		logger.debug("Bad limit replaced");
         	}
-        	output = new SPARQLQueryImpl(expandedQueryString).toRDF();
+        	if (expandedQueryString.contains("WHERE {\nWHERE")){
+        		expandedQueryString=expandedQueryString.replaceAll("WHERE \\{\nWHERE", "WHERE");
+        		logger.debug("Double WHERE replaced");
+        	}
+        	expandedQueryString=expandedQueryString.replaceAll("ORDER", " ORDER");
+        	try {
+        		output = new SPARQLQueryImpl(expandedQueryString).toRDF();
+        	}
+        	catch (Exception e){
+        		e.printStackTrace();
+        		output=new SetOfStatementsImpl();
+        	}
         }
         return output;
     }

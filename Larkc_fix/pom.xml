@@ -36,17 +36,17 @@
 			<url>http://maven.sti2.at/archiva/repository/external</url>
 		</repository>
 		
-		<!-- External Maven repo for SIM artifacts -->
+		<!-- External Maven repo for SIM artifacts 
 		<repository>
 			<id>internal.maven.softgress.com</id>
 			<name>Internal Release Repository for SIM artifacts</name>
 			<url>http://maven.softgress.com:8080/archiva/repository/internal/</url>
-		</repository>
+		</repository> 
 		<repository>
 			<id>snapshots.maven.softgress.com</id>
 			<name>Internal Snapshot Repository for SIM artifacts</name>
 			<url>http://maven.softgress.com:8080/archiva/repository/snapshots/</url>
-		</repository>
+		</repository> -->
 		
 		<repository>
 			<id>org.CognitiveWeb</id>
