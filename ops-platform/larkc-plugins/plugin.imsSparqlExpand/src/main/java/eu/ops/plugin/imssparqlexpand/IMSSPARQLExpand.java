@@ -116,14 +116,27 @@ public class IMSSPARQLExpand extends Plugin {
             SetOfStatements result = invokeInternalWithExceptions(input);
             logger.info("Query expansion successful: " + result.toString());
             return result;
-        } catch (QueryExpansionException ex) {
-            logger.warn("Problem writing expanded query.", ex);
+        } catch (Throwable throwable) {
+            logger.warn("Problem writing expanded query.", throwable);
+            return wrapThrowable(throwable);
         }
-        //Failed so return input
-        logger.info("IMSSPARQLExpand: ERROR: Returning input");
-        return input;
     }
 
+    protected SetOfStatements wrapThrowable(Throwable throwable){
+        String errorQuery = "SELECT  ?s ?p ?o "
+                + "WHERE { "
+                + " GRAPH <http://www.example.org/ErrorInTheQuery> {"
+                + " ?s ?p ?o."
+                + " }"
+                + " } Limit 1" 
+                + " #There was an throwable expanding the query "
+                + throwable.getClass().toString()
+                + " "
+                + throwable.getLocalizedMessage();
+        SPARQLQuery expandedQuery = new SPARQLQueryImpl(errorQuery);
+        return expandedQuery.toRDF();
+    }
+    
     /**
      * Called on plug-in destruction. Plug-ins are destroyed on workflow deletion.
      * Free an resources you might have allocated here.
