@@ -41,14 +41,16 @@ WHERE {
 			_:node9 a sio:CHEMINF_000311 ;
 				sio:SIO_000300 ?rtb }
 	}
-	GRAPH <http://linkedlifedata.com/resource/drugbank> {
-		OPTIONAL { ?db_uri drugbank:affectedOrganism ?affectedOrganism }
-		OPTIONAL { ?db_uri drugbank:biotransformation ?biotransformation }
-		OPTIONAL { ?db_uri drugbank:description ?description }
-		OPTIONAL { ?db_uri drugbank:indication ?indication }
-		OPTIONAL { ?db_uri drugbank:proteinBinding ?proteinBinding }
-		OPTIONAL { ?db_uri drugbank:toxicity ?toxicity }
-		OPTIONAL { ?db_uri drugbank:meltingPoint ?meltingPoint }
+	OPTIONAL {
+		GRAPH <http://linkedlifedata.com/resource/drugbank> {
+			OPTIONAL { ?db_uri drugbank:affectedOrganism ?affectedOrganism }
+			OPTIONAL { ?db_uri drugbank:biotransformation ?biotransformation }
+			OPTIONAL { ?db_uri drugbank:description ?description }
+			OPTIONAL { ?db_uri drugbank:indication ?indication }
+			OPTIONAL { ?db_uri drugbank:proteinBinding ?proteinBinding }
+			OPTIONAL { ?db_uri drugbank:toxicity ?toxicity }
+			OPTIONAL { ?db_uri drugbank:meltingPoint ?meltingPoint }
+		}
 	}
 }
 
