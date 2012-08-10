@@ -131,7 +131,9 @@ public class IMSSPARQLExpand extends Plugin {
         	}
         	catch (Exception e){
         		e.printStackTrace();
-        		output=new SetOfStatementsImpl();
+        		//output=new SetOfStatementsImpl();
+        		output = new SPARQLQueryImpl("CONSTRUCT {_:1 <http://www.openphacts.org/api#error> " +
+        				"\""+e.getMessage()+"\" } WHERE {} LIMIT 1").toRDF();
         	}
         }
         return output;
@@ -148,16 +150,19 @@ public class IMSSPARQLExpand extends Plugin {
      */
     @Override
     protected SetOfStatements invokeInternal(SetOfStatements input) {
-        try {
+        SetOfStatements output=input;
+		try {
             SetOfStatements result = invokeInternalWithExceptions(input);
             logger.info("Query expansion successful: " + result.toString());
             return result;
-        } catch (QueryExpansionException ex) {
+        } catch (Exception ex) {
             logger.warn("Problem writing expanded query.", ex);
+            output = new SPARQLQueryImpl("CONSTRUCT {_:1 <http://www.openphacts.org/api#error> " +
+            		"\""+ex.getMessage()+"\" } WHERE {} LIMIT 1").toRDF();
         }
-        //Failed so return input
+        //Failed so return error
         logger.info("IMSSPARQLExpand: ERROR: Returning input");
-        return input;
+        return output;
     }
 
     /**
