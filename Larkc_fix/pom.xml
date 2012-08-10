@@ -379,7 +379,7 @@
 			<scope>compile</scope>
 		</dependency>
 		
-		<!-- SIM - Semantic Instrumentation & Monitoring -->
+		<!-- SIM - Semantic Instrumentation & Monitoring 
 		<dependency>
 			<groupId>sim</groupId>
 			<artifactId>sim-instrumentation</artifactId>
@@ -400,7 +400,7 @@
 			<version>1.6.9</version>
 			<type>jar</type>
 			<scope>provided</scope>
-		</dependency>
+		</dependency> -->
 
 
 		<!-- Bigdata dependencies -->

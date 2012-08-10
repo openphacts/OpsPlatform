@@ -18,8 +18,8 @@ cd ../plugins/SparqlQueryEvaluationReasoner
 mvn assembly:assembly -Dmaven.test.skip=true
 mv ./target/*SNAPSHOT.jar   ../../platform/plugins
 
-#cd ../../platform/endpoints/endpointsSourceCode/endpoint.sparql/
-#mvn install
+cd ../../platform/endpoints/endpointsSourceCode/endpoint.sparql/
+mvn install
 
 cd $OPS_PATH
 cd openphacts/ops-platform/larkc-plugins/
