@@ -93,9 +93,9 @@ public class LdaEndpointResource extends ServerResource {
 			throw new Exception("Malformed query!");
 		}
 		logger.debug("Query in valid SPARQL");
-		if(!q.toUpperCase().contains("LIMIT")){
+		/*if(!q.toUpperCase().contains("LIMIT")){
 			q+=" LIMIT 100";
-		}
+		}*/
 
 		// Get the corresponding executor from the LarKC platform.
 		Application application = this.getApplication();
@@ -193,9 +193,9 @@ public class LdaEndpointResource extends ServerResource {
 		if (q == null) {
 			setStatus(Status.CLIENT_ERROR_NOT_FOUND);
 		}
-		if(!q.toUpperCase().contains("LIMIT")){
+		/*if(!q.toUpperCase().contains("LIMIT")){
 			q+=" LIMIT 100";
-		}
+		}*/
 		// Get the corresponding executor from the LarKC platform.
 		Application application = this.getApplication();
 		Executor ex = null;
