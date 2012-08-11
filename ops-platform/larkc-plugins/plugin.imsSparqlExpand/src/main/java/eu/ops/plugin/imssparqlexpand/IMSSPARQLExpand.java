@@ -161,7 +161,7 @@ public class IMSSPARQLExpand extends Plugin {
             		"\""+ex.getMessage()+"\" } WHERE {} LIMIT 1").toRDF();
         }
         //Failed so return error
-        logger.info("IMSSPARQLExpand: ERROR: Returning input");
+        logger.info("IMSSPARQLExpand: ERROR: Returning error");
         return output;
     }
 
