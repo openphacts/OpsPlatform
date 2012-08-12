@@ -9,7 +9,7 @@ WHERE {
 		?cw_uri skos:prefLabel ?compound_name.
 	}
 	GRAPH <http://www.chemspider.com> {
-		?csid_uri chemspider:smiles ?inchi;
+		?csid_uri chemspider:inchi ?inchi;
 			chemspider:inchikey ?inchi_key;
 			chemspider:smiles ?smiles . 
 	}
