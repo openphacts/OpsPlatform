@@ -1,6 +1,7 @@
 package eu.ops.endpoint.lda;
 
 import org.restlet.Component;
+import org.restlet.Context;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 import org.slf4j.Logger;
@@ -49,6 +50,7 @@ public class LdaEndpoint extends Endpoint {
 
 		// Create a new server
 		restletServer = new Server(Protocol.HTTP, port);
+		restletServer.setContext(new Context());
 		restletServer.getContext().getParameters().set("maxThreads", "1024");
 		restletServer.getContext().getParameters().set("maxTotalConnections", "1024");
 		restletServer.getContext().getParameters().set("socketTimeout", "600000");
