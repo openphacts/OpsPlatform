@@ -49,7 +49,9 @@ public class LdaEndpoint extends Endpoint {
 
 		// Create a new server
 		restletServer = new Server(Protocol.HTTP, port);
-
+		restletServer.getContext().getParameters().set("maxThreads", "1024");
+		restletServer.getContext().getParameters().set("maxTotalConnections", "1024");
+		restletServer.getContext().getParameters().set("socketTimeout", "600000");
 		// Add the new HTTP server
 		component.getServers().add(restletServer);
 
