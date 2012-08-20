@@ -117,10 +117,10 @@ public class IMSSPARQLExpand extends Plugin {
         if (!parameters.isEmpty() && inputURI != null){
         	String expandedQueryString = queryExpander.expand(query.toString(),parameters,inputURI);
         	logger.debug("Expanded query: "+expandedQueryString);
-        	if (expandedQueryString.trim().endsWith("}")) {
-        		expandedQueryString=expandedQueryString.replaceAll("} \n\nLIMIT", "\n\nLIMIT") + "}";
-        		logger.debug("Bad limit replaced");
-        	}
+        	//if (expandedQueryString.trim().endsWith("}")) {
+        	//	expandedQueryString=expandedQueryString.replaceAll("} \n\nLIMIT", "\n\nLIMIT") + "}";
+        	//	logger.debug("Bad limit replaced");
+        	//}
         	if (expandedQueryString.contains("WHERE {\nWHERE")){
         		expandedQueryString=expandedQueryString.replaceAll("WHERE \\{\nWHERE", "WHERE");
         		logger.debug("Double WHERE replaced");
