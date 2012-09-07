@@ -23,6 +23,7 @@ import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.QueryLanguage;
+import org.openrdf.query.GraphQueryResult;
 import org.openrdf.repository.RepositoryConnection
 
 import org.slf4j.Logger;
@@ -36,6 +37,7 @@ import eu.larkc.core.data.SAILRdfStoreConnectionImpl;
 import eu.larkc.core.data.SetOfStatements;
 import eu.larkc.core.data.SetOfStatementsImpl;
 import eu.larkc.core.data.VariableBinding;
+import eu.larkc.core.data.iterator.GraphQueryResultCloseableIterator;
 import eu.larkc.core.query.SPARQLQuery;
 import eu.larkc.core.query.SesameVariableBinding;
 import eu.larkc.core.util.RDFConstants;
@@ -66,19 +68,23 @@ public class SparqlQueryEvaluationReasoner extends Plugin {
 				while (i.hasNext()) {
 					Statement s = i.next();
 					if (s.getPredicate().equals(RDFConstants.LARKC_HASSERIALIZEDFORM)) {
-						SesameVariableBinding varbinding = new SesameVariableBinding();
 						String sparql = s.getObject().stringValue();
 						try {
 							logger.debug("Got query for Virtuoso: " + sparql);
 							RepositoryConnection virtCon = SAILRdfStoreConnectionImpl.myRepository.getConnection();
 							if (sparql.toUpperCase().contains("CONSTRUCT"))
-								virtCon.prepareGraphQuery(QueryLanguage.SPARQL,s.getObject().stringValue()).evaluate(varbinding);
-							else
+								GraphQueryResult = virtCon.prepareGraphQuery(QueryLanguage.SPARQL,s.getObject().stringValue()).evaluate();
+								virtCon.close();
+								return new SetOfStatementsImpl(new GraphQueryResultCloseableIterator<Statement>(result));
+							else {
+								SesameVariableBinding varbinding = new SesameVariableBinding();
 								virtCon.prepareTupleQuery(QueryLanguage.SPARQL,s.getObject().stringValue()).evaluate(varbinding);
+								virtCon.close();
+								return varbinding.toRDF(new SetOfStatementsImpl());
+							}
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
-						return varbinding.toRDF(new SetOfStatementsImpl());
 					}
 				}
 			}
