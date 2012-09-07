@@ -24,7 +24,7 @@ import org.openrdf.model.URI;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.QueryLanguage;
 import org.openrdf.query.GraphQueryResult;
-import org.openrdf.repository.RepositoryConnection
+import org.openrdf.repository.RepositoryConnection;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,10 +72,11 @@ public class SparqlQueryEvaluationReasoner extends Plugin {
 						try {
 							logger.debug("Got query for Virtuoso: " + sparql);
 							RepositoryConnection virtCon = SAILRdfStoreConnectionImpl.myRepository.getConnection();
-							if (sparql.toUpperCase().contains("CONSTRUCT"))
+							if (sparql.toUpperCase().contains("CONSTRUCT")) {
 								GraphQueryResult = virtCon.prepareGraphQuery(QueryLanguage.SPARQL,s.getObject().stringValue()).evaluate();
 								virtCon.close();
 								return new SetOfStatementsImpl(new GraphQueryResultCloseableIterator<Statement>(result));
+							}
 							else {
 								SesameVariableBinding varbinding = new SesameVariableBinding();
 								virtCon.prepareTupleQuery(QueryLanguage.SPARQL,s.getObject().stringValue()).evaluate(varbinding);
