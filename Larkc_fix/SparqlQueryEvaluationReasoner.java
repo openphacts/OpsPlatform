@@ -75,7 +75,7 @@ public class SparqlQueryEvaluationReasoner extends Plugin {
 							if (sparql.toUpperCase().contains("CONSTRUCT")) {
 								GraphQueryResult result = virtCon.prepareGraphQuery(QueryLanguage.SPARQL,s.getObject().stringValue()).evaluate();
 								virtCon.close();
-								return new SetOfStatementsImpl(new GraphQueryResultCloseableIterator<Statement>(result));
+								return new SetOfStatementsImpl(result);
 							}
 							else {
 								SesameVariableBinding varbinding = new SesameVariableBinding();
