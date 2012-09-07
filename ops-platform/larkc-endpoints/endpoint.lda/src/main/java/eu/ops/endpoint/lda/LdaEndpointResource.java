@@ -37,6 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
+import eu.larkc.core.data.CloseableIterator;
 import eu.larkc.core.data.DataFactory;
 import eu.larkc.core.data.SetOfStatements;
 import eu.larkc.core.data.SetOfStatementsImpl;
@@ -324,7 +325,10 @@ public class LdaEndpointResource extends ServerResource {
 		if (nextResults == null) {
 			return new StringRepresentation("", MediaType.APPLICATION_RDF_XML);
 		}
-
+		CloseableIterator<Statement> statementsIterator = nextResults.getStatements();
+		while (statementsIterator.hasNext()){
+			logger.debug(statementsIterator.next().toString());
+		}
 		// Transform the SetOfStatements in an RDF/XML string.
 		ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
 		RDFXMLWriter writer = new RDFXMLWriter(byteStream);
