@@ -16,6 +16,7 @@
  */
 package eu.larkc.plugin;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -75,7 +76,10 @@ public class SparqlQueryEvaluationReasoner extends Plugin {
 							if (sparql.toUpperCase().contains("CONSTRUCT")) {
 								GraphQueryResult result = virtCon.prepareGraphQuery(QueryLanguage.SPARQL,s.getObject().stringValue()).evaluate();
 								virtCon.close();
-								return new SetOfStatementsImpl(result);
+								ArrayList<Statement> stmtList = new ArrayList<Statement>();
+								while (result.hasNext())
+									stmtList.add(result.next());
+								return new SetOfStatementsImpl(stmtList);
 							}
 							else {
 								SesameVariableBinding varbinding = new SesameVariableBinding();
