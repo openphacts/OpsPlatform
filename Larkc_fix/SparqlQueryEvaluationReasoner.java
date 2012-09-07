@@ -26,6 +26,7 @@ import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.QueryLanguage;
 import org.openrdf.query.GraphQueryResult;
 import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.rio.rdfxml.RDFXMLWriter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,6 +75,8 @@ public class SparqlQueryEvaluationReasoner extends Plugin {
 							logger.debug("Got query for Virtuoso: " + sparql);
 							RepositoryConnection virtCon = SAILRdfStoreConnectionImpl.myRepository.getConnection();
 							if (sparql.toUpperCase().contains("CONSTRUCT")) {
+								RDFXMLWriter rdfxmlwriter = new RDFXMLWriter(System.err);
+								virtCon.prepareGraphQuery(QueryLanguage.SPARQL,s.getObject().stringValue()).evaluate(rdfxmlwriter);
 								GraphQueryResult result = virtCon.prepareGraphQuery(QueryLanguage.SPARQL,s.getObject().stringValue()).evaluate();
 								System.err.println(result.next().toString());
 								virtCon.close();
