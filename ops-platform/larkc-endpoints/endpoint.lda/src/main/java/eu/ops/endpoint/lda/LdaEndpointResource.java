@@ -331,6 +331,7 @@ public class LdaEndpointResource extends ServerResource {
 		/*SerializationHelper.printSetOfStatements(nextResults, byteStream,
 				writer);*/
 		String serializedStatements = new String(byteStream.toByteArray());
+		logger.debug(serializedStatements);
 
 		// Set mime-type to APP RDF/XML and return result.
 		Representation rep = new StringRepresentation(serializedStatements,
