@@ -77,6 +77,7 @@ public class SparqlQueryEvaluationReasoner extends Plugin {
 								GraphQueryResult result = virtCon.prepareGraphQuery(QueryLanguage.SPARQL,s.getObject().stringValue()).evaluate();
 								System.err.println(result);
 								virtCon.close();
+								System.err.println(result);
 								ArrayList<Statement> stmtList = new ArrayList<Statement>();
 								while (result.hasNext())
 									stmtList.add(result.next());
