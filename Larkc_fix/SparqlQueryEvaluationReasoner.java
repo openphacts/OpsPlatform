@@ -76,11 +76,10 @@ public class SparqlQueryEvaluationReasoner extends Plugin {
 							RepositoryConnection virtCon = SAILRdfStoreConnectionImpl.myRepository.getConnection();
 							if (sparql.toUpperCase().contains("CONSTRUCT")) {
 								GraphQueryResult result = virtCon.prepareGraphQuery(QueryLanguage.SPARQL,s.getObject().stringValue()).evaluate();
-								System.err.println(result.next().toString());
-								virtCon.close();
 								ArrayList<Statement> stmtList = new ArrayList<Statement>();
 								while (result.hasNext())
 									stmtList.add(result.next());
+								virtCon.close();
 								return new SetOfStatementsImpl(stmtList);
 							}
 							else {
