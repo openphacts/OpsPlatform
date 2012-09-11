@@ -79,23 +79,20 @@ public class SparqlQueryEvaluationReasoner extends Plugin {
 								ArrayList<Statement> stmtList = new ArrayList<Statement>();
 								while (result.hasNext())
 									stmtList.add(result.next());
+								virtCon.close();
 								return new SetOfStatementsImpl(stmtList);
 							}
 							else {
 								SesameVariableBinding varbinding = new SesameVariableBinding();
 								virtCon.prepareTupleQuery(QueryLanguage.SPARQL,s.getObject().stringValue()).evaluate(varbinding);
+								virtCon.close();
 								return varbinding.toRDF(new SetOfStatementsImpl());
 							}
-							virtCon.close();
 						} catch (Exception e) {
-							RepositoryConnection virtCon = SAILRdfStoreConnectionImpl.myRepository.getConnection();
-							GraphQueryResult result = virtCon.prepareGraphQuery(QueryLanguage.SPARQL,"CONSTRUCT {_:1 <http://www.openphacts.org/api#error> " +
-									"\""+ e.getMessage()+"\" } WHERE {} LIMIT 1").evaluate();
-							ArrayList<Statement> stmtList = new ArrayList<Statement>();
-							while (result.hasNext())
-								stmtList.add(result.next());
-							virtCon.close();
-							return new SetOfStatementsImpl(stmtList);
+							SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery("" +
+									"CONSTRUCT {_:1 <http://www.openphacts.org/api#error> " +
+									"\""+ e.getMessage()+"\" } WHERE {} LIMIT 1");
+							return DataFactory.INSTANCE.createRdfStoreConnection().executeConstruct(query);
 						}
 					}
 				}
