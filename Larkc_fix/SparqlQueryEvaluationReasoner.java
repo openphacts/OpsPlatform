@@ -86,14 +86,15 @@ public class SparqlQueryEvaluationReasoner extends Plugin {
 								virtCon.prepareTupleQuery(QueryLanguage.SPARQL,s.getObject().stringValue()).evaluate(varbinding);
 								return varbinding.toRDF(new SetOfStatementsImpl());
 							}
+							virtCon.close();
 						} catch (Exception e) {
 							GraphQueryResult result = virtCon.prepareGraphQuery(QueryLanguage.SPARQL,"CONSTRUCT {_:1 <http://www.openphacts.org/api#error> " +
 									"\""+ e.getMessage()+"\" } WHERE {} LIMIT 1").evaluate();
 							while (result.hasNext())
 								stmtList.add(result.next());
+							virtCon.close();
 							return new SetOfStatementsImpl(stmtList);
 						}
-						virtCon.close();
 					}
 				}
 			}
