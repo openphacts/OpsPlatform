@@ -5,11 +5,16 @@ export MAVEN_OPTS=-Xmx512m
 
 currentdir=`pwd`
 
-cp ../../Larkc_fix/logback.xml $LARKC_PATH/larkc/platform/src/main/resources/
-cp ../../Larkc_fix/pom.xml $LARKC_PATH/larkc/platform/
-cp ../../Larkc_fix/DataFactoryImpl.java $LARKC_PATH/larkc/platform/src/main/java/eu/larkc/core/data/
-cp ../../Larkc_fix/SAILRdfStoreConnectionImpl.java $LARKC_PATH/larkc/platform/src/main/java/eu/larkc/core/data/
-cp ../../Larkc_fix/SparqlQueryEvaluationReasoner.java $LARKC_PATH/larkc/plugins/SparqlQueryEvaluationReasoner/src/main/java/eu/larkc/plugin
+cd $LARKC_PATH/openphacts/Larkc_fix/
+
+cp logback.xml $LARKC_PATH/larkc/platform/src/main/resources/
+cp pom.xml $LARKC_PATH/larkc/platform/
+cp DataFactoryImpl.java $LARKC_PATH/larkc/platform/src/main/java/eu/larkc/core/data/
+cp SAILRdfStoreConnectionImpl.java $LARKC_PATH/larkc/platform/src/main/java/eu/larkc/core/data/
+cp SparqlQueryEvaluationReasoner.java $LARKC_PATH/larkc/plugins/SparqlQueryEvaluationReasoner/src/main/java/eu/larkc/plugin
+mvn install:install-file -Dfile=virt_sesame2.jar -DgroupId=virtuoso.sesame2 -DartifactId=virt_sesame2 -Dversion=2.6.5 -Dpackaging=jar
+mvn install:install-file -Dfile=virtjdbc3.jar -DgroupId=virtuoso.jdbc3 -DartifactId=virtjdbc3 -Dversion=3.0.0 -Dpackaging=jar
+
 cd $LARKC_PATH/larkc/platform/
 mvn assembly:assembly -DdescriptorId=jar-with-dependencies -Dmaven.test.skip=true
 mvn install -DdescriptorId=jar-with-dependencies -Dmaven.test.skip=true
