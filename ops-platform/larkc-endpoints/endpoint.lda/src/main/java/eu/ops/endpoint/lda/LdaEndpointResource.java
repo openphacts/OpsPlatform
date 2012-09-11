@@ -328,6 +328,8 @@ public class LdaEndpointResource extends ServerResource {
 		// Transform the SetOfStatements in an RDF/XML string.
 		ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
 		RDFXMLWriter writer = new RDFXMLWriter(byteStream);
+		SerializationHelper.printSetOfStatements(nextResults, byteStream,
+				writer);
 		String serializedStatements = new String(byteStream.toByteArray());
 		logger.debug(serializedStatements);
 
