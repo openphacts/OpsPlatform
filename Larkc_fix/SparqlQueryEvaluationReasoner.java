@@ -75,8 +75,6 @@ public class SparqlQueryEvaluationReasoner extends Plugin {
 							logger.debug("Got query for Virtuoso: " + sparql);
 							RepositoryConnection virtCon = SAILRdfStoreConnectionImpl.myRepository.getConnection();
 							if (sparql.toUpperCase().contains("CONSTRUCT")) {
-								RDFXMLWriter rdfxmlwriter = new RDFXMLWriter(System.err);
-								virtCon.prepareGraphQuery(QueryLanguage.SPARQL,s.getObject().stringValue()).evaluate(rdfxmlwriter);
 								GraphQueryResult result = virtCon.prepareGraphQuery(QueryLanguage.SPARQL,s.getObject().stringValue()).evaluate();
 								System.err.println(result.next().toString());
 								virtCon.close();
