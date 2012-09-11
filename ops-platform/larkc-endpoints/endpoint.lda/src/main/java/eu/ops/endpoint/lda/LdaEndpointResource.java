@@ -325,10 +325,6 @@ public class LdaEndpointResource extends ServerResource {
 		if (nextResults == null) {
 			return new StringRepresentation("", MediaType.APPLICATION_RDF_XML);
 		}
-		CloseableIterator<Statement> statementsIterator = nextResults.getStatements();
-		while (statementsIterator.hasNext()){
-			logger.debug(statementsIterator.next().toString());
-		}
 		// Transform the SetOfStatements in an RDF/XML string.
 		ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
 		RDFXMLWriter writer = new RDFXMLWriter(byteStream);
