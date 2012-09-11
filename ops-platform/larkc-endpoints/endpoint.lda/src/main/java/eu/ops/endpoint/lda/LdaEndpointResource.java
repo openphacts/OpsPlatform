@@ -37,7 +37,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
-import eu.larkc.core.data.CloseableIterator;
 import eu.larkc.core.data.DataFactory;
 import eu.larkc.core.data.SetOfStatements;
 import eu.larkc.core.data.SetOfStatementsImpl;
@@ -331,7 +330,6 @@ public class LdaEndpointResource extends ServerResource {
 		SerializationHelper.printSetOfStatements(nextResults, byteStream,
 				writer);
 		String serializedStatements = new String(byteStream.toByteArray());
-		logger.debug(serializedStatements);
 
 		// Set mime-type to APP RDF/XML and return result.
 		Representation rep = new StringRepresentation(serializedStatements,
