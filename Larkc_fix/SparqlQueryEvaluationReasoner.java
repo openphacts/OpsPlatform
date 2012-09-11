@@ -91,6 +91,7 @@ public class SparqlQueryEvaluationReasoner extends Plugin {
 							RepositoryConnection virtCon = SAILRdfStoreConnectionImpl.myRepository.getConnection();
 							GraphQueryResult result = virtCon.prepareGraphQuery(QueryLanguage.SPARQL,"CONSTRUCT {_:1 <http://www.openphacts.org/api#error> " +
 									"\""+ e.getMessage()+"\" } WHERE {} LIMIT 1").evaluate();
+							ArrayList<Statement> stmtList = new ArrayList<Statement>();
 							while (result.hasNext())
 								stmtList.add(result.next());
 							virtCon.close();
