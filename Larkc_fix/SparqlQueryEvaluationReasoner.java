@@ -91,7 +91,7 @@ public class SparqlQueryEvaluationReasoner extends Plugin {
 						} catch (Exception e) {
 							SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery("" +
 									"CONSTRUCT {_:1 <http://www.openphacts.org/api#error> " +
-									"\""+ e.getMessage().replaceAll("\n\"", " ")+"\" } WHERE {} LIMIT 1");
+									"\""+ e.getMessage().replaceAll("\n", " ").replaceAll("\"", " ")+"\" } WHERE {} LIMIT 1");
 							return DataFactory.INSTANCE.createRdfStoreConnection().executeConstruct(query);
 						}
 					}

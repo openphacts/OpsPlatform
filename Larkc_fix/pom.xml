@@ -213,7 +213,7 @@
             <version>2.6.3</version>
         </dependency>
 
-		<!-- Virtuoso Sesame Provider
+		<!-- Virtuoso Sesame Provider -->
 		<dependency>
 			<groupId>virtuoso.sesame2</groupId>
 			<artifactId>virt_sesame2</artifactId>
@@ -223,7 +223,7 @@
 			<groupId>virtuoso.jdbc3</groupId>
 			<artifactId>virtjdbc3</artifactId>
 			<version>3.0.0</version>
-		</dependency> 	-->
+		</dependency> 	
 		<!-- RESTlet -->
 		<dependency>
 			<groupId>org.restlet.jse</groupId>

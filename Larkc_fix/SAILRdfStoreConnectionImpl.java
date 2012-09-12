@@ -49,7 +49,7 @@ import org.openrdf.rio.RDFFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-//import virtuoso.sesame2.driver.VirtuosoRepository;
+import virtuoso.sesame2.driver.VirtuosoRepository;
 
 //import com.clarkparsia.fourstore.sesame.FourStoreSail;
 //import com.clarkparsia.fourstore.sesame.FourStoreSailRepository;
@@ -112,7 +112,7 @@ public class SAILRdfStoreConnectionImpl implements RdfStoreConnection {
 	}*/
 
 	
-	/* Sesame HTTP*/
+	/* Sesame HTTP
 	public static Repository getSesameHttpRepository(String url, String repo) {
 		if (myRepository == null) {
 	        myRepository = new HTTPRepository(url, repo);
@@ -125,7 +125,7 @@ public class SAILRdfStoreConnectionImpl implements RdfStoreConnection {
 	        }
 		}
 	    return myRepository;
-	}
+	}*/
 	
 	/* 4store 
 	public static Repository get4StoreRepository(URL url) { 
@@ -142,7 +142,7 @@ public class SAILRdfStoreConnectionImpl implements RdfStoreConnection {
 		return myRepository; 
 	}*/
 	
-	/* Virtuoso 
+	/* Virtuoso */
 	public static Repository getVirtuosoRepository(){
 		if (myRepository == null) { 
 			try { 
@@ -154,7 +154,7 @@ public class SAILRdfStoreConnectionImpl implements RdfStoreConnection {
 			} 
 		} 
 		return myRepository; 
-	}*/
+	}
 	
 	/* bigdata
 	public static Repository getBigdataRepository() { 

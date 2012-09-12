@@ -141,7 +141,7 @@ public class DataFactoryImpl implements DataFactory {
 		 }
 		 */
 		
-		/* Sesame HTTP */
+		/* Sesame HTTP 
 		 try {
 			return new SAILRdfStoreConnectionImpl(SAILRdfStoreConnectionImpl
 					.getSesameHttpRepository("http://localhost:8080/openrdf-sesame","OPS")
@@ -149,9 +149,9 @@ public class DataFactoryImpl implements DataFactory {
 		} catch (RepositoryException e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);
-		}
+		}*/
 		
-		/* Virtuoso
+		/* Virtuoso */
 		try { 
 			return new SAILRdfStoreConnectionImpl(SAILRdfStoreConnectionImpl 
 					.getVirtuosoRepository() 
@@ -159,7 +159,7 @@ public class DataFactoryImpl implements DataFactory {
 		} catch (Exception e) { 
 			e.printStackTrace();
 			throw new RuntimeException(e); 
-		} */
+		}
 		
 		/* Sesame in-memory (non-persistent) 
 		try {
