@@ -8,9 +8,14 @@ _:reasoner a <urn:eu.larkc.plugin.SparqlQueryEvaluationReasoner> .
 #Define IMS plugin
 _:imsplugin a <urn:eu.ops.plugin.imssparqlexpand.IMSSPARQLExpand> .
 _:path larkc:hasInput _:imsplugin .
-_:imsplugin larkc:connectsTo _:reasoner .
+_:imsplugin larkc:connectsTo _:virtuoso .
 _:imsplugin larkc:hasParameter _:serviceparam .
 _:serviceparam larkc:ExpanderService "http://openphacts.cs.man.ac.uk:9090/QueryExpander" .
+
+#Define Virtuoso plugin
+_:virtuoso a <urn:eu.ops.plugin.virtuoso.VirtuosoSparqlFormatter> .
+_:virtuoso larkc:connectsTo _:reasoner .
+
 
 #Define the endpoint for this workflow.
 _:ep a <urn:eu.ops.endpoint.lda.LdaEndpoint> .
