@@ -67,6 +67,7 @@ public class SparqlQueryEvaluationReasoner extends Plugin {
 		if (con instanceof SAILRdfStoreConnectionImpl){
 			if (((SAILRdfStoreConnectionImpl)con).getRepositoryClass() == "virtuoso.sesame2.driver.VirtuosoRepository") {
 				CloseableIterator<Statement> i = input.getStatements();
+				con.close();
 				while (i.hasNext()) {
 					Statement s = i.next();
 					if (s.getPredicate().equals(RDFConstants.LARKC_HASSERIALIZEDFORM)) {
