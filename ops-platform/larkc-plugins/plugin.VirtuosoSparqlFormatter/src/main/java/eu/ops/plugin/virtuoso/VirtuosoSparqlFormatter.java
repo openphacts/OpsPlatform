@@ -82,7 +82,7 @@ public class VirtuosoSparqlFormatter extends Plugin
 		if (sparql.toUpperCase().contains("CONSTRUCT") &&
 				sparql.toUpperCase().contains("SELECT") &&
 				!sparql.toUpperCase().substring(0, sparql.toUpperCase().indexOf("SELECT")).contains("WHERE")){
-			sparql = sparql.substring(0, sparql.indexOf("}")+1) + " WHERE { " + sparql.substring(sparql.indexOf("}")) + "}";
+			sparql = sparql.substring(0, sparql.indexOf("}")+1) + " WHERE { " + sparql.substring(sparql.indexOf("}")+1) + "}";
 		}
 		return sparql.replaceAll("(?i)\\([ ]*GROUP_CONCAT[ ]*\\([ ]*DISTINCT", "( sql:GROUP_DIGEST (")
 				.replaceAll("(?i)GROUP_CONCAT", "sql:GROUP_CONCAT")
