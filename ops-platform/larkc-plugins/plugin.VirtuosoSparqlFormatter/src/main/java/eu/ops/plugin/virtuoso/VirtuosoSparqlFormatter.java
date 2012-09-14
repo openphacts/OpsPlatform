@@ -93,4 +93,5 @@ public class VirtuosoSparqlFormatter extends Plugin
 	protected void shutdownInternal() {
 		// TODO Auto-generated method stub
 	}
+	
 }
