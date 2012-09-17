@@ -25,6 +25,8 @@ import org.openrdf.model.URI;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.QueryLanguage;
 import org.openrdf.query.GraphQueryResult;
+import org.openrdf.query.TupleQuery;
+import org.openrdf.query.TupleQueryResult;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.rio.rdfxml.RDFXMLWriter;
 
@@ -86,7 +88,10 @@ public class SparqlQueryEvaluationReasoner extends Plugin {
 							else {
 								logger.debug("Got SELECT query for Virtuoso: " + sparql);
 								SesameVariableBinding varbinding = new SesameVariableBinding();
-								virtCon.prepareTupleQuery(QueryLanguage.SPARQL,s.getObject().stringValue()).evaluate(varbinding);
+								logger.debug("Created varibinding object.");
+								TupleQuery tquery = virtCon.prepareTupleQuery(QueryLanguage.SPARQL,s.getObject().stringValue());
+								logger.debug("Prepared tuple query.");
+								TupleQueryResult result = tquery.evaluate(varbinding);
 								logger.debug("Got SELECT results.");
 								virtCon.close();
 								logger.debug("Closed virtuoso connection.");
