@@ -73,9 +73,9 @@ public class SparqlQueryEvaluationReasoner extends Plugin {
 					if (s.getPredicate().equals(RDFConstants.LARKC_HASSERIALIZEDFORM)) {
 						String sparql = s.getObject().stringValue();
 						try {
-							logger.debug("Got query for Virtuoso: " + sparql);
 							RepositoryConnection virtCon = SAILRdfStoreConnectionImpl.myRepository.getConnection();
 							if (sparql.toUpperCase().contains("CONSTRUCT")) {
+								logger.debug("Got CONSTRUCT query for Virtuoso: " + sparql);
 								GraphQueryResult result = virtCon.prepareGraphQuery(QueryLanguage.SPARQL,s.getObject().stringValue()).evaluate();
 								ArrayList<Statement> stmtList = new ArrayList<Statement>();
 								while (result.hasNext())
@@ -84,12 +84,14 @@ public class SparqlQueryEvaluationReasoner extends Plugin {
 								return new SetOfStatementsImpl(stmtList);
 							}
 							else {
+								logger.debug("Got SELECT query for Virtuoso: " + sparql);
 								SesameVariableBinding varbinding = new SesameVariableBinding();
 								virtCon.prepareTupleQuery(QueryLanguage.SPARQL,s.getObject().stringValue()).evaluate(varbinding);
 								virtCon.close();
 								return varbinding.toRDF(new SetOfStatementsImpl());
 							}
 						} catch (Exception e) {
+							logger.debug("Virtuoso threw an exception: " + e.getMessage());
 							SPARQLQuery query = DataFactory.INSTANCE.createSPARQLQuery("" +
 									"CONSTRUCT {_:1 <http://www.openphacts.org/api#error> " +
 									"\""+ e.getMessage().replaceAll("\n", " ").replaceAll("\"", " ")+"\" } WHERE {} LIMIT 1");
