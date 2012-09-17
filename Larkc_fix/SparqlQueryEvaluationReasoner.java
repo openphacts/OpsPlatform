@@ -91,7 +91,8 @@ public class SparqlQueryEvaluationReasoner extends Plugin {
 								logger.debug("Created varibinding object.");
 								TupleQuery tquery = virtCon.prepareTupleQuery(QueryLanguage.SPARQL,s.getObject().stringValue());
 								logger.debug("Prepared tuple query.");
-								TupleQueryResult result = tquery.evaluate(varbinding);
+								TupleQueryResult result = tquery.evaluate();
+								tquery.evaluate(varbinding);
 								logger.debug("Got SELECT results.");
 								virtCon.close();
 								logger.debug("Closed virtuoso connection.");
