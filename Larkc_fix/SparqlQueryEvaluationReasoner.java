@@ -87,7 +87,9 @@ public class SparqlQueryEvaluationReasoner extends Plugin {
 								logger.debug("Got SELECT query for Virtuoso: " + sparql);
 								SesameVariableBinding varbinding = new SesameVariableBinding();
 								virtCon.prepareTupleQuery(QueryLanguage.SPARQL,s.getObject().stringValue()).evaluate(varbinding);
+								logger.debug("Got SELECT results.");
 								virtCon.close();
+								logger.debug("Closed virtuoso connection.");
 								return varbinding.toRDF(new SetOfStatementsImpl());
 							}
 						} catch (Exception e) {
