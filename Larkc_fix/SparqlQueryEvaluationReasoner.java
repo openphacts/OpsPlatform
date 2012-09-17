@@ -92,6 +92,7 @@ public class SparqlQueryEvaluationReasoner extends Plugin {
 								TupleQuery tquery = virtCon.prepareTupleQuery(QueryLanguage.SPARQL,s.getObject().stringValue());
 								logger.debug("Prepared tuple query.");
 								TupleQueryResult result = tquery.evaluate();
+								logger.debug("Tuple query evaluated without varbinding.");
 								tquery.evaluate(varbinding);
 								logger.debug("Got SELECT results.");
 								virtCon.close();
