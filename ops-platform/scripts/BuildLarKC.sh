@@ -12,6 +12,7 @@ cp pom.xml $LARKC_PATH/larkc/platform/
 cp DataFactoryImpl.java $LARKC_PATH/larkc/platform/src/main/java/eu/larkc/core/data/
 cp SAILRdfStoreConnectionImpl.java $LARKC_PATH/larkc/platform/src/main/java/eu/larkc/core/data/
 cp SparqlQueryEvaluationReasoner.java $LARKC_PATH/larkc/plugins/SparqlQueryEvaluationReasoner/src/main/java/eu/larkc/plugin
+cp VariableBindingBase.java $LARKC_PATH/larkc/platform/src/main/java/eu/larkc/core/query/
 mvn install:install-file -Dfile=virt_sesame2.jar -DgroupId=virtuoso.sesame2 -DartifactId=virt_sesame2 -Dversion=2.6.5 -Dpackaging=jar
 mvn install:install-file -Dfile=virtjdbc3.jar -DgroupId=virtuoso.jdbc3 -DartifactId=virtjdbc3 -Dversion=3.0.0 -Dpackaging=jar
 
