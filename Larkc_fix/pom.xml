@@ -215,15 +215,16 @@
 
 		<!-- Virtuoso Sesame Provider -->
 		<dependency>
-			<groupId>virtuoso.sesame2</groupId>
+			<groupId>com.openlink.virtuoso</groupId>
 			<artifactId>virt_sesame2</artifactId>
 			<version>2.6.5</version>
 		</dependency>
+		<!-- Virtuoso JDBC3 -->
 		<dependency>
-			<groupId>virtuoso.jdbc3</groupId>
-			<artifactId>virtjdbc3</artifactId>
-			<version>3.0.0</version>
-		</dependency> 	
+		        <groupId>com.openlink.virtuoso</groupId>
+		        <artifactId>virtjdbc3</artifactId>
+		        <version>3.x</version>
+		</dependency>
 		<!-- RESTlet -->
 		<dependency>
 			<groupId>org.restlet.jse</groupId>
