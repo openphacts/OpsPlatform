@@ -1,0 +1,16 @@
+connect http://localhost:9090/openrdf-sesame .
+open OPS_Sep_Cand .
+load /home/OPS/develop/openphacts/datasets/conceptwiki/cw_url_preflabels_20120615_validTurtle.ttl into http://www.conceptwiki.org .
+load /home/OPS/develop/openphacts/datasets/linksets/cw-cs_linkset.ttl into http://www.conceptwiki.org .
+load /home/OPS/develop/openphacts/datasets/uniprotrdf/inference.ttl into http://purl.uniprot.org/enzyme/inference .
+load /home/OPS/develop/openphacts/datasets/uniprotrdf/direct.ttl into http://purl.uniprot.org/enzyme/direct .
+load /home/OPS/develop/openphacts/datasets/uniprotrdf/enzyme_names_comments.ttl into http://purl.uniprot.org/enzyme .
+load /home/OPS/develop/openphacts/datasets/lodd/drugbank_dump.nt into http://linkedlifedata.com/resource/drugbank .
+load /home/OPS/develop/openphacts/datasets/lodd/drug_type_labels.ttl into http://linkedlifedata.com/resource/drugbank .
+load /home/OPS/develop/openphacts/datasets/lodd/drug_category_labels.ttl into http://linkedlifedata.com/resource/drugbank .
+load /home/OPS/develop/openphacts/datasets/uniprotrdf/swissprot.rdf into http://purl.uniprot.org .
+load /home/OPS/develop/openphacts/datasets/chebi/chebi_subclasses_direct_withLabels.nt into http://www.ebi.ac.uk/chebi .
+load /home/OPS/develop/openphacts/datasets/chebi/chebi_inference.nt into http://www.ebi.ac.uk/chebi/inference .
+load /home/OPS/develop/openphacts/datasets/ACD_Labs/UPDATED_ChEMBL20120601.ttl into http://www.chemspider.com .
+load /home/OPS/develop/openphacts/datasets/OPS-DS-TTL/chemspider.ttl into http://www.chemspider.com .
+close.
