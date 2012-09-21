@@ -505,7 +505,7 @@ public class OPSAPIEndpointResource extends ServerResource {
 	private ParsedRequest compoundInfo(String[] parts) throws APIException {
 		boolean hasMethod = false;
 		String uri="";
-		String sparql = new Scanner(this.getClass().getResourceAsStream("sparql/compoundInfo.sparql")).useDelimiter("\\Z").next();
+		String sparql = new Scanner(this.getClass().getResourceAsStream("/compoundInfo.sparql")).useDelimiter("\\Z").next();
 		for (String part : parts) {
 			int eq = part.indexOf('=');
 			if (eq < 0) {
