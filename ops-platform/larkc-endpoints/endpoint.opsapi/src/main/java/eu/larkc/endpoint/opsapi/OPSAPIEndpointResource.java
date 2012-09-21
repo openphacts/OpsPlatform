@@ -350,7 +350,7 @@ public class OPSAPIEndpointResource extends ServerResource {
 	private ParsedRequest proteinPharmacology(String[] parts) throws APIException {
 		boolean hasMethod = false;
 		String uri="";
-		String sparql = new Scanner(this.getClass().getResourceAsStream("sparql/proteinPharmacology.sparql")).useDelimiter("\\Z").next();
+		String sparql = new Scanner(this.getClass().getResourceAsStream("/proteinPharmacology.sparql")).useDelimiter("\\Z").next();
 		for (String part : parts) {
 			int eq = part.indexOf('=');
 			if (eq < 0) {
@@ -402,7 +402,7 @@ public class OPSAPIEndpointResource extends ServerResource {
 	private ParsedRequest compoundPharmacology(String[] parts) throws APIException {
 		boolean hasMethod = false;
 		String uri="";
-		String sparql = new Scanner(this.getClass().getResourceAsStream("sparql/compoundPharmacology.sparql")).useDelimiter("\\Z").next();
+		String sparql = new Scanner(this.getClass().getResourceAsStream("/compoundPharmacology.sparql")).useDelimiter("\\Z").next();
 		for (String part : parts) {
 			int eq = part.indexOf('=');
 			if (eq < 0) {
@@ -453,7 +453,7 @@ public class OPSAPIEndpointResource extends ServerResource {
 	private ParsedRequest proteinInfo(String[] parts) throws APIException {
 		boolean hasMethod = false;
 		String uri="";
-		String sparql = new Scanner(this.getClass().getResourceAsStream("sparql/proteinInfo.sparql")).useDelimiter("\\Z").next();
+		String sparql = new Scanner(this.getClass().getResourceAsStream("/proteinInfo.sparql")).useDelimiter("\\Z").next();
 		for (String part : parts) {
 			int eq = part.indexOf('=');
 			if (eq < 0) {
