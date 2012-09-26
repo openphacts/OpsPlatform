@@ -59,7 +59,7 @@ import eu.larkc.shared.SerializationHelper;
  */
 public class LdaEndpointResource extends ServerResource {
 
-	private final String[] OPS_variables = {"?chembl_uri" , "?cw_uri" , "?db_uri" , "?cs_uri"};
+	private final String[] OPS_variables = {"?chembl_uri" , "?cw_uri" , "?db_uri" , "?cs_uri" , "?uniprot_uri"};
 		
 	private static Logger logger = LoggerFactory
 			.getLogger(LdaEndpointResource.class);
