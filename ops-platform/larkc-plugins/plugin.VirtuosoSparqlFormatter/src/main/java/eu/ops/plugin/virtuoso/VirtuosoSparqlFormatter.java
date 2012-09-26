@@ -88,7 +88,7 @@ public class VirtuosoSparqlFormatter extends Plugin
 				.replaceAll("(?i)GROUP_CONCAT", "sql:GROUP_CONCAT")
 				.replaceAll("(?i);[ ]*SEPARATOR[ ]*=[ ]*", ", ")
 				.replaceAll("(?i)[ ]*sql:GROUP_DIGEST[ ]*\\([ ]*[ a-z\\?,_]*, [\"'] , [\"']", "$0 , 1000 , 1")
-				.replaceAll("(?i)(FILTER[ ]*\\([ ]*[a-z\\?,]*_uri[ ]*=[ ]*)(<http[?]*>)","$1 IRI($2)");
+				.replaceAll("(?i)(FILTER[ ]*\\([ ]*[a-z\\?,]*_uri[ ]*=[ ]*)(<http://.*>)","$1 IRI($2)");
 	}
 
 	/**
@@ -98,6 +98,10 @@ public class VirtuosoSparqlFormatter extends Plugin
 	@Override
 	protected void shutdownInternal() {
 		// TODO Auto-generated method stub
+	}
+	
+	public static void main(String[] args){
+		System.err.println(new VirtuosoSparqlFormatter(	RDFConstants.LARKC_SPARQLQUERY).formatQuery("FILTeR (?db_uri = <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugs/DB00398>)"));
 	}
 	
 }
